@@ -79,9 +79,9 @@
     </dependency>
 
     <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <scope>runtime</scope>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>42.5.4</version>
     </dependency>
 
     <dependency>
@@ -148,6 +148,61 @@
             <goals>
               <goal>sonar</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-xjc-plugin</artifactId>
+        <version>3.3.0</version>
+        <executions>
+          <execution>
+            <id>xjc1</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>xsdtojava</goal>
+            </goals>
+            <configuration>
+              <sourceRoot>${basedir}/target/generated-sources/src/main/java</sourceRoot>
+              <xsdOptions>
+                <xsdOption>
+                  <xsd>${basedir}/src/main/resources/xsd/CatalogoDatiInformativiPSP.xsd</xsd>
+                  <packagename>it.gov.pagopa.microservice.catalogodati</packagename>
+                </xsdOption>
+              </xsdOptions>
+            </configuration>
+          </execution>
+          <execution>
+            <id>xjc2</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>xsdtojava</goal>
+            </goals>
+            <configuration>
+              <sourceRoot>${basedir}/target/generated-sources/src/main/java</sourceRoot>
+              <xsdOptions>
+                <xsdOption>
+                  <xsd>${basedir}/src/main/resources/xsd/TabellaDelleContropartiEstesa_1_2_0.xsd</xsd>
+                  <packagename>it.gov.pagopa.microservice.controparti</packagename>
+                </xsdOption>
+              </xsdOptions>
+            </configuration>
+          </execution>
+          <execution>
+            <id>xjc3</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>xsdtojava</goal>
+            </goals>
+            <configuration>
+              <sourceRoot>${basedir}/target/generated-sources/src/main/java</sourceRoot>
+              <xsdOptions>
+                <xsdOption>
+                  <xsd>${basedir}/src/main/resources/xsd/TemplateInformativa_1_0_11.xsd</xsd>
+                  <packagename>it.gov.pagopa.microservice.template</packagename>
+                </xsdOption>
+              </xsdOptions>
+            </configuration>
           </execution>
         </executions>
       </plugin>
