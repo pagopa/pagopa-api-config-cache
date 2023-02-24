@@ -36,7 +36,7 @@ public class ConvertCanaliToChannelDetails implements Converter<Canali, Channel>
                 .timeoutB(source.getTimeoutB())
                 .timeoutC(source.getTimeoutC())
                 .newFaultCode(source.getUseNewFaultCode())
-                .npmService(source.getServizioNmp()).redirectIp(source.getRedirectIp())
+                .nmpService(source.getServizioNmp()).redirectIp(source.getRedirectIp())
                 .redirectPath(source.getRedirectPath())
                 .redirectPort(source.getRedirectPorta())
                 .redirectQueryString(source.getRedirectQueryString())
