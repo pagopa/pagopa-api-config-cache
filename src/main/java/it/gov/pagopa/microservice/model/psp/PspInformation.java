@@ -20,6 +20,6 @@ public class PspInformation {
   @JsonIgnore
   private String psp;
 
-  @JsonProperty(value = "informativa")
+  @JsonProperty(value = "informativa",required = true)
   private String informativa;
 }
