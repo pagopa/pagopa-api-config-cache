@@ -244,7 +244,8 @@ public class ConfigService {
                   s.getAuxDigit(),
                   s.getSegregazione(),
                   s.getQuartoModello(),
-                  s.getBroadcast());
+                  s.getBroadcast(),
+                  s.getStazione().getVersionePrimitive());
         }).collect(Collectors.toList());
     }
 

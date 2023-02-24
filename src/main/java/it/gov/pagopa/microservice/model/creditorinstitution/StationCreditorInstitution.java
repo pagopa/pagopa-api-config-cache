@@ -44,6 +44,9 @@ public class StationCreditorInstitution {
   @JsonProperty(value = "broadcast",required = true)
   private Boolean broadcast;
 
+  @JsonProperty(value = "primitive_version",required = true)
+  private Integer primitiveVersion;
+
   @JsonIgnore
   public String getIdentifier() {
     return stationCode + "_" + creditorInstitutionCode + "_" + auxDigit + "_" + applicationCode
