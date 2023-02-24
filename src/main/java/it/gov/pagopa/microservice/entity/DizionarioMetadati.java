@@ -17,16 +17,18 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class DizionarioMetadati {
+
   @Id
   @Column(name = "CHIAVE", nullable = false)
   private String key;
 
   @Column(name = "DESCRIZIONE", nullable = false)
-   private String descr;
+  private String description;
+
   @Column(name = "DATA_INIZIO_VALIDITA")
-  private ZonedDateTime dataInizioValidita;
+  private ZonedDateTime startDate;
 
   @Column(name = "DATA_FINE_VALIDITA")
-  private ZonedDateTime dataFineValidita;
+  private ZonedDateTime endDate;
 
 }

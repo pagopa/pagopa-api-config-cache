@@ -23,11 +23,12 @@ import lombok.ToString;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class StationCreditorInstitution {
 
-  @JsonProperty(value = "creditor_institution_code")
+  @JsonProperty(value = "creditor_institution_code",required = true)
   private String creditorInstitutionCode;
 
-  @JsonProperty(value = "station_code")
+  @JsonProperty(value = "station_code",required = true)
   private String stationCode;
+
   @JsonProperty(value = "application_code")
   private Long applicationCode;
 
@@ -37,10 +38,10 @@ public class StationCreditorInstitution {
   @JsonProperty(value = "segregation_code")
   private Long segregationCode;
 
-  @JsonProperty(value = "mod4")
+  @JsonProperty(value = "mod4",required = true)
   private Boolean mod4;
 
-  @JsonProperty(value = "broadcast")
+  @JsonProperty(value = "broadcast",required = true)
   private Boolean broadcast;
 
   @JsonIgnore

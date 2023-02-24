@@ -41,7 +41,6 @@ public class ConvertStazioniToStationDetails implements Converter<Stazioni, Stat
                 .targetHost(CommonUtil.deNull(source.getTargetHost()))
                 .targetPort(source.getTargetPort())
                 .targetPath(CommonUtil.deNull(source.getTargetPath()))
-                .flagOnline(CommonUtil.deNull(source.getFlagOnline()))
                 .threadNumber(source.getNumThread())
                 .timeoutA(source.getTimeoutA())
                 .timeoutB(source.getTimeoutB())

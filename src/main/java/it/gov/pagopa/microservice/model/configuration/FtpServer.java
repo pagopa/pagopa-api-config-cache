@@ -2,6 +2,7 @@ package it.gov.pagopa.microservice.model.configuration;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,6 +21,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Builder
+@JsonPropertyOrder({"host","port","enabled","username","password","root_path","service","type","in_path","out_path","history_path"})
 public class FtpServer {
 
   @JsonProperty(value = "host", required = true)
@@ -27,6 +29,9 @@ public class FtpServer {
 
   @JsonProperty(value = "port", required = true)
   private Integer port;
+
+  @JsonProperty(value = "enabled", required = true)
+  private Boolean enabled;
 
   @JsonProperty(value = "username", required = true)
   private String username;
@@ -52,8 +57,6 @@ public class FtpServer {
   @JsonProperty(value = "history_path", required = true)
   private String historyPath;
 
-  @JsonProperty(value = "enabled", required = true)
-  private Boolean enabled;
 
   @JsonIgnore
   public String getIdentifier() {

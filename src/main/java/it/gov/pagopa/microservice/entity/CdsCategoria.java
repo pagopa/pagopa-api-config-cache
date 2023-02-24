@@ -20,6 +20,6 @@ public class CdsCategoria {
     private Long id;
 
     @Column(name = "DESCRIZIONE")
-    private String descrizione;
+    private String description;
 
 }

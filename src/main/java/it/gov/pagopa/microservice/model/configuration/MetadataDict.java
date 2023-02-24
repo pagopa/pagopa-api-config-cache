@@ -19,10 +19,13 @@ public class MetadataDict {
 
   @JsonProperty(value = "key", required = true)
   private String key;
+
   @JsonProperty(value = "description")
   private String description;
-  @JsonProperty(value = "start_date", required = true)
+
+  @JsonProperty(value = "start_date")
   private ZonedDateTime startDate;
+
   @JsonProperty(value = "end_date")
   private ZonedDateTime endDate;
 

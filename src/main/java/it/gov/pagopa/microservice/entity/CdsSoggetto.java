@@ -20,9 +20,9 @@ public class CdsSoggetto {
     private Long id;
 
     @Column(name = "ID_DOMINIO", nullable = false)
-    private String idDominio;
+    private String creditorInstitutionCode;
 
     @Column(name = "DESCRIZIONE_ENTE")
-    private String descrizioneEnte;
+    private String creditorInstitutionDescription;
 
 }

@@ -25,10 +25,10 @@ import lombok.ToString;
 @Builder
 public class CreditorInstitution {
 
-  @JsonProperty(value = "creditor_institution_code")
+  @JsonProperty(value = "creditor_institution_code",required = true)
   private String creditorInstitutionCode;
 
-  @JsonProperty(value = "enabled")
+  @JsonProperty(value = "enabled",required = true)
   private Boolean enabled;
 
   @JsonProperty(value = "business_name")
@@ -37,13 +37,13 @@ public class CreditorInstitution {
   @JsonProperty(value = "address")
   private CreditorInstitutionAddress address;
 
-  @JsonProperty(value = "psp_payment")
+  @JsonProperty(value = "psp_payment",required = true)
   private Boolean pspPayment;
 
-  @JsonProperty(value = "reporting_ftp")
+  @JsonProperty(value = "reporting_ftp",required = true)
   private Boolean reportingFtp;
 
-  @JsonProperty(value = "reporting_zip")
+  @JsonProperty(value = "reporting_zip",required = true)
   private Boolean reportingZip;
 
 

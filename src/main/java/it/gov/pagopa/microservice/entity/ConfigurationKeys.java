@@ -18,15 +18,15 @@ public class ConfigurationKeys implements Serializable {
 
     @Id
     @Column(name = "CONFIG_CATEGORY", nullable = false, length = 255)
-    private String configCategory;
+    private String category;
 
     @Column(name = "CONFIG_KEY", nullable = false, length = 255)
-    private String configKey;
+    private String key;
 
     @Column(name = "CONFIG_VALUE", nullable = false, length = 255)
-    private String configValue;
+    private String value;
 
     @Column(name = "CONFIG_DESCRIPTION", length = 255)
-    private String configDescription;
+    private String description;
 
 }

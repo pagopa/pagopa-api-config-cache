@@ -8,10 +8,10 @@ public class ConfigurationKeysView implements Serializable {
 
     @Id
     @Column(name = "CONFIG_CATEGORY", nullable = false)
-    private String configCategory;
+    private String category;
 
     @Id
     @Column(name = "CONFIG_KEY", nullable = false)
-    private String configKey;
+    private String key;
 
 }
