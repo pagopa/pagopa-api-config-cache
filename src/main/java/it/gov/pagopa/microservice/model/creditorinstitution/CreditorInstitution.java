@@ -34,6 +34,9 @@ public class CreditorInstitution {
   @JsonProperty(value = "business_name")
   private String businessName;
 
+  @JsonProperty(value = "description")
+  private String description;
+
   @JsonProperty(value = "address")
   private CreditorInstitutionAddress address;
 
