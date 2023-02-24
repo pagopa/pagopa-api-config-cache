@@ -23,7 +23,7 @@ public class MetadataDict {
   @JsonProperty(value = "description")
   private String description;
 
-  @JsonProperty(value = "start_date")
+  @JsonProperty(value = "start_date",required = true)
   private ZonedDateTime startDate;
 
   @JsonProperty(value = "end_date")

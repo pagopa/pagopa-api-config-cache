@@ -85,8 +85,8 @@ public class Channel {
   @JsonProperty(value = "timeout_c",required = true)
   private Long timeoutC;
 
-  @JsonProperty(value = "npm_service",required = true)
-  private String npmService;
+  @JsonProperty(value = "nmp_service",required = true)
+  private String nmpService;
 
   @JsonProperty(value = "new_fault_code",required = true)
   private Boolean newFaultCode;
