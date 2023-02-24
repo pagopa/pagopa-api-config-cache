@@ -32,7 +32,7 @@ import it.gov.pagopa.microservice.entity.InformativePaMaster;
 import it.gov.pagopa.microservice.entity.Pa;
 import it.gov.pagopa.microservice.entity.Psp;
 import it.gov.pagopa.microservice.entity.PspCanaleTipoVersamentoCanale;
-import it.gov.pagopa.microservice.model.cds.CdsCatService;
+import it.gov.pagopa.microservice.model.cds.CdsService;
 import it.gov.pagopa.microservice.model.cds.CdsCategory;
 import it.gov.pagopa.microservice.model.cds.CdsSubject;
 import it.gov.pagopa.microservice.model.cds.CdsSubjectService;
@@ -189,9 +189,9 @@ public class ConfigService {
         log.info("loading CdsCategories");
         return modelMapper.modelMapper().map(cdsCategorieRepository.findAll(), new TypeToken<List<CdsCategory>>() {}.getType());
     }
-    public List<CdsCatService> getCdsServices() {
+    public List<CdsService> getCdsServices() {
         log.info("loading CdsServices");
-        return modelMapper.modelMapper().map(cdsServizioRepository.findAll(), new TypeToken<List<CdsCatService>>() {}.getType());
+        return modelMapper.modelMapper().map(cdsServizioRepository.findAll(), new TypeToken<List<CdsService>>() {}.getType());
     }
     public List<CdsSubject> getCdsSubjects() {
         log.info("loading CdsSubjects");

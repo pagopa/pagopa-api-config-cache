@@ -35,7 +35,7 @@ public class ConfigurationKey {
 
   @JsonIgnore
   public String getIdentifier() {
-    return category + "_" + key;
+    return category + "-" + key;
   }
 
 }

@@ -1,7 +1,7 @@
 package it.gov.pagopa.microservice.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import it.gov.pagopa.microservice.model.cds.CdsCatService;
+import it.gov.pagopa.microservice.model.cds.CdsService;
 import it.gov.pagopa.microservice.model.cds.CdsCategory;
 import it.gov.pagopa.microservice.model.cds.CdsSubject;
 import it.gov.pagopa.microservice.model.cds.CdsSubjectService;
@@ -49,7 +49,7 @@ public class ConfigData {
   @JsonProperty(required = true)
   public Map<String, Channel> canali;
   @JsonProperty(required = true)
-  public Map<String, CdsCatService> cdsServizi;
+  public Map<String, CdsService> cdsServizi;
   @JsonProperty(required = true)
   public Map<String, CdsSubject> cdsSoggetti;
   @JsonProperty(required = true)

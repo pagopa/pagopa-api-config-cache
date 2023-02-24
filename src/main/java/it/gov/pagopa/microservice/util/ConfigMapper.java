@@ -6,7 +6,6 @@ import it.gov.pagopa.microservice.entity.CdsServizio;
 import it.gov.pagopa.microservice.entity.CdsSoggettoServizio;
 import it.gov.pagopa.microservice.entity.Codifiche;
 import it.gov.pagopa.microservice.entity.CodifichePa;
-import it.gov.pagopa.microservice.entity.ConfigurationKeys;
 import it.gov.pagopa.microservice.entity.FtpServers;
 import it.gov.pagopa.microservice.entity.IbanValidiPerPa;
 import it.gov.pagopa.microservice.entity.IntermediariPa;
@@ -16,9 +15,8 @@ import it.gov.pagopa.microservice.entity.Psp;
 import it.gov.pagopa.microservice.entity.Stazioni;
 import it.gov.pagopa.microservice.entity.TipiVersamento;
 import it.gov.pagopa.microservice.entity.WfespPluginConf;
-import it.gov.pagopa.microservice.model.cds.CdsCatService;
+import it.gov.pagopa.microservice.model.cds.CdsService;
 import it.gov.pagopa.microservice.model.cds.CdsSubjectService;
-import it.gov.pagopa.microservice.model.configuration.ConfigurationKey;
 import it.gov.pagopa.microservice.model.configuration.FtpServer;
 import it.gov.pagopa.microservice.model.configuration.PaymentType;
 import it.gov.pagopa.microservice.model.configuration.Plugin;
@@ -76,10 +74,10 @@ public class ConfigMapper {
     Converter<PaymentType, String> convertPaymentTypeString = new ConvertPaymentTypeToString();
     Converter<PaymentType, TipiVersamento> convertPaymentTypeTipiVersamento = new ConvertPaymentTypeToTipiVersamento();
 
-    Converter<CdsServizio, CdsCatService> convertCdsServizioCdsCatService = new Converter<CdsServizio, CdsCatService>() {
-      public CdsCatService convert(MappingContext<CdsServizio, CdsCatService> mappingContext) {
+    Converter<CdsServizio, CdsService> convertCdsServizioCdsCatService = new Converter<CdsServizio, CdsService>() {
+      public CdsService convert(MappingContext<CdsServizio, CdsService> mappingContext) {
         CdsServizio source = mappingContext.getSource();
-        return CdsCatService.builder()
+        return CdsService.builder()
             .serviceId(source.getIdServizio())
             .description(source.getDescrizioneServizio())
             .version(source.getVersion())
@@ -131,7 +129,7 @@ public class ConfigMapper {
     mapper.createTypeMap(PaymentType.class, TipiVersamento.class)
         .setConverter(convertPaymentTypeTipiVersamento);
 
-    mapper.createTypeMap(CdsServizio.class, CdsCatService.class)
+    mapper.createTypeMap(CdsServizio.class, CdsService.class)
         .setConverter(convertCdsServizioCdsCatService);
     mapper.createTypeMap(CdsSoggettoServizio.class, CdsSubjectService.class)
         .setConverter(convertCdsSoggettoServizioCdsSubjectService);

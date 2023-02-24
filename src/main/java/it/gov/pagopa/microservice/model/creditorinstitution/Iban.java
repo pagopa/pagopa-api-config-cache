@@ -48,7 +48,7 @@ public class Iban {
 
   @JsonIgnore
   public String getIdentifier() {
-    return creditorInstitutionCode + "_" + ibanValue;
+    return creditorInstitutionCode + "-" + ibanValue;
   }
 
 

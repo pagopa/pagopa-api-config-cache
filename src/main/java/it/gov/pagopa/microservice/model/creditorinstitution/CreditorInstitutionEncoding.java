@@ -37,7 +37,7 @@ public class CreditorInstitutionEncoding {
 
   @JsonIgnore
   public String getIdentifier() {
-    return creditorInstitutionCode + "_" + codeType + "_" + encodingCode;
+    return encodingCode;
   }
 
 

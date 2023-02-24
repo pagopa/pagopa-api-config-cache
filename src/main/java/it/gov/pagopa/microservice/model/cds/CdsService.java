@@ -15,7 +15,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Builder
-public class CdsCatService {
+public class CdsService {
 
   @JsonProperty(value = "id",required = true)
   private String serviceId;

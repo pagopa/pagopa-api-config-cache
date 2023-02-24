@@ -25,7 +25,7 @@ public class CdsSubjectService {
   @JsonProperty(value = "service",required = true)
   private String service;
 
-  @JsonProperty(value = "subject_service_id")
+  @JsonProperty(value = "subject_service_id",required = true)
   private String subjectServiceId;
 
   @JsonProperty(value = "start_date")

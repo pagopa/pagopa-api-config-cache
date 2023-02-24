@@ -1,7 +1,7 @@
 package it.gov.pagopa.microservice.controller;
 
 import it.gov.pagopa.microservice.model.ConfigData;
-import it.gov.pagopa.microservice.model.cds.CdsCatService;
+import it.gov.pagopa.microservice.model.cds.CdsService;
 import it.gov.pagopa.microservice.model.cds.CdsCategory;
 import it.gov.pagopa.microservice.model.cds.CdsSubject;
 import it.gov.pagopa.microservice.model.cds.CdsSubjectService;
@@ -81,8 +81,8 @@ public class CacheController {
     cdscats.stream().forEach(k->cdscatsMap.put(k.getDescription(),k));
     configData.setCdsCategorie(cdscatsMap);
 
-    List<CdsCatService> cdsServices = configService.getCdsServices();
-    Map cdsServicesMap = new HashMap<String, CdsCatService>();
+    List<CdsService> cdsServices = configService.getCdsServices();
+    Map cdsServicesMap = new HashMap<String, CdsService>();
     cdsServices.stream().forEach(k->cdsServicesMap.put(k.getIdentifier(),k));
     configData.setCdsServizi(cdsServicesMap);
 
