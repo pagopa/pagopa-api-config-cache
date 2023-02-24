@@ -23,6 +23,9 @@ public class Channel {
   @JsonProperty(value = "channel_code",required = true)
   private String channelCode;
 
+  @JsonProperty(value = "description")
+  private String description;
+
   @JsonProperty(value = "enabled",required = true)
   private Boolean enabled;
 

@@ -15,6 +15,7 @@ public class ConvertCanaliToChannelDetails implements Converter<Canali, Channel>
         Canali source = context.getSource();
         return Channel.builder()
                 .channelCode(source.getIdCanale())
+                .description(source.getDescrizione())
                 .enabled(source.getEnabled())
                 .ip(source.getIp())
                 .password(source.getPassword())

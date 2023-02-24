@@ -69,6 +69,9 @@ public class Station {
   @JsonProperty(value = "pof_service")
   private String pofService;
 
+  @JsonProperty(value = "nmp_service")
+  private String nmpService;
+
   @JsonProperty(value = "broker_code",required = true)
   private String brokerCode;
 
@@ -101,7 +104,7 @@ public class Station {
   @JsonProperty(value = "proxy_password")
   private String proxyPassword;
 
-  @JsonProperty(value = "thread_number")
+  @JsonProperty(value = "thread_number",required = true)
   private Long threadNumber;
 
   @JsonProperty(value = "timeout_a",required = true)

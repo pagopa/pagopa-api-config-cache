@@ -23,6 +23,7 @@ public class ConvertStazioniToStationDetails implements Converter<Stazioni, Stat
                 .port(source.getPorta())
                 .service(CommonUtil.deNull(source.getServizio()))
                 .pofService(CommonUtil.deNull(source.getServizioPof()))
+                .nmpService(CommonUtil.deNull(source.getServizioPof()))
                 .protocol4Mod(source.getProtocollo4Mod() != null ? Protocol.fromValue(source.getProtocollo4Mod()) : null)
                 .brokerCode(CommonUtil.deNull(source.getIntermediarioPa().getIdIntermediarioPa()))
                 .ip4Mod(CommonUtil.deNull(source.getIp4Mod()))
