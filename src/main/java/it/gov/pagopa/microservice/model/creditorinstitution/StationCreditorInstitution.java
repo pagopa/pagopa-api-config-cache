@@ -47,6 +47,9 @@ public class StationCreditorInstitution {
   @JsonProperty(value = "primitive_version",required = true)
   private Integer primitiveVersion;
 
+  @JsonProperty(value = "spontaneous_payment",required = true)
+  private Boolean spontaneousPayment;
+
   @JsonIgnore
   public String getIdentifier() {
     return stationCode + "_" + creditorInstitutionCode + "_" + auxDigit + "_" + applicationCode

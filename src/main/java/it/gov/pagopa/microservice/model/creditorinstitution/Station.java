@@ -87,7 +87,7 @@ public class Station {
   @JsonProperty(value = "service_4mod")
   private String service4Mod;
 
-  @JsonProperty(value = "proxy_enabled")
+  @JsonProperty(value = "proxy_enabled",required = true)
   private Boolean proxyEnabled;
 
   @JsonProperty(value = "proxy_host")

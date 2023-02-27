@@ -11,7 +11,7 @@ import it.gov.pagopa.microservice.model.configuration.GdeConfiguration;
 import it.gov.pagopa.microservice.model.configuration.MetadataDict;
 import it.gov.pagopa.microservice.model.configuration.PaymentType;
 import it.gov.pagopa.microservice.model.configuration.Plugin;
-import it.gov.pagopa.microservice.model.creditorinstitution.BrokerDetails;
+import it.gov.pagopa.microservice.model.creditorinstitution.BrokerCreditorInstitution;
 import it.gov.pagopa.microservice.model.creditorinstitution.CreditorInstitution;
 import it.gov.pagopa.microservice.model.creditorinstitution.CreditorInstitutionEncoding;
 import it.gov.pagopa.microservice.model.creditorinstitution.Encoding;
@@ -62,8 +62,8 @@ public class CacheController {
     long startTime = System.nanoTime();
 
     ConfigData configData = new ConfigData();
-    List<BrokerDetails> intpa = configService.getBrokerDetails();
-    Map intpamap = new HashMap<String,BrokerDetails>();
+    List<BrokerCreditorInstitution> intpa = configService.getBrokerDetails();
+    Map intpamap = new HashMap<String, BrokerCreditorInstitution>();
     intpa.stream().forEach(k->{
       intpamap.put(k.getBrokerCode(),k);
     });

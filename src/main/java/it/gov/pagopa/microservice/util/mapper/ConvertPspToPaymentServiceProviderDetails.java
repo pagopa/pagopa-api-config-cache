@@ -19,7 +19,7 @@ public class ConvertPspToPaymentServiceProviderDetails implements Converter<Psp,
                 .abi(source.getAbi())
                 .bic(source.getBic())
                 .myBankCode(source.getCodiceMybank())
-                .stamp(source.getMarcaBolloDigitale())
+                .digitalStamp(source.getMarcaBolloDigitale())
                 .agidPsp(source.getAgidPsp())
                 .taxCode(source.getCodiceFiscale())
                 .vatNumber(source.getVatNumber())

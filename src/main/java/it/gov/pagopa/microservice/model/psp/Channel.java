@@ -41,7 +41,7 @@ public class Channel {
   @JsonProperty(value = "port",required = true)
   private Long port;
 
-  @JsonProperty(value = "service",required = true)
+  @JsonProperty(value = "service")
   private String service;
 
   @JsonProperty(value = "broker_psp_code",required = true)
@@ -85,7 +85,7 @@ public class Channel {
   @JsonProperty(value = "timeout_c",required = true)
   private Long timeoutC;
 
-  @JsonProperty(value = "nmp_service",required = true)
+  @JsonProperty(value = "nmp_service")
   private String nmpService;
 
   @JsonProperty(value = "new_fault_code",required = true)
@@ -118,8 +118,8 @@ public class Channel {
   @JsonProperty(value = "recovery",required = true)
   private Boolean recovery;
 
-  @JsonProperty(value = "digital_stamp_brand",required = true)
-  private Boolean digitalStampBrand;
+  @JsonProperty(value = "digital_stamp",required = true)
+  private Boolean digitalStamp;
 
   @JsonProperty(value = "flag_io",required = true)
   private Boolean flagIo;

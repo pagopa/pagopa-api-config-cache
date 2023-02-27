@@ -21,17 +21,17 @@ import lombok.ToString;
 @Builder
 public class ConfigurationKey {
 
-  @JsonProperty(value = "value", required = true)
-  private String value;
-
-  @JsonProperty(value = "description")
-  private String description;
-
   @JsonProperty(value = "category", required = true)
   private String category;
 
   @JsonProperty(value = "key", required = true)
   private String key;
+
+  @JsonProperty(value = "value", required = true)
+  private String value;
+
+  @JsonProperty(value = "description")
+  private String description;
 
   @JsonIgnore
   public String getIdentifier() {

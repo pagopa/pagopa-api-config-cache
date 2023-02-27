@@ -44,7 +44,7 @@ public class ConvertCanaliToChannelDetails implements Converter<Canali, Channel>
                 .paymentModel(getPaymentModel(source.getModelloPagamento()))
                 .rtPush(source.getRtPush())
                 .recovery(source.getRecovery())
-                .digitalStampBrand(source.getMarcaBolloDigitale())
+                .digitalStamp(source.getMarcaBolloDigitale())
                 .agid(source.getAgidChannel())
                 .primitiveVersion(source.getVersionePrimitive())
                 .flagIo(source.getFlagIo())

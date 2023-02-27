@@ -34,8 +34,8 @@ public class PaymentServiceProvider {
   @JsonProperty(value = "my_bank_code")
   private String myBankCode;
 
-  @JsonProperty(value = "stamp", required = true)
-  private Boolean stamp;
+  @JsonProperty(value = "digital_stamp", required = true)
+  private Boolean digitalStamp;
 
   @JsonProperty(value = "agid_psp", required = true)
   private Boolean agidPsp;

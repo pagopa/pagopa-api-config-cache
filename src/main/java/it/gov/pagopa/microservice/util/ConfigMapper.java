@@ -20,7 +20,7 @@ import it.gov.pagopa.microservice.model.cds.CdsSubjectService;
 import it.gov.pagopa.microservice.model.configuration.FtpServer;
 import it.gov.pagopa.microservice.model.configuration.PaymentType;
 import it.gov.pagopa.microservice.model.configuration.Plugin;
-import it.gov.pagopa.microservice.model.creditorinstitution.BrokerDetails;
+import it.gov.pagopa.microservice.model.creditorinstitution.BrokerCreditorInstitution;
 import it.gov.pagopa.microservice.model.creditorinstitution.CreditorInstitution;
 import it.gov.pagopa.microservice.model.creditorinstitution.CreditorInstitutionEncoding;
 import it.gov.pagopa.microservice.model.creditorinstitution.Encoding;
@@ -63,7 +63,7 @@ public class ConfigMapper {
     Converter<CodifichePa, CreditorInstitutionEncoding> convertCodifichePaToEncoding = new ConvertCodifichePaToEncoding();
     Converter<Codifiche, Encoding> convertCodificheToEncoding = new ConvertCodificheToEncoding();
     Converter<IbanValidiPerPa, Iban> convertIbanValidiPerPaToIban = new ConvertIbanValidiPerPaToIban();
-    Converter<IntermediariPa, BrokerDetails> convertIntermediariPaToBrokerDetails = new ConvertIntermediariPaToBrokerDetails();
+    Converter<IntermediariPa, BrokerCreditorInstitution> convertIntermediariPaToBrokerDetails = new ConvertIntermediariPaToBrokerDetails();
     Converter<Psp, PaymentServiceProvider> convertPspToPaymentServiceProvider = new ConvertPspToPaymentServiceProviderDetails();
     Converter<IntermediariPsp, BrokerPsp> convertIntermediariPspToBrokerPspDetails = new ConvertIntermediariPspToBrokerPspDetails();
     Converter<Canali, Channel> convertCanaliToChannelDetails = new ConvertCanaliToChannelDetails();
@@ -110,7 +110,7 @@ public class ConfigMapper {
     mapper.createTypeMap(Codifiche.class, Encoding.class).setConverter(convertCodificheToEncoding);
     mapper.createTypeMap(IbanValidiPerPa.class, Iban.class)
         .setConverter(convertIbanValidiPerPaToIban);
-    mapper.createTypeMap(IntermediariPa.class, BrokerDetails.class)
+    mapper.createTypeMap(IntermediariPa.class, BrokerCreditorInstitution.class)
         .setConverter(convertIntermediariPaToBrokerDetails);
     mapper.createTypeMap(Psp.class, PaymentServiceProvider.class)
         .setConverter(convertPspToPaymentServiceProvider);

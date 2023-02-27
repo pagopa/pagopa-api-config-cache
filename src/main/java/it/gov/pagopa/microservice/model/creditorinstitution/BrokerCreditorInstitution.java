@@ -21,7 +21,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class BrokerDetails {
+public class BrokerCreditorInstitution {
 
   @JsonProperty(value = "broker_code", required = true)
   private String brokerCode;

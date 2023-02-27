@@ -19,7 +19,7 @@ public class ConfigData {
   @JsonProperty(required = true)
   public Map<String, CreditorInstitution> pas;
   @JsonProperty(required = true)
-  public Map<String, BrokerDetails> intermediariPa;
+  public Map<String, BrokerCreditorInstitution> intermediariPa;
   @JsonProperty(required = true)
   public Map<String, Station> stazioni;
   @JsonProperty(required = true)

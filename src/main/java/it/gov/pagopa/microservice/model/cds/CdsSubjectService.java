@@ -28,7 +28,7 @@ public class CdsSubjectService {
   @JsonProperty(value = "subject_service_id",required = true)
   private String subjectServiceId;
 
-  @JsonProperty(value = "start_date")
+  @JsonProperty(value = "start_date",required = true)
   private ZonedDateTime startDate;
 
   @JsonProperty(value = "end_date")
