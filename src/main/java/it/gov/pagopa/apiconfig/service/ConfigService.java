@@ -235,55 +235,55 @@ public class ConfigService {
     intpa.stream().forEach(k->{
       intpamap.put(k.getBrokerCode(),k);
     });
-    configData.setIntermediariPa(intpamap);
+    configData.setCreditorInstitutionBrokers(intpamap);
 
     List<BrokerPsp> intpsp = getBrokerPspDetails();
     Map intpspmap = new HashMap<String, BrokerPsp>();
     intpsp.stream().forEach(k->{
       intpspmap.put(k.getBrokerPspCode(),k);
     });
-    configData.setIntermediariPsp(intpspmap);
+    configData.setPspBrokers(intpspmap);
 
     List<CdsCategory> cdscats = getCdsCategories();
     Map cdscatsMap = new HashMap<String, CdsCategory>();
     cdscats.stream().forEach(k->cdscatsMap.put(k.getDescription(),k));
-    configData.setCdsCategorie(cdscatsMap);
+    configData.setCdsCategories(cdscatsMap);
 
     List<CdsService> cdsServices = getCdsServices();
     Map cdsServicesMap = new HashMap<String, CdsService>();
     cdsServices.stream().forEach(k->cdsServicesMap.put(k.getIdentifier(),k));
-    configData.setCdsServizi(cdsServicesMap);
+    configData.setCdsServices(cdsServicesMap);
 
     List<CdsSubject> cdsSubjects = getCdsSubjects();
     Map cdsSubjectsMap = new HashMap<String, CdsSubject>();
     cdsSubjects.stream().forEach(k->cdsSubjectsMap.put(k.getCreditorInstitutionCode(),k));
-    configData.setCdsSoggetti(cdsSubjectsMap);
+    configData.setCdsSubjects(cdsSubjectsMap);
 
     List<CdsSubjectService> cdsSubjectServices = getCdsSubjectServices();
     Map cdsSubjectServicesMap = new HashMap<String,CdsSubjectService>();
     cdsSubjectServices.stream().forEach(k->cdsSubjectServicesMap.put(k.getSubjectServiceId(),k));
-    configData.setCdsSoggettiServizi(cdsSubjectServicesMap);
+    configData.setCdsSubjectServices(cdsSubjectServicesMap);
 
     List<GdeConfiguration> gde = getGdeConfiguration();
     Map gdeMap = new HashMap<String, GdeConfiguration>();
     gde.stream().forEach(k->{
       gdeMap.put(k.getIdentifier(),k);
     });
-    configData.setConfigurazioniGde(gdeMap);
+    configData.setGdeConfigurations(gdeMap);
 
     List<MetadataDict> meta = getMetadataDict();
     Map metaMap = new HashMap<String,MetadataDict>();
     meta.stream().forEach(k->{
       metaMap.put(k.getKey(),k);
     });
-    configData.setDizionarioMetadati(metaMap);
+    configData.setMetadataDict(metaMap);
 
     List<ConfigurationKey> configurationKeyList = getConfigurationKeys();
     Map configMap = new HashMap<String,ConfigurationKey>();
     configurationKeyList.stream().forEach(k->{
       configMap.put(k.getIdentifier(),k);
     });
-    configData.setConfigurazioni(configMap);
+    configData.setConfigurations(configMap);
 
     List<FtpServer> ftpservers = getFtpServers();
     Map ftpserversMap = new HashMap<String,FtpServer>();
@@ -295,7 +295,7 @@ public class ConfigService {
     Map codiciLingua = new HashMap<String,String>();
     codiciLingua.put("IT","IT");
     codiciLingua.put("DE","DE");
-    configData.setCodiciLingua(codiciLingua);
+    configData.setLanguages(codiciLingua);
 
     List<Plugin> plugins = getWfespPluginConfigurations();
     Map pluginsMap = new HashMap<String,Plugin>();
@@ -316,55 +316,55 @@ public class ConfigService {
     canali.stream().forEach(k->{
       canalimap.put(k.getChannelCode(),k);
     });
-    configData.setCanali(canalimap);
+    configData.setChannels(canalimap);
     List<PaymentType> tipiv = getPaymentTypes();
     Map tipivMap = new HashMap<String, PaymentType>();
     tipiv.stream().forEach(k->{
       tipivMap.put(k.getPaymentTypeCode(),k);
     });
 
-    configData.setTipiVersamento(tipivMap);
+    configData.setPaymentTypes(tipivMap);
     List<PspChannelPaymentType> pspChannels = getPaymentServiceProvidersChannels();
     Map pspChannelsMap = new HashMap<String, PspChannelPaymentType>();
     pspChannels.stream().forEach(k->{
       pspChannelsMap.put(k.getIdentifier(),k);
     });
-    configData.setPspCanaliTipiVersamento(pspChannelsMap);
+    configData.setPspChannelPaymentTypes(pspChannelsMap);
 
     List<CreditorInstitution> pas = getCreditorInstitutions();
     Map pamap = new HashMap<String, CreditorInstitution>();
     pas.stream().forEach(k->{
       pamap.put(k.getCreditorInstitutionCode(),k);
     });
-    configData.setPas(pamap);
+    configData.setCreditorInstitutions(pamap);
 
     List<Encoding> encodings = getEncodings();
     Map encodingsMap = new HashMap<String,Encoding>();
     encodings.stream().forEach(k->{
       encodingsMap.put(k.getCodeType(),k);
     });
-    configData.setCodifiche(encodingsMap);
+    configData.setEncodings(encodingsMap);
 
     List<CreditorInstitutionEncoding> ciencodings = getCreditorInstitutionEncodings();
     Map ciencodingsMap = new HashMap<String, CreditorInstitutionEncoding>();
     ciencodings.stream().forEach(k->{
       ciencodingsMap.put(k.getIdentifier(),k);
     });
-    configData.setCodifichePa(ciencodingsMap);
+    configData.setCreditorInstitutionEncodings(ciencodingsMap);
 
     List<StationCreditorInstitution> paspa = findAllPaStazioniPa();
     Map paspamap = new HashMap<String, StationCreditorInstitution>();
     paspa.stream().forEach(k->{
       paspamap.put(k.getIdentifier(),k);
     });
-    configData.setStazioniPa(paspamap);
+    configData.setCreditorInstitutionStations(paspamap);
 
     List<Station> stazioni = findAllStazioni();
     Map stazionimap = new HashMap<String, Station>();
     stazioni.stream().forEach(k->{
       stazionimap.put(k.getStationCode(),k);
     });
-    configData.setStazioni(stazionimap);
+    configData.setStations(stazionimap);
     List<Iban> ibans = getCurrentIbans();
     Map ibansMap = new HashMap<String,Encoding>();
     ibans.stream().forEach(k->{
@@ -377,21 +377,21 @@ public class ConfigService {
     infopsps.stream().forEach(k->{
       infopspsMap.put(k.getPsp(),k);
     });
-    configData.setInformativeCdi(infopspsMap);
+    configData.setPspInformations(infopspsMap);
 
     List<PspInformation> infopspTemplates = getTemplateInformativePsp();
     Map infopspTemplatesMap = new HashMap<String, PspInformation>();
     infopspTemplates.stream().forEach(k->{
       infopspTemplatesMap.put(k.getPsp(),k);
     });
-    configData.setInformativeCdiTemplate(infopspTemplatesMap);
+    configData.setPspInformationTemplates(infopspTemplatesMap);
 
     List<CreditorInstitutionInformation> infopas = getInformativePa();
     Map infopasMap = new HashMap<String,CreditorInstitutionInformation>();
     infopas.stream().forEach(k->{
       infopasMap.put(k.getPa(),k);
     });
-    configData.setInformativePa(infopasMap);
+    configData.setCreditorInstitutionInformations(infopasMap);
 
     long endTime = System.nanoTime();
     long duration = (endTime - startTime) / 1000000;
