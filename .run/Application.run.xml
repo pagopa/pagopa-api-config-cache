@@ -5,12 +5,12 @@
       <env name="SPRING_DATASOURCE_URL" value="jdbc:postgresql://pagopa-d-weu-nodo-flexible-postgresql.postgres.database.azure.com:6432/nodo" />
       <env name="SPRING_DATASOURCE_USERNAME" value="cfg" />
     </envs>
-    <option name="MAIN_CLASS_NAME" value="it.gov.pagopa.microservice.Application" />
+    <option name="MAIN_CLASS_NAME" value="it.gov.pagopa.apiconfig.Application" />
     <module name="pagopa-api-config-cache" />
     <option name="VM_PARAMETERS" value="-Dspring.profiles.active=local" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="it.gov.pagopa.microservice.*" />
+        <option name="PATTERN" value="it.gov.pagopa.apiconfig.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

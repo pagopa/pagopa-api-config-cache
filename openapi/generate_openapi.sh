@@ -15,6 +15,8 @@ fi
 
 
 # save openapi
-curl http://localhost:8080/v3/api-docs > ./openapi.json
+curl http://localhost:8080/v3/api-docs/nodev1 > ./openapi_nodev1.json
+curl http://localhost:8080/v3/api-docs/nodev2 > ./openapi_nodev2.json
+curl http://localhost:8080/v3/api-docs/verifier > ./openapi_verifier.json
 
 # UI mode http://localhost:8080/swagger-ui/index.html

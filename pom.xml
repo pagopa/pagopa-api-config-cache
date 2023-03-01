@@ -10,8 +10,8 @@
     <version>2.7.3</version>
   </parent>
 
-  <groupId>it.gov.pagopa</groupId>
-  <artifactId>microservice</artifactId> <!--TODO: set your artifactId-->
+  <groupId>it.gov.pagopa.apiconfig</groupId>
+  <artifactId>cache</artifactId> <!--TODO: set your artifactId-->
   <version>0.0.1</version>
   <name>Your project name</name> <!--TODO: set your name-->
   <description>Your description</description> <!--TODO: set your description-->
@@ -167,7 +167,7 @@
               <xsdOptions>
                 <xsdOption>
                   <xsd>${basedir}/src/main/resources/xsd/CatalogoDatiInformativiPSP.xsd</xsd>
-                  <packagename>it.gov.pagopa.microservice.catalogodati</packagename>
+                  <packagename>it.gov.pagopa.apiconfig.catalogodati</packagename>
                 </xsdOption>
               </xsdOptions>
             </configuration>
@@ -183,7 +183,7 @@
               <xsdOptions>
                 <xsdOption>
                   <xsd>${basedir}/src/main/resources/xsd/TabellaDelleContropartiEstesa_1_2_0.xsd</xsd>
-                  <packagename>it.gov.pagopa.microservice.controparti</packagename>
+                  <packagename>it.gov.pagopa.apiconfig.controparti</packagename>
                 </xsdOption>
               </xsdOptions>
             </configuration>
@@ -199,7 +199,7 @@
               <xsdOptions>
                 <xsdOption>
                   <xsd>${basedir}/src/main/resources/xsd/TemplateInformativa_1_0_11.xsd</xsd>
-                  <packagename>it.gov.pagopa.microservice.template</packagename>
+                  <packagename>it.gov.pagopa.apiconfig.template</packagename>
                 </xsdOption>
               </xsdOptions>
             </configuration>
