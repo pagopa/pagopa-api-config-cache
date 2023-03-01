@@ -13,8 +13,8 @@
   <groupId>it.gov.pagopa.apiconfig</groupId>
   <artifactId>cache</artifactId> <!--TODO: set your artifactId-->
   <version>0.0.1</version>
-  <name>Your project name</name> <!--TODO: set your name-->
-  <description>Your description</description> <!--TODO: set your description-->
+  <name>Api config cacher</name> <!--TODO: set your name-->
+  <description>Api config cacher</description> <!--TODO: set your description-->
 
   <properties>
     <java.version>11</java.version>
@@ -28,6 +28,10 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-redis</artifactId>
     </dependency>
 
     <!-- Spring utils-->

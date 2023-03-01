@@ -56,6 +56,7 @@ import it.gov.pagopa.apiconfig.model.node.v1.psp.Channel;
 import it.gov.pagopa.apiconfig.model.node.v1.psp.PaymentServiceProvider;
 import it.gov.pagopa.apiconfig.model.node.v1.psp.PspChannelPaymentType;
 import it.gov.pagopa.apiconfig.model.node.v1.psp.PspInformation;
+import it.gov.pagopa.apiconfig.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.repository.CanaliRepository;
 import it.gov.pagopa.apiconfig.repository.CdiDetailRepository;
 import it.gov.pagopa.apiconfig.repository.CdiFasciaCostoServizioRepository;
@@ -83,7 +84,17 @@ import it.gov.pagopa.apiconfig.repository.PspRepository;
 import it.gov.pagopa.apiconfig.repository.StazioniRepository;
 import it.gov.pagopa.apiconfig.repository.TipiVersamentoRepository;
 import it.gov.pagopa.apiconfig.repository.WfespPluginConfRepository;
+import it.gov.pagopa.apiconfig.template.TplCostiServizio;
+import it.gov.pagopa.apiconfig.template.TplFasciaCostoServizio;
+import it.gov.pagopa.apiconfig.template.TplIdentificazioneServizio;
+import it.gov.pagopa.apiconfig.template.TplInformativaDetail;
+import it.gov.pagopa.apiconfig.template.TplInformativaMaster;
 import it.gov.pagopa.apiconfig.template.TplInformativaPSP;
+import it.gov.pagopa.apiconfig.template.TplInformazioniServizio;
+import it.gov.pagopa.apiconfig.template.TplListaFasceCostoServizio;
+import it.gov.pagopa.apiconfig.template.TplListaInformativaDetail;
+import it.gov.pagopa.apiconfig.template.TplListaInformazioniServizio;
+import it.gov.pagopa.apiconfig.template.TplListaParoleChiave;
 import it.gov.pagopa.apiconfig.util.ConfigMapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -99,7 +110,11 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
@@ -112,11 +127,20 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @Slf4j
 @Service
+@Transactional
 public class ConfigService {
 
+  @Autowired
+  private PlatformTransactionManager transactionManager;
+  @Autowired
+  private RedisRepository redisRepository;
   @Autowired
   private ConfigMapper modelMapper;
   @Autowired
@@ -176,12 +200,36 @@ public class ConfigService {
 
   private String DA_COMPILARE_FLUSSO = "DA COMPILARE (formato: [IDPSP]_dd-mm-yyyy - esempio: ESEMPIO_31-12-2001)";
   private String DA_COMPILARE = "DA COMPILARE";
+  private String KEY_V1 = "node_v1";
+  private String KEY_V1_VERSION = "node_v1_version";
 
-  public ConfigDataV1 newCache() throws IOException {
+  @PostConstruct
+  private void initAllCaches() throws IOException {
+
+    new TransactionTemplate(transactionManager).execute(new TransactionCallback(){
+
+      @Override
+      public Object doInTransaction(TransactionStatus transactionStatus) {
+
+        try {
+          newCacheV1();
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+
+        return null;
+      }
+
+    });
+  }
+
+  public ConfigDataV1 newCacheV1() throws IOException {
 
     long startTime = System.nanoTime();
 
     ConfigDataV1 configData = new ConfigDataV1();
+
+
     List<BrokerCreditorInstitution> intpa = getBrokerDetails();
     Map intpamap = new HashMap<String, BrokerCreditorInstitution>();
     intpa.stream().forEach(k->{
@@ -323,32 +371,48 @@ public class ConfigService {
       ibansMap.put(k.getIdentifier(),k);
     });
     configData.setIbans(ibansMap);
-/*
-    List<InformativaPSP> infopsps = getInformativePsp();
-    Map infopspsMap = new HashMap<String, InformativaPSP>();
+
+    List<PspInformation> infopsps = getInformativePsp();
+    Map infopspsMap = new HashMap<String, PspInformation>();
     infopsps.stream().forEach(k->{
       infopspsMap.put(k.getPsp(),k);
     });
-
     configData.setInformativeCdi(infopspsMap);
 
-    List<InformativaPA> infopas = getInformativePa();
-    Map infopasMap = new HashMap<String,InformativaPA>();
+    List<PspInformation> infopspTemplates = getTemplateInformativePsp();
+    Map infopspTemplatesMap = new HashMap<String, PspInformation>();
+    infopspTemplates.stream().forEach(k->{
+      infopspTemplatesMap.put(k.getPsp(),k);
+    });
+    configData.setInformativeCdiTemplate(infopspTemplatesMap);
+
+    List<CreditorInstitutionInformation> infopas = getInformativePa();
+    Map infopasMap = new HashMap<String,CreditorInstitutionInformation>();
     infopas.stream().forEach(k->{
       infopasMap.put(k.getPa(),k);
     });
     configData.setInformativePa(infopasMap);
-*/
 
     long endTime = System.nanoTime();
     long duration = (endTime - startTime) / 1000000;
     log.info("cache loaded in "+duration+"ms");
 
-//    String stringData = new ConfigParser().writeConfig(configData);
-//        pushToRedis(stringData.getBytes(StandardCharsets.UTF_8));
+    configData.setVersion(""+endTime);
+
+    redisRepository.save(KEY_V1,configData,1440);
+    redisRepository.save(KEY_V1_VERSION,configData.getVersion(),1440);
+
     return configData;
   }
 
+  public String getCacheV1Version(){
+    Object v = redisRepository.get(KEY_V1_VERSION);
+    if(v!=null){
+      return (String)v;
+    }else{
+      return null;
+    }
+  }
 
   public List<ConfigurationKey> getConfigurationKeys() {
     log.info("loading ConfigurationKeys");
@@ -381,7 +445,7 @@ public class ConfigService {
   public List<CdsService> getCdsServices() {
     log.info("loading CdsServices");
     return modelMapper.modelMapper()
-        .map(cdsServizioRepository.findAll(), new TypeToken<List<CdsService>>() {
+        .map(cdsServizioRepository.findAllFetching(), new TypeToken<List<CdsService>>() {
         }.getType());
   }
 
@@ -395,7 +459,7 @@ public class ConfigService {
   public List<CdsSubjectService> getCdsSubjectServices() {
     log.info("loading CdsSubjectServices");
     return modelMapper.modelMapper()
-        .map(cdsSoggettoServizioRepository.findAll(), new TypeToken<List<CdsSubjectService>>() {
+        .map(cdsSoggettoServizioRepository.findAllFetching(), new TypeToken<List<CdsSubjectService>>() {
         }.getType());
   }
 
@@ -710,115 +774,112 @@ public class ConfigService {
 
   }
 
-//    public List<InformativaPSP> getTemplateInformativePsp(){
-//
-//
-//
-//        log.info("loading TemplateInformativePsp");
-//        List<Psp> psps = pspRepository.findAll();
-//        List<InformativaPSP> templates = new ArrayList<>();
-//
-//        psps.stream().forEach(psp->{
-//            try {
-//                Optional<CdiMasterValid> masters = cdiMasterValidRepository.findByfkPsp_objId(psp.getObjId());
-//                TplInformativaPSP tplInformativaPSP = new TplInformativaPSP();
-//                tplInformativaPSP.setRagioneSociale(DA_COMPILARE);
-//                tplInformativaPSP.setIdentificativoPSP(DA_COMPILARE);
-//                tplInformativaPSP.setCodiceABI(Objects.isNull(psp.getAbi()) ? DA_COMPILARE : psp.getAbi());
-//                tplInformativaPSP.setCodiceBIC(Objects.isNull(psp.getBic()) ? DA_COMPILARE : psp.getBic());
-//                tplInformativaPSP.setIdentificativoFlusso(DA_COMPILARE_FLUSSO);
-//                tplInformativaPSP.setMybankIDVS(Objects.isNull(psp.getCodiceMybank()) ? DA_COMPILARE : psp.getCodiceMybank());
-//
-//                TplInformativaMaster tplInformativaMaster = new TplInformativaMaster();
-//                tplInformativaMaster.setLogoPSP(DA_COMPILARE);
-//                tplInformativaMaster.setDataInizioValidita(DA_COMPILARE);
-//                tplInformativaMaster.setDataPubblicazione(DA_COMPILARE);
-//                tplInformativaMaster.setUrlConvenzioniPSP(DA_COMPILARE);
-//                tplInformativaMaster.setUrlInformativaPSP(DA_COMPILARE);
-//                tplInformativaMaster.setUrlInformazioniPSP(DA_COMPILARE);
-//                tplInformativaMaster.setMarcaBolloDigitale(0);
-//                tplInformativaMaster.setStornoPagamento(0);
-//                tplInformativaPSP.setInformativaMaster(tplInformativaMaster);
-//
-//                if (masters.isEmpty()) {
-//                    TplListaInformativaDetail tplListaInformativaDetail = new TplListaInformativaDetail();
-//                    tplListaInformativaDetail.getInformativaDetail().add(makeTplInformativaDetail(null, null, null, null));
-//                    tplInformativaPSP.setListaInformativaDetail(tplListaInformativaDetail);
-//                    templates.add(new InformativaPSP(psp.getIdPsp(), toXml(tplInformativaPSP)));
-//                } else {
-//                    tplInformativaPSP.setRagioneSociale(psp.getRagioneSociale());
-//                    tplInformativaPSP.setIdentificativoPSP(psp.getIdPsp());
-//                    TplListaInformativaDetail tplListaInformativaDetail = new TplListaInformativaDetail();
-//                    masters.get().getCdiDetail().stream().forEach(d -> {
-//                        tplListaInformativaDetail.getInformativaDetail()
-//                                .add(makeTplInformativaDetail(d.getFkPspCanaleTipoVersamento().getCanaleTipoVersamento().getCanale().getIdCanale(),
-//                                        d.getFkPspCanaleTipoVersamento().getCanaleTipoVersamento().getCanale().getFkIntermediarioPsp().getIdIntermediarioPsp(),
-//                                        d.getFkPspCanaleTipoVersamento().getCanaleTipoVersamento().getTipoVersamento().getTipoVersamento(),
-//                                        d.getModelloPagamento()));
-//                    });
-//                    tplInformativaPSP.setListaInformativaDetail(tplListaInformativaDetail);
-//                    templates.add(new InformativaPSP(psp.getIdPsp(), toXml(tplInformativaPSP)));
-//                }
-//            } catch (Exception e){
-//                log.error("errore creazione template informativa psp:"+psp.getIdPsp());
-//            }
-//
-//        });
-//
-//        return templates;
-//
-//    }
-//
-//    private TplInformativaDetail makeTplInformativaDetail(String idCanale,String idInter,String tv,Long modello){
-//        TplInformativaDetail tplInformativaDetail = new TplInformativaDetail();
-//        tplInformativaDetail.setCanaleApp(DA_COMPILARE);
-//        tplInformativaDetail.setIdentificativoCanale(Objects.isNull(idCanale)?DA_COMPILARE:idCanale);
-//        tplInformativaDetail.setPriorita(DA_COMPILARE);
-//        tplInformativaDetail.setTipoVersamento(Objects.isNull(tv)?it.pagopa.template.StTipoVersamento.BBT:it.pagopa.template.StTipoVersamento.fromValue(tv));
-//        tplInformativaDetail.setModelloPagamento(Objects.isNull(modello)?0:modello.intValue());
-//        tplInformativaDetail.setIdentificativoIntermediario(Objects.isNull(idInter)?DA_COMPILARE:idInter);
-//        tplInformativaDetail.setServizioAlleImprese(null);
-//
-//        TplIdentificazioneServizio tplIdentificazioneServizio = new TplIdentificazioneServizio();
-//        tplIdentificazioneServizio.setLogoServizio(DA_COMPILARE);
-//        tplIdentificazioneServizio.setNomeServizio(DA_COMPILARE);
-//        tplInformativaDetail.setIdentificazioneServizio(tplIdentificazioneServizio);
-//
-//        TplCostiServizio tplCostiServizio = new TplCostiServizio();
-//        tplCostiServizio.setTipoCommissione("0");
-//        tplCostiServizio.setTipoCostoTransazione("0");
-//        TplFasciaCostoServizio tplFasciaCostoServizio = new TplFasciaCostoServizio();
-//        tplFasciaCostoServizio.setCostoFisso(DA_COMPILARE);
-//        tplFasciaCostoServizio.setImportoMassimoFascia(DA_COMPILARE);
-//        tplFasciaCostoServizio.setCostoFisso(DA_COMPILARE);
-//        List<TplFasciaCostoServizio> tplFasciaCostoServizios = Arrays.asList(tplFasciaCostoServizio, tplFasciaCostoServizio, tplFasciaCostoServizio);
-//        TplListaFasceCostoServizio fasce = new TplListaFasceCostoServizio();
-//        fasce.getFasciaCostoServizio().addAll(tplFasciaCostoServizios);
-//        tplCostiServizio.setListaFasceCostoServizio(fasce);
-//        tplInformativaDetail.setCostiServizio(tplCostiServizio);
-//
-//        TplListaParoleChiave ks = new TplListaParoleChiave();
-//        ks.getParoleChiave().add(DA_COMPILARE);
-//        ks.getParoleChiave().add(DA_COMPILARE);
-//        ks.getParoleChiave().add(DA_COMPILARE);
-//        tplInformativaDetail.setListaParoleChiave(ks);
-//
-//        TplListaInformazioniServizio info = new TplListaInformazioniServizio();
-//
-//        Arrays.asList(it.pagopa.template.StCodiceLingua.IT,it.pagopa.template.StCodiceLingua.EN,
-//                it.pagopa.template.StCodiceLingua.DE, it.pagopa.template.StCodiceLingua.FR,
-//                it.pagopa.template.StCodiceLingua.SL).stream().forEach(l->{
-//            TplInformazioniServizio infoser = new TplInformazioniServizio();
-//            infoser.setCodiceLingua(it.pagopa.template.StCodiceLingua.IT);
-//            infoser.setDescrizioneServizio(DA_COMPILARE);
-//            infoser.setDescrizioneServizio(DA_COMPILARE);
-//            infoser.setUrlInformazioniCanale(DA_COMPILARE);
-//            infoser.setLimitazioniServizio(DA_COMPILARE);
-//            info.getInformazioniServizio().add(infoser);
-//        });
-//        tplInformativaDetail.setListaInformazioniServizio(info);
-//        return tplInformativaDetail;
-//    }
+    public List<PspInformation> getTemplateInformativePsp(){
+        log.info("loading TemplateInformativePsp");
+        List<Psp> psps = pspRepository.findAll();
+        List<PspInformation> templates = new ArrayList<>();
+
+        psps.stream().forEach(psp->{
+            try {
+                Optional<CdiMasterValid> masters = cdiMasterValidRepository.findByfkPsp_objId(psp.getObjId());
+                TplInformativaPSP tplInformativaPSP = new TplInformativaPSP();
+                tplInformativaPSP.setRagioneSociale(DA_COMPILARE);
+                tplInformativaPSP.setIdentificativoPSP(DA_COMPILARE);
+                tplInformativaPSP.setCodiceABI(Objects.isNull(psp.getAbi()) ? DA_COMPILARE : psp.getAbi());
+                tplInformativaPSP.setCodiceBIC(Objects.isNull(psp.getBic()) ? DA_COMPILARE : psp.getBic());
+                tplInformativaPSP.setIdentificativoFlusso(DA_COMPILARE_FLUSSO);
+                tplInformativaPSP.setMybankIDVS(Objects.isNull(psp.getCodiceMybank()) ? DA_COMPILARE : psp.getCodiceMybank());
+
+                TplInformativaMaster tplInformativaMaster = new TplInformativaMaster();
+                tplInformativaMaster.setLogoPSP(DA_COMPILARE);
+                tplInformativaMaster.setDataInizioValidita(DA_COMPILARE);
+                tplInformativaMaster.setDataPubblicazione(DA_COMPILARE);
+                tplInformativaMaster.setUrlConvenzioniPSP(DA_COMPILARE);
+                tplInformativaMaster.setUrlInformativaPSP(DA_COMPILARE);
+                tplInformativaMaster.setUrlInformazioniPSP(DA_COMPILARE);
+                tplInformativaMaster.setMarcaBolloDigitale(0);
+                tplInformativaMaster.setStornoPagamento(0);
+                tplInformativaPSP.setInformativaMaster(tplInformativaMaster);
+
+                if (masters.isEmpty()) {
+                    TplListaInformativaDetail tplListaInformativaDetail = new TplListaInformativaDetail();
+                    tplListaInformativaDetail.getInformativaDetail().add(makeTplInformativaDetail(null, null, null, null));
+                    tplInformativaPSP.setListaInformativaDetail(tplListaInformativaDetail);
+                    templates.add(new PspInformation(psp.getIdPsp(), toXml(tplInformativaPSP)));
+                } else {
+                    tplInformativaPSP.setRagioneSociale(psp.getRagioneSociale());
+                    tplInformativaPSP.setIdentificativoPSP(psp.getIdPsp());
+                    TplListaInformativaDetail tplListaInformativaDetail = new TplListaInformativaDetail();
+                    masters.get().getCdiDetail().stream().forEach(d -> {
+                        tplListaInformativaDetail.getInformativaDetail()
+                                .add(makeTplInformativaDetail(d.getFkPspCanaleTipoVersamento().getCanale().getIdCanale(),
+                                        d.getFkPspCanaleTipoVersamento().getCanale().getFkIntermediarioPsp().getIdIntermediarioPsp(),
+                                        d.getFkPspCanaleTipoVersamento().getTipoVersamento().getTipoVersamento(),
+                                        d.getModelloPagamento()));
+                    });
+                    tplInformativaPSP.setListaInformativaDetail(tplListaInformativaDetail);
+                    templates.add(new PspInformation(psp.getIdPsp(), toXml(tplInformativaPSP)));
+                }
+            } catch (Exception e){
+                log.error("errore creazione template informativa psp:"+psp.getIdPsp()+" error:"+e.getMessage());
+            }
+
+        });
+
+        return templates;
+
+    }
+
+    private TplInformativaDetail makeTplInformativaDetail(String idCanale,String idInter,String tv,Long modello){
+        TplInformativaDetail tplInformativaDetail = new TplInformativaDetail();
+        tplInformativaDetail.setCanaleApp(DA_COMPILARE);
+        tplInformativaDetail.setIdentificativoCanale(Objects.isNull(idCanale)?DA_COMPILARE:idCanale);
+        tplInformativaDetail.setPriorita(DA_COMPILARE);
+        tplInformativaDetail.setTipoVersamento(Objects.isNull(tv)?it.gov.pagopa.apiconfig.template.StTipoVersamento.BBT:it.gov.pagopa.apiconfig.template.StTipoVersamento.fromValue(tv));
+        tplInformativaDetail.setModelloPagamento(Objects.isNull(modello)?0:modello.intValue());
+        tplInformativaDetail.setIdentificativoIntermediario(Objects.isNull(idInter)?DA_COMPILARE:idInter);
+        tplInformativaDetail.setServizioAlleImprese(null);
+
+        TplIdentificazioneServizio tplIdentificazioneServizio = new TplIdentificazioneServizio();
+        tplIdentificazioneServizio.setLogoServizio(DA_COMPILARE);
+        tplIdentificazioneServizio.setNomeServizio(DA_COMPILARE);
+        tplInformativaDetail.setIdentificazioneServizio(tplIdentificazioneServizio);
+
+        TplCostiServizio tplCostiServizio = new TplCostiServizio();
+        tplCostiServizio.setTipoCommissione("0");
+        tplCostiServizio.setTipoCostoTransazione("0");
+        TplFasciaCostoServizio tplFasciaCostoServizio = new TplFasciaCostoServizio();
+        tplFasciaCostoServizio.setCostoFisso(DA_COMPILARE);
+        tplFasciaCostoServizio.setImportoMassimoFascia(DA_COMPILARE);
+        tplFasciaCostoServizio.setCostoFisso(DA_COMPILARE);
+        List<TplFasciaCostoServizio> tplFasciaCostoServizios = Arrays.asList(tplFasciaCostoServizio, tplFasciaCostoServizio, tplFasciaCostoServizio);
+        TplListaFasceCostoServizio fasce = new TplListaFasceCostoServizio();
+        fasce.getFasciaCostoServizio().addAll(tplFasciaCostoServizios);
+        tplCostiServizio.setListaFasceCostoServizio(fasce);
+        tplInformativaDetail.setCostiServizio(tplCostiServizio);
+
+        TplListaParoleChiave ks = new TplListaParoleChiave();
+        ks.getParoleChiave().add(DA_COMPILARE);
+        ks.getParoleChiave().add(DA_COMPILARE);
+        ks.getParoleChiave().add(DA_COMPILARE);
+        tplInformativaDetail.setListaParoleChiave(ks);
+
+        TplListaInformazioniServizio info = new TplListaInformazioniServizio();
+
+        Arrays.asList(it.gov.pagopa.apiconfig.template.StCodiceLingua.IT,it.gov.pagopa.apiconfig.template.StCodiceLingua.EN,
+                it.gov.pagopa.apiconfig.template.StCodiceLingua.DE, it.gov.pagopa.apiconfig.template.StCodiceLingua.FR,
+                it.gov.pagopa.apiconfig.template.StCodiceLingua.SL).stream().forEach(l->{
+            TplInformazioniServizio infoser = new TplInformazioniServizio();
+            infoser.setCodiceLingua(it.gov.pagopa.apiconfig.template.StCodiceLingua.IT);
+            infoser.setDescrizioneServizio(DA_COMPILARE);
+            infoser.setDescrizioneServizio(DA_COMPILARE);
+            infoser.setUrlInformazioniCanale(DA_COMPILARE);
+            infoser.setLimitazioniServizio(DA_COMPILARE);
+            info.getInformazioniServizio().add(infoser);
+        });
+        tplInformativaDetail.setListaInformazioniServizio(info);
+        return tplInformativaDetail;
+    }
 
   public List<CreditorInstitutionInformation> getInformativePa() {
     log.info("loading InformativePa");
@@ -954,12 +1015,12 @@ public class ConfigService {
             DatatypeConstants.FIELD_UNDEFINED);
   }
 
-  private XMLGregorianCalendar tsToXmlGC(ZonedDateTime ZonedDateTime)
+  private XMLGregorianCalendar tsToXmlGC(ZonedDateTime dateTime)
       throws DatatypeConfigurationException {
-    if (ZonedDateTime == null) {
+    if (dateTime == null) {
       return null;
     }
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-    return DatatypeFactory.newInstance().newXMLGregorianCalendar(formatter.format(ZonedDateTime));
+    return DatatypeFactory.newInstance().newXMLGregorianCalendar(formatter.format(dateTime));
   }
 }

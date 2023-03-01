@@ -33,6 +33,8 @@ import lombok.Setter;
 public class ConfigDataV1 {
 
   @JsonProperty(required = true)
+  private String version;
+  @JsonProperty(required = true)
   public Map<String, CreditorInstitution> pas;
   @JsonProperty(required = true)
   public Map<String, BrokerCreditorInstitution> intermediariPa;

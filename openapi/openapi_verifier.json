@@ -1,0 +1,24 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "Your project name",
+    "description" : "Your description",
+    "termsOfService" : "https://www.pagopa.gov.it/",
+    "version" : "0.0.1"
+  },
+  "servers" : [ {
+    "url" : "http://localhost:8080",
+    "description" : "Generated server url"
+  } ],
+  "paths" : { },
+  "components" : {
+    "securitySchemes" : {
+      "ApiKey" : {
+        "type" : "apiKey",
+        "description" : "The API key to access this function app.",
+        "name" : "Ocp-Apim-Subscription-Key",
+        "in" : "header"
+      }
+    }
+  }
+}
