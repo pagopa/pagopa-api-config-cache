@@ -200,8 +200,8 @@ public class ConfigService {
 
   private String DA_COMPILARE_FLUSSO = "DA COMPILARE (formato: [IDPSP]_dd-mm-yyyy - esempio: ESEMPIO_31-12-2001)";
   private String DA_COMPILARE = "DA COMPILARE";
-  private String KEY_V1 = "node_v1";
-  private String KEY_V1_VERSION = "node_v1_version";
+  private String KEY_V1 = "apicfg_node_v1";
+  private String KEY_V1_VERSION = "apicfg_node_v1_version";
 
   @PostConstruct
   private void initAllCaches() throws IOException {
