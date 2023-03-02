@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
+import it.gov.pagopa.apiconfig.model.node.v1.ConfigDataV1;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +30,13 @@ public class RedisConfig {
   private int redisPort;
 
   @Bean
+  public ObjectMapper objectMapper() {
+    final var objectMapper = new ObjectMapper().findAndRegisterModules();
+    objectMapper.setVisibility(PropertyAccessor.ALL,  JsonAutoDetect.Visibility.ANY);
+    return objectMapper;
+  }
+
+  @Bean
   public LettuceConnectionFactory redisConnectionFactory() {
     RedisStandaloneConfiguration redisConfiguration = new RedisStandaloneConfiguration(redisHost, redisPort);
     if(redisPassword.isPresent()){
@@ -38,17 +46,13 @@ public class RedisConfig {
   }
 
   @Bean
-  public RedisTemplate<String, Object> redisTemplate(final LettuceConnectionFactory connectionFactory) {
+  public RedisTemplate<String, Object> redisObjectTemplate(final LettuceConnectionFactory connectionFactory,ObjectMapper objectMapper) {
     RedisTemplate<String, Object> template = new RedisTemplate<>();
     template.setKeySerializer(new StringRedisSerializer());
-
     final var jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
-    final var objectMapper = new ObjectMapper().findAndRegisterModules();
-    objectMapper.setVisibility(PropertyAccessor.ALL,  JsonAutoDetect.Visibility.ANY);
     jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
     template.setValueSerializer(jackson2JsonRedisSerializer);
     template.setConnectionFactory(connectionFactory);
-
     return template;
   }
 

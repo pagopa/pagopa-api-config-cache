@@ -24,10 +24,13 @@ import it.gov.pagopa.apiconfig.controparti.CtFasciaOraria;
 import it.gov.pagopa.apiconfig.controparti.CtInformativaControparte;
 import it.gov.pagopa.apiconfig.controparti.CtListaInformativeControparte;
 import it.gov.pagopa.apiconfig.controparti.StTipoPeriodo;
+import it.gov.pagopa.apiconfig.entity.CdiFasciaCostoServizio;
 import it.gov.pagopa.apiconfig.entity.CdiInformazioniServizio;
 import it.gov.pagopa.apiconfig.entity.CdiMasterValid;
+import it.gov.pagopa.apiconfig.entity.CdiPreference;
 import it.gov.pagopa.apiconfig.entity.IbanValidiPerPa;
 import it.gov.pagopa.apiconfig.entity.InformativePaDetail;
+import it.gov.pagopa.apiconfig.entity.InformativePaFasce;
 import it.gov.pagopa.apiconfig.entity.InformativePaMaster;
 import it.gov.pagopa.apiconfig.entity.Pa;
 import it.gov.pagopa.apiconfig.entity.Psp;
@@ -60,6 +63,7 @@ import it.gov.pagopa.apiconfig.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.repository.CanaliRepository;
 import it.gov.pagopa.apiconfig.repository.CdiDetailRepository;
 import it.gov.pagopa.apiconfig.repository.CdiFasciaCostoServizioRepository;
+import it.gov.pagopa.apiconfig.repository.CdiInformazioniServizioRepository;
 import it.gov.pagopa.apiconfig.repository.CdiMasterValidRepository;
 import it.gov.pagopa.apiconfig.repository.CdiPreferenceRepository;
 import it.gov.pagopa.apiconfig.repository.CdsCategorieRepository;
@@ -74,6 +78,7 @@ import it.gov.pagopa.apiconfig.repository.FtpServersRepository;
 import it.gov.pagopa.apiconfig.repository.GdeConfigRepository;
 import it.gov.pagopa.apiconfig.repository.IbanValidiPerPaRepository;
 import it.gov.pagopa.apiconfig.repository.InformativePaDetailRepository;
+import it.gov.pagopa.apiconfig.repository.InformativePaFasceRepository;
 import it.gov.pagopa.apiconfig.repository.InformativePaMasterRepository;
 import it.gov.pagopa.apiconfig.repository.IntermediariPaRepository;
 import it.gov.pagopa.apiconfig.repository.IntermediariPspRepository;
@@ -113,7 +118,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -126,11 +130,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.web.client.HttpServerErrorException;
 
 @Slf4j
 @Service
@@ -192,43 +195,47 @@ public class ConfigService {
   @Autowired
   private CdiPreferenceRepository cdiPreferenceRepository;
   @Autowired
+  private CdiInformazioniServizioRepository cdiInformazioniServizioRepository;
+  @Autowired
   private CdiFasciaCostoServizioRepository cdiFasceRepository;
   @Autowired
   private InformativePaMasterRepository informativePaMasterRepository;
   @Autowired
   private InformativePaDetailRepository informativePaDetailRepository;
+  @Autowired
+  private InformativePaFasceRepository informativePaFasceRepository;
 
   private String DA_COMPILARE_FLUSSO = "DA COMPILARE (formato: [IDPSP]_dd-mm-yyyy - esempio: ESEMPIO_31-12-2001)";
   private String DA_COMPILARE = "DA COMPILARE";
   private String KEY_V1 = "apicfg_node_v1";
   private String KEY_V1_VERSION = "apicfg_node_v1_version";
 
-  @PostConstruct
-  private void initAllCaches() throws IOException {
+//  @PostConstruct
+//  private void initAllCaches() throws IOException {
+//
+//    new TransactionTemplate(transactionManager).execute(new TransactionCallback(){
+//
+//      @Override
+//      public Object doInTransaction(TransactionStatus transactionStatus) {
+//
+//        try {
+//          newCacheV1();
+//        } catch (IOException e) {
+//          throw new RuntimeException(e);
+//        }
+//
+//        return null;
+//      }
+//
+//    });
+//  }
 
-    new TransactionTemplate(transactionManager).execute(new TransactionCallback(){
-
-      @Override
-      public Object doInTransaction(TransactionStatus transactionStatus) {
-
-        try {
-          newCacheV1();
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        }
-
-        return null;
-      }
-
-    });
-  }
 
   public ConfigDataV1 newCacheV1() throws IOException {
 
     long startTime = System.nanoTime();
 
     ConfigDataV1 configData = new ConfigDataV1();
-
 
     List<BrokerCreditorInstitution> intpa = getBrokerDetails();
     Map intpamap = new HashMap<String, BrokerCreditorInstitution>();
@@ -372,14 +379,16 @@ public class ConfigService {
     });
     configData.setIbans(ibansMap);
 
-    List<PspInformation> infopsps = getInformativePsp();
+    Pair<List<PspInformation>, List<PspInformation>> informativePspAndTemplates = getInformativePspAndTemplates();
+
+    List<PspInformation> infopsps = informativePspAndTemplates.getLeft();
     Map infopspsMap = new HashMap<String, PspInformation>();
     infopsps.stream().forEach(k->{
       infopspsMap.put(k.getPsp(),k);
     });
     configData.setPspInformations(infopspsMap);
 
-    List<PspInformation> infopspTemplates = getTemplateInformativePsp();
+    List<PspInformation> infopspTemplates = informativePspAndTemplates.getRight();
     Map infopspTemplatesMap = new HashMap<String, PspInformation>();
     infopspTemplates.stream().forEach(k->{
       infopspTemplatesMap.put(k.getPsp(),k);
@@ -401,11 +410,11 @@ public class ConfigService {
 
     redisRepository.save(KEY_V1,configData,1440);
     redisRepository.save(KEY_V1_VERSION,configData.getVersion(),1440);
-
     return configData;
   }
 
   public String getCacheV1Version(){
+
     Object v = redisRepository.get(KEY_V1_VERSION);
     if(v!=null){
       return (String)v;
@@ -627,10 +636,27 @@ public class ConfigService {
     }
   }
 
-  public List<PspInformation> getInformativePsp() {
+  public Pair<List<PspInformation>,List<PspInformation>> getInformativePspAndTemplates(){
+    List<CdiPreference> preferences = cdiPreferenceRepository.findAll();
+    List<CdiFasciaCostoServizio> allFasce = cdiFasceRepository.findAll();
+    List<CdiMasterValid> masters = cdiMasterValidRepository.findAllFetching();
+    List<CdiInformazioniServizio> allInformazioni = cdiInformazioniServizioRepository.findAll();
+
+    List<PspInformation> informativePsp = getInformativePsp(masters, preferences, allFasce,
+        allInformazioni);
+    List<PspInformation> templateInformativePsp = getTemplateInformativePsp(masters, preferences, allFasce,
+        allInformazioni);
+
+    return Pair.of(informativePsp,templateInformativePsp);
+  }
+  public List<PspInformation> getInformativePsp(List<CdiMasterValid> masters,
+      List<CdiPreference> preferences,
+      List<CdiFasciaCostoServizio> allFasce,
+      List<CdiInformazioniServizio> allInformazioni
+  ) {
     log.info("loading InformativePsp");
     double COSTO_CONVENZIONE_FORMAT = 100d;
-    List<CdiMasterValid> masters = cdiMasterValidRepository.findAllFetching();
+
     List<CtListaInformativePSP> informativePspSingle = masters.stream()
         .filter(m -> !m.getCdiDetail().isEmpty()).map(cdiMaster -> {
 
@@ -667,7 +693,8 @@ public class ConfigService {
             ctIdentificazioneServizio.setNomeServizio(cdiDetail.getNomeServizio());
             ctIdentificazioneServizio.setLogoServizio("".getBytes(StandardCharsets.UTF_8));
 
-            CdiInformazioniServizio it = cdiDetail.getCdiInformazioniServizio().stream()
+
+            CdiInformazioniServizio it = allInformazioni.stream().filter(ii->ii.getFkCdiDetail().getId().equals(cdiDetail.getId()))
                 .filter(info -> info.getCodiceLingua().equals("IT")).collect(Collectors.toList())
                 .get(0);
             CtInformazioniServizio ctInformazioniServizio = new CtInformazioniServizio();
@@ -679,7 +706,8 @@ public class ConfigService {
             CtListaInformazioniServizio ctListaInformazioniServizio = new CtListaInformazioniServizio();
             ctListaInformazioniServizio.getInformazioniServizio().add(ctInformazioniServizio);
 
-            List<CtFasciaCostoServizio> fasce = cdiDetail.getCdiFasciaCostoServizio().stream()
+
+            List<CtFasciaCostoServizio> fasce = allFasce.stream().filter(fas->fas.getFkCdiDetail().getId().equals(cdiDetail.getId()))
                 .map(fascia -> {
                   CtFasciaCostoServizio ctFasciaCostoServizio = new CtFasciaCostoServizio();
                   ctFasciaCostoServizio.setCostoFisso(
@@ -695,7 +723,9 @@ public class ConfigService {
             CtListaFasceCostoServizio ctListaFasceCostoServizio = new CtListaFasceCostoServizio();
             ctListaFasceCostoServizio.getFasciaCostoServizio().addAll(fasce);
 
-            List<String> buyers = cdiDetail.getCdiPreference().stream().map(p -> p.getBuyer())
+            List<CdiPreference> cdiPreferenceStream = preferences.stream().filter(pref -> pref.getCdiDetail().getId().equals(cdiDetail.getId())).collect(
+                Collectors.toList());
+            List<String> buyers = cdiPreferenceStream.stream().map(p -> p.getBuyer())
                 .collect(Collectors.toList());
             CtListaConvenzioni listaConvenzioni = new CtListaConvenzioni();
             listaConvenzioni.getCodiceConvenzione().addAll(buyers);
@@ -705,7 +735,7 @@ public class ConfigService {
             ctInformativaDetail.setIdentificativoCanale(
                 pspCanaleTipoVersamento.getCanale().getIdCanale());
 
-            List<Double> costiConvenzione = cdiDetail.getCdiPreference().stream()
+            List<Double> costiConvenzione = cdiPreferenceStream.stream()
                 .map(p -> p.getCostoConvenzione() / COSTO_CONVENZIONE_FORMAT)
                 .collect(Collectors.toList());
 
@@ -774,14 +804,20 @@ public class ConfigService {
 
   }
 
-    public List<PspInformation> getTemplateInformativePsp(){
+    public List<PspInformation> getTemplateInformativePsp(List<CdiMasterValid> allMasters,
+        List<CdiPreference> preferences,
+        List<CdiFasciaCostoServizio> allFasce,
+        List<CdiInformazioniServizio> allInformazioni
+    ){
         log.info("loading TemplateInformativePsp");
         List<Psp> psps = pspRepository.findAll();
         List<PspInformation> templates = new ArrayList<>();
 
+
+
         psps.stream().forEach(psp->{
             try {
-                Optional<CdiMasterValid> masters = cdiMasterValidRepository.findByfkPsp_objId(psp.getObjId());
+                Optional<CdiMasterValid> masters = allMasters.stream().filter(m->m.getFkPsp().getIdPsp().equals(psp.getObjId())).findFirst();
                 TplInformativaPSP tplInformativaPSP = new TplInformativaPSP();
                 tplInformativaPSP.setRagioneSociale(DA_COMPILARE);
                 tplInformativaPSP.setIdentificativoPSP(DA_COMPILARE);
@@ -883,6 +919,9 @@ public class ConfigService {
 
   public List<CreditorInstitutionInformation> getInformativePa() {
     log.info("loading InformativePa");
+    List<IbanValidiPerPa> allIbans = ibanValidiPerPaRepository.findAll();
+    List<InformativePaMaster> allMasters = informativePaMasterRepository.findAll();
+    List<InformativePaFasce> allFasce = informativePaFasceRepository.findAll();
     List<Pa> pas = paRepository.findAll();//.stream().filter(s->s.getIdDominio().equals("90000000002")).collect(Collectors.toList());
 
     List<Pair<String, CtListaInformativeControparte>> informativePaSingle = new ArrayList<>();
@@ -898,7 +937,8 @@ public class ConfigService {
       ctInformativaControparte.setContactCenterEnteCreditore("contactCenterEnteCreditore");
       ctInformativaControparte.setPagamentiPressoPSP(pa.getPagamentoPressoPsp() ? 1 : 0);
 
-      List<IbanValidiPerPa> ibans = pa.getIbans();
+      List<IbanValidiPerPa> ibans = allIbans.stream().filter(i->i.getFkPa().equals(pa.getObjId())).collect(
+          Collectors.toList());
       List<CtContoAccredito> contiaccredito = ibans.stream().map(iban -> {
         String idNegozio = null;
         if (iban.getIdMerchant() != null && iban.getIdBancaSeller() != null
@@ -921,7 +961,8 @@ public class ConfigService {
       }).collect(Collectors.toList());
       ctInformativaControparte.getInformativaContoAccredito().addAll(contiaccredito);
 
-      List<InformativePaMaster> masters = pa.getInformativePaMasters();
+      List<InformativePaMaster> masters = allMasters.stream().filter(m->m.getFkPa().getObjId().equals(pa.getObjId())).collect(
+          Collectors.toList());
       InformativePaMaster master = null;
       if (!masters.isEmpty()) {
         master = masters.get(0);
@@ -936,10 +977,10 @@ public class ConfigService {
 
         List<CtErogazione> disponibilita = infodetails.stream()
             .filter(d -> d.getFlagDisponibilita())
-            .map(d -> infoDetailToCtErogazione(d)).collect(Collectors.toList());
+            .map(d -> infoDetailToCtErogazione(allFasce,d)).collect(Collectors.toList());
         List<CtErogazione> indisponibilita = infodetails.stream()
             .filter(d -> !d.getFlagDisponibilita())
-            .map(d -> infoDetailToCtErogazione(d)).collect(Collectors.toList());
+            .map(d -> infoDetailToCtErogazione(allFasce,d)).collect(Collectors.toList());
         CtErogazioneServizio ctErogazioneServizio = new CtErogazioneServizio();
         ctErogazioneServizio.getDisponibilita().addAll(disponibilita);
         ctErogazioneServizio.getIndisponibilita().addAll(indisponibilita);
@@ -975,10 +1016,10 @@ public class ConfigService {
     return informativePaSingleCache;
   }
 
-  private CtErogazione infoDetailToCtErogazione(InformativePaDetail det) {
+  private CtErogazione infoDetailToCtErogazione(List<InformativePaFasce> allFasce,InformativePaDetail det) {
     List<CtFasciaOraria> fasce = new ArrayList<>();
     try {
-      fasce = det.getFasce().stream().map(f -> {
+      fasce = allFasce.stream().filter(f->f.getFkInformativaPaDetail().getId().equals(det.getId())).map(f -> {
         CtFasciaOraria fascia = new CtFasciaOraria();
         try {
           fascia.setFasciaOrariaDa(stringToXmlGCTime(f.getOraDa()));

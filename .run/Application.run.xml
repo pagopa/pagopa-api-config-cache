@@ -7,7 +7,7 @@
     </envs>
     <option name="MAIN_CLASS_NAME" value="it.gov.pagopa.apiconfig.Application" />
     <module name="pagopa-api-config-cache" />
-    <option name="VM_PARAMETERS" value="-Dspring.profiles.active=local" />
+    <option name="VM_PARAMETERS" value="-Dspring.profiles.active=local -Xmx2048m" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="it.gov.pagopa.apiconfig.*" />
