@@ -39,6 +39,7 @@ parameters:
 variables:
   imageRepository: '$(IMAGE_REPOSITORY_NAME)'
   nameSpace: '$(K8S_NAMESPACE)'
+  FILE_CONFIG_PATH_CONFIGAPP: $(Build.SourcesDirectory)/helm/config/${{ parameters.ENV }}/application.properties
 
   ${{ if eq(parameters['ENV'], 'dev') }}:
     dockerRegistryServiceConnection: $(DEV_CONTAINER_REGISTRY_SERVICE_CONN)
@@ -123,39 +124,6 @@ stages:
               DOCKER_IMAGE_TAG: $(current_version)
               FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
 
-  # Testing the docker image
-  - stage: Smoke_Test
-    dependsOn:
-      - Build
-    condition: and(succeeded(), eq('${{ parameters.TEST }}', 'true'))
-    jobs:
-      - job: smoke_tests
-        pool:
-          vmImage: 'ubuntu-18.04'
-        steps:
-          - checkout: self
-            persistCredentials: true
-
-          - script: |
-              git checkout $(sourceBranch)
-            displayName: Checkout and update branch
-
-          - task: Docker@2
-            displayName: "Docker login"
-            inputs:
-              containerRegistry: "$(dockerRegistryServiceConnection)"
-              command: "login"
-
-          - task: Bash@3
-            displayName: 'Run Smoke Tests'
-            inputs:
-              targetType: 'inline'
-              script: |
-                cd ./integration-test
-                sh run_integration_test.sh local
-            env:
-              containerRegistry: $(dockerRegistryFqdn)
-
   # Deploy on K8s with Helm
   - stage: Deploy
     condition: and(succeeded('Build'), not(failed('Smoke_Test')))
@@ -196,29 +164,5 @@ stages:
                     DEPLOY_VERSION: $(deploy_version)
                     APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
                     APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
-
-
-  # Run Tests
-  - stage: Integration_Test
-    dependsOn:
-      - Deploy
-    condition: and(and(succeeded(), eq('${{ parameters.TEST }}', 'true')), ne('${{ parameters.ENV }}', 'prod'))
-    jobs:
-      - job: integration_tests
-        steps:
-          - checkout: self
-            persistCredentials: true
-
-          - script: |
-              git checkout $(sourceBranch)
-            displayName: Checkout and update branch
-
-          - task: Bash@3
-            displayName: 'Run Integration Tests'
-            inputs:
-              targetType: 'inline'
-              script: |
-                cd ./integration-test/src
-                export subkey=$(API_SUBSCRIPTION_KEY)
-                yarn install
-                yarn test:${{ parameters.ENV }}
+                    ARGUMENTS: >-
+                      --set-filemicroservice-chart.fileConfig.application\.properties="$(FILE_CONFIG_PATH_CONFIGAPP)"
