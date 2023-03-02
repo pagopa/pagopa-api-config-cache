@@ -1,10 +1,15 @@
 microservice-chart:
-  namespace: "your-namespace" # TODO: set your AKS namespace
+  namespace: "nodo"
   nameOverride: ""
   fullnameOverride: ""
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   image:
-    repository: pagopadcommonacr.azurecr.io/yourname # TODO
-    tag: "0.0.3"
+    repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
+    tag: "0.0.1"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -28,16 +33,13 @@ microservice-chart:
     port: 8080
   ingress:
     create: true
-    host: "your.host" # TODO: set the host
-    path: /your-path-here/(.*) # TODO: set your path
+    host: "weudev.nodo.internal.dev.platform.pagopa.it"
+    path: /api-config-cache(/|$)(.*)
+    pathType: Prefix
+    servicePort: 8080
+    rewriteTarget: /$2
   serviceAccount:
     create: false
-    annotations: { }
-    name: ""
-  podAnnotations: { }
-  podSecurityContext:
-    seccompProfile:
-      type: RuntimeDefault
   securityContext:
     allowPrivilegeEscalation: false
   resources:
@@ -45,29 +47,32 @@ microservice-chart:
       memory: "512Mi"
       cpu: "0.25"
     limits:
-      memory: "512Mi"
-      cpu: "0.25"
-  autoscaling:
-    enable: true
-    minReplica: 3
-    maxReplica: 10
-    pollingInterval: 10 # seconds
-    cooldownPeriod: 50 # seconds
-    triggers:
-      - type: cpu
-        metadata:
-          # Required
-          type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
-          value: "75"
+      memory: "2G"
+      cpu: "1"
   envConfig:
-    # TODO: set your name
-    WEBSITE_SITE_NAME: 'yourProjectName' # required to show cloud role name in application insights
+    DB_CONFIG_URL: jdbc:postgresql://pagopa-d-weu-nodo-flexible-postgresql.postgres.database.azure.com:6432/nodo?sslmode=require&prepareThreshold=0&currentSchema=cfg
+    DB_CONFIG_USER: cfg
+    REDIS_HOST: pagopa-d-redis.redis.cache.windows.net
+    REDIS_PORT: 6380
   envSecret:
     # required
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-d-connection-string'
+    DB_CONFIG_PASSWORD: "db-cfg-password"
+    REDIS_PASSWORD: "redis-password"
   keyvault:
-    name: "pagopa-d-afm-kv"
+    name: "pagopa-d-nodo-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-  nodeSelector: { }
-  tolerations: [ ]
-  affinity: { }
+  tolerations:
+    - key: dedicated
+      operator: Equal
+      value: "nodo"
+      effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: nodo
+                operator: In
+                values:
+                  - "true"
