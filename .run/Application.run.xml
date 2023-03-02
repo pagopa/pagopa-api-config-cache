@@ -1,13 +1,15 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Application" type="Application" factoryName="Application" nameIsGenerated="true">
     <envs>
-      <env name="SPRING_DATASOURCE_PASSWORD" value="password" />
-      <env name="SPRING_DATASOURCE_URL" value="jdbc:postgresql://pagopa-d-weu-nodo-flexible-postgresql.postgres.database.azure.com:6432/nodo?currentSchema=cfg&amp;prepareThreshold=0" />
-      <env name="SPRING_DATASOURCE_USERNAME" value="cfg" />
+      <env name="DB_CONFIG_PASSWORD" value="password" />
+      <env name="DB_CONFIG_URL" value="jdbc:postgresql://pagopa-d-weu-nodo-flexible-postgresql.postgres.database.azure.com:6432/nodo?sslmode=require&amp;prepareThreshold=0&amp;currentSchema=cfg" />
+      <env name="DB_CONFIG_USER" value="cfg" />
+      <env name="REDIS_HOST" value="redis" />
+      <env name="REDIS_PORT" value="6379" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="it.gov.pagopa.apiconfig.Application" />
     <module name="cache" />
-    <option name="VM_PARAMETERS" value="-Dspring.profiles.active=local -Xmx2048m" />
+    <option name="VM_PARAMETERS" value="-Xmx2048m -Dspring.config.location=./helm/config/dev/application.properties" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="it.gov.pagopa.apiconfig.*" />

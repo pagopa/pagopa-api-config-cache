@@ -205,8 +205,7 @@ public class ConfigService {
 
   private String DA_COMPILARE_FLUSSO = "DA COMPILARE (formato: [IDPSP]_dd-mm-yyyy - esempio: ESEMPIO_31-12-2001)";
   private String DA_COMPILARE = "DA COMPILARE";
-  private String KEY_V1 = "apicfg_node_v1";
-  private String KEY_V1_VERSION = "apicfg_node_v1_version";
+
 
 //  @PostConstruct
 //  private void initAllCaches() throws IOException {
@@ -406,19 +405,16 @@ public class ConfigService {
 
     configData.setVersion(""+endTime);
 
-    redisRepository.save(KEY_V1,configData,1440);
-    redisRepository.save(KEY_V1_VERSION,configData.getVersion(),1440);
+    redisRepository.pushToRedisAsync(configData);
+
     return configData;
   }
 
-  public String getCacheV1Version(){
 
-    Object v = redisRepository.get(KEY_V1_VERSION);
-    if(v!=null){
-      return (String)v;
-    }else{
-      return null;
-    }
+
+
+  public String getCacheV1Version(){
+    return redisRepository.getCacheV1Version();
   }
 
   public List<ConfigurationKey> getConfigurationKeys() {
