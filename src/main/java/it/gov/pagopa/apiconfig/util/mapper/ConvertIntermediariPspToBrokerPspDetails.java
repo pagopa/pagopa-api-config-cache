@@ -1,6 +1,6 @@
 package it.gov.pagopa.apiconfig.util.mapper;
 
-import it.gov.pagopa.apiconfig.entity.IntermediariPsp;
+import it.gov.pagopa.apiconfig.starter.entity.IntermediariPsp;
 import it.gov.pagopa.apiconfig.model.node.v1.psp.BrokerPsp;
 import it.gov.pagopa.apiconfig.util.CommonUtil;
 import org.modelmapper.Converter;

@@ -1,6 +1,6 @@
 package it.gov.pagopa.apiconfig.util.mapper;
 
-import it.gov.pagopa.apiconfig.entity.CodifichePa;
+import it.gov.pagopa.apiconfig.starter.entity.CodifichePa;
 import it.gov.pagopa.apiconfig.model.node.v1.creditorinstitution.CodeTypeEnum;
 import it.gov.pagopa.apiconfig.model.node.v1.creditorinstitution.CreditorInstitutionEncoding;
 import org.modelmapper.Converter;

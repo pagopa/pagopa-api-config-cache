@@ -1,6 +1,6 @@
 package it.gov.pagopa.apiconfig.util.mapper;
 
-import it.gov.pagopa.apiconfig.entity.Canali;
+import it.gov.pagopa.apiconfig.starter.entity.Canali;
 import it.gov.pagopa.apiconfig.model.node.v1.configuration.Protocol;
 import it.gov.pagopa.apiconfig.model.node.v1.psp.Channel;
 import it.gov.pagopa.apiconfig.model.node.v1.psp.PaymentModel;

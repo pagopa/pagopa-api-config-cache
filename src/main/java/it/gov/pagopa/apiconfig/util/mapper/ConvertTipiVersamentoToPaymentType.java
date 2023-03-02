@@ -1,6 +1,6 @@
 package it.gov.pagopa.apiconfig.util.mapper;
 
-import it.gov.pagopa.apiconfig.entity.TipiVersamento;
+import it.gov.pagopa.apiconfig.starter.entity.TipiVersamento;
 import it.gov.pagopa.apiconfig.model.node.v1.configuration.PaymentType;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;

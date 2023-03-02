@@ -2,7 +2,7 @@ package it.gov.pagopa.apiconfig.util.mapper;
 
 import it.gov.pagopa.apiconfig.model.node.v1.configuration.Protocol;
 import it.gov.pagopa.apiconfig.model.node.v1.creditorinstitution.Station;
-import it.gov.pagopa.apiconfig.entity.Stazioni;
+import it.gov.pagopa.apiconfig.starter.entity.Stazioni;
 import it.gov.pagopa.apiconfig.util.CommonUtil;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;

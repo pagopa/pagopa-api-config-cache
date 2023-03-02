@@ -24,17 +24,6 @@ import it.gov.pagopa.apiconfig.controparti.CtFasciaOraria;
 import it.gov.pagopa.apiconfig.controparti.CtInformativaControparte;
 import it.gov.pagopa.apiconfig.controparti.CtListaInformativeControparte;
 import it.gov.pagopa.apiconfig.controparti.StTipoPeriodo;
-import it.gov.pagopa.apiconfig.entity.CdiFasciaCostoServizio;
-import it.gov.pagopa.apiconfig.entity.CdiInformazioniServizio;
-import it.gov.pagopa.apiconfig.entity.CdiMasterValid;
-import it.gov.pagopa.apiconfig.entity.CdiPreference;
-import it.gov.pagopa.apiconfig.entity.IbanValidiPerPa;
-import it.gov.pagopa.apiconfig.entity.InformativePaDetail;
-import it.gov.pagopa.apiconfig.entity.InformativePaFasce;
-import it.gov.pagopa.apiconfig.entity.InformativePaMaster;
-import it.gov.pagopa.apiconfig.entity.Pa;
-import it.gov.pagopa.apiconfig.entity.Psp;
-import it.gov.pagopa.apiconfig.entity.PspCanaleTipoVersamentoCanale;
 import it.gov.pagopa.apiconfig.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.model.node.v1.cds.CdsCategory;
 import it.gov.pagopa.apiconfig.model.node.v1.cds.CdsService;
@@ -60,35 +49,46 @@ import it.gov.pagopa.apiconfig.model.node.v1.psp.PaymentServiceProvider;
 import it.gov.pagopa.apiconfig.model.node.v1.psp.PspChannelPaymentType;
 import it.gov.pagopa.apiconfig.model.node.v1.psp.PspInformation;
 import it.gov.pagopa.apiconfig.redis.RedisRepository;
-import it.gov.pagopa.apiconfig.repository.CanaliRepository;
-import it.gov.pagopa.apiconfig.repository.CdiDetailRepository;
-import it.gov.pagopa.apiconfig.repository.CdiFasciaCostoServizioRepository;
-import it.gov.pagopa.apiconfig.repository.CdiInformazioniServizioRepository;
-import it.gov.pagopa.apiconfig.repository.CdiMasterValidRepository;
-import it.gov.pagopa.apiconfig.repository.CdiPreferenceRepository;
-import it.gov.pagopa.apiconfig.repository.CdsCategorieRepository;
-import it.gov.pagopa.apiconfig.repository.CdsServizioRepository;
-import it.gov.pagopa.apiconfig.repository.CdsSoggettoRepository;
-import it.gov.pagopa.apiconfig.repository.CdsSoggettoServizioRepository;
-import it.gov.pagopa.apiconfig.repository.CodifichePaRepository;
-import it.gov.pagopa.apiconfig.repository.CodificheRepository;
-import it.gov.pagopa.apiconfig.repository.ConfigurationKeysRepository;
-import it.gov.pagopa.apiconfig.repository.DizionarioMetadatiRepository;
-import it.gov.pagopa.apiconfig.repository.FtpServersRepository;
-import it.gov.pagopa.apiconfig.repository.GdeConfigRepository;
-import it.gov.pagopa.apiconfig.repository.IbanValidiPerPaRepository;
-import it.gov.pagopa.apiconfig.repository.InformativePaDetailRepository;
-import it.gov.pagopa.apiconfig.repository.InformativePaFasceRepository;
-import it.gov.pagopa.apiconfig.repository.InformativePaMasterRepository;
-import it.gov.pagopa.apiconfig.repository.IntermediariPaRepository;
-import it.gov.pagopa.apiconfig.repository.IntermediariPspRepository;
-import it.gov.pagopa.apiconfig.repository.PaRepository;
-import it.gov.pagopa.apiconfig.repository.PaStazionePaRepository;
-import it.gov.pagopa.apiconfig.repository.PspCanaleTipoVersamentoRepository;
-import it.gov.pagopa.apiconfig.repository.PspRepository;
-import it.gov.pagopa.apiconfig.repository.StazioniRepository;
-import it.gov.pagopa.apiconfig.repository.TipiVersamentoRepository;
-import it.gov.pagopa.apiconfig.repository.WfespPluginConfRepository;
+import it.gov.pagopa.apiconfig.starter.entity.CdiFasciaCostoServizio;
+import it.gov.pagopa.apiconfig.starter.entity.CdiInformazioniServizio;
+import it.gov.pagopa.apiconfig.starter.entity.CdiMasterValid;
+import it.gov.pagopa.apiconfig.starter.entity.CdiPreference;
+import it.gov.pagopa.apiconfig.starter.entity.IbanValidiPerPa;
+import it.gov.pagopa.apiconfig.starter.entity.InformativePaDetail;
+import it.gov.pagopa.apiconfig.starter.entity.InformativePaFasce;
+import it.gov.pagopa.apiconfig.starter.entity.InformativePaMaster;
+import it.gov.pagopa.apiconfig.starter.entity.Pa;
+import it.gov.pagopa.apiconfig.starter.entity.Psp;
+import it.gov.pagopa.apiconfig.starter.entity.PspCanaleTipoVersamentoCanale;
+import it.gov.pagopa.apiconfig.starter.repository.CanaliRepository;
+import it.gov.pagopa.apiconfig.starter.repository.CdiDetailRepository;
+import it.gov.pagopa.apiconfig.starter.repository.CdiFasciaCostoServizioRepository;
+import it.gov.pagopa.apiconfig.starter.repository.CdiInformazioniServizioRepository;
+import it.gov.pagopa.apiconfig.starter.repository.CdiMasterValidRepository;
+import it.gov.pagopa.apiconfig.starter.repository.CdiPreferenceRepository;
+import it.gov.pagopa.apiconfig.starter.repository.CdsCategorieRepository;
+import it.gov.pagopa.apiconfig.starter.repository.CdsServizioRepository;
+import it.gov.pagopa.apiconfig.starter.repository.CdsSoggettoRepository;
+import it.gov.pagopa.apiconfig.starter.repository.CdsSoggettoServizioRepository;
+import it.gov.pagopa.apiconfig.starter.repository.CodifichePaRepository;
+import it.gov.pagopa.apiconfig.starter.repository.CodificheRepository;
+import it.gov.pagopa.apiconfig.starter.repository.ConfigurationKeysRepository;
+import it.gov.pagopa.apiconfig.starter.repository.DizionarioMetadatiRepository;
+import it.gov.pagopa.apiconfig.starter.repository.FtpServersRepository;
+import it.gov.pagopa.apiconfig.starter.repository.GdeConfigRepository;
+import it.gov.pagopa.apiconfig.starter.repository.IbanValidiPerPaRepository;
+import it.gov.pagopa.apiconfig.starter.repository.InformativePaDetailRepository;
+import it.gov.pagopa.apiconfig.starter.repository.InformativePaFasceRepository;
+import it.gov.pagopa.apiconfig.starter.repository.InformativePaMasterRepository;
+import it.gov.pagopa.apiconfig.starter.repository.IntermediariPaRepository;
+import it.gov.pagopa.apiconfig.starter.repository.IntermediariPspRepository;
+import it.gov.pagopa.apiconfig.starter.repository.PaRepository;
+import it.gov.pagopa.apiconfig.starter.repository.PaStazionePaRepository;
+import it.gov.pagopa.apiconfig.starter.repository.PspCanaleTipoVersamentoCanaleRepository;
+import it.gov.pagopa.apiconfig.starter.repository.PspRepository;
+import it.gov.pagopa.apiconfig.starter.repository.StazioniRepository;
+import it.gov.pagopa.apiconfig.starter.repository.TipiVersamentoRepository;
+import it.gov.pagopa.apiconfig.starter.repository.WfespPluginConfRepository;
 import it.gov.pagopa.apiconfig.template.TplCostiServizio;
 import it.gov.pagopa.apiconfig.template.TplFasciaCostoServizio;
 import it.gov.pagopa.apiconfig.template.TplIdentificazioneServizio;
@@ -130,10 +130,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.web.client.HttpServerErrorException;
 
 @Slf4j
 @Service
@@ -185,7 +183,7 @@ public class ConfigService {
   @Autowired
   private CanaliRepository canaliRepository;
   @Autowired
-  private PspCanaleTipoVersamentoRepository pspCanaleTipoVersamentoRepository;
+  private PspCanaleTipoVersamentoCanaleRepository pspCanaleTipoVersamentoCanaleRepository;
   @Autowired
   private PspRepository pspRepository;
   @Autowired
@@ -510,14 +508,14 @@ public class ConfigService {
   public List<Iban> getCurrentIbans() {
     log.info("loading Ibans");
     return modelMapper.modelMapper()
-        .map(ibanValidiPerPaRepository.findAllFetching(), new TypeToken<List<Iban>>() {
+        .map(ibanValidiPerPaRepository.findAllFetchingPas(), new TypeToken<List<Iban>>() {
         }.getType());
   }
 
   public List<Station> findAllStazioni() {
     log.info("loading Stations");
     return modelMapper.modelMapper()
-        .map(stazioniRepository.findAllFetching(), new TypeToken<List<Station>>() {
+        .map(stazioniRepository.findAllFetchingIntermediario(), new TypeToken<List<Station>>() {
         }.getType());
   }
 
@@ -547,13 +545,13 @@ public class ConfigService {
   public List<Channel> getAllCanali() {
     log.info("loading Channels");
     return modelMapper.modelMapper()
-        .map(canaliRepository.findAllFetching(), new TypeToken<List<Channel>>() {
+        .map(canaliRepository.findAllFetchingIntermediario(), new TypeToken<List<Channel>>() {
         }.getType());
   }
 
   public List<PspChannelPaymentType> getPaymentServiceProvidersChannels() {
     log.info("loading PspChannels");
-    return pspCanaleTipoVersamentoRepository.findAllFetching().stream().map(p -> {
+    return pspCanaleTipoVersamentoCanaleRepository.findAllFetching().stream().map(p -> {
       return new PspChannelPaymentType(p.getPsp().getIdPsp(), p.getCanale().getIdCanale(),
           p.getTipoVersamento().getTipoVersamento());
     }).collect(Collectors.toList());
@@ -568,7 +566,7 @@ public class ConfigService {
 
   public List<CreditorInstitutionEncoding> getCreditorInstitutionEncodings() {
     log.info("loading PaEncodings");
-    return modelMapper.modelMapper().map(codifichePaRepository.findAllFetching(),
+    return modelMapper.modelMapper().map(codifichePaRepository.findAllFetchingCodifiche(),
         new TypeToken<List<CreditorInstitutionEncoding>>() {
         }.getType());
   }

@@ -2,11 +2,11 @@
   <configuration default="false" name="Application" type="Application" factoryName="Application" nameIsGenerated="true">
     <envs>
       <env name="SPRING_DATASOURCE_PASSWORD" value="password" />
-      <env name="SPRING_DATASOURCE_URL" value="jdbc:postgresql://pagopa-d-weu-nodo-flexible-postgresql.postgres.database.azure.com:6432/nodo?prepareThreshold=0" />
+      <env name="SPRING_DATASOURCE_URL" value="jdbc:postgresql://pagopa-d-weu-nodo-flexible-postgresql.postgres.database.azure.com:6432/nodo?currentSchema=cfg&amp;prepareThreshold=0" />
       <env name="SPRING_DATASOURCE_USERNAME" value="cfg" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="it.gov.pagopa.apiconfig.Application" />
-    <module name="pagopa-api-config-cache" />
+    <module name="cache" />
     <option name="VM_PARAMETERS" value="-Dspring.profiles.active=local -Xmx2048m" />
     <extension name="coverage">
       <pattern>

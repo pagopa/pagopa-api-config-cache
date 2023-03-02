@@ -1,6 +1,6 @@
 package it.gov.pagopa.apiconfig.util.mapper;
 
-import it.gov.pagopa.apiconfig.entity.Codifiche;
+import it.gov.pagopa.apiconfig.starter.entity.Codifiche;
 import it.gov.pagopa.apiconfig.model.node.v1.creditorinstitution.Encoding;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;

@@ -1,6 +1,6 @@
 package it.gov.pagopa.apiconfig.util.mapper;
 
-import it.gov.pagopa.apiconfig.entity.Pa;
+import it.gov.pagopa.apiconfig.starter.entity.Pa;
 import it.gov.pagopa.apiconfig.model.node.v1.creditorinstitution.CreditorInstitutionAddress;
 import it.gov.pagopa.apiconfig.model.node.v1.creditorinstitution.CreditorInstitution;
 import it.gov.pagopa.apiconfig.util.CommonUtil;

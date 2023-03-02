@@ -1,22 +1,8 @@
 package it.gov.pagopa.apiconfig.util;
 
-import it.gov.pagopa.apiconfig.entity.CanaleTipoVersamento;
-import it.gov.pagopa.apiconfig.entity.Canali;
-import it.gov.pagopa.apiconfig.entity.CdsServizio;
-import it.gov.pagopa.apiconfig.entity.CdsSoggettoServizio;
-import it.gov.pagopa.apiconfig.entity.Codifiche;
-import it.gov.pagopa.apiconfig.entity.CodifichePa;
-import it.gov.pagopa.apiconfig.entity.FtpServers;
-import it.gov.pagopa.apiconfig.entity.IbanValidiPerPa;
-import it.gov.pagopa.apiconfig.entity.IntermediariPa;
-import it.gov.pagopa.apiconfig.entity.IntermediariPsp;
-import it.gov.pagopa.apiconfig.entity.Pa;
-import it.gov.pagopa.apiconfig.entity.Psp;
-import it.gov.pagopa.apiconfig.entity.Stazioni;
-import it.gov.pagopa.apiconfig.entity.TipiVersamento;
-import it.gov.pagopa.apiconfig.entity.WfespPluginConf;
 import it.gov.pagopa.apiconfig.model.node.v1.cds.CdsService;
 import it.gov.pagopa.apiconfig.model.node.v1.cds.CdsSubjectService;
+import it.gov.pagopa.apiconfig.model.node.v1.configuration.ConfigurationKey;
 import it.gov.pagopa.apiconfig.model.node.v1.configuration.FtpServer;
 import it.gov.pagopa.apiconfig.model.node.v1.configuration.PaymentType;
 import it.gov.pagopa.apiconfig.model.node.v1.configuration.Plugin;
@@ -29,10 +15,27 @@ import it.gov.pagopa.apiconfig.model.node.v1.creditorinstitution.Station;
 import it.gov.pagopa.apiconfig.model.node.v1.psp.BrokerPsp;
 import it.gov.pagopa.apiconfig.model.node.v1.psp.Channel;
 import it.gov.pagopa.apiconfig.model.node.v1.psp.PaymentServiceProvider;
+import it.gov.pagopa.apiconfig.starter.entity.CanaleTipoVersamento;
+import it.gov.pagopa.apiconfig.starter.entity.Canali;
+import it.gov.pagopa.apiconfig.starter.entity.CdsServizio;
+import it.gov.pagopa.apiconfig.starter.entity.CdsSoggettoServizio;
+import it.gov.pagopa.apiconfig.starter.entity.Codifiche;
+import it.gov.pagopa.apiconfig.starter.entity.CodifichePa;
+import it.gov.pagopa.apiconfig.starter.entity.ConfigurationKeys;
+import it.gov.pagopa.apiconfig.starter.entity.FtpServers;
+import it.gov.pagopa.apiconfig.starter.entity.IbanValidiPerPa;
+import it.gov.pagopa.apiconfig.starter.entity.IntermediariPa;
+import it.gov.pagopa.apiconfig.starter.entity.IntermediariPsp;
+import it.gov.pagopa.apiconfig.starter.entity.Pa;
+import it.gov.pagopa.apiconfig.starter.entity.Psp;
+import it.gov.pagopa.apiconfig.starter.entity.Stazioni;
+import it.gov.pagopa.apiconfig.starter.entity.TipiVersamento;
+import it.gov.pagopa.apiconfig.starter.entity.WfespPluginConf;
 import it.gov.pagopa.apiconfig.util.mapper.ConvertCanaleTipoVersamentoToPaymentType;
 import it.gov.pagopa.apiconfig.util.mapper.ConvertCanaliToChannelDetails;
 import it.gov.pagopa.apiconfig.util.mapper.ConvertCodifichePaToEncoding;
 import it.gov.pagopa.apiconfig.util.mapper.ConvertCodificheToEncoding;
+import it.gov.pagopa.apiconfig.util.mapper.ConvertConfiguration;
 import it.gov.pagopa.apiconfig.util.mapper.ConvertFtpServersToFtpServer;
 import it.gov.pagopa.apiconfig.util.mapper.ConvertIbanValidiPerPaToIban;
 import it.gov.pagopa.apiconfig.util.mapper.ConvertIntermediariPaToBrokerDetails;
@@ -59,6 +62,7 @@ public class ConfigMapper {
     mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
     Converter<Pa, CreditorInstitution> convertPaToCreditorInstitutionDetails = new ConvertPaToCreditorInstitutionDetails();
+    Converter<ConfigurationKeys, ConfigurationKey> convertConfiguration = new ConvertConfiguration();
     Converter<Stazioni, Station> convertStazioniToStationDetails = new ConvertStazioniToStationDetails();
     Converter<CodifichePa, CreditorInstitutionEncoding> convertCodifichePaToEncoding = new ConvertCodifichePaToEncoding();
     Converter<Codifiche, Encoding> convertCodificheToEncoding = new ConvertCodificheToEncoding();
@@ -133,6 +137,9 @@ public class ConfigMapper {
         .setConverter(convertCdsServizioCdsCatService);
     mapper.createTypeMap(CdsSoggettoServizio.class, CdsSubjectService.class)
         .setConverter(convertCdsSoggettoServizioCdsSubjectService);
+
+    mapper.createTypeMap(ConfigurationKeys.class, ConfigurationKey.class)
+        .setConverter(convertConfiguration);
 
     return mapper;
   }
