@@ -3,9 +3,9 @@
 #
 
 FROM maven:3.8.4-jdk-11-slim as buildtime
-ENV STARTER_URL="https://cesarecaccuri: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@maven.pkg.github.com/pagopa/pagopa-api-config-starter"
 WORKDIR /build
 COPY . .
+COPY lib .
 RUN mvn package -DskipTests=true
 
 FROM adoptopenjdk/openjdk11:alpine-jre as builder
