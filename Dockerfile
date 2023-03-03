@@ -10,6 +10,7 @@ COPY mvnw ./mvnw
 COPY .mvn ./.mvn
 RUN ./mvnw dependency:resolve -DskipTests=true
 COPY . .
+RUN chmod +x ./mvnw
 RUN ./mvnw package -DskipTests=true
 
 FROM adoptopenjdk/openjdk11:alpine-jre as builder
