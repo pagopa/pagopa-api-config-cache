@@ -130,7 +130,7 @@ stages:
 
   # Deploy on K8s with Helm
   - stage: Deploy
-    condition: succeeded('Build')
+    condition: or(succeeded('Build'),eq(${{ parameters.SKIP_BUILD }}, true)
     dependsOn:
       - Release
       - Build
