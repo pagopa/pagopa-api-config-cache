@@ -50,11 +50,11 @@ microservice-chart:
       memory: "2G"
       cpu: "1"
   envConfig:
-    DB_CONFIG_URL: jdbc:postgresql://pagopa-d-weu-nodo-flexible-postgresql.postgres.database.azure.com:6432/nodo?sslmode=require&prepareThreshold=0&currentSchema=cfg
-    DB_CONFIG_USER: cfg
-    REDIS_HOST: pagopa-d-redis.redis.cache.windows.net
-    REDIS_PORT: 6380
-    JAVA_OPTS: -Dspring.config.location=/mnt/file-config/application.properties
+    DB_CONFIG_URL: "jdbc:postgresql://pagopa-d-weu-nodo-flexible-postgresql.postgres.database.azure.com:6432/nodo?sslmode=require&prepareThreshold=0&currentSchema=cfg"
+    DB_CONFIG_USER: "cfg"
+    REDIS_HOST: "pagopa-d-redis.redis.cache.windows.net1"
+    REDIS_PORT: "6380"
+    JAVA_OPTS: "-Dspring.config.location=/mnt/file-config/application.properties"
   envSecret:
     # required
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-d-connection-string'
