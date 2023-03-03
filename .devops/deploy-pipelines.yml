@@ -80,7 +80,7 @@ resources:
     - repository: pagopaCommons
       type: github
       name: pagopa/azure-pipeline-templates
-      ref: refs/tags/v3.6.0
+      ref: refs/tags/v3.7.0
       endpoint: 'io-azure-devops-github-ro'
 
 stages:
@@ -149,10 +149,6 @@ stages:
                   persistCredentials: true
 
                 - script: |
-                    echo "current version is $(deploy_version)"
-                  displayName: Version $(deploy_version)
-
-                - script: |
                     git checkout $(sourceBranch)
                   displayName: Checkout and update branch
 
@@ -171,5 +167,3 @@ stages:
                     DEPLOY_VERSION: $(deploy_version)
                     APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
                     APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
-                    ARGUMENTS: >-
-                      --set-file microservice-chart.fileConfig.application\.properties="$(FILE_CONFIG_PATH_CONFIGAPP)"
