@@ -30,14 +30,18 @@
 <!--    </repository>-->
 <!--  </repositories>-->
 
+  <repositories>
+    <repository>
+      <id>local-maven-repo</id>
+      <url>file:///${project.parent.basedir}/local-mvn-repo</url>
+    </repository>
+  </repositories>
+
   <dependencies>
     <dependency>
       <groupId>it.gov.pagopa.api-config</groupId>
       <artifactId>starter</artifactId>
       <version>0.1.1-fixing</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/starter-0.1.1.jar</systemPath>
-<!--      in attesa che il repo sia public-->
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
