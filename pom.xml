@@ -26,7 +26,7 @@
   <repositories>
     <repository>
       <id>github</id>
-      <url>${STARTER_URL}</url>
+      <url>https://cesarecaccuri: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@maven.pkg.github.com/pagopa/pagopa-api-config-starter</url>
     </repository>
   </repositories>
 
