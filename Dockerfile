@@ -3,7 +3,7 @@
 #
 
 FROM maven:3.8.4-jdk-11-slim as buildtime
-ENV STARTER_URL="https://cesarecaccuri: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@maven.pkg.github.com/pagopa/pagopa-api-config-starter"
+ENV STARTER_URL="https://cesarecaccuri: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@maven.pkg.github.com/pagopa/pagopa-api-config-starter"
 WORKDIR /build
 COPY . .
 RUN mvn package -DskipTests=true

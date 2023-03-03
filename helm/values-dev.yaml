@@ -55,11 +55,11 @@ microservice-chart:
     REDIS_HOST: "pagopa-d-redis.redis.cache.windows.net1"
     REDIS_PORT: "6380"
     JAVA_OPTS: "-Dspring.config.location=/mnt/file-config/application.properties"
+    REDIS_PASSWORD: ""
   envSecret:
     # required
-    APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-d-connection-string'
+    #APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-d-connection-string'
     DB_CONFIG_PASSWORD: "db-cfg-password"
-    REDIS_PASSWORD: "redis-password"
   keyvault:
     name: "pagopa-d-nodo-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
