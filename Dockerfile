@@ -3,7 +3,7 @@
 #
 
 FROM openjdk:11-jdk-slim as buildtime
-ENV STARTER_URL="https://cesarecaccuri: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@maven.pkg.github.com/pagopa/pagopa-api-config-starter"
+ENV STARTER_URL="https://cesarecaccuri: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@maven.pkg.github.com/pagopa/pagopa-api-config-starter"
 WORKDIR /build
 COPY pom.xml pom.xml
 COPY mvnw ./mvnw
