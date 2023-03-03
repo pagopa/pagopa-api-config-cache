@@ -160,4 +160,4 @@ stages:
                     APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
                     APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
                     ARGUMENTS: >-
-                      --set-filemicroservice-chart.fileConfig.application\.properties="$(FILE_CONFIG_PATH_CONFIGAPP)"
+                      --set-file microservice-chart.fileConfig.application\.properties="$(FILE_CONFIG_PATH_CONFIGAPP)"
