@@ -149,8 +149,8 @@ stages:
                   persistCredentials: true
 
                 - script: |
-                    echo "current version is $(current_version)"
-                  displayName: Version $(current_version)
+                    echo "current version is $(deploy_version)"
+                  displayName: Version $(deploy_version)
 
                 - script: |
                     git checkout $(sourceBranch)
