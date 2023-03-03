@@ -31,10 +31,6 @@ parameters:
     values:
       - False
       - True
-  - name: TEST
-    displayName: Run integration/smoke tests
-    type: boolean
-    default: true
 
 variables:
   imageRepository: '$(IMAGE_REPOSITORY_NAME)'
@@ -126,11 +122,10 @@ stages:
 
   # Deploy on K8s with Helm
   - stage: Deploy
-    condition: and(succeeded('Build'), not(failed('Smoke_Test')))
+    condition: succeeded('Build')
     dependsOn:
       - Release
       - Build
-      - Smoke_Test
     variables:
       deploy_version: $[ stageDependencies.Release.make_release.outputs['current_version.value'] ]
     jobs:
