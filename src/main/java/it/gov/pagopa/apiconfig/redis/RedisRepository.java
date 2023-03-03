@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class RedisRepository {
 
   private String KEY_V1 = "apicfg_node_v1";
-  private String KEY_V1_VERSION = "apicfg_node_v1_version";
+  private String KEY_V1_VERSION = "apicfg_node_v1_id";
 
   @Autowired
   private RedisTemplate<String, Object> redisTemplate;

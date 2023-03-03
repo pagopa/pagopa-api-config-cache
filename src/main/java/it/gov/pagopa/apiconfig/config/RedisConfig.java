@@ -3,8 +3,6 @@ package it.gov.pagopa.apiconfig.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Optional;
-import it.gov.pagopa.apiconfig.model.node.v1.ConfigDataV1;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,9 +17,6 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @EnableRedisRepositories("it.pagopa.pagopa.apiconfig.redis.repository")
 //@ConditionalOnExpression("'${redis.enable}' == 'true'")
 public class RedisConfig {
-
-  @Value("${spring.redis.password}")
-  private Optional<String> redisPassword;
 
   @Value("${spring.redis.host}")
   private String redisHost;
@@ -39,9 +34,6 @@ public class RedisConfig {
   @Bean
   public LettuceConnectionFactory redisConnectionFactory() {
     RedisStandaloneConfiguration redisConfiguration = new RedisStandaloneConfiguration(redisHost, redisPort);
-    if(redisPassword.isPresent()){
-      redisConfiguration.setPassword(redisPassword.get());
-    }
     return new LettuceConnectionFactory(redisConfiguration);
   }
 

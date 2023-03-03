@@ -23,18 +23,29 @@
 
 
 
-  <repositories>
-    <repository>
-      <id>github</id>
-      <url>${STARTER_URL}</url>
-    </repository>
-  </repositories>
+<!--  <repositories>-->
+<!--    <repository>-->
+<!--      <id>github</id>-->
+<!--      <url>${STARTER_URL}</url>-->
+<!--    </repository>-->
+<!--  </repositories>-->
 
   <dependencies>
     <dependency>
       <groupId>it.gov.pagopa.api-config</groupId>
       <artifactId>starter</artifactId>
       <version>0.1.1-fixing</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/starter-0.1.1.jar</systemPath>
+<!--      in attesa che il repo sia public-->
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -166,7 +177,7 @@
               <sourceRoot>${basedir}/target/generated-sources/src/main/java</sourceRoot>
               <xsdOptions>
                 <xsdOption>
-                  <xsd>${basedir}/src/main/resources/xsd/CatalogoDatiInformativiPSP.xsd</xsd>
+                  <xsd>${basedir}/src/main/resources/xsd/sanp3.3.1/CatalogoDatiInformativiPSP.xsd</xsd>
                   <packagename>it.gov.pagopa.apiconfig.catalogodati</packagename>
                 </xsdOption>
               </xsdOptions>
@@ -182,7 +193,7 @@
               <sourceRoot>${basedir}/target/generated-sources/src/main/java</sourceRoot>
               <xsdOptions>
                 <xsdOption>
-                  <xsd>${basedir}/src/main/resources/xsd/TabellaDelleContropartiEstesa_1_2_0.xsd</xsd>
+                  <xsd>${basedir}/src/main/resources/xsd/sanp3.3.1/TabellaDelleContropartiEstesa_1_2_0.xsd</xsd>
                   <packagename>it.gov.pagopa.apiconfig.controparti</packagename>
                 </xsdOption>
               </xsdOptions>
@@ -198,7 +209,7 @@
               <sourceRoot>${basedir}/target/generated-sources/src/main/java</sourceRoot>
               <xsdOptions>
                 <xsdOption>
-                  <xsd>${basedir}/src/main/resources/xsd/TemplateInformativa_1_0_11.xsd</xsd>
+                  <xsd>${basedir}/src/main/resources/xsd/sanp3.3.1/TemplateInformativa_1_0_11.xsd</xsd>
                   <packagename>it.gov.pagopa.apiconfig.template</packagename>
                 </xsdOption>
               </xsdOptions>
