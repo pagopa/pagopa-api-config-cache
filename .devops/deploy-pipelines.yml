@@ -31,6 +31,13 @@ parameters:
     values:
       - False
       - True
+  - name: "SKIP_BUILD"
+    displayName: "Skip Build"
+    type: boolean
+    default: False
+    values:
+      - False
+      - True
 
 variables:
   imageRepository: '$(IMAGE_REPOSITORY_NAME)'
@@ -100,6 +107,7 @@ stages:
   # Build and Push Docker Image
   - stage: Build
     dependsOn: Release
+    condition: and(succeeded(), eq(${{ parameters.SKIP_BUILD }}, false))
     variables:
       current_version: $[ stageDependencies.Release.make_release.outputs['current_version.value'] ]
     jobs:
