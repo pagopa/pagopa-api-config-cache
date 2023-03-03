@@ -115,10 +115,12 @@ stages:
         steps:
           - checkout: self
             persistCredentials: true
-
+          - script: |
+              echo "current version is $(sourceBranch)"
+            displayName: Version $(current_version)
           - script: |
               git checkout $(sourceBranch)
-            displayName: Checkout and update branch $(current_version)
+            displayName: Checkout and update branch
 
           - template: templates/docker-release/template.yaml@pagopaCommons
             parameters:
