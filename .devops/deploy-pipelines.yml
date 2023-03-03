@@ -80,7 +80,7 @@ resources:
     - repository: pagopaCommons
       type: github
       name: pagopa/azure-pipeline-templates
-      ref: refs/tags/v3.2.0
+      ref: refs/tags/v3.6.0
       endpoint: 'io-azure-devops-github-ro'
 
 stages:
@@ -118,7 +118,7 @@ stages:
 
           - script: |
               git checkout $(sourceBranch)
-            displayName: Checkout and update branch
+            displayName: Checkout and update branch $(current_version)
 
           - template: templates/docker-release/template.yaml@pagopaCommons
             parameters:
