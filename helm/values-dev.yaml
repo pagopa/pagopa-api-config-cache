@@ -54,7 +54,6 @@ microservice-chart:
     DB_CONFIG_USER: "cfg"
     REDIS_HOST: "pagopa-d-redis.redis.cache.windows.net1"
     REDIS_PORT: "6380"
-    JAVA_OPTS: "-Dspring.config.location=/mnt/file-config/application.properties"
   envSecret:
     # required
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-d-connection-string'
