@@ -116,7 +116,7 @@ stages:
           - checkout: self
             persistCredentials: true
           - script: |
-              echo "current version is $(sourceBranch)"
+              echo "current version is $(current_version)"
             displayName: Version $(current_version)
           - script: |
               git checkout $(sourceBranch)
