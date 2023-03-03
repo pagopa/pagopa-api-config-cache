@@ -167,3 +167,5 @@ stages:
                     DEPLOY_VERSION: $(deploy_version)
                     APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
                     APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
+                    ARGUMENTS: >-
+                      --set-file microservice-chart.fileConfig.application\.properties="$(FILE_CONFIG_PATH_CONFIGAPP)"
