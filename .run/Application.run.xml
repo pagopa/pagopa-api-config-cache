@@ -4,12 +4,12 @@
       <env name="DB_CONFIG_PASSWORD" value="password" />
       <env name="DB_CONFIG_URL" value="jdbc:postgresql://pagopa-d-weu-nodo-flexible-postgresql.postgres.database.azure.com:6432/nodo?sslmode=require&amp;prepareThreshold=0&amp;currentSchema=cfg" />
       <env name="DB_CONFIG_USER" value="cfg" />
-      <env name="REDIS_HOST" value="redis" />
+      <env name="REDIS_HOST" value="localhost" />
       <env name="REDIS_PORT" value="6379" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="it.gov.pagopa.apiconfig.Application" />
     <module name="cache" />
-    <option name="VM_PARAMETERS" value="-Xmx2048m -Dspring.config.location=./helm/config/dev/application.properties" />
+    <option name="VM_PARAMETERS" value="-Xmx2048m" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="it.gov.pagopa.apiconfig.*" />

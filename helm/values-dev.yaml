@@ -33,7 +33,7 @@ microservice-chart:
     port: 8080
   ingress:
     create: true
-    host: "weudev.apiconfig.internal.dev.platform.pagopa.it"
+    host: "weudev.nodo.internal.dev.platform.pagopa.it"
     path: /api-config-cache(/|$)(.*)
     pathType: Prefix
     servicePort: 8080
@@ -56,8 +56,8 @@ microservice-chart:
     REDIS_PORT: "6380"
   envSecret:
     # required
-    APPLICATIONINSIGHTS_CONNECTION_STRING: 'ai-connection-string'
-    DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
+    APPLICATIONINSIGHTS_CONNECTION_STRING: 'azure-insight-connection-string'
+    DB_CONFIG_PASSWORD: "db-cfg-password"
   keyvault:
-    name: "pagopa-d-apiconfig-kv"
+    name: "pagopa-d-nodo-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"

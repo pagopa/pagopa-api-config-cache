@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-@org.springframework.data.redis.core.RedisHash
 public class RedisRepository {
 
   private String KEY_V1 = "apicfg_node_v1";
@@ -31,6 +30,7 @@ public class RedisRepository {
     try {
       save(KEY_V1, configData, 1440);
       save(KEY_V1_VERSION, configData.getVersion(), 1440);
+      log.info("saved on redis version "+configData.getVersion());
     } catch (Exception e){
       log.error("could not save to redis:{}",e.getMessage());
     }
