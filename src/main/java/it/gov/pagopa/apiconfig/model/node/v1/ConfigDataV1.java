@@ -35,53 +35,53 @@ public class ConfigDataV1 {
   @JsonProperty(required = true)
   private String version;
   @JsonProperty(required = true)
-  public Map<String, CreditorInstitution> creditorInstitutions;
+  private Map<String, CreditorInstitution> creditorInstitutions;
   @JsonProperty(required = true)
-  public Map<String, BrokerCreditorInstitution> creditorInstitutionBrokers;
+  private Map<String, BrokerCreditorInstitution> creditorInstitutionBrokers;
   @JsonProperty(required = true)
-  public Map<String, Station> stations;
+  private Map<String, Station> stations;
   @JsonProperty(required = true)
-  public Map<String, StationCreditorInstitution> creditorInstitutionStations;
+  private Map<String, StationCreditorInstitution> creditorInstitutionStations;
   @JsonProperty(required = true)
-  public Map<String, Encoding> encodings;
+  private Map<String, Encoding> encodings;
   @JsonProperty(required = true)
-  public Map<String, CreditorInstitutionEncoding> creditorInstitutionEncodings;
+  private Map<String, CreditorInstitutionEncoding> creditorInstitutionEncodings;
   @JsonProperty(required = true)
-  public Map<String, Iban> ibans;
+  private Map<String, Iban> ibans;
   @JsonProperty(required = true)
-  public Map<String, CreditorInstitutionInformation> creditorInstitutionInformations;
+  private Map<String, CreditorInstitutionInformation> creditorInstitutionInformations;
   @JsonProperty(required = true)
-  public Map<String, PaymentServiceProvider> psps;
+  private Map<String, PaymentServiceProvider> psps;
   @JsonProperty(required = true)
-  public Map<String, BrokerPsp> pspBrokers;
+  private Map<String, BrokerPsp> pspBrokers;
   @JsonProperty(required = true)
-  public Map<String, PaymentType> paymentTypes;
+  private Map<String, PaymentType> paymentTypes;
   @JsonProperty(required = true)
-  public Map<String, PspChannelPaymentType> pspChannelPaymentTypes;
+  private Map<String, PspChannelPaymentType> pspChannelPaymentTypes;
   @JsonProperty(required = true)
-  public Map<String, Plugin> plugins;
+  private Map<String, Plugin> plugins;
   @JsonProperty(required = true)
-  public Map<String, PspInformation> pspInformationTemplates;
+  private Map<String, PspInformation> pspInformationTemplates;
   @JsonProperty(required = true)
-  public Map<String, PspInformation> pspInformations;
+  private Map<String, PspInformation> pspInformations;
   @JsonProperty(required = true)
-  public Map<String, Channel> channels;
+  private Map<String, Channel> channels;
   @JsonProperty(required = true)
-  public Map<String, CdsService> cdsServices;
+  private Map<String, CdsService> cdsServices;
   @JsonProperty(required = true)
-  public Map<String, CdsSubject> cdsSubjects;
+  private Map<String, CdsSubject> cdsSubjects;
   @JsonProperty(required = true)
-  public Map<String, CdsSubjectService> cdsSubjectServices;
+  private Map<String, CdsSubjectService> cdsSubjectServices;
   @JsonProperty(required = true)
-  public Map<String, CdsCategory> cdsCategories;
+  private Map<String, CdsCategory> cdsCategories;
   @JsonProperty(required = true)
-  public Map<String, ConfigurationKey> configurations;
+  private Map<String, ConfigurationKey> configurations;
   @JsonProperty(required = true)
-  public Map<String, FtpServer> ftpServers;
+  private Map<String, FtpServer> ftpServers;
   @JsonProperty(required = true)
-  public Map<String, String> languages;
+  private Map<String, String> languages;
   @JsonProperty(required = true)
-  public Map<String, GdeConfiguration> gdeConfigurations;
+  private Map<String, GdeConfiguration> gdeConfigurations;
   @JsonProperty(required = true)
-  public Map<String, MetadataDict> metadataDict;
+  private Map<String, MetadataDict> metadataDict;
 }
