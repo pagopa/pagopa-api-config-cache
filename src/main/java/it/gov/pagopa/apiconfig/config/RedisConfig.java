@@ -3,9 +3,6 @@ package it.gov.pagopa.apiconfig.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.lettuce.core.RedisClient;
-import io.lettuce.core.api.StatefulRedisConnection;
-import io.lettuce.core.api.sync.RedisCommands;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,18 +30,6 @@ public class RedisConfig {
     final var objectMapper = new ObjectMapper().findAndRegisterModules();
     objectMapper.setVisibility(PropertyAccessor.ALL,  JsonAutoDetect.Visibility.ANY);
     return objectMapper;
-  }
-
-  @Bean
-  public RedisClient redisClient() {
-    RedisClient redisClient = RedisClient.create("rediss://"+redisPwd+"@"+redisHost+":"+redisPort);
-    StatefulRedisConnection<String, String> connection = redisClient.connect();
-    RedisCommands<String, String> syncCommands = connection.sync();
-
-    syncCommands.get("key");
-
-    connection.close();
-    return redisClient;
   }
 
   @Bean
