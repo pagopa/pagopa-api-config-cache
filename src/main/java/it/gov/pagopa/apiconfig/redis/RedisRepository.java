@@ -1,7 +1,7 @@
 package it.gov.pagopa.apiconfig.redis;
 
-import java.time.Duration;
 import it.gov.pagopa.apiconfig.model.node.v1.ConfigDataV1;
+import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -28,11 +28,12 @@ public class RedisRepository {
   @Async
   public void pushToRedisAsync(ConfigDataV1 configData) {
     try {
+      log.info("saving on redis");
       save(KEY_V1, configData, 1440);
       save(KEY_V1_VERSION, configData.getVersion(), 1440);
       log.info("saved on redis version "+configData.getVersion());
     } catch (Exception e){
-      log.error("could not save to redis:{}",e.getMessage());
+      log.error("could not save on redis",e);
     }
   }
 
