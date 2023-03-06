@@ -52,7 +52,7 @@ microservice-chart:
   envConfig:
     DB_CONFIG_URL: "jdbc:postgresql://pagopa-d-weu-nodo-flexible-postgresql.postgres.database.azure.com:6432/nodo?sslmode=require&prepareThreshold=0&currentSchema=cfg"
     DB_CONFIG_USER: "cfg"
-    REDIS_HOST: "rediss://pagopa-d-redis.redis.cache.windows.net"
+    REDIS_HOST: "pagopa-d-redis.redis.cache.windows.net"
     REDIS_PORT: "6380"
     REDIS_PWD: "todo-from-secret"
   envSecret:
