@@ -51,16 +51,12 @@ public class NodeCacheController {
       @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
       @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema())),
       @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema())),
+      @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema())),
       @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
       @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))})
   @GetMapping(value = "/v1/id", produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<CacheVersion> versionv1() throws IOException {
-    String cacheV1Version = configService.getCacheV1Version();
-    if (cacheV1Version != null) {
-      return ResponseEntity.ok(new CacheVersion(cacheV1Version));
-    } else {
-      return ResponseEntity.notFound().build();
-    }
+  public ResponseEntity<CacheVersion> idV1() throws IOException {
+      return ResponseEntity.ok(configService.getCacheV1Id());
   }
 
 

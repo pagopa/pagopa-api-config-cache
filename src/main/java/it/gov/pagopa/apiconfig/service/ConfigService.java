@@ -24,6 +24,9 @@ import it.gov.pagopa.apiconfig.controparti.CtFasciaOraria;
 import it.gov.pagopa.apiconfig.controparti.CtInformativaControparte;
 import it.gov.pagopa.apiconfig.controparti.CtListaInformativeControparte;
 import it.gov.pagopa.apiconfig.controparti.StTipoPeriodo;
+import it.gov.pagopa.apiconfig.exception.AppError;
+import it.gov.pagopa.apiconfig.exception.AppException;
+import it.gov.pagopa.apiconfig.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.model.node.v1.cds.CdsCategory;
 import it.gov.pagopa.apiconfig.model.node.v1.cds.CdsService;
@@ -137,6 +140,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Service
 @Transactional
 public class ConfigService {
+
+  private String KEY_V1 = "apicfg_node_v1";
+  private String KEY_V1_ID = "apicfg_node_v1_id";
 
   @Autowired
   private PlatformTransactionManager transactionManager;
@@ -404,14 +410,16 @@ public class ConfigService {
 
     configData.setVersion("" + endTime);
 
-    redisRepository.pushToRedisAsync(configData);
+    redisRepository.pushToRedisAsync(KEY_V1,KEY_V1_ID,configData);
 
     return configData;
   }
 
 
-  public String getCacheV1Version() {
-    return redisRepository.getCacheV1Version();
+  public CacheVersion getCacheV1Id() {
+    String cacheId = Optional.ofNullable(redisRepository.getStringByKeyId(KEY_V1_ID))
+        .orElseThrow(() -> new AppException(AppError.CACHE_ID_NOT_FOUND, KEY_V1_ID));
+    return new CacheVersion(cacheId);
   }
 
   public List<ConfigurationKey> getConfigurationKeys() {

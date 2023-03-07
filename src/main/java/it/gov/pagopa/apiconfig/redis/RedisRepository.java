@@ -12,9 +12,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class RedisRepository {
 
-  private String KEY_V1 = "apicfg_node_v1";
-  private String KEY_V1_VERSION = "apicfg_node_v1_id";
-
   @Autowired
   private RedisTemplate<String, Object> redisTemplate;
 
@@ -27,23 +24,23 @@ public class RedisRepository {
   }
 
   @Async
-  public void pushToRedisAsync(ConfigDataV1 configData) {
+  public void pushToRedisAsync(String key,String keyId,ConfigDataV1 configData) {
     try {
       log.info("saving on redis");
-      save(KEY_V1, configData, 1440);
-      save(KEY_V1_VERSION, configData.getVersion(), 1440);
+      save(key, configData, 1440);
+      save(keyId, configData.getVersion(), 1440);
       log.info("saved on redis version " + configData.getVersion());
     } catch (Exception e) {
       log.error("could not save on redis", e);
     }
   }
 
-  public String getCacheV1Version() {
+  public String getStringByKeyId(String keyId) {
     Object v = null;
     try {
-      get(KEY_V1_VERSION);
+      v = get(keyId);
     } catch (Exception e) {
-      log.error("could not get key " + KEY_V1_VERSION + " from redis", e);
+      log.error("could not get key " + keyId + " from redis", e);
     }
     if (v != null) {
       return (String) v;
