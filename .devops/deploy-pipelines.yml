@@ -40,6 +40,8 @@ parameters:
       - True
 
 variables:
+  MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
+  MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
   imageRepository: '$(IMAGE_REPOSITORY_NAME)'
   nameSpace: '$(K8S_NAMESPACE)'
   FILE_CONFIG_PATH_CONFIGAPP: $(Build.SourcesDirectory)/helm/config/${{ parameters.ENV }}/application.properties
@@ -115,6 +117,15 @@ stages:
         steps:
           - checkout: self
             persistCredentials: true
+
+          - task: Cache@2
+            inputs:
+              key: 'maven | "$(Agent.OS)" | pom.xml'
+              restoreKeys: |
+                maven | "$(Agent.OS)"
+                maven
+              path: $(MAVEN_CACHE_FOLDER)
+            displayName: Cache Maven local repo
 
           - script: |
               git checkout $(sourceBranch)

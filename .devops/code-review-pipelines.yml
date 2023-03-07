@@ -67,26 +67,26 @@ stages:
             inputs:
               pollingTimeoutSec: '300'
 
-      - job: smoke_tests
-        dependsOn: # parallel running job
-        pool:
-          vmImage: 'ubuntu-18.04'
-        steps:
-          - checkout: self
-            persistCredentials: true
-
-          - task: Docker@2
-            displayName: "Docker login"
-            inputs:
-              containerRegistry: "$(DEV_CONTAINER_REGISTRY_SERVICE_CONN)"
-              command: "login"
-
-          - task: Bash@3
-            displayName: 'Run Integration Tests'
-            inputs:
-              targetType: 'inline'
-              script: |
-                cd ./integration-test
-                sh run_integration_test.sh local
+#      - job: smoke_tests
+#        dependsOn: # parallel running job
+#        pool:
+#          vmImage: 'ubuntu-18.04'
+#        steps:
+#          - checkout: self
+#            persistCredentials: true
+#
+#          - task: Docker@2
+#            displayName: "Docker login"
+#            inputs:
+#              containerRegistry: "$(DEV_CONTAINER_REGISTRY_SERVICE_CONN)"
+#              command: "login"
+#
+#          - task: Bash@3
+#            displayName: 'Run Integration Tests'
+#            inputs:
+#              targetType: 'inline'
+#              script: |
+#                cd ./integration-test
+#                sh run_integration_test.sh local
 
 

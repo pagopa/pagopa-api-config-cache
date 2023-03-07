@@ -43,14 +43,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.transaction.PlatformTransactionManager;
 
 //@SpringBootTest(classes = Application.class)
 @ExtendWith(MockitoExtension.class)
 class NodoConfigCacheTest {
 
-  @Mock
-  private PlatformTransactionManager transactionManager;
   @Mock
   private RedisRepository redisRepository;
   @Mock
@@ -124,19 +121,58 @@ class NodoConfigCacheTest {
     when(dizionarioMetadatiRepository.findAll()).thenReturn(TestUtils.mockMetadataDicts);
     when(paRepository.findAll()).thenReturn(TestUtils.pas);
     when(pspRepository.findAll()).thenReturn(TestUtils.psps);
+    when(intermediariPaRepository.findAll()).thenReturn(TestUtils.intpas);
+    when(intermediariPspRepository.findAll()).thenReturn(TestUtils.intpsp);
+    when(cdiMasterValidRepository.findAllFetching()).thenReturn(TestUtils.cdiMasterValid);
+    when(cdiPreferenceRepository.findAll()).thenReturn(TestUtils.cdiPreference);
+    when(cdiFasceRepository.findAll()).thenReturn(TestUtils.cdiFasciaCostoServizio);
+    when(cdiInformazioniServizioRepository.findAll()).thenReturn(TestUtils.cdiInformazioniServizio);
+    when(canaliRepository.findAllFetchingIntermediario()).thenReturn(TestUtils.canali);
+    when(tipiVersamentoRepository.findAll()).thenReturn(TestUtils.tipiVersamento);
+    when(pspCanaleTipoVersamentoCanaleRepository.findAllFetching()).thenReturn(TestUtils.pspCanaliTv);
   }
 
   @Test
   void getCacheV1() throws Exception {
     ConfigDataV1 allData = configService.newCacheV1();
-    assertThat(allData.getConfigurations()).containsKey(
-        TestUtils.mockConfigurationKeys.get(0).getConfigCategory()+"-"+
-            TestUtils.mockConfigurationKeys.get(0).getConfigKey());
-    assertThat(allData.getMetadataDict()).containsKey(TestUtils.mockMetadataDicts.get(0).getKey());
-    assertThat(allData.getCreditorInstitutions()).containsKey(TestUtils.pas.get(0).getIdDominio());
-    assertThat(allData.getCreditorInstitutionInformations()).containsKey(TestUtils.pas.get(0).getIdDominio());
-    assertThat(allData.getPsps()).containsKey(TestUtils.psps.get(0).getIdPsp());
-    assertThat(allData.getPspInformationTemplates()).containsKey(TestUtils.psps.get(0).getIdPsp());
+    assertThat(allData.getConfigurations())
+        .containsKey(TestUtils.mockConfigurationKeys.get(0).getConfigCategory()+"-"+TestUtils.mockConfigurationKeys.get(0).getConfigKey())
+        .containsKey(TestUtils.mockConfigurationKeys.get(1).getConfigCategory()+"-"+TestUtils.mockConfigurationKeys.get(1).getConfigKey());
+    assertThat(allData.getMetadataDict())
+        .containsKey(TestUtils.mockMetadataDicts.get(0).getKey())
+        .containsKey(TestUtils.mockMetadataDicts.get(1).getKey());
+    assertThat(allData.getCreditorInstitutions())
+        .containsKey(TestUtils.pas.get(0).getIdDominio())
+        .containsKey(TestUtils.pas.get(1).getIdDominio());
+    assertThat(allData.getCreditorInstitutionInformations())
+        .containsKey(TestUtils.pas.get(0).getIdDominio())
+        .containsKey(TestUtils.pas.get(1).getIdDominio());
+    assertThat(allData.getCreditorInstitutionBrokers())
+        .containsKey(TestUtils.intpas.get(0).getIdIntermediarioPa())
+        .containsKey(TestUtils.intpas.get(1).getIdIntermediarioPa());
+    assertThat(allData.getPsps())
+        .containsKey(TestUtils.psps.get(0).getIdPsp())
+        .containsKey(TestUtils.psps.get(1).getIdPsp());
+    assertThat(allData.getChannels())
+        .containsKey(TestUtils.canali.get(0).getIdCanale())
+        .containsKey(TestUtils.canali.get(1).getIdCanale());
+    assertThat(allData.getPaymentTypes())
+        .containsKey(TestUtils.tipiVersamento.get(0).getTipoVersamento())
+        .containsKey(TestUtils.tipiVersamento.get(0).getTipoVersamento());
+    assertThat(allData.getPspChannelPaymentTypes())
+        .containsKey(TestUtils.pspCanaliTv.get(0).getPsp().getIdPsp()+"_"+TestUtils.pspCanaliTv.get(0).getCanale().getIdCanale()+"_"+TestUtils.pspCanaliTv.get(0).getTipoVersamento().getTipoVersamento())
+        .containsKey(TestUtils.pspCanaliTv.get(1).getPsp().getIdPsp()+"_"+TestUtils.pspCanaliTv.get(1).getCanale().getIdCanale()+"_"+TestUtils.pspCanaliTv.get(1).getTipoVersamento().getTipoVersamento());
+    assertThat(allData.getPspInformations())
+        .containsKey(TestUtils.psps.get(0).getIdPsp())
+        .containsKey(TestUtils.psps.get(1).getIdPsp())
+        .containsKey("FULL").containsKey("EMPTY");
+    assertThat(allData.getPspInformationTemplates())
+        .containsKey(TestUtils.psps.get(0).getIdPsp())
+        .containsKey(TestUtils.psps.get(1).getIdPsp());
+    assertThat(allData.getPspBrokers())
+        .containsKey(TestUtils.intpsp.get(0).getIdIntermediarioPsp())
+        .containsKey(TestUtils.intpsp.get(1).getIdIntermediarioPsp());
+
   }
 
 }
