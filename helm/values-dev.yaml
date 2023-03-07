@@ -54,11 +54,11 @@ microservice-chart:
     DB_CONFIG_USER: "cfg"
     REDIS_HOST: "pagopa-d-redis.redis.cache.windows.net"
     REDIS_PORT: "6380"
+    REDIS_PWD: "redis-password"
   envSecret:
     # required
     APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-d-connection-string"
     DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
-    REDIS_PWD: "redis-password"
   keyvault:
     name: "pagopa-d-apiconfig-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
