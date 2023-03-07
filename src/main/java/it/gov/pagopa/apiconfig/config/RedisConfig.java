@@ -28,22 +28,24 @@ public class RedisConfig {
   @Bean
   public ObjectMapper objectMapper() {
     final var objectMapper = new ObjectMapper().findAndRegisterModules();
-    objectMapper.setVisibility(PropertyAccessor.ALL,  JsonAutoDetect.Visibility.ANY);
+    objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
     return objectMapper;
   }
 
   @Bean
   public LettuceConnectionFactory redisConnectionFactory() {
-    RedisStandaloneConfiguration redisConfiguration = new RedisStandaloneConfiguration(redisHost, redisPort);
+    RedisStandaloneConfiguration redisConfiguration = new RedisStandaloneConfiguration(redisHost,
+        redisPort);
     redisConfiguration.setPassword(redisPwd);
     LettuceClientConfiguration lettuceConfig = LettuceClientConfiguration.builder()
         .useSsl()
         .build();
-    return new LettuceConnectionFactory(redisConfiguration,lettuceConfig);
+    return new LettuceConnectionFactory(redisConfiguration, lettuceConfig);
   }
 
   @Bean
-  public RedisTemplate<String, Object> redisObjectTemplate(final LettuceConnectionFactory connectionFactory,ObjectMapper objectMapper) {
+  public RedisTemplate<String, Object> redisObjectTemplate(
+      final LettuceConnectionFactory connectionFactory, ObjectMapper objectMapper) {
     RedisTemplate<String, Object> template = new RedisTemplate<>();
     template.setKeySerializer(new StringRedisSerializer());
     final var jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);

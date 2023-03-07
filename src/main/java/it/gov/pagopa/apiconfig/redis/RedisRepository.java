@@ -21,6 +21,7 @@ public class RedisRepository {
   public void save(String key, Object value, long ttl) {
     redisTemplate.opsForValue().set(key, value, Duration.ofMinutes(ttl));
   }
+
   public Object get(String key) {
     return redisTemplate.opsForValue().get(key);
   }
@@ -31,22 +32,22 @@ public class RedisRepository {
       log.info("saving on redis");
       save(KEY_V1, configData, 1440);
       save(KEY_V1_VERSION, configData.getVersion(), 1440);
-      log.info("saved on redis version "+configData.getVersion());
-    } catch (Exception e){
-      log.error("could not save on redis",e);
+      log.info("saved on redis version " + configData.getVersion());
+    } catch (Exception e) {
+      log.error("could not save on redis", e);
     }
   }
 
-  public String getCacheV1Version(){
+  public String getCacheV1Version() {
     Object v = null;
     try {
       get(KEY_V1_VERSION);
-    } catch (Exception e){
-      log.error("could not get key "+KEY_V1_VERSION+" from redis",e);
+    } catch (Exception e) {
+      log.error("could not get key " + KEY_V1_VERSION + " from redis", e);
     }
-    if(v!=null){
-      return (String)v;
-    }else{
+    if (v != null) {
+      return (String) v;
+    } else {
       return null;
     }
   }

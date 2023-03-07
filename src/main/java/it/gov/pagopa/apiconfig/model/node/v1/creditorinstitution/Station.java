@@ -25,27 +25,27 @@ import lombok.ToString;
 @Builder
 public class Station {
 
-  @JsonProperty(value = "station_code",required = true)
+  @JsonProperty(value = "station_code", required = true)
   private String stationCode;
 
-  @JsonProperty(value = "enabled",required = true)
+  @JsonProperty(value = "enabled", required = true)
   private Boolean enabled;
 
-  @JsonProperty(value = "version",required = true)
+  @JsonProperty(value = "version", required = true)
   private Long version;
 
-  @JsonProperty(value = "ip",required = true)
+  @JsonProperty(value = "ip", required = true)
   private String ip;
 
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
-  @JsonProperty(value = "password",required = true)
+  @JsonProperty(value = "password", required = true)
   private String password;
 
-  @JsonProperty(value = "port",required = true)
+  @JsonProperty(value = "port", required = true)
   private Long port;
 
-  @JsonProperty(value = "protocol",required = true)
+  @JsonProperty(value = "protocol", required = true)
   private Protocol protocol;
 
   @JsonProperty(value = "redirect_ip")
@@ -72,7 +72,7 @@ public class Station {
   @JsonProperty(value = "nmp_service")
   private String nmpService;
 
-  @JsonProperty(value = "broker_code",required = true)
+  @JsonProperty(value = "broker_code", required = true)
   private String brokerCode;
 
   @JsonProperty(value = "protocol_4mod")
@@ -87,7 +87,7 @@ public class Station {
   @JsonProperty(value = "service_4mod")
   private String service4Mod;
 
-  @JsonProperty(value = "proxy_enabled",required = true)
+  @JsonProperty(value = "proxy_enabled", required = true)
   private Boolean proxyEnabled;
 
   @JsonProperty(value = "proxy_host")
@@ -104,22 +104,22 @@ public class Station {
   @JsonProperty(value = "proxy_password")
   private String proxyPassword;
 
-  @JsonProperty(value = "thread_number",required = true)
+  @JsonProperty(value = "thread_number", required = true)
   private Long threadNumber;
 
-  @JsonProperty(value = "timeout_a",required = true)
+  @JsonProperty(value = "timeout_a", required = true)
   private Long timeoutA;
 
-  @JsonProperty(value = "timeout_b",required = true)
+  @JsonProperty(value = "timeout_b", required = true)
   private Long timeoutB;
 
-  @JsonProperty(value = "timeout_c",required = true)
+  @JsonProperty(value = "timeout_c", required = true)
   private Long timeoutC;
 
   @JsonIgnore
   private Long brokerObjId;
 
-  @JsonProperty(value = "invio_rt_istantaneo",required = true)
+  @JsonProperty(value = "invio_rt_istantaneo", required = true)
   private Boolean rtInstantaneousDispatch;
 
   @JsonProperty(value = "target_host")
@@ -131,6 +131,6 @@ public class Station {
   @JsonProperty(value = "target_path")
   private String targetPath;
 
-  @JsonProperty(value = "primitive_version",required = true)
+  @JsonProperty(value = "primitive_version", required = true)
   private Integer primitiveVersion;
 }

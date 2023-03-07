@@ -13,7 +13,7 @@
 
   <xs:simpleType name="stIdServizio">
     <xs:restriction base="xs:string">
-      <xs:pattern value="[0-9]{5,5}" />
+      <xs:pattern value="[0-9]{5,5}"/>
     </xs:restriction>
   </xs:simpleType>
 
@@ -59,8 +59,8 @@
 
   <xs:simpleType name="stText255">
     <xs:restriction base="xs:string">
-      <xs:minLength value="1" />
-      <xs:maxLength value="255" />
+      <xs:minLength value="1"/>
+      <xs:maxLength value="255"/>
     </xs:restriction>
   </xs:simpleType>
 
@@ -96,7 +96,8 @@
 
   <xs:complexType name="ctListaInformativeControparte">
     <xs:sequence>
-      <xs:element name="informativaControparte" type="ctInformativaControparte" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element name="informativaControparte" type="ctInformativaControparte"
+        maxOccurs="unbounded" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -107,10 +108,11 @@
       <xs:element type="xs:dateTime" name="dataInizioValidita"/>
       <xs:element type="stPagamentiPressoPSP" name="pagamentiPressoPSP"/>
       <xs:element type="stText255" name="contactCenterEnteCreditore"/>
-      <xs:element type="ctModelloTreSpontaneo" name="modelloTreSpontaneo" minOccurs="0" />
-      <xs:element type="ctAvvisaturaPull" name="avvisaturaPull" minOccurs="0" />
-      <xs:element type="ctErogazioneServizio" name="erogazioneServizio" minOccurs="0" />
-      <xs:element type="ctContoAccredito" name="informativaContoAccredito" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element type="ctModelloTreSpontaneo" name="modelloTreSpontaneo" minOccurs="0"/>
+      <xs:element type="ctAvvisaturaPull" name="avvisaturaPull" minOccurs="0"/>
+      <xs:element type="ctErogazioneServizio" name="erogazioneServizio" minOccurs="0"/>
+      <xs:element type="ctContoAccredito" name="informativaContoAccredito" minOccurs="0"
+        maxOccurs="unbounded"/>
     </xs:sequence>
 
   </xs:complexType>
@@ -124,14 +126,15 @@
 
   <xs:complexType name="ctServiziModelloTreSpontaneo">
     <xs:sequence>
-      <xs:element name="idServizio" type="stIdServizio" />
-      <xs:element type="xs:dateTime" name="dataInizioValidita" />
+      <xs:element name="idServizio" type="stIdServizio"/>
+      <xs:element type="xs:dateTime" name="dataInizioValidita"/>
     </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="ctModelloTreSpontaneo">
     <xs:sequence>
-      <xs:element type="ctServiziModelloTreSpontaneo" name="serviziModelloTreSpontaneo" minOccurs="1" maxOccurs="unbounded" />
+      <xs:element type="ctServiziModelloTreSpontaneo" name="serviziModelloTreSpontaneo"
+        minOccurs="1" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
 

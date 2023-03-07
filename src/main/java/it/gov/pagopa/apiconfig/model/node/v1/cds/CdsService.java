@@ -17,19 +17,19 @@ import lombok.ToString;
 @Builder
 public class CdsService {
 
-  @JsonProperty(value = "id",required = true)
+  @JsonProperty(value = "id", required = true)
   private String serviceId;
 
-  @JsonProperty(value = "description",required = true)
+  @JsonProperty(value = "description", required = true)
   private String description;
 
-  @JsonProperty(value = "reference_xsd",required = true)
+  @JsonProperty(value = "reference_xsd", required = true)
   private String referenceXsd;
 
-  @JsonProperty(value = "version",required = true)
+  @JsonProperty(value = "version", required = true)
   private Long version;
 
-  @JsonProperty(value = "category",required = true)
+  @JsonProperty(value = "category", required = true)
   private String category;
 
   @JsonIgnore

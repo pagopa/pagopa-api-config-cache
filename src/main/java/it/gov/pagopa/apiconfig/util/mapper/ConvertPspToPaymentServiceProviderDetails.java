@@ -6,23 +6,24 @@ import it.gov.pagopa.apiconfig.util.CommonUtil;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
 
-public class ConvertPspToPaymentServiceProviderDetails implements Converter<Psp, PaymentServiceProvider> {
+public class ConvertPspToPaymentServiceProviderDetails implements
+    Converter<Psp, PaymentServiceProvider> {
 
-    @Override
-    public PaymentServiceProvider convert(MappingContext<Psp, PaymentServiceProvider> context) {
-        Psp source = context.getSource();
-        return PaymentServiceProvider.builder()
-                .pspCode(source.getIdPsp())
-                .enabled(source.getEnabled())
-                .description(source.getDescrizione())
-                .businessName(CommonUtil.deNull(source.getRagioneSociale()))
-                .abi(source.getAbi())
-                .bic(source.getBic())
-                .myBankCode(source.getCodiceMybank())
-                .digitalStamp(source.getMarcaBolloDigitale())
-                .agidPsp(source.getAgidPsp())
-                .taxCode(source.getCodiceFiscale())
-                .vatNumber(source.getVatNumber())
-                .build();
-    }
+  @Override
+  public PaymentServiceProvider convert(MappingContext<Psp, PaymentServiceProvider> context) {
+    Psp source = context.getSource();
+    return PaymentServiceProvider.builder()
+        .pspCode(source.getIdPsp())
+        .enabled(source.getEnabled())
+        .description(source.getDescrizione())
+        .businessName(CommonUtil.deNull(source.getRagioneSociale()))
+        .abi(source.getAbi())
+        .bic(source.getBic())
+        .myBankCode(source.getCodiceMybank())
+        .digitalStamp(source.getMarcaBolloDigitale())
+        .agidPsp(source.getAgidPsp())
+        .taxCode(source.getCodiceFiscale())
+        .vatNumber(source.getVatNumber())
+        .build();
+  }
 }

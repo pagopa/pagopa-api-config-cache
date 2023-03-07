@@ -587,7 +587,7 @@ public class ConfigService {
       marshaller.marshal(informativaPSP, baos);
       return encoder.encodeToString(baos.toByteArray());
     } catch (Exception e) {
-      log.error("error creating TplInformativaPSP",e);
+      log.error("error creating TplInformativaPSP", e);
       return e.toString();
     }
   }
@@ -605,7 +605,7 @@ public class ConfigService {
       marshaller.marshal(informativaPSP, baos);
       return encoder.encodeToString(baos.toByteArray());
     } catch (Exception e) {
-      log.error("error creating CtListaInformativePSP",e);
+      log.error("error creating CtListaInformativePSP", e);
       return e.toString();
     }
   }
@@ -623,7 +623,7 @@ public class ConfigService {
       marshaller.marshal(informativaPA, baos);
       return encoder.encodeToString(baos.toByteArray());
     } catch (Exception e) {
-      log.error("error creating CtListaInformativeControparte",e);
+      log.error("error creating CtListaInformativeControparte", e);
       return e.toString();
     }
   }

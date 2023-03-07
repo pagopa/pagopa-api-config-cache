@@ -20,6 +20,6 @@ public class CreditorInstitutionInformation {
   @JsonIgnore
   private String pa;
 
-  @JsonProperty(value = "informativa",required = true)
+  @JsonProperty(value = "informativa", required = true)
   private String informativa;
 }

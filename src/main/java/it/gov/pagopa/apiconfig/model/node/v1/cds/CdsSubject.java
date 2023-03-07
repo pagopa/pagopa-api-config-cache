@@ -16,10 +16,10 @@ import lombok.ToString;
 @ToString
 public class CdsSubject {
 
-  @JsonProperty(value = "creditor_institution_code",required = true)
+  @JsonProperty(value = "creditor_institution_code", required = true)
   private String creditorInstitutionCode;
 
-  @JsonProperty(value = "creditor_institution_description",required = true)
+  @JsonProperty(value = "creditor_institution_description", required = true)
   private String creditorInstitutionDescription;
 
 }

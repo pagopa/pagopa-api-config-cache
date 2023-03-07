@@ -23,16 +23,16 @@ import lombok.ToString;
 @Builder
 public class BrokerPsp {
 
-  @JsonProperty(value = "broker_psp_code",required = true)
+  @JsonProperty(value = "broker_psp_code", required = true)
   private String brokerPspCode;
 
   @JsonProperty(value = "description")
   private String description;
 
-  @JsonProperty(value = "enabled",required = true)
+  @JsonProperty(value = "enabled", required = true)
   private Boolean enabled;
 
-  @JsonProperty(value = "extended_fault_bean",required = true)
+  @JsonProperty(value = "extended_fault_bean", required = true)
   private Boolean extendedFaultBean;
 
 }

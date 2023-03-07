@@ -23,17 +23,17 @@ import lombok.ToString;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Iban {
 
-  @JsonProperty(value = "iban",required = true)
+  @JsonProperty(value = "iban", required = true)
   private String ibanValue;
 
-  @JsonProperty(value = "creditor_institution_code",required = true)
+  @JsonProperty(value = "creditor_institution_code", required = true)
   private String creditorInstitutionCode;
 
-  @JsonProperty(value = "validity_date",required = true)
+  @JsonProperty(value = "validity_date", required = true)
   @JsonSerialize(using = ZonedDateTimeSerializer.class)
   private ZonedDateTime validityDate;
 
-  @JsonProperty(value = "publication_date",required = true)
+  @JsonProperty(value = "publication_date", required = true)
   @JsonSerialize(using = ZonedDateTimeSerializer.class)
   private ZonedDateTime publicationDate;
 

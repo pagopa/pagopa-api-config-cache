@@ -8,14 +8,14 @@ import org.modelmapper.spi.MappingContext;
 
 public class ConvertConfiguration implements Converter<ConfigurationKeys, ConfigurationKey> {
 
-    @Override
-    public ConfigurationKey convert(MappingContext<ConfigurationKeys, ConfigurationKey> context) {
-      ConfigurationKeys k = context.getSource();
-        return ConfigurationKey.builder()
-            .category(k.getConfigCategory())
-            .value(k.getConfigValue())
-            .description(k.getConfigDescription())
-            .key(k.getConfigKey())
-                .build();
-    }
+  @Override
+  public ConfigurationKey convert(MappingContext<ConfigurationKeys, ConfigurationKey> context) {
+    ConfigurationKeys k = context.getSource();
+    return ConfigurationKey.builder()
+        .category(k.getConfigCategory())
+        .value(k.getConfigValue())
+        .description(k.getConfigDescription())
+        .key(k.getConfigKey())
+        .build();
+  }
 }

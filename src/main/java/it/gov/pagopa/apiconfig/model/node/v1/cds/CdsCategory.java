@@ -16,7 +16,7 @@ import lombok.ToString;
 @ToString
 public class CdsCategory {
 
-  @JsonProperty(value = "description",required = true)
+  @JsonProperty(value = "description", required = true)
   private String description;
 
 }

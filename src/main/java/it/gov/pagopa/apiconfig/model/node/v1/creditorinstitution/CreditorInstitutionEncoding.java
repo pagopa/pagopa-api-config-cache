@@ -20,13 +20,13 @@ import lombok.ToString;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreditorInstitutionEncoding {
 
-  @JsonProperty(value = "code_type",required = true)
+  @JsonProperty(value = "code_type", required = true)
   private String codeType;
 
-  @JsonProperty(value = "encoding_code",required = true)
+  @JsonProperty(value = "encoding_code", required = true)
   private String encodingCode;
 
-  @JsonProperty(value = "creditor_institution_code",required = true)
+  @JsonProperty(value = "creditor_institution_code", required = true)
   private String creditorInstitutionCode;
 
   @JsonIgnore

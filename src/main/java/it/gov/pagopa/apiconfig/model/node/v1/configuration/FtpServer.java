@@ -21,7 +21,8 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Builder
-@JsonPropertyOrder({"host","port","enabled","username","password","root_path","service","type","in_path","out_path","history_path"})
+@JsonPropertyOrder({"host", "port", "enabled", "username", "password", "root_path", "service",
+    "type", "in_path", "out_path", "history_path"})
 public class FtpServer {
 
   @JsonProperty(value = "id", required = true)

@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 
-
 /**
  * Stations
  */
@@ -23,10 +22,10 @@ import lombok.ToString;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class StationCreditorInstitution {
 
-  @JsonProperty(value = "creditor_institution_code",required = true)
+  @JsonProperty(value = "creditor_institution_code", required = true)
   private String creditorInstitutionCode;
 
-  @JsonProperty(value = "station_code",required = true)
+  @JsonProperty(value = "station_code", required = true)
   private String stationCode;
 
   @JsonProperty(value = "application_code")
@@ -38,16 +37,16 @@ public class StationCreditorInstitution {
   @JsonProperty(value = "segregation_code")
   private Long segregationCode;
 
-  @JsonProperty(value = "mod4",required = true)
+  @JsonProperty(value = "mod4", required = true)
   private Boolean mod4;
 
-  @JsonProperty(value = "broadcast",required = true)
+  @JsonProperty(value = "broadcast", required = true)
   private Boolean broadcast;
 
-  @JsonProperty(value = "primitive_version",required = true)
+  @JsonProperty(value = "primitive_version", required = true)
   private Integer primitiveVersion;
 
-  @JsonProperty(value = "spontaneous_payment",required = true)
+  @JsonProperty(value = "spontaneous_payment", required = true)
   private Boolean spontaneousPayment;
 
   @JsonIgnore

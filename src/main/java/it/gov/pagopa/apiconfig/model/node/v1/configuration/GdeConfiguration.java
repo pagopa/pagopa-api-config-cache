@@ -26,7 +26,7 @@ public class GdeConfiguration {
 
   @JsonProperty(value = "event_hub_enabled", required = true)
   private Boolean eventHubEnabled;
-  
+
   @JsonProperty(value = "event_hub_payload_enabled", required = true)
   private Boolean eventHubPayloadEnabled;
 

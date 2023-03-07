@@ -20,34 +20,34 @@ import lombok.ToString;
 @Builder
 public class Channel {
 
-  @JsonProperty(value = "channel_code",required = true)
+  @JsonProperty(value = "channel_code", required = true)
   private String channelCode;
 
   @JsonProperty(value = "description")
   private String description;
 
-  @JsonProperty(value = "enabled",required = true)
+  @JsonProperty(value = "enabled", required = true)
   private Boolean enabled;
 
-  @JsonProperty(value = "password",required = true)
+  @JsonProperty(value = "password", required = true)
   private String password;
 
-  @JsonProperty(value = "protocol",required = true)
+  @JsonProperty(value = "protocol", required = true)
   private Protocol protocol;
 
-  @JsonProperty(value = "ip",required = true)
+  @JsonProperty(value = "ip", required = true)
   private String ip;
 
-  @JsonProperty(value = "port",required = true)
+  @JsonProperty(value = "port", required = true)
   private Long port;
 
   @JsonProperty(value = "service")
   private String service;
 
-  @JsonProperty(value = "broker_psp_code",required = true)
+  @JsonProperty(value = "broker_psp_code", required = true)
   private String brokerPspCode;
 
-  @JsonProperty(value = "proxy_enabled",required = true)
+  @JsonProperty(value = "proxy_enabled", required = true)
   private Boolean proxyEnabled;
 
   @JsonProperty(value = "proxy_host")
@@ -73,22 +73,22 @@ public class Channel {
   @JsonProperty(value = "target_path")
   private String targetPath;
 
-  @JsonProperty(value = "thread_number",required = true)
+  @JsonProperty(value = "thread_number", required = true)
   private Long threadNumber;
 
-  @JsonProperty(value = "timeout_a",required = true)
+  @JsonProperty(value = "timeout_a", required = true)
   private Long timeoutA;
 
-  @JsonProperty(value = "timeout_b",required = true)
+  @JsonProperty(value = "timeout_b", required = true)
   private Long timeoutB;
 
-  @JsonProperty(value = "timeout_c",required = true)
+  @JsonProperty(value = "timeout_c", required = true)
   private Long timeoutC;
 
   @JsonProperty(value = "nmp_service")
   private String nmpService;
 
-  @JsonProperty(value = "new_fault_code",required = true)
+  @JsonProperty(value = "new_fault_code", required = true)
   private Boolean newFaultCode;
 
   @JsonProperty(value = "redirect_ip")
@@ -106,28 +106,28 @@ public class Channel {
   @JsonProperty(value = "redirect_protocol")
   private Protocol redirectProtocol;
 
-  @JsonProperty(value = "payment_model",required = true)
+  @JsonProperty(value = "payment_model", required = true)
   private PaymentModel paymentModel;
 
   @JsonProperty(value = "serv_plugin")
   private String servPlugin;
 
-  @JsonProperty(value = "rt_push",required = true)
+  @JsonProperty(value = "rt_push", required = true)
   private Boolean rtPush;
 
-  @JsonProperty(value = "recovery",required = true)
+  @JsonProperty(value = "recovery", required = true)
   private Boolean recovery;
 
-  @JsonProperty(value = "digital_stamp",required = true)
+  @JsonProperty(value = "digital_stamp", required = true)
   private Boolean digitalStamp;
 
-  @JsonProperty(value = "flag_io",required = true)
+  @JsonProperty(value = "flag_io", required = true)
   private Boolean flagIo;
 
-  @JsonProperty(value = "agid",required = true)
+  @JsonProperty(value = "agid", required = true)
   private Boolean agid;
 
-  @JsonProperty(value = "primitive_version",required = true)
+  @JsonProperty(value = "primitive_version", required = true)
   private Integer primitiveVersion;
 
 }

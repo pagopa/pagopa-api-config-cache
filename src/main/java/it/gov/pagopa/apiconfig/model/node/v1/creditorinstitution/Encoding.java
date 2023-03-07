@@ -19,11 +19,11 @@ import lombok.ToString;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Encoding {
 
-  @JsonProperty(value = "code_type",required = true)
+  @JsonProperty(value = "code_type", required = true)
   private String codeType;
 
 
-  @JsonProperty(value = "description",required = true)
+  @JsonProperty(value = "description", required = true)
   private String description;
 
 

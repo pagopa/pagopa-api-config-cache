@@ -29,7 +29,8 @@ public class NodeCacheController {
   @Autowired
   private ConfigService configService;
 
-  @Operation(summary = "Get full node v1 config", security = {@SecurityRequirement(name = "ApiKey"), @SecurityRequirement(name = "Authorization")}, tags = {"Creditor Institutions",})
+  @Operation(summary = "Get full node v1 config", security = {@SecurityRequirement(name = "ApiKey"),
+      @SecurityRequirement(name = "Authorization")}, tags = {"Creditor Institutions",})
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ConfigDataV1.class))),
       @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
@@ -42,7 +43,9 @@ public class NodeCacheController {
     return ResponseEntity.ok(configService.newCacheV1());
   }
 
-  @Operation(summary = "Get last node v1 cache version", security = {@SecurityRequirement(name = "ApiKey"), @SecurityRequirement(name = "Authorization")}, tags = {"Creditor Institutions",})
+  @Operation(summary = "Get last node v1 cache version", security = {
+      @SecurityRequirement(name = "ApiKey"), @SecurityRequirement(name = "Authorization")}, tags = {
+      "Creditor Institutions",})
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = CacheVersion.class))),
       @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
@@ -53,13 +56,12 @@ public class NodeCacheController {
   @GetMapping(value = "/v1/id", produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<CacheVersion> versionv1() throws IOException {
     String cacheV1Version = configService.getCacheV1Version();
-    if(cacheV1Version!=null){
+    if (cacheV1Version != null) {
       return ResponseEntity.ok(new CacheVersion(cacheV1Version));
-    }else{
+    } else {
       return ResponseEntity.notFound().build();
     }
   }
-
 
 
 }

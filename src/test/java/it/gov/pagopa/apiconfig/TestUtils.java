@@ -59,11 +59,11 @@ public class TestUtils {
           .description("description2").build());
 
   public static List<Pa> pas = Arrays.asList(Pa.builder()
-      .description("description1")
-      .enabled(true)
-      .idDominio("idDominio1")
-      .pagamentoPressoPsp(true)
-      .build(),
+          .description("description1")
+          .enabled(true)
+          .idDominio("idDominio1")
+          .pagamentoPressoPsp(true)
+          .build(),
       Pa.builder()
           .description("description2")
           .enabled(true)
@@ -72,8 +72,8 @@ public class TestUtils {
           .build());
 
   public static List<Psp> psps = Arrays.asList(Psp.builder()
-      .idPsp("idPsp1")
-      .build(),
+          .idPsp("idPsp1")
+          .build(),
       Psp.builder()
           .idPsp("idPsp2")
           .build());

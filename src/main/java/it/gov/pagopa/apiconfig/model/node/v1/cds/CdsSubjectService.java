@@ -19,22 +19,22 @@ import lombok.ToString;
 @Builder
 public class CdsSubjectService {
 
-  @JsonProperty(value = "subject",required = true)
+  @JsonProperty(value = "subject", required = true)
   private String subject;
 
-  @JsonProperty(value = "service",required = true)
+  @JsonProperty(value = "service", required = true)
   private String service;
 
-  @JsonProperty(value = "subject_service_id",required = true)
+  @JsonProperty(value = "subject_service_id", required = true)
   private String subjectServiceId;
 
-  @JsonProperty(value = "start_date",required = true)
+  @JsonProperty(value = "start_date", required = true)
   private ZonedDateTime startDate;
 
   @JsonProperty(value = "end_date")
   private ZonedDateTime endDate;
 
-  @JsonProperty(value = "fee",required = true)
+  @JsonProperty(value = "fee", required = true)
   private Boolean fee;
 
 }
