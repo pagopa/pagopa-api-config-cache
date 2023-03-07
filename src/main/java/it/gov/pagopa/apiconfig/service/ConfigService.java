@@ -653,7 +653,7 @@ public class ConfigService {
     List<CtListaInformativePSP> informativePspSingle = masters.stream()
         .filter(m -> !m.getCdiDetail().isEmpty()).map(cdiMaster -> {
 
-          Psp psp = cdiMaster.getFkPsp();
+          Psp psp = cdiMaster.getPsp();
           CtInformativaPSP ctInformativaPSP = new CtInformativaPSP();
           ctInformativaPSP.setCodiceABI(psp.getAbi());
           ctInformativaPSP.setCodiceBIC(psp.getBic());
@@ -678,16 +678,16 @@ public class ConfigService {
           ctInformativaPSP.setIdentificativoFlusso(cdiMaster.getIdInformativaPsp());
 
           List<CtInformativaDetail> details = cdiMaster.getCdiDetail().stream().filter(
-              d -> !d.getFkPspCanaleTipoVersamento().getTipoVersamento().getTipoVersamento()
+              d -> !d.getPspCanaleTipoVersamento().getTipoVersamento().getTipoVersamento()
                   .equals("PPAY")).map(cdiDetail -> {
-            PspCanaleTipoVersamentoCanale pspCanaleTipoVersamento = cdiDetail.getFkPspCanaleTipoVersamento();
+            PspCanaleTipoVersamentoCanale pspCanaleTipoVersamento = cdiDetail.getPspCanaleTipoVersamento();
 
             CtIdentificazioneServizio ctIdentificazioneServizio = new CtIdentificazioneServizio();
             ctIdentificazioneServizio.setNomeServizio(cdiDetail.getNomeServizio());
             ctIdentificazioneServizio.setLogoServizio("".getBytes(StandardCharsets.UTF_8));
 
             CdiInformazioniServizio it = allInformazioni.stream()
-                .filter(ii -> ii.getFkCdiDetail().getId().equals(cdiDetail.getId()))
+                .filter(ii -> ii.getCdiDetail().getId().equals(cdiDetail.getId()))
                 .filter(info -> info.getCodiceLingua().equals("IT")).collect(Collectors.toList())
                 .get(0);
             CtInformazioniServizio ctInformazioniServizio = new CtInformazioniServizio();
@@ -700,7 +700,7 @@ public class ConfigService {
             ctListaInformazioniServizio.getInformazioniServizio().add(ctInformazioniServizio);
 
             List<CtFasciaCostoServizio> fasce = allFasce.stream()
-                .filter(fas -> fas.getFkCdiDetail().getId().equals(cdiDetail.getId()))
+                .filter(fas -> fas.getCdiDetail().getId().equals(cdiDetail.getId()))
                 .map(fascia -> {
                   CtFasciaCostoServizio ctFasciaCostoServizio = new CtFasciaCostoServizio();
                   ctFasciaCostoServizio.setCostoFisso(
@@ -745,7 +745,7 @@ public class ConfigService {
             ctInformativaDetail.setPriorita(cdiDetail.getPriorita().intValue());
             ctInformativaDetail.setListaConvenzioni(listaConvenzioni);
             ctInformativaDetail.setIdentificativoIntermediario(
-                pspCanaleTipoVersamento.getCanale().getFkIntermediarioPsp()
+                pspCanaleTipoVersamento.getCanale().getIntermediarioPsp()
                     .getIdIntermediarioPsp());
             ctInformativaDetail.setIdentificazioneServizio(ctIdentificazioneServizio);
             ctInformativaDetail.setListaInformazioniServizio(ctListaInformazioniServizio);
@@ -810,7 +810,7 @@ public class ConfigService {
     psps.stream().forEach(psp -> {
       try {
         Optional<CdiMasterValid> masters = allMasters.stream()
-            .filter(m -> m.getFkPsp().getIdPsp().equals(psp.getObjId())).findFirst();
+            .filter(m -> m.getPsp().getIdPsp().equals(psp.getObjId())).findFirst();
         TplInformativaPSP tplInformativaPSP = new TplInformativaPSP();
         tplInformativaPSP.setRagioneSociale(DA_COMPILARE);
         tplInformativaPSP.setIdentificativoPSP(DA_COMPILARE);
@@ -844,10 +844,10 @@ public class ConfigService {
           masters.get().getCdiDetail().stream().forEach(d -> {
             tplListaInformativaDetail.getInformativaDetail()
                 .add(makeTplInformativaDetail(
-                    d.getFkPspCanaleTipoVersamento().getCanale().getIdCanale(),
-                    d.getFkPspCanaleTipoVersamento().getCanale().getFkIntermediarioPsp()
+                    d.getPspCanaleTipoVersamento().getCanale().getIdCanale(),
+                    d.getPspCanaleTipoVersamento().getCanale().getIntermediarioPsp()
                         .getIdIntermediarioPsp(),
-                    d.getFkPspCanaleTipoVersamento().getTipoVersamento().getTipoVersamento(),
+                    d.getPspCanaleTipoVersamento().getTipoVersamento().getTipoVersamento(),
                     d.getModelloPagamento()));
           });
           tplInformativaPSP.setListaInformativaDetail(tplListaInformativaDetail);
@@ -969,7 +969,7 @@ public class ConfigService {
       ctInformativaControparte.getInformativaContoAccredito().addAll(contiaccredito);
 
       List<InformativePaMaster> masters = allMasters.stream()
-          .filter(m -> m.getFkPa().getObjId().equals(pa.getObjId())).collect(
+          .filter(m -> m.getPa().getObjId().equals(pa.getObjId())).collect(
               Collectors.toList());
       InformativePaMaster master = null;
       if (!masters.isEmpty()) {
@@ -1029,7 +1029,7 @@ public class ConfigService {
     List<CtFasciaOraria> fasce = new ArrayList<>();
     try {
       fasce = allFasce.stream()
-          .filter(f -> f.getFkInformativaPaDetail().getId().equals(det.getId())).map(f -> {
+          .filter(f -> f.getInformativaPaDetail().getId().equals(det.getId())).map(f -> {
             CtFasciaOraria fascia = new CtFasciaOraria();
             try {
               fascia.setFasciaOrariaDa(stringToXmlGCTime(f.getOraDa()));

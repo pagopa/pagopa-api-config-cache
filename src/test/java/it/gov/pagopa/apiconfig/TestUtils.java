@@ -79,13 +79,13 @@ public class TestUtils {
           .build());
   public static List<Canali> canali = Arrays.asList(
       Canali.builder()
-          .fkIntermediarioPsp(intpsp.get(0))
+          .intermediarioPsp(intpsp.get(0))
           .protocollo("HTTP")
           .idCanale("idCanale1")
           .modelloPagamento("IMMEDIATO")
           .build(),
       Canali.builder()
-          .fkIntermediarioPsp(intpsp.get(0))
+          .intermediarioPsp(intpsp.get(0))
           .protocollo("HTTP")
           .modelloPagamento("IMMEDIATO")
           .idCanale("idCanale2")
@@ -117,38 +117,38 @@ public class TestUtils {
           .canaleApp(1L)
           .priorita(1L)
           .modelloPagamento(1L)
-          .fkPspCanaleTipoVersamento(pspCanaliTv.get(0))
+          .pspCanaleTipoVersamento(pspCanaliTv.get(0))
           .build(),
       CdiDetail.builder()
           .id(2L)
           .canaleApp(2L)
           .priorita(2L)
           .modelloPagamento(2L)
-          .fkPspCanaleTipoVersamento(pspCanaliTv.get(1))
+          .pspCanaleTipoVersamento(pspCanaliTv.get(1))
           .build());
 
   public static List<CdiMasterValid> cdiMasterValid = Arrays.asList(
       CdiMasterValid.builder()
-          .fkPsp(psps.get(0))
+          .psp(psps.get(0))
           .cdiDetail(Arrays.asList(cdiDetail.get(0)))
           .stornoPagamento(true)
           .marcaBolloDigitale(true)
           .build(),
       CdiMasterValid.builder()
-          .fkPsp(psps.get(1))
+          .psp(psps.get(1))
           .cdiDetail(Arrays.asList(cdiDetail.get(1)))
           .stornoPagamento(true)
           .marcaBolloDigitale(true)
           .build());
   public static List<CdiFasciaCostoServizio> cdiFasciaCostoServizio = Arrays.asList(
       CdiFasciaCostoServizio.builder()
-          .fkCdiDetail(cdiDetail.get(0))
+          .cdiDetail(cdiDetail.get(0))
           .costoFisso(10d)
           .importoMassimo(10d)
           .valoreCommissione(10d)
           .build(),
       CdiFasciaCostoServizio.builder()
-          .fkCdiDetail(cdiDetail.get(1))
+          .cdiDetail(cdiDetail.get(1))
           .costoFisso(10d)
           .importoMassimo(10d)
           .valoreCommissione(10d)
@@ -164,11 +164,11 @@ public class TestUtils {
           .build());
   public static List<CdiInformazioniServizio> cdiInformazioniServizio = Arrays.asList(
       CdiInformazioniServizio.builder()
-          .fkCdiDetail(cdiDetail.get(0))
+          .cdiDetail(cdiDetail.get(0))
           .codiceLingua("IT")
           .build(),
       CdiInformazioniServizio.builder()
-          .fkCdiDetail(cdiDetail.get(1))
+          .cdiDetail(cdiDetail.get(1))
           .codiceLingua("IT")
           .build());
 

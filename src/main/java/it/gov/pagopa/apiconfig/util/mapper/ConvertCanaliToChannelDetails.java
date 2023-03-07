@@ -22,7 +22,7 @@ public class ConvertCanaliToChannelDetails implements Converter<Canali, Channel>
                 .port(source.getPorta())
                 .protocol(Protocol.fromValue(source.getProtocollo()))
                 .service(source.getServizio())
-                .brokerPspCode(source.getFkIntermediarioPsp().getIdIntermediarioPsp())
+                .brokerPspCode(source.getIntermediarioPsp().getIdIntermediarioPsp())
                 .proxyEnabled(source.getProxyEnabled())
                 .proxyHost(source.getProxyHost())
                 .proxyPort(source.getProxyPort())

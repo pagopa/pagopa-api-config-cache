@@ -38,7 +38,12 @@ public class RedisRepository {
   }
 
   public String getCacheV1Version(){
-    Object v = get(KEY_V1_VERSION);
+    Object v = null;
+    try {
+      get(KEY_V1_VERSION);
+    } catch (Exception e){
+      log.error("could not get key "+KEY_V1_VERSION+" from redis",e);
+    }
     if(v!=null){
       return (String)v;
     }else{

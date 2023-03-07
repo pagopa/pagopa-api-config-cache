@@ -1,5 +1,5 @@
 microservice-chart:
-  namespace: "nodo"
+  namespace: "apiconfig"
   nameOverride: ""
   fullnameOverride: ""
   strategy:
@@ -33,7 +33,7 @@ microservice-chart:
     port: 8080
   ingress:
     create: true
-    host: "weudev.nodo.internal.dev.platform.pagopa.it"
+    host: "weudev.apiconfig.internal.dev.platform.pagopa.it"
     path: /api-config-cache(/|$)(.*)
     pathType: Prefix
     servicePort: 8080
@@ -54,11 +54,11 @@ microservice-chart:
     DB_CONFIG_USER: "cfg"
     REDIS_HOST: "pagopa-d-redis.redis.cache.windows.net"
     REDIS_PORT: "6380"
-    REDIS_PWD: "todo-from-secret"
   envSecret:
     # required
-    APPLICATIONINSIGHTS_CONNECTION_STRING: 'azure-insight-connection-string'
-    DB_CONFIG_PASSWORD: "db-cfg-password"
+    APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-d-connection-string"
+    DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
+    REDIS_PWD: "redis-password"
   keyvault:
-    name: "pagopa-d-nodo-kv"
+    name: "pagopa-d-apiconfig-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"

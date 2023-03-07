@@ -1,5 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Application" type="Application" factoryName="Application" nameIsGenerated="true">
+    <envs>
+      <env name="REDIS_PWD" value="tbd" />
+    </envs>
     <option name="MAIN_CLASS_NAME" value="it.gov.pagopa.apiconfig.Application" />
     <module name="cache" />
     <option name="VM_PARAMETERS" value="-Xmx2048m -Dspring.profiles.active=local" />

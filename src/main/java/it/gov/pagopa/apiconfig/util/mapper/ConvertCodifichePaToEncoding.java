@@ -26,8 +26,8 @@ public class ConvertCodifichePaToEncoding implements Converter<CodifichePa, Cred
      * @return {@link CreditorInstitutionEncoding.CodeTypeEnum}
      */
     private CodeTypeEnum getCodeType(CodifichePa source) {
-        if (source != null && source.getFkCodifica() != null) {
-            return CodeTypeEnum.fromValue(source.getFkCodifica().getIdCodifica());
+        if (source != null && source.getCodifica() != null) {
+            return CodeTypeEnum.fromValue(source.getCodifica().getIdCodifica());
         } else {
             return null;
         }
