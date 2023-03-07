@@ -1,18 +1,16 @@
-# Template for Java Spring Microservice project
+# pagoPA API-Config Cache
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=TODO-set-your-id&metric=alert_status)](https://sonarcloud.io/dashboard?id=TODO-set-your-id)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pagopa_pagopa-api-config-cache&metric=alert_status)](https://sonarcloud.io/dashboard?id=TODO-set-your-id)
 
-TODO: add a description
+API-Config Cache aims to generate customized cache data for stakeholder stored on the Redis cache.
 
 TODO: generate a index with this tool: https://ecotrust-canada.github.io/markdown-toc/
 
-TODO: resolve all the TODOs in this template
-
 ---
 
-## Api Documentation 📖
+## API Documentation 📖
 
-See the [OpenApi 3 here.](TODO: set your url)
+See the [OpenApi 3 here.](https://raw.githubusercontent.com/pagopa/pagopa-api-config-cache/main/openapi/openapi.json)
 
 ---
 
@@ -23,16 +21,15 @@ See the [OpenApi 3 here.](TODO: set your url)
 - Spring Web
 - Hibernate
 - JPA
-- ...
-- TODO
+- Redis
 
 ---
 
-## Start Project Locally 🚀
+## Start project locally 🚀 `TODO`
 
 ### Prerequisites
 
-- docker
+- docker 
 
 ### Run docker container
 
@@ -44,7 +41,7 @@ from `./docker` directory
 
 ---
 
-## Develop Locally 💻
+## Develop locally 💻 `TODO`
 
 ### Prerequisites
 
