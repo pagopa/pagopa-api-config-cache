@@ -5,7 +5,6 @@
 FROM maven:3.8.4-jdk-11-slim as buildtime
 WORKDIR /build
 COPY . .
-COPY ./lib ./lib
 RUN mvn package -DskipTests=true
 
 FROM adoptopenjdk/openjdk11:alpine-jre as builder
