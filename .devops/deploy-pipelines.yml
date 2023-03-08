@@ -184,6 +184,8 @@ stages:
         pool:
           name: $(poolImage)
         environment: ${{ parameters['ENV'] }}
+        workspace:
+          clean: all
         strategy:
           runOnce:
             deploy:
