@@ -190,7 +190,7 @@ stages:
               steps:
                 - checkout: self
                   persistCredentials: true
-                  clean: true
+                  fetchDepth: 1
 
                 - script: |
                     git checkout $(sourceBranch)
