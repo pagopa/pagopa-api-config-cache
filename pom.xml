@@ -22,7 +22,6 @@
     <starter.version>0.1.2</starter.version>
     <springdoc.version>1.6.11</springdoc.version>
     <postgresql.version>42.5.4</postgresql.version>
-    <hibernate.version>5.6.5.Final</hibernate.version>
     <modelmapper.version>3.1.0</modelmapper.version>
   </properties>
 
@@ -96,12 +95,6 @@
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <version>${postgresql.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-core</artifactId>
-      <version>${hibernate.version}</version>
     </dependency>
 
     <!-- utilities -->
