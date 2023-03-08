@@ -196,6 +196,10 @@ stages:
                     git checkout $(sourceBranch)
                   displayName: Checkout and update branch
 
+                - script: |
+                    ls -la helm
+                  displayName: Check files
+
                 - template: templates/helm-microservice-chart-setup/template.yaml@pagopaCommons
                   parameters:
                     DEPLOY_VERSION: $(deploy_version)
