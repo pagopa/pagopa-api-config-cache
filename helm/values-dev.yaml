@@ -72,6 +72,8 @@ pagopa-api-cache-postgresql:
     DB_CONFIG_DRIVER: "org.postgresql.Driver"
   envSecret:
     DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
+    APPLICATIONINSIGHTS_CONNECTION_STRING: { { .Values.envSecret.APPLICATIONINSIGHTS_CONNECTION_STRING } }
+    REDIS_PWD: { { .Values.envSecret.REDIS_PWD } }
 pagopa-api-cache-oracle:
   !!merge <<: *basecache
   envConfig:
