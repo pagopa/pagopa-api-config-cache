@@ -29,7 +29,7 @@ public class RedisRepository {
       log.info("saving on redis");
       save(key, configData, 1440);
       save(keyId, configData.getVersion(), 1440);
-      log.info("saved on redis version " + configData.getVersion());
+      log.info("saved on redis id " + configData.getVersion());
     } catch (Exception e) {
       log.error("could not save on redis", e);
     }
