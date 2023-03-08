@@ -48,8 +48,8 @@ parameters:
       - oracle
       - postgresql
 variables:
-  USE_POSTGRESQL: ${{ eq( parameters.ENV,'postgresql') }}
-  USE_ORACLE: ${{ eq( parameters.ENV,'oracle') }}
+  USE_POSTGRESQL: ${{ eq( parameters.DATABASE,'postgresql') }}
+  USE_ORACLE: ${{ eq( parameters.DATABASE,'oracle') }}
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
   MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
   imageRepository: '$(IMAGE_REPOSITORY_NAME)'
