@@ -122,6 +122,8 @@ stages:
   - stage: Release
     jobs:
       - job: make_release
+        workspace:
+          clean: all
         steps:
           - checkout: self
             clean: true
@@ -145,6 +147,8 @@ stages:
       current_version: $[ stageDependencies.Release.make_release.outputs['current_version.value'] ]
     jobs:
       - job: "build"
+        workspace:
+          clean: all
         steps:
           - checkout: self
             persistCredentials: true
@@ -181,11 +185,11 @@ stages:
       deploy_version: $[ stageDependencies.Release.make_release.outputs['current_version.value'] ]
     jobs:
       - deployment: "deploy"
+        workspace:
+          clean: all
         pool:
           name: $(poolImage)
         environment: ${{ parameters['ENV'] }}
-        workspace:
-          clean: all
         strategy:
           runOnce:
             deploy:
