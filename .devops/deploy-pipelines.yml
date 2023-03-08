@@ -148,6 +148,7 @@ stages:
         steps:
           - checkout: self
             persistCredentials: true
+            clean: true
 
 #          - task: Cache@2
 #            inputs:
