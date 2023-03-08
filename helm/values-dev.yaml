@@ -83,3 +83,6 @@ pagopa-api-cache-oracle:
     APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-d-connection-string"
     DB_CONFIG_PASSWORD: "oracle-db-cfg-password"
     REDIS_PWD: "redis-password"
+microservice-chart:
+  image:
+    tag: 0.0.1
