@@ -190,6 +190,7 @@ stages:
               steps:
                 - checkout: self
                   persistCredentials: true
+                  clean: true
 
                 - script: |
                     git checkout $(sourceBranch)
