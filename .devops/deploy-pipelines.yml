@@ -65,6 +65,8 @@ variables:
     appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_DEV)"
     API_SUBSCRIPTION_KEY: $(DEV_API_SUBSCRIPTION_KEY)
     appName: 'cache'
+    AZURE_SERVICE_CONNECTION: '$(TF_DEV_AZURE_SERVICE_CONNECTION)'
+    KEY_VAULT_NAME: 'pagopa-d-apiconfig-kv'
   ${{ if eq(parameters['ENV'], 'it') }}:
     dockerRegistryServiceConnection: $(DEV_CONTAINER_REGISTRY_SERVICE_CONN)
     dockerRegistryFqdn: $(DEV_CONTAINER_NAMESPACE)
@@ -74,6 +76,8 @@ variables:
     appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_DEV)"
     API_SUBSCRIPTION_KEY: $(DEV_API_SUBSCRIPTION_KEY)
     appName: 'cache-replica'
+    AZURE_SERVICE_CONNECTION: '$(TF_DEV_AZURE_SERVICE_CONNECTION)'
+    KEY_VAULT_NAME: 'pagopa-d-apiconfig-kv'
   ${{ if eq(parameters['ENV'], 'uat') }}:
     dockerRegistryServiceConnection: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
     dockerRegistryFqdn: $(UAT_CONTAINER_NAMESPACE)
@@ -83,6 +87,8 @@ variables:
     appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_UAT)"
     API_SUBSCRIPTION_KEY: $(UAT_API_SUBSCRIPTION_KEY)
     appName: 'cache'
+    AZURE_SERVICE_CONNECTION: '$(TF_UAT_AZURE_SERVICE_CONNECTION)'
+    KEY_VAULT_NAME: 'pagopa-u-apiconfig-kv'
   ${{ if eq(parameters['ENV'], 'prf') }}:
     dockerRegistryServiceConnection: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
     dockerRegistryFqdn: $(UAT_CONTAINER_NAMESPACE)
@@ -92,6 +98,8 @@ variables:
     appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_UAT)"
     API_SUBSCRIPTION_KEY: $(UAT_API_SUBSCRIPTION_KEY)
     appName: 'cache-replica'
+    AZURE_SERVICE_CONNECTION: '$(TF_UAT_AZURE_SERVICE_CONNECTION)'
+    KEY_VAULT_NAME: 'pagopa-u-apiconfig-kv'
   ${{ if eq(parameters['ENV'], 'prod') }}:
     dockerRegistryServiceConnection: $(PROD_CONTAINER_REGISTRY_SERVICE_CONN)
     dockerRegistryFqdn: $(PROD_CONTAINER_NAMESPACE)
@@ -100,6 +108,8 @@ variables:
     appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_PROD)"
     appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_PROD)"
     appName: 'cache'
+    AZURE_SERVICE_CONNECTION: '$(TF_PROD_AZURE_SERVICE_CONNECTION)'
+    KEY_VAULT_NAME: 'pagopa-p-apiconfig-kv'
 
   ${{ if eq(variables['Build.SourceBranchName'], 'merge') }}:
     sourceBranch: "main" # force to main branch
@@ -150,6 +160,14 @@ stages:
         workspace:
           clean: all
         steps:
+          - task: AzureKeyVault@2
+            displayName: "Get secrets"
+            inputs:
+              azureSubscription: $(AZURE_SERVICE_CONNECTION)
+              keyVaultName: $(KEY_VAULT_NAME)
+              secretsFilter: 'mvn-package-password'
+          - bash: |
+              echo "##vso[task.setvariable variable=MAVEN_PKG_PASSWORD]$(mvn-package-password)"
           - checkout: self
             persistCredentials: true
             clean: true
