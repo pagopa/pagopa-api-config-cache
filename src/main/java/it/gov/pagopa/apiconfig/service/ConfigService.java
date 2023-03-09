@@ -133,6 +133,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -141,8 +142,11 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Transactional
 public class ConfigService {
 
-  private String KEY_V1 = "apicfg_node_v1";
-  private String KEY_V1_ID = "apicfg_node_v1_id";
+  @Value("apicfg_${spring.database.id}_node_v1")
+  private String KEY_V1;
+
+  @Value("apicfg_${spring.database.id}_node_v1_id")
+  private String KEY_V1_ID;
 
   @Autowired
   private PlatformTransactionManager transactionManager;
