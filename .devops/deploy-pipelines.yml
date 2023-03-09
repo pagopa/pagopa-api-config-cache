@@ -41,7 +41,7 @@ parameters:
       - False
       - True
   - name: DATABASE
-    displayName: Database to use(oracle[nexi],postgresql[pagopa])
+    displayName: Database to use
     type: string
     default: postgresql
     values:
@@ -222,5 +222,5 @@ stages:
                     APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
                     APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
                     ARGUMENTS: >-
-                      --set pagopa-api-cache-postgresql.enabled="$(USE_POSTGRESQL)"
-                      --set pagopa-api-cache-oracle.enabled="$(USE_ORACLE)"
+                      --set postgresql.enabled="$(USE_POSTGRESQL)"
+                      --set oracle.enabled="$(USE_ORACLE)"

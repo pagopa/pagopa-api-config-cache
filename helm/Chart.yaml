@@ -8,10 +8,10 @@ dependencies:
   - name: microservice-chart
     version: 1.21.0
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
-    alias: pagopa-api-cache-postgresql
-    condition: pagopa-api-cache-postgresql.enabled
+    alias: postgresql
+    condition: postgresql.enabled
   - name: microservice-chart
     version: 1.21.0
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
-    alias: pagopa-api-cache-oracle
-    condition: pagopa-api-cache-oracle.enabled
+    alias: oracle
+    condition: oracle.enabled
