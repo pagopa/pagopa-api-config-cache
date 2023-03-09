@@ -31,10 +31,10 @@ basecache: &basecache
     create: true
     type: ClusterIP
     port: 8080
-  ingress:
+  ingress: &ingress
     create: true
     host: "weudev.apiconfig.internal.dev.platform.pagopa.it"
-    path: /api-config-cache-replica(/|$)(.*)
+    path: /api-config-cache(/|$)(.*)
     pathType: Prefix
     servicePort: 8080
     rewriteTarget: /$2
@@ -49,17 +49,20 @@ basecache: &basecache
     limits:
       memory: "2G"
       cpu: "1"
-  envConfig:
+  envConfig: &envConfig
     AZURE_INSIGHTS_ENABLED: "true"
     REDIS_HOST: "pagopa-d-redis.redis.cache.windows.net"
     REDIS_PORT: "6380"
-  envSecret:
+  envSecret: &envSecret
     # required
     APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-d-connection-string"
     REDIS_PWD: "redis-password"
   keyvault:
     name: "pagopa-d-apiconfig-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+# Configuration used to update image tag
+microservice-chart:
+  !!merge <<: *basecache
 postgresql:
   !!merge <<: *basecache
   ingress:
@@ -88,6 +91,3 @@ oracle:
   envSecret:
     !!merge <<: *envSecret
     DB_CONFIG_PASSWORD: "oracle-db-cfg-password"
-microservice-chart:
-  image:
-    tag: 0.0.1

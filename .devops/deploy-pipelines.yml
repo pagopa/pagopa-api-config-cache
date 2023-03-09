@@ -123,7 +123,8 @@ resources:
     - repository: pagopaCommons
       type: github
       name: pagopa/azure-pipeline-templates
-      ref: refs/tags/v3.7.0
+#      ref: refs/tags/v3.7.0
+      ref: customize-maven-github-release
       endpoint: 'io-azure-devops-github-ro'
 
 stages:
@@ -146,6 +147,12 @@ stages:
               gitUsername: $(GIT_USERNAME)
               gitHubConnection: $(GITHUB_CONNECTION)
               semver: "${{ parameters.SEMVER }}"
+              customHelmStep: |
+                VALUES_FILE="helm/values-${{ parameters['ENV'] }}.yaml"
+                if [[ -f "$VALUES_FILE" ]]; then
+                  yq -i ".microservice-chart.image.tag = \"$(next_version.value)\"" "$VALUES_FILE"
+                  git add "$VALUES_FILE"
+                fi
 
           - template: templates/maven-github-current-version/template.yaml@pagopaCommons
 
