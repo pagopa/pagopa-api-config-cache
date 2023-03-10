@@ -187,7 +187,7 @@ stages:
               DOCKER_IMAGE_NAME: $(imageRepository)
               DOCKER_IMAGE_TAG: $(current_version)
               FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
-              DOCKER_ENVS:
+              DOCKER_BUILD_ARGS:
                 - GITHUB_TOKEN_READ_PACKAGES="$(github_token_read_packages)"
 
   # Deploy on K8s with Helm

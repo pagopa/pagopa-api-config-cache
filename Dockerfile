@@ -2,6 +2,9 @@
 # Build
 #
 
+ARG github_token # you could give this a default value as well
+ENV GITHUB_TOKEN_READ_PACKAGES=$github_token
+
 FROM maven:3.8.4-jdk-11-slim as buildtime
 WORKDIR /build
 COPY . .
