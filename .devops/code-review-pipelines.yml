@@ -16,8 +16,18 @@ pool:
 variables:
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
   MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+  AZURE_SERVICE_CONNECTION: '$(KV-SERVICE-CONNECTION-DEV)'
+  KEY_VAULT_NAME: '$(AZ-KV-NAME-DEV)'
 
 steps:
+  - task: AzureKeyVault@2
+    displayName: "Get secrets"
+    inputs:
+      azureSubscription: $(AZURE_SERVICE_CONNECTION)
+      keyVaultName: $(KEY_VAULT_NAME)
+      secretsFilter: 'github-token-read-packages'
+  - bash: |
+      echo "##vso[task.setvariable variable=GITHUB_TOKEN_READ_PACKAGES]$(github-token-read-packages)"
   - task: Cache@2
     inputs:
       key: 'maven | "$(Agent.OS)" | pom.xml'
