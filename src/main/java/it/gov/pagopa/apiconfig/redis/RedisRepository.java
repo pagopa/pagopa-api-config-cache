@@ -26,12 +26,22 @@ public class RedisRepository {
   @Async
   public void pushToRedisAsync(String key,String keyId,ConfigDataV1 configData) {
     try {
-      log.info("saving on redis");
+      log.info("saving {} on redis",key);
       save(key, configData, 1440);
       save(keyId, configData.getVersion(), 1440);
-      log.info("saved on redis id " + configData.getVersion());
+      log.info("saved {} on redis,id {}",key, configData.getVersion());
     } catch (Exception e) {
       log.error("could not save on redis", e);
+    }
+  }
+  @Async
+  public void pushToRedisAsync(String key,Object object) {
+    try {
+      log.info("saving {} on redis",key);
+      save(key, object, 1440);
+      log.info("saved {} on redis",key);
+    } catch (Exception e) {
+      log.error("could not save "+key+"on redis", e);
     }
   }
 
