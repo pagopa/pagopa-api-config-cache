@@ -16,15 +16,15 @@ pool:
 variables:
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
   MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
-  GITHUB_TOKEN_READ_PACKAGES: '$(github_token_read_packages_dev)'
+  GITHUB_TOKEN_READ_PACKAGES_SECRET: '$(github_token_read_packages_dev)'
 
 steps:
 #  - bash: |
 #      echo "##vso[task.setvariable variable=GITHUB_TOKEN_READ_PACKAGES;isOutput=true]$(github_token_read_packages)"
   - bash: |
-      echo "##vso[task.setvariable variable=GITHUB_TOKEN_READ_PACKAGES_SET]$(GITHUB_TOKEN_READ_PACKAGES)"
+      echo "##vso[task.setvariable variable=GITHUB_TOKEN_READ_PACKAGES]$(GITHUB_TOKEN_READ_PACKAGES_SECRET)"
   - bash: |
-      echo "GITHUB_TOKEN_READ_PACKAGES: [$GITHUB_TOKEN_READ_PACKAGES_SET]"
+      echo "GITHUB_TOKEN_READ_PACKAGES: [$GITHUB_TOKEN_READ_PACKAGES]"
   - task: Cache@2
     inputs:
       key: 'maven | "$(Agent.OS)" | pom.xml'
