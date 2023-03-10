@@ -29,7 +29,7 @@
   <repositories>
     <repository>
       <id>github</id>
-      <url>https://${GITHUB_TOKEN_READ_PACKAGES}@maven.pkg.github.com/pagopa/pagopa-api-config-starter</url>
+      <url>https://public:${GITHUB_TOKEN_READ_PACKAGES}@maven.pkg.github.com/pagopa/pagopa-api-config-starter</url>
     </repository>
   </repositories>
 

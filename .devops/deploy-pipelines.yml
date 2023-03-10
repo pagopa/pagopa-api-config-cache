@@ -119,7 +119,7 @@ resources:
       type: github
       name: pagopa/azure-pipeline-templates
 #      ref: refs/tags/v3.7.0
-      ref: customize-maven-github-release
+      ref: docker_envs
       endpoint: 'io-azure-devops-github-ro'
 
 stages:
@@ -162,8 +162,6 @@ stages:
         workspace:
           clean: all
         steps:
-          - bash: |
-              echo "##vso[task.setvariable variable=GITHUB_TOKEN_READ_PACKAGES]$(github_token_read_packages)"
           - checkout: self
             persistCredentials: true
             clean: true
@@ -180,8 +178,8 @@ stages:
           - script: |
               git checkout $(sourceBranch)
             displayName: Checkout and update branch
-          - bash: |
-              sed -i 's/\${GITHUB_TOKEN_READ_PACKAGES}/$(github_token_read_packages)/g' pom.xml
+#          - bash: |
+#              sed -i 's/\${GITHUB_TOKEN_READ_PACKAGES}/$(github_token_read_packages)/g' pom.xml
           - template: templates/docker-release/template.yaml@pagopaCommons
             parameters:
               CONTAINER_REGISTRY_SERVICE_CONN: $(dockerRegistryServiceConnection)
@@ -189,6 +187,8 @@ stages:
               DOCKER_IMAGE_NAME: $(imageRepository)
               DOCKER_IMAGE_TAG: $(current_version)
               FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
+              DOCKER_ENVS:
+                - GITHUB_TOKEN_READ_PACKAGES="$(github_token_read_packages)"
 
   # Deploy on K8s with Helm
   - stage: Deploy
