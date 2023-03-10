@@ -22,7 +22,9 @@ steps:
 #  - bash: |
 #      echo "##vso[task.setvariable variable=GITHUB_TOKEN_READ_PACKAGES;isOutput=true]$(github_token_read_packages)"
   - bash: |
-      echo "GITHUB_TOKEN_READ_PACKAGES: [$GITHUB_TOKEN_READ_PACKAGES]"
+      echo "##vso[task.setvariable variable=sauce]token is $(GITHUB_TOKEN_READ_PACKAGES)"
+  - bash: |
+      echo "GITHUB_TOKEN_READ_PACKAGES: [$SAUCE]"
   - task: Cache@2
     inputs:
       key: 'maven | "$(Agent.OS)" | pom.xml'
