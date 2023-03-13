@@ -284,67 +284,67 @@ public class ConfigService {
 
     List<PaymentServiceProvider> psps = getAllPaymentServiceProviders();
     HashMap<String, PaymentServiceProvider> pspMap = new HashMap<>();
-    psps.stream().forEach(k ->      pspMap.put(k.getPspCode(), k));
+    psps.stream().forEach(k -> pspMap.put(k.getPspCode(), k));
     configData.setPsps(pspMap);
 
     List<Channel> canali = getAllCanali();
     HashMap<String, Channel> canalimap = new HashMap<>();
-    canali.stream().forEach(k ->      canalimap.put(k.getChannelCode(), k));
+    canali.stream().forEach(k -> canalimap.put(k.getChannelCode(), k));
     configData.setChannels(canalimap);
     List<PaymentType> tipiv = getPaymentTypes();
     HashMap<String, PaymentType> tipivMap = new HashMap<>();
-    tipiv.stream().forEach(k ->      tipivMap.put(k.getPaymentTypeCode(), k));
+    tipiv.stream().forEach(k -> tipivMap.put(k.getPaymentTypeCode(), k));
 
     configData.setPaymentTypes(tipivMap);
     List<PspChannelPaymentType> pspChannels = getPaymentServiceProvidersChannels();
     HashMap<String, PspChannelPaymentType> pspChannelsMap = new HashMap<>();
-    pspChannels.stream().forEach(k ->      pspChannelsMap.put(k.getIdentifier(), k));
+    pspChannels.stream().forEach(k -> pspChannelsMap.put(k.getIdentifier(), k));
     configData.setPspChannelPaymentTypes(pspChannelsMap);
 
     List<CreditorInstitution> pas = getCreditorInstitutions();
     HashMap<String, CreditorInstitution> pamap = new HashMap<>();
-    pas.stream().forEach(k ->      pamap.put(k.getCreditorInstitutionCode(), k));
+    pas.stream().forEach(k -> pamap.put(k.getCreditorInstitutionCode(), k));
     configData.setCreditorInstitutions(pamap);
 
     List<Encoding> encodings = getEncodings();
     HashMap<String, Encoding> encodingsMap = new HashMap<>();
-    encodings.stream().forEach(k ->      encodingsMap.put(k.getCodeType(), k));
+    encodings.stream().forEach(k -> encodingsMap.put(k.getCodeType(), k));
     configData.setEncodings(encodingsMap);
 
     List<CreditorInstitutionEncoding> ciencodings = getCreditorInstitutionEncodings();
     HashMap<String, CreditorInstitutionEncoding> ciencodingsMap = new HashMap<>();
-    ciencodings.stream().forEach(k ->      ciencodingsMap.put(k.getIdentifier(), k));
+    ciencodings.stream().forEach(k -> ciencodingsMap.put(k.getIdentifier(), k));
     configData.setCreditorInstitutionEncodings(ciencodingsMap);
 
     List<StationCreditorInstitution> paspa = findAllPaStazioniPa();
     HashMap<String, StationCreditorInstitution> paspamap = new HashMap<>();
-    paspa.stream().forEach(k ->      paspamap.put(k.getIdentifier(), k));
+    paspa.stream().forEach(k -> paspamap.put(k.getIdentifier(), k));
     configData.setCreditorInstitutionStations(paspamap);
 
     List<Station> stazioni = findAllStazioni();
     HashMap<String, Station> stazionimap = new HashMap<>();
-    stazioni.stream().forEach(k ->      stazionimap.put(k.getStationCode(), k));
+    stazioni.stream().forEach(k -> stazionimap.put(k.getStationCode(), k));
     configData.setStations(stazionimap);
     List<Iban> ibans = getCurrentIbans();
     HashMap<String, Iban> ibansMap = new HashMap<>();
-    ibans.stream().forEach(k ->      ibansMap.put(k.getIdentifier(), k));
+    ibans.stream().forEach(k -> ibansMap.put(k.getIdentifier(), k));
     configData.setIbans(ibansMap);
 
     Pair<List<PspInformation>, List<PspInformation>> informativePspAndTemplates = getInformativePspAndTemplates();
 
     List<PspInformation> infopsps = informativePspAndTemplates.getLeft();
     HashMap<String, PspInformation> infopspsMap = new HashMap<>();
-    infopsps.stream().forEach(k ->      infopspsMap.put(k.getPsp(), k));
+    infopsps.stream().forEach(k -> infopspsMap.put(k.getPsp(), k));
     configData.setPspInformations(infopspsMap);
 
     List<PspInformation> infopspTemplates = informativePspAndTemplates.getRight();
     HashMap<String, PspInformation> infopspTemplatesMap = new HashMap<>();
-    infopspTemplates.stream().forEach(k ->      infopspTemplatesMap.put(k.getPsp(), k));
+    infopspTemplates.stream().forEach(k -> infopspTemplatesMap.put(k.getPsp(), k));
     configData.setPspInformationTemplates(infopspTemplatesMap);
 
     List<CreditorInstitutionInformation> infopas = getInformativePa();
     HashMap<String, CreditorInstitutionInformation> infopasMap = new HashMap<>();
-    infopas.stream().forEach(k ->      infopasMap.put(k.getPa(), k));
+    infopas.stream().forEach(k -> infopasMap.put(k.getPa(), k));
     configData.setCreditorInstitutionInformations(infopasMap);
 
     long endTime = System.nanoTime();
@@ -353,7 +353,7 @@ public class ConfigService {
 
     configData.setVersion("" + endTime);
 
-    redisRepository.pushToRedisAsync(KEYV1, KEYV1ID,configData);
+    redisRepository.pushToRedisAsync(KEYV1, KEYV1ID, configData);
 
     return configData;
   }
@@ -532,7 +532,7 @@ public class ConfigService {
       JAXBContext jc = JAXBContext.newInstance(element.getClass());
       Marshaller marshaller = jc.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
-      marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION,SCHEMA_INSTANCE);
+      marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, SCHEMA_INSTANCE);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       marshaller.marshal(informativaPSP, baos);
       return encoder.encodeToString(baos.toByteArray());
@@ -549,7 +549,7 @@ public class ConfigService {
       JAXBContext jc = JAXBContext.newInstance(element.getClass());
       Marshaller marshaller = jc.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
-      marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION,SCHEMA_INSTANCE);
+      marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, SCHEMA_INSTANCE);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       marshaller.marshal(informativaPSP, baos);
       return encoder.encodeToString(baos.toByteArray());
@@ -566,7 +566,7 @@ public class ConfigService {
       JAXBContext jc = JAXBContext.newInstance(element.getClass());
       Marshaller marshaller = jc.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
-      marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION,SCHEMA_INSTANCE);
+      marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, SCHEMA_INSTANCE);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       marshaller.marshal(informativaPA, baos);
       return encoder.encodeToString(baos.toByteArray());
@@ -610,12 +610,12 @@ public class ConfigService {
           try {
             ctInformativaMaster.setDataInizioValidita(tsToXmlGC(cdiMaster.getDataInizioValidita()));
           } catch (DatatypeConfigurationException e) {
-            throw new AppException(AppError.INTERNAL_SERVER_ERROR,e);
+            throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
           }
           try {
             ctInformativaMaster.setDataPubblicazione(tsToXmlGC(cdiMaster.getDataPubblicazione()));
           } catch (DatatypeConfigurationException e) {
-            throw new AppException(AppError.INTERNAL_SERVER_ERROR,e);
+            throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
           }
           ctInformativaMaster.setLogoPSP("".getBytes(StandardCharsets.UTF_8));
           ctInformativaMaster.setStornoPagamento(cdiMaster.getStornoPagamento() ? 1 : 0);
@@ -717,7 +717,8 @@ public class ConfigService {
         }).collect(Collectors.toList());
 
     CtListaInformativePSP informativaPspFull = new CtListaInformativePSP();
-    informativePspSingle.forEach(i -> informativaPspFull.getInformativaPSP().addAll(i.getInformativaPSP()));
+    informativePspSingle.forEach(
+        i -> informativaPspFull.getInformativaPSP().addAll(i.getInformativaPSP()));
 
     CtListaInformativePSP informativaEmpty = new CtListaInformativePSP();
 
@@ -865,7 +866,7 @@ public class ConfigService {
     return tplInformativaDetail;
   }
 
-  private List<CtContoAccredito> manageContiAccredito(List<IbanValidiPerPa> ibans){
+  private List<CtContoAccredito> manageContiAccredito(List<IbanValidiPerPa> ibans) {
     return ibans.stream().map(iban -> {
       String idNegozio = null;
       if (iban.getIdMerchant() != null && iban.getIdBancaSeller() != null
@@ -882,11 +883,12 @@ public class ConfigService {
       try {
         ctContoAccredito.setDataAttivazioneIban(tsToXmlGC(iban.getDataInizioValidita()));
       } catch (DatatypeConfigurationException e) {
-        throw new AppException(AppError.INTERNAL_SERVER_ERROR,e);
+        throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
       }
       return ctContoAccredito;
     }).collect(Collectors.toList());
   }
+
   public List<CreditorInstitutionInformation> getInformativePa() {
     log.info("loading InformativePa");
     List<IbanValidiPerPa> allIbans = ibanValidiPerPaRepository.findAll();
@@ -924,7 +926,7 @@ public class ConfigService {
         try {
           ctInformativaControparte.setDataInizioValidita(tsToXmlGC(master.getDataInizioValidita()));
         } catch (DatatypeConfigurationException e) {
-          throw new AppException(AppError.INTERNAL_SERVER_ERROR,e);
+          throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
         }
         List<InformativePaDetail> infodetails = master.getDetails();
 
@@ -979,12 +981,12 @@ public class ConfigService {
             try {
               fascia.setFasciaOrariaDa(stringToXmlGCTime(f.getOraDa()));
             } catch (DatatypeConfigurationException e) {
-              throw new AppException(AppError.INTERNAL_SERVER_ERROR,e);
+              throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
             }
             try {
               fascia.setFasciaOrariaA(stringToXmlGCTime(f.getOraA()));
             } catch (DatatypeConfigurationException e) {
-              throw new AppException(AppError.INTERNAL_SERVER_ERROR,e);
+              throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
             }
             return fascia;
           }).collect(Collectors.toList());
