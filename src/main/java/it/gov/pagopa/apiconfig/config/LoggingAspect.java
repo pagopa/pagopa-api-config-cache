@@ -34,7 +34,7 @@ public class LoggingAspect {
   @Value("${info.properties.environment}")
   private String environment;
 
-  @Pointcut("@within(it.gov.pagopa.apiconfig.controller..*.*(..))")
+  @Pointcut("@within(org.springframework.web.bind.annotation.RestController)")
   public void restController() {
     // all rest controllers
   }
