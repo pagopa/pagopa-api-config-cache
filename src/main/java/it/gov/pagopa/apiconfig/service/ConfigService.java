@@ -911,12 +911,34 @@ public class ConfigService {
     return tplInformativaDetail;
   }
 
+  private List<CtContoAccredito> manageContiAccredito(List<IbanValidiPerPa> ibans){
+    return ibans.stream().map(iban -> {
+      String idNegozio = null;
+      if (iban.getIdMerchant() != null && iban.getIdBancaSeller() != null
+          && iban.getChiaveAvvio() != null && iban.getChiaveEsito() != null &&
+          !iban.getIdMerchant().isEmpty() && !iban.getIdBancaSeller().isEmpty()
+          && !iban.getChiaveAvvio().isEmpty() && !iban.getChiaveEsito().isEmpty()
+      ) {
+        idNegozio = iban.getIdMerchant();
+      }
+      CtContoAccredito ctContoAccredito = new CtContoAccredito();
+      ctContoAccredito.setIbanAccredito(iban.getIbanAccredito());
+      ctContoAccredito.setIdNegozio(idNegozio);
+      ctContoAccredito.setSellerBank(iban.getIdBancaSeller());
+      try {
+        ctContoAccredito.setDataAttivazioneIban(tsToXmlGC(iban.getDataInizioValidita()));
+      } catch (DatatypeConfigurationException e) {
+        throw new RuntimeException(e);
+      }
+      return ctContoAccredito;
+    }).collect(Collectors.toList());
+  }
   public List<CreditorInstitutionInformation> getInformativePa() {
     log.info("loading InformativePa");
     List<IbanValidiPerPa> allIbans = ibanValidiPerPaRepository.findAll();
     List<InformativePaMaster> allMasters = informativePaMasterRepository.findAll();
     List<InformativePaFasce> allFasce = informativePaFasceRepository.findAll();
-    List<Pa> pas = paRepository.findAll();//.stream().filter(s->s.getIdDominio().equals("90000000002")).collect(Collectors.toList());
+    List<Pa> pas = paRepository.findAll();
 
     List<Pair<String, CtListaInformativeControparte>> informativePaSingle = new ArrayList<>();
     CtListaInformativeControparte informativaPaFull = new CtListaInformativeControparte();
@@ -934,26 +956,7 @@ public class ConfigService {
       List<IbanValidiPerPa> ibans = allIbans.stream().filter(i -> i.getFkPa().equals(pa.getObjId()))
           .collect(
               Collectors.toList());
-      List<CtContoAccredito> contiaccredito = ibans.stream().map(iban -> {
-        String idNegozio = null;
-        if (iban.getIdMerchant() != null && iban.getIdBancaSeller() != null
-            && iban.getChiaveAvvio() != null && iban.getChiaveEsito() != null &&
-            !iban.getIdMerchant().isEmpty() && !iban.getIdBancaSeller().isEmpty()
-            && !iban.getChiaveAvvio().isEmpty() && !iban.getChiaveEsito().isEmpty()
-        ) {
-          idNegozio = iban.getIdMerchant();
-        }
-        CtContoAccredito ctContoAccredito = new CtContoAccredito();
-        ctContoAccredito.setIbanAccredito(iban.getIbanAccredito());
-        ctContoAccredito.setIdNegozio(idNegozio);
-        ctContoAccredito.setSellerBank(iban.getIdBancaSeller());
-        try {
-          ctContoAccredito.setDataAttivazioneIban(tsToXmlGC(iban.getDataInizioValidita()));
-        } catch (DatatypeConfigurationException e) {
-          throw new RuntimeException(e);
-        }
-        return ctContoAccredito;
-      }).collect(Collectors.toList());
+      List<CtContoAccredito> contiaccredito = manageContiAccredito(ibans);
       ctInformativaControparte.getInformativaContoAccredito().addAll(contiaccredito);
 
       List<InformativePaMaster> masters = allMasters.stream()

@@ -1,6 +1,7 @@
 package it.gov.pagopa.apiconfig.model.node.v1.creditorinstitution;
 
 import java.util.Arrays;
+import java.util.Optional;
 import lombok.Getter;
 
 public enum CodeTypeEnum {
@@ -19,8 +20,13 @@ public enum CodeTypeEnum {
   }
 
   public static CodeTypeEnum fromValue(String value) {
-    return Arrays.stream(CodeTypeEnum.values())
+    Optional<CodeTypeEnum> codeTypeEnum = Arrays.stream(CodeTypeEnum.values())
         .filter(elem -> elem.value.equals(value))
-        .findFirst().get();
+        .findFirst();
+    if(codeTypeEnum.isPresent()){
+      return codeTypeEnum.get();
+    } else {
+      return null;
+    }
   }
 }

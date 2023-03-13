@@ -1,8 +1,8 @@
 package it.gov.pagopa.apiconfig.util.mapper;
 
-import it.gov.pagopa.apiconfig.starter.entity.CodifichePa;
 import it.gov.pagopa.apiconfig.model.node.v1.creditorinstitution.CodeTypeEnum;
 import it.gov.pagopa.apiconfig.model.node.v1.creditorinstitution.CreditorInstitutionEncoding;
+import it.gov.pagopa.apiconfig.starter.entity.CodifichePa;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
 
@@ -14,9 +14,10 @@ public class ConvertCodifichePaToEncoding implements
   public CreditorInstitutionEncoding convert(
       MappingContext<CodifichePa, CreditorInstitutionEncoding> context) {
     CodifichePa source = context.getSource();
+    CodeTypeEnum codeType = getCodeType(source);
     return CreditorInstitutionEncoding.builder()
         .creditorInstitutionCode(source.getCodicePa())
-        .codeType(getCodeType(source).getValue())
+        .codeType(codeType!=null?codeType.getValue():null)
         .encodingCode(source.getCodicePa())
         .build();
   }
