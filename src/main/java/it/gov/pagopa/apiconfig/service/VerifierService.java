@@ -3,7 +3,6 @@ package it.gov.pagopa.apiconfig.service;
 
 import it.gov.pagopa.apiconfig.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.repository.VerifierRepository;
-import java.io.IOException;
 import java.util.List;
 import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +29,7 @@ public class VerifierService {
 
   public List<String> getPaV2() {
     List<String> allPaForVerifier = paRepository.findAllPaForVerifier();
-    redisRepository.pushToRedisAsync(keyV1,allPaForVerifier);
+    redisRepository.pushToRedisAsync(keyV1, allPaForVerifier);
     return allPaForVerifier;
   }
 }
