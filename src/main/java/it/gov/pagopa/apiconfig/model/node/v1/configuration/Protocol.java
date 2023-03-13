@@ -1,6 +1,7 @@
 package it.gov.pagopa.apiconfig.model.node.v1.configuration;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 public enum Protocol {
   HTTPS("HTTPS"),
@@ -13,8 +14,13 @@ public enum Protocol {
   }
 
   public static Protocol fromValue(String value) {
-    return Arrays.stream(Protocol.values())
+    Optional<Protocol> protocol = Arrays.stream(Protocol.values())
         .filter(elem -> elem.value.equals(value))
-        .findFirst().get();
+        .findFirst();
+    if(protocol.isPresent()){
+      return protocol.get();
+    } else {
+      return null;
+    }
   }
 }

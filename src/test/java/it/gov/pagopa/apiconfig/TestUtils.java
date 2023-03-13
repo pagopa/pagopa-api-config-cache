@@ -73,9 +73,11 @@ public class TestUtils {
 
   public static List<Psp> psps = Arrays.asList(Psp.builder()
           .idPsp("idPsp1")
+          .objId(1l)
           .build(),
       Psp.builder()
           .idPsp("idPsp2")
+          .objId(2l)
           .build());
   public static List<Canali> canali = Arrays.asList(
       Canali.builder()

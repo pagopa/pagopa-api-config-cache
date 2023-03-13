@@ -1,6 +1,7 @@
 package it.gov.pagopa.apiconfig.model.node.v1.psp;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 public enum PaymentModel {
 
@@ -18,15 +19,25 @@ public enum PaymentModel {
   }
 
   public static PaymentModel fromValue(String value) {
-    return Arrays.stream(PaymentModel.values())
+    Optional<PaymentModel> first = Arrays.stream(PaymentModel.values())
         .filter(elem -> elem.value.equals(value))
-        .findFirst().get();
+        .findFirst();
+    if(first.isPresent()){
+      return first.get();
+    }else{
+      return null;
+    }
   }
 
   public static PaymentModel fromDatabaseValue(String databaseValue) {
-    return Arrays.stream(PaymentModel.values())
+    Optional<PaymentModel> first = Arrays.stream(PaymentModel.values())
         .filter(elem -> elem.databaseValue.equals(databaseValue))
-        .findFirst().get();
+        .findFirst();
+    if(first.isPresent()){
+      return first.get();
+    }else{
+      return null;
+    }
   }
 
 }
