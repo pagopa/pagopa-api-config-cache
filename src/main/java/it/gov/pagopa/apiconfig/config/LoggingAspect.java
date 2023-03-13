@@ -34,18 +34,17 @@ public class LoggingAspect {
   @Value("${info.properties.environment}")
   private String environment;
 
-  // TODO: set your package
-  @Pointcut("@within(org.springframework.web.bind.annotation.RestController)")
+  @Pointcut("@within(it.gov.pagopa.apiconfig.controller..*.*(..))")
   public void restController() {
     // all rest controllers
   }
 
-  @Pointcut("execution(* it.gov.pagopa.microservice.repository..*.*(..))")
+  @Pointcut("execution(* it.gov.pagopa.apiconfig.repository..*.*(..))")
   public void repository() {
     // all repository methods
   }
 
-  @Pointcut("execution(* it.gov.pagopa.microservice.service..*.*(..))")
+  @Pointcut("execution(* it.gov.pagopa.apiconfig.service..*.*(..))")
   public void service() {
     // all service methods
   }

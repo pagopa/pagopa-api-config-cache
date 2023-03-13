@@ -55,7 +55,7 @@ public class NodeCacheController {
       @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
       @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))})
   @GetMapping(value = "/v1/id", produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<CacheVersion> idV1() throws IOException {
+  public ResponseEntity<CacheVersion> idV1() {
       return ResponseEntity.ok(configService.getCacheV1Id());
   }
 
