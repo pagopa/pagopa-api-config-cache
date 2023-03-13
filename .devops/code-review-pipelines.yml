@@ -59,7 +59,7 @@ steps:
       mavenAuthenticateFeed: false
       effectivePomSkip: false
       sonarQubeRunAnalysis: true
-      isJacocoCoverageReportXML: true
+      isJacocoCoverageReportXML: false
       sqMavenPluginVersionChoice: 'latest'
 
   - task: SonarCloudPublish@1
