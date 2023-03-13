@@ -142,11 +142,15 @@ import org.springframework.transaction.PlatformTransactionManager;
 public class ConfigService {
 
   @Value("apicfg_${spring.database.id}_node_v1")
-  private String KEYV1;
+  private String keyV1;
 
   @Value("apicfg_${spring.database.id}_node_v1_id")
-  private String KEYV1ID;
+  private String keyV1Id;
 
+  private static String DA_COMPILARE_FLUSSO = "DA COMPILARE (formato: [IDPSP]_dd-mm-yyyy - esempio: ESEMPIO_31-12-2001)";
+  private static String DA_COMPILARE = "DA COMPILARE";
+  private static String SCHEMA_INSTANCE = "http://www.w3.org/2001/XMLSchema-instance";
+  private static double COSTO_CONVENZIONE_FORMAT = 100d;
   @Autowired
   private PlatformTransactionManager transactionManager;
   @Autowired
@@ -212,9 +216,6 @@ public class ConfigService {
   @Autowired
   private InformativePaFasceRepository informativePaFasceRepository;
 
-  private String DA_COMPILARE_FLUSSO = "DA COMPILARE (formato: [IDPSP]_dd-mm-yyyy - esempio: ESEMPIO_31-12-2001)";
-  private String DA_COMPILARE = "DA COMPILARE";
-  private String SCHEMA_INSTANCE = "http://www.w3.org/2001/XMLSchema-instance";
 
   public ConfigDataV1 newCacheV1() throws IOException {
 
@@ -353,15 +354,15 @@ public class ConfigService {
 
     configData.setVersion("" + endTime);
 
-    redisRepository.pushToRedisAsync(KEYV1, KEYV1ID, configData);
+    redisRepository.pushToRedisAsync(keyV1, keyV1Id, configData);
 
     return configData;
   }
 
 
   public CacheVersion getCacheV1Id() {
-    String cacheId = Optional.ofNullable(redisRepository.getStringByKeyId(KEYV1ID))
-        .orElseThrow(() -> new AppException(AppError.CACHE_ID_NOT_FOUND, KEYV1ID));
+    String cacheId = Optional.ofNullable(redisRepository.getStringByKeyId(keyV1Id))
+        .orElseThrow(() -> new AppException(AppError.CACHE_ID_NOT_FOUND, keyV1Id));
     return new CacheVersion(cacheId);
   }
 
@@ -466,18 +467,17 @@ public class ConfigService {
 
   public List<StationCreditorInstitution> findAllPaStazioniPa() {
     log.info("loading PaStations");
-    return paStazioniRepository.findAllFetching().stream().map(s -> {
-      return new StationCreditorInstitution(
-          s.getPa().getIdDominio(),
-          s.getStazione().getIdStazione(),
-          s.getProgressivo(),
-          s.getAuxDigit(),
-          s.getSegregazione(),
-          s.getQuartoModello(),
-          s.getBroadcast(),
-          s.getStazione().getVersionePrimitive(),
-          s.getPagamentoSpontaneo());
-    }).collect(Collectors.toList());
+    return paStazioniRepository.findAllFetching().stream().map(s -> new StationCreditorInstitution(
+        s.getPa().getIdDominio(),
+        s.getStazione().getIdStazione(),
+        s.getProgressivo(),
+        s.getAuxDigit(),
+        s.getSegregazione(),
+        s.getQuartoModello(),
+        s.getBroadcast(),
+        s.getStazione().getVersionePrimitive(),
+        s.getPagamentoSpontaneo())
+    ).collect(Collectors.toList());
   }
 
   public List<CreditorInstitution> getCreditorInstitutions() {
@@ -496,10 +496,9 @@ public class ConfigService {
 
   public List<PspChannelPaymentType> getPaymentServiceProvidersChannels() {
     log.info("loading PspChannels");
-    return pspCanaleTipoVersamentoCanaleRepository.findAllFetching().stream().map(p -> {
-      return new PspChannelPaymentType(p.getPsp().getIdPsp(), p.getCanale().getIdCanale(),
-          p.getTipoVersamento().getTipoVersamento());
-    }).collect(Collectors.toList());
+    return pspCanaleTipoVersamentoCanaleRepository.findAllFetching().stream()
+        .map(p -> new PspChannelPaymentType(p.getPsp().getIdPsp(), p.getCanale().getIdCanale(),
+            p.getTipoVersamento().getTipoVersamento())).collect(Collectors.toList());
   }
 
   public List<PaymentServiceProvider> getAllPaymentServiceProviders() {
@@ -584,7 +583,7 @@ public class ConfigService {
 
     List<PspInformation> informativePsp = getInformativePsp(masters, preferences, allFasce,
         allInformazioni);
-    List<PspInformation> templateInformativePsp = getTemplateInformativePsp(masters, allFasce);
+    List<PspInformation> templateInformativePsp = getTemplateInformativePsp(masters);
 
     return Pair.of(informativePsp, templateInformativePsp);
   }
@@ -595,7 +594,7 @@ public class ConfigService {
       List<CdiInformazioniServizio> allInformazioni
   ) {
     log.info("loading InformativePsp");
-    double COSTO_CONVENZIONE_FORMAT = 100d;
+
 
     List<CtListaInformativePSP> informativePspSingle = masters.stream()
         .filter(m -> !m.getCdiDetail().isEmpty()).map(cdiMaster -> {
@@ -618,9 +617,9 @@ public class ConfigService {
             throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
           }
           ctInformativaMaster.setLogoPSP("".getBytes(StandardCharsets.UTF_8));
-          ctInformativaMaster.setStornoPagamento(cdiMaster.getStornoPagamento() ? 1 : 0);
+          ctInformativaMaster.setStornoPagamento(Boolean.TRUE.equals(cdiMaster.getStornoPagamento()) ? 1 : 0);
           ctInformativaMaster.setUrlInformazioniPSP(cdiMaster.getUrlInformazioniPsp());
-          ctInformativaMaster.setMarcaBolloDigitale(cdiMaster.getMarcaBolloDigitale() ? 1 : 0);
+          ctInformativaMaster.setMarcaBolloDigitale(Boolean.TRUE.equals(cdiMaster.getMarcaBolloDigitale()) ? 1 : 0);
           ctInformativaPSP.setInformativaMaster(ctInformativaMaster);
           ctInformativaPSP.setIdentificativoFlusso(cdiMaster.getIdInformativaPsp());
 
@@ -699,7 +698,7 @@ public class ConfigService {
               CtListaParoleChiave ctListaParoleChiave = new CtListaParoleChiave();
               ctListaParoleChiave.getParoleChiave().addAll(
                   Arrays.stream(cdiDetail.getTags().split(";"))
-                      .map(t -> StParoleChiave.fromValue(t)).collect(Collectors.toList()));
+                      .map(StParoleChiave::fromValue).collect(Collectors.toList()));
               ctInformativaDetail.setListaParoleChiave(ctListaParoleChiave);
             }
             ctInformativaDetail.setModelloPagamento(cdiDetail.getModelloPagamento().intValue());
@@ -743,9 +742,7 @@ public class ConfigService {
 
   }
 
-  public List<PspInformation> getTemplateInformativePsp(List<CdiMasterValid> allMasters,
-      List<CdiFasciaCostoServizio> allFasce
-  ) {
+  public List<PspInformation> getTemplateInformativePsp(List<CdiMasterValid> allMasters) {
     log.info("loading TemplateInformativePsp");
     List<Psp> psps = pspRepository.findAll();
     List<PspInformation> templates = new ArrayList<>();
@@ -784,15 +781,14 @@ public class ConfigService {
           tplInformativaPSP.setRagioneSociale(psp.getRagioneSociale());
           tplInformativaPSP.setIdentificativoPSP(psp.getIdPsp());
           TplListaInformativaDetail tplListaInformativaDetail = new TplListaInformativaDetail();
-          masters.get().getCdiDetail().stream().forEach(d -> {
-            tplListaInformativaDetail.getInformativaDetail()
+          masters.get().getCdiDetail().stream().forEach(d -> tplListaInformativaDetail.getInformativaDetail()
                 .add(makeTplInformativaDetail(
                     d.getPspCanaleTipoVersamento().getCanale().getIdCanale(),
                     d.getPspCanaleTipoVersamento().getCanale().getIntermediarioPsp()
                         .getIdIntermediarioPsp(),
                     d.getPspCanaleTipoVersamento().getTipoVersamento().getTipoVersamento(),
-                    d.getModelloPagamento()));
-          });
+                    d.getModelloPagamento()))
+          );
           tplInformativaPSP.setListaInformativaDetail(tplListaInformativaDetail);
           templates.add(new PspInformation(psp.getIdPsp(), toXml(tplInformativaPSP)));
         }
@@ -907,7 +903,7 @@ public class ConfigService {
       ctInformativaControparte.setIdentificativoDominio(pa.getIdDominio());
       ctInformativaControparte.setRagioneSociale(pa.getRagioneSociale());
       ctInformativaControparte.setContactCenterEnteCreditore("contactCenterEnteCreditore");
-      ctInformativaControparte.setPagamentiPressoPSP(pa.getPagamentoPressoPsp() ? 1 : 0);
+      ctInformativaControparte.setPagamentiPressoPSP(Boolean.TRUE.equals(pa.getPagamentoPressoPsp()) ? 1 : 0);
 
       List<IbanValidiPerPa> ibans = allIbans.stream().filter(i -> i.getFkPa().equals(pa.getObjId()))
           .collect(
