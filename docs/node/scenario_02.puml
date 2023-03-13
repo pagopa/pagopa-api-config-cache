@@ -1,0 +1,13 @@
+/'
+Scenario 02:
+  Node retrieves cache, and it is present on Redis
+'/
+@startuml
+Node -> APIM: /stakeholders/node/cache/schemas/v1
+APIM -> Redis: Check <b>apicfg_*_node_v1</b> exists
+note right
+  <b>*</b> regards the database version (o or p)
+end note
+"Redis" --> APIM: Return cache data
+APIM --> Node: Return cache data
+@enduml
