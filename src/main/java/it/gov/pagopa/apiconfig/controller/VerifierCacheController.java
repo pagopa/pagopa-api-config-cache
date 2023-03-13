@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import it.gov.pagopa.apiconfig.model.ProblemJson;
 import it.gov.pagopa.apiconfig.service.VerifierService;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +38,7 @@ public class VerifierCacheController {
       @ApiResponse(responseCode = "429", description = "Too many requests", content = @Content(schema = @Schema())),
       @ApiResponse(responseCode = "500", description = "Service unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class)))})
   @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<String>> cache() throws IOException {
+  public ResponseEntity<List<String>> cache() {
     return ResponseEntity.ok(verifierService.getPaV2());
   }
 

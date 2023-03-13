@@ -28,7 +28,7 @@ public class VerifierService {
   @Autowired
   private VerifierRepository paRepository;
 
-  public List<String> getPaV2() throws IOException {
+  public List<String> getPaV2() {
     List<String> allPaForVerifier = paRepository.findAllPaForVerifier();
     redisRepository.pushToRedisAsync(keyV1,allPaForVerifier);
     return allPaForVerifier;

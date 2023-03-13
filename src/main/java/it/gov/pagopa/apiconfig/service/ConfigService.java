@@ -147,10 +147,10 @@ public class ConfigService {
   @Value("apicfg_${spring.database.id}_node_v1_id")
   private String keyV1Id;
 
-  private static String DA_COMPILARE_FLUSSO = "DA COMPILARE (formato: [IDPSP]_dd-mm-yyyy - esempio: ESEMPIO_31-12-2001)";
-  private static String DA_COMPILARE = "DA COMPILARE";
-  private static String SCHEMA_INSTANCE = "http://www.w3.org/2001/XMLSchema-instance";
-  private static double COSTO_CONVENZIONE_FORMAT = 100d;
+  private static String daCompilareFlusso = "DA COMPILARE (formato: [IDPSP]_dd-mm-yyyy - esempio: ESEMPIO_31-12-2001)";
+  private static String daCompilare = "DA COMPILARE";
+  private static String schemaInstance = "http://www.w3.org/2001/XMLSchema-instance";
+  private static double costoConvenzioneFormat = 100d;
   @Autowired
   private PlatformTransactionManager transactionManager;
   @Autowired
@@ -531,7 +531,7 @@ public class ConfigService {
       JAXBContext jc = JAXBContext.newInstance(element.getClass());
       Marshaller marshaller = jc.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
-      marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, SCHEMA_INSTANCE);
+      marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaInstance);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       marshaller.marshal(informativaPSP, baos);
       return encoder.encodeToString(baos.toByteArray());
@@ -548,7 +548,7 @@ public class ConfigService {
       JAXBContext jc = JAXBContext.newInstance(element.getClass());
       Marshaller marshaller = jc.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
-      marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, SCHEMA_INSTANCE);
+      marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaInstance);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       marshaller.marshal(informativaPSP, baos);
       return encoder.encodeToString(baos.toByteArray());
@@ -565,7 +565,7 @@ public class ConfigService {
       JAXBContext jc = JAXBContext.newInstance(element.getClass());
       Marshaller marshaller = jc.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
-      marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, SCHEMA_INSTANCE);
+      marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaInstance);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       marshaller.marshal(informativaPA, baos);
       return encoder.encodeToString(baos.toByteArray());
@@ -675,7 +675,7 @@ public class ConfigService {
                 pspCanaleTipoVersamento.getCanale().getIdCanale());
 
             List<Double> costiConvenzione = cdiPreferenceStream.stream()
-                .map(p -> p.getCostoConvenzione() / COSTO_CONVENZIONE_FORMAT)
+                .map(p -> p.getCostoConvenzione() / costoConvenzioneFormat)
                 .collect(Collectors.toList());
 
             CtCostiServizio costiServizio = new CtCostiServizio();
@@ -752,21 +752,21 @@ public class ConfigService {
         Optional<CdiMasterValid> masters = allMasters.stream()
             .filter(m -> m.getPsp().getObjId().equals(psp.getObjId())).findFirst();
         TplInformativaPSP tplInformativaPSP = new TplInformativaPSP();
-        tplInformativaPSP.setRagioneSociale(DA_COMPILARE);
-        tplInformativaPSP.setIdentificativoPSP(DA_COMPILARE);
-        tplInformativaPSP.setCodiceABI(Objects.isNull(psp.getAbi()) ? DA_COMPILARE : psp.getAbi());
-        tplInformativaPSP.setCodiceBIC(Objects.isNull(psp.getBic()) ? DA_COMPILARE : psp.getBic());
-        tplInformativaPSP.setIdentificativoFlusso(DA_COMPILARE_FLUSSO);
+        tplInformativaPSP.setRagioneSociale(daCompilare);
+        tplInformativaPSP.setIdentificativoPSP(daCompilare);
+        tplInformativaPSP.setCodiceABI(Objects.isNull(psp.getAbi()) ? daCompilare : psp.getAbi());
+        tplInformativaPSP.setCodiceBIC(Objects.isNull(psp.getBic()) ? daCompilare : psp.getBic());
+        tplInformativaPSP.setIdentificativoFlusso(daCompilareFlusso);
         tplInformativaPSP.setMybankIDVS(
-            Objects.isNull(psp.getCodiceMybank()) ? DA_COMPILARE : psp.getCodiceMybank());
+            Objects.isNull(psp.getCodiceMybank()) ? daCompilare : psp.getCodiceMybank());
 
         TplInformativaMaster tplInformativaMaster = new TplInformativaMaster();
-        tplInformativaMaster.setLogoPSP(DA_COMPILARE);
-        tplInformativaMaster.setDataInizioValidita(DA_COMPILARE);
-        tplInformativaMaster.setDataPubblicazione(DA_COMPILARE);
-        tplInformativaMaster.setUrlConvenzioniPSP(DA_COMPILARE);
-        tplInformativaMaster.setUrlInformativaPSP(DA_COMPILARE);
-        tplInformativaMaster.setUrlInformazioniPSP(DA_COMPILARE);
+        tplInformativaMaster.setLogoPSP(daCompilare);
+        tplInformativaMaster.setDataInizioValidita(daCompilare);
+        tplInformativaMaster.setDataPubblicazione(daCompilare);
+        tplInformativaMaster.setUrlConvenzioniPSP(daCompilare);
+        tplInformativaMaster.setUrlInformativaPSP(daCompilare);
+        tplInformativaMaster.setUrlInformazioniPSP(daCompilare);
         tplInformativaMaster.setMarcaBolloDigitale(0);
         tplInformativaMaster.setStornoPagamento(0);
         tplInformativaPSP.setInformativaMaster(tplInformativaMaster);
@@ -806,30 +806,30 @@ public class ConfigService {
   private TplInformativaDetail makeTplInformativaDetail(String idCanale, String idInter, String tv,
       Long modello) {
     TplInformativaDetail tplInformativaDetail = new TplInformativaDetail();
-    tplInformativaDetail.setCanaleApp(DA_COMPILARE);
+    tplInformativaDetail.setCanaleApp(daCompilare);
     tplInformativaDetail.setIdentificativoCanale(
-        Objects.isNull(idCanale) ? DA_COMPILARE : idCanale);
-    tplInformativaDetail.setPriorita(DA_COMPILARE);
+        Objects.isNull(idCanale) ? daCompilare : idCanale);
+    tplInformativaDetail.setPriorita(daCompilare);
     tplInformativaDetail.setTipoVersamento(
         Objects.isNull(tv) ? it.gov.pagopa.apiconfig.template.StTipoVersamento.BBT
             : it.gov.pagopa.apiconfig.template.StTipoVersamento.fromValue(tv));
     tplInformativaDetail.setModelloPagamento(Objects.isNull(modello) ? 0 : modello.intValue());
     tplInformativaDetail.setIdentificativoIntermediario(
-        Objects.isNull(idInter) ? DA_COMPILARE : idInter);
+        Objects.isNull(idInter) ? daCompilare : idInter);
     tplInformativaDetail.setServizioAlleImprese(null);
 
     TplIdentificazioneServizio tplIdentificazioneServizio = new TplIdentificazioneServizio();
-    tplIdentificazioneServizio.setLogoServizio(DA_COMPILARE);
-    tplIdentificazioneServizio.setNomeServizio(DA_COMPILARE);
+    tplIdentificazioneServizio.setLogoServizio(daCompilare);
+    tplIdentificazioneServizio.setNomeServizio(daCompilare);
     tplInformativaDetail.setIdentificazioneServizio(tplIdentificazioneServizio);
 
     TplCostiServizio tplCostiServizio = new TplCostiServizio();
     tplCostiServizio.setTipoCommissione("0");
     tplCostiServizio.setTipoCostoTransazione("0");
     TplFasciaCostoServizio tplFasciaCostoServizio = new TplFasciaCostoServizio();
-    tplFasciaCostoServizio.setCostoFisso(DA_COMPILARE);
-    tplFasciaCostoServizio.setImportoMassimoFascia(DA_COMPILARE);
-    tplFasciaCostoServizio.setCostoFisso(DA_COMPILARE);
+    tplFasciaCostoServizio.setCostoFisso(daCompilare);
+    tplFasciaCostoServizio.setImportoMassimoFascia(daCompilare);
+    tplFasciaCostoServizio.setCostoFisso(daCompilare);
     List<TplFasciaCostoServizio> tplFasciaCostoServizios = Arrays.asList(tplFasciaCostoServizio,
         tplFasciaCostoServizio, tplFasciaCostoServizio);
     TplListaFasceCostoServizio fasce = new TplListaFasceCostoServizio();
@@ -838,9 +838,9 @@ public class ConfigService {
     tplInformativaDetail.setCostiServizio(tplCostiServizio);
 
     TplListaParoleChiave ks = new TplListaParoleChiave();
-    ks.getParoleChiave().add(DA_COMPILARE);
-    ks.getParoleChiave().add(DA_COMPILARE);
-    ks.getParoleChiave().add(DA_COMPILARE);
+    ks.getParoleChiave().add(daCompilare);
+    ks.getParoleChiave().add(daCompilare);
+    ks.getParoleChiave().add(daCompilare);
     tplInformativaDetail.setListaParoleChiave(ks);
 
     TplListaInformazioniServizio info = new TplListaInformazioniServizio();
@@ -852,10 +852,10 @@ public class ConfigService {
         it.gov.pagopa.apiconfig.template.StCodiceLingua.SL).stream().forEach(l -> {
       TplInformazioniServizio infoser = new TplInformazioniServizio();
       infoser.setCodiceLingua(it.gov.pagopa.apiconfig.template.StCodiceLingua.IT);
-      infoser.setDescrizioneServizio(DA_COMPILARE);
-      infoser.setDescrizioneServizio(DA_COMPILARE);
-      infoser.setUrlInformazioniCanale(DA_COMPILARE);
-      infoser.setLimitazioniServizio(DA_COMPILARE);
+      infoser.setDescrizioneServizio(daCompilare);
+      infoser.setDescrizioneServizio(daCompilare);
+      infoser.setUrlInformazioniCanale(daCompilare);
+      infoser.setLimitazioniServizio(daCompilare);
       info.getInformazioniServizio().add(infoser);
     });
     tplInformativaDetail.setListaInformazioniServizio(info);

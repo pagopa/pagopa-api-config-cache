@@ -1,18 +1,5 @@
 package it.gov.pagopa.apiconfig.util;
 
-import lombok.experimental.UtilityClass;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
-import org.xml.sax.SAXException;
-
-import javax.xml.XMLConstants;
-import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.transform.stax.StAXSource;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -23,6 +10,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.xml.XMLConstants;
+import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.transform.stax.StAXSource;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+import lombok.experimental.UtilityClass;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.xml.sax.SAXException;
 
 @UtilityClass
 public class CommonUtil {
@@ -48,8 +47,8 @@ public class CommonUtil {
    * @param ZonedDateTime to convert
    * @return convert ZonedDateTime to {@link Timestamp}
    */
-  public static Timestamp toTimestamp(ZonedDateTime ZonedDateTime) {
-    return Timestamp.from(ZonedDateTime.toInstant());
+  public static Timestamp toTimestamp(ZonedDateTime zdt) {
+    return Timestamp.from(zdt.toInstant());
   }
 
   /**
