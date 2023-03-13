@@ -18,7 +18,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 public class VerifierService {
 
   @Value("apicfg_${spring.database.id}_verifier_v1")
-  private String KEY_V1;
+  private String KEYV1;
 
   @Autowired
   private PlatformTransactionManager transactionManager;
@@ -30,7 +30,7 @@ public class VerifierService {
 
   public List<String> getPaV2() throws IOException {
     List<String> allPaForVerifier = paRepository.findAllPaForVerifier();
-    redisRepository.pushToRedisAsync(KEY_V1,allPaForVerifier);
+    redisRepository.pushToRedisAsync(KEYV1,allPaForVerifier);
     return allPaForVerifier;
   }
 }

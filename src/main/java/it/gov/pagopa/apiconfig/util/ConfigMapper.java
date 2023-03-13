@@ -33,6 +33,8 @@ import it.gov.pagopa.apiconfig.starter.entity.TipiVersamento;
 import it.gov.pagopa.apiconfig.starter.entity.WfespPluginConf;
 import it.gov.pagopa.apiconfig.util.mapper.ConvertCanaleTipoVersamentoToPaymentType;
 import it.gov.pagopa.apiconfig.util.mapper.ConvertCanaliToChannelDetails;
+import it.gov.pagopa.apiconfig.util.mapper.ConvertCdsServizioCdsCatService;
+import it.gov.pagopa.apiconfig.util.mapper.ConvertCdsSoggettoServizioCdsSubjectService;
 import it.gov.pagopa.apiconfig.util.mapper.ConvertCodifichePaToEncoding;
 import it.gov.pagopa.apiconfig.util.mapper.ConvertCodificheToEncoding;
 import it.gov.pagopa.apiconfig.util.mapper.ConvertConfiguration;
@@ -50,7 +52,6 @@ import it.gov.pagopa.apiconfig.util.mapper.ConvertWfespPluginConfToWfespPluginCo
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
-import org.modelmapper.spi.MappingContext;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -78,32 +79,8 @@ public class ConfigMapper {
     Converter<PaymentType, String> convertPaymentTypeString = new ConvertPaymentTypeToString();
     Converter<PaymentType, TipiVersamento> convertPaymentTypeTipiVersamento = new ConvertPaymentTypeToTipiVersamento();
 
-    Converter<CdsServizio, CdsService> convertCdsServizioCdsCatService = new Converter<CdsServizio, CdsService>() {
-      public CdsService convert(MappingContext<CdsServizio, CdsService> mappingContext) {
-        CdsServizio source = mappingContext.getSource();
-        return CdsService.builder()
-            .serviceId(source.getIdServizio())
-            .description(source.getDescrizioneServizio())
-            .version(source.getVersion())
-            .category(source.getCategoria().getDescription())
-            .referenceXsd(source.getXsdRiferimento())
-            .build();
-      }
-    };
-    Converter<CdsSoggettoServizio, CdsSubjectService> convertCdsSoggettoServizioCdsSubjectService = new Converter<CdsSoggettoServizio, CdsSubjectService>() {
-      public CdsSubjectService convert(
-          MappingContext<CdsSoggettoServizio, CdsSubjectService> mappingContext) {
-        CdsSoggettoServizio source = mappingContext.getSource();
-        return CdsSubjectService.builder()
-            .service(source.getServizio().getIdServizio())
-            .subjectServiceId(source.getIdSoggettoServizio())
-            .startDate(source.getDataInizioValidita())
-            .endDate(source.getDataFineValidita())
-            .fee(source.getCommissione())
-            .subject(source.getSoggetto().getCreditorInstitutionCode())
-            .build();
-      }
-    };
+    Converter<CdsServizio, CdsService> convertCdsServizioCdsCatService = new ConvertCdsServizioCdsCatService();
+    Converter<CdsSoggettoServizio, CdsSubjectService> convertCdsSoggettoServizioCdsSubjectService = new ConvertCdsSoggettoServizioCdsSubjectService();
 
     mapper.createTypeMap(Pa.class, CreditorInstitution.class)
         .setConverter(convertPaToCreditorInstitutionDetails);
