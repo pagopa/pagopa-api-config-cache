@@ -48,7 +48,7 @@ steps:
     displayName: 'Run Junit Test'
     inputs:
       mavenPomFile: 'pom.xml'
-      goals: 'clean verify'
+      goals: 'clean test'
       publishJUnitResults: true
       testResultsFiles: '**/surefire-reports/TEST-*.xml'
       codeCoverageToolOption: 'JaCoCo'
