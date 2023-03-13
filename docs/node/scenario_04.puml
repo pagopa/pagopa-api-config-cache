@@ -1,0 +1,14 @@
+/'
+Scenario 03:
+  Node retrieves last cache version id, but it is not present on Redis
+'/
+@startuml
+Node -> APIM: <b>/stakeholders/node/cache/schemas/v1/id</b>
+APIM -> "API Config\nCache": <b>/stakeholders/node/cache/schemas/v1/id</b>
+"API Config\nCache" -> Redis: Get <b>apicfg_*_node_v1_id
+note right
+  <b>*</b> regards the database version (o or p)
+end note
+"API Config\nCache" --> APIM: 404 Not Found
+APIM --> Node: 404 Not Found
+@enduml

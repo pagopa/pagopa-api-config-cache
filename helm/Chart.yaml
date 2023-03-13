@@ -1,10 +1,17 @@
 apiVersion: v2
-name: pagopa-afm-calculator
+name: pagopa-api-cache-chart
 description: Microservice that handles calculation for pagoPA Advanced Fees Management
 type: application
-version: 0.0.3
-appVersion: 0.0.3
+version: 0.0.1
+appVersion: 0.0.1
 dependencies:
   - name: microservice-chart
     version: 1.21.0
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
+    alias: postgresql
+    condition: postgresql.enabled
+  - name: microservice-chart
+    version: 1.21.0
+    repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
+    alias: oracle
+    condition: oracle.enabled
