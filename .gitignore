@@ -11,7 +11,7 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
+#*.jar
 *.war
 *.nar
 *.ear
@@ -32,3 +32,6 @@ hs_err_pid*
 # Project files
 /target/
 **/node_modules
+
+helm/charts
+helm/Chart.lock
