@@ -33,7 +33,7 @@ basecache: &basecache
     port: 8080
   ingress: &ingress
     create: true
-    host: "weudev.apiconfig.internal.dev.platform.pagopa.it"
+    host: "weuuat.apiconfig.internal.uat.platform.pagopa.it"
     path: /api-config-cache(/|$)(.*)
     pathType: Prefix
     servicePort: 8080
@@ -51,14 +51,14 @@ basecache: &basecache
       cpu: "1"
   envConfig: &envConfig
     AZURE_INSIGHTS_ENABLED: "true"
-    REDIS_HOST: "pagopa-d-redis.redis.cache.windows.net"
+    REDIS_HOST: "pagopa-u-redis.redis.cache.windows.net"
     REDIS_PORT: "6380"
   envSecret: &envSecret
     # required
-    APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-d-connection-string"
+    APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-u-connection-string"
     REDIS_PWD: "redis-password"
   keyvault:
-    name: "pagopa-d-apiconfig-kv"
+    name: "pagopa-u-apiconfig-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
 # Configuration used to update image tag
 microservice-chart:
@@ -70,8 +70,8 @@ postgresql:
     path: /api-config-cache/p(/|$)(.*)
   envConfig:
     !!merge <<: *envConfig
-    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-cache-postgresql"
-    DB_CONFIG_URL: "jdbc:postgresql://pagopa-d-weu-nodo-flexible-postgresql.postgres.database.azure.com:6432/nodo?sslmode=require&prepareThreshold=0&currentSchema=cfg"
+    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-cache-postgresql-replica"
+    DB_CONFIG_URL: "jdbc:postgresql://pagopa-u-weu-nodo-flexible-postgresql.postgres.database.azure.com:6432/nodo-replica?sslmode=require&prepareThreshold=0&currentSchema=cfg"
     DB_CONFIG_USER: "cfg"
     DB_CONFIG_DRIVER: "org.postgresql.Driver"
     DATABASE_ID: "p"
@@ -85,7 +85,7 @@ oracle:
     path: /api-config-cache/o(/|$)(.*)
   envConfig:
     !!merge <<: *envConfig
-    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-cache-oracle"
+    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-cache-oracle-replica"
     DB_CONFIG_URL: "jdbc:oracle:thin:@db-nodo-pagamenti.d.db-nodo-pagamenti.com:1522/NDPSPCT_PP_NODO4_CFG"
     DB_CONFIG_USER: "NODO4_CFG"
     DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"

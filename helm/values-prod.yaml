@@ -33,7 +33,7 @@ basecache: &basecache
     port: 8080
   ingress: &ingress
     create: true
-    host: "weudev.apiconfig.internal.dev.platform.pagopa.it"
+    host: "weuprod.apiconfig.internal.prod.platform.pagopa.it"
     path: /api-config-cache(/|$)(.*)
     pathType: Prefix
     servicePort: 8080
@@ -51,14 +51,14 @@ basecache: &basecache
       cpu: "1"
   envConfig: &envConfig
     AZURE_INSIGHTS_ENABLED: "true"
-    REDIS_HOST: "pagopa-d-redis.redis.cache.windows.net"
+    REDIS_HOST: "pagopa-p-redis.redis.cache.windows.net"
     REDIS_PORT: "6380"
   envSecret: &envSecret
     # required
-    APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-d-connection-string"
+    APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-p-connection-string"
     REDIS_PWD: "redis-password"
   keyvault:
-    name: "pagopa-d-apiconfig-kv"
+    name: "pagopa-p-apiconfig-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
 # Configuration used to update image tag
 microservice-chart:
@@ -71,7 +71,7 @@ postgresql:
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-cache-postgresql"
-    DB_CONFIG_URL: "jdbc:postgresql://pagopa-d-weu-nodo-flexible-postgresql.postgres.database.azure.com:6432/nodo?sslmode=require&prepareThreshold=0&currentSchema=cfg"
+    DB_CONFIG_URL: "jdbc:postgresql://pagopa-p-weu-nodo-flexible-postgresql.postgres.database.azure.com:6432/nodo?sslmode=require&prepareThreshold=0&currentSchema=cfg"
     DB_CONFIG_USER: "cfg"
     DB_CONFIG_DRIVER: "org.postgresql.Driver"
     DATABASE_ID: "p"

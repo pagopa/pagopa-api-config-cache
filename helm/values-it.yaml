@@ -93,3 +93,12 @@ oracle:
   envSecret:
     !!merge <<: *envSecret
     DB_CONFIG_PASSWORD: "oracle-db-cfg-password"
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node_type
+                operator: In
+                values:
+                  - user
