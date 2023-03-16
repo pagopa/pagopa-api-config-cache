@@ -63,7 +63,7 @@ public class Channel {
   private Redirect redirect;
 
   @JsonProperty(value = "payment_model", required = true)
-  private PaymentModel paymentModel;
+  private String paymentModel;
 
   @JsonProperty(value = "serv_plugin")
   private String servPlugin;

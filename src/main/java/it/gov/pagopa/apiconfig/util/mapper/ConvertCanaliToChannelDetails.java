@@ -67,7 +67,7 @@ public class ConvertCanaliToChannelDetails implements Converter<CanaliView, Chan
             .port(source.getRedirectPort())
             .path(source.getRedirectPath())
             .queryString(source.getRedirectQueryString()).build())
-        .paymentModel(getPaymentModel(source.getModelloPagamento()))
+        .paymentModel(source.getModelloPagamento())
         .rtPush(source.getRtPush())
         .recovery(source.getRecovery())
         .digitalStamp(source.getMarcaBolloDigitale())

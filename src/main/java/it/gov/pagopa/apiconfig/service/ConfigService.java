@@ -348,13 +348,23 @@ public class ConfigService {
 //    infopas.stream().forEach(k -> infopasMap.put(k.getPa(), k));
 //    configData.setCreditorInstitutionInformations(infopasMap);
 
+//    List<PspInformation> infopspTemplates = informativePspAndTemplates.getRight();
+//    HashMap<String, PspInformation> infopspTemplatesMap = new HashMap<>();
+//    infopspTemplates.stream().forEach(k -> infopspTemplatesMap.put(k.getPsp(), k));
+//    configData.setPspInformationTemplates(infopspTemplatesMap);
+
+//    List<CreditorInstitutionInformation> infopas = getInformativePa();
+//    HashMap<String, CreditorInstitutionInformation> infopasMap = new HashMap<>();
+//    infopas.stream().forEach(k -> infopasMap.put(k.getPa(), k));
+//    configData.setCreditorInstitutionInformations(infopasMap);
+
     long endTime = System.nanoTime();
     long duration = (endTime - startTime) / 1000000;
     log.info("cache loaded in " + duration + "ms");
 
     configData.setVersion("" + endTime);
 
-    redisRepository.pushToRedisAsync(keyV1, keyV1Id, configData);
+//    redisRepository.pushToRedisAsync(keyV1, keyV1Id, configData);
 
     return configData;
   }
