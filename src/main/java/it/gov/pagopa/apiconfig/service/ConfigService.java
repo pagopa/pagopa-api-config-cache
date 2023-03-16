@@ -331,32 +331,22 @@ public class ConfigService {
     ibans.stream().forEach(k -> ibansMap.put(k.getIdentifier(), k));
     configData.setIbans(ibansMap);
 
-//    Pair<List<PspInformation>, List<PspInformation>> informativePspAndTemplates = getInformativePspAndTemplates();
-//
-//    List<PspInformation> infopsps = informativePspAndTemplates.getLeft();
-//    HashMap<String, PspInformation> infopspsMap = new HashMap<>();
-//    infopsps.stream().forEach(k -> infopspsMap.put(k.getPsp(), k));
-//    configData.setPspInformations(infopspsMap);
-//
-//    List<PspInformation> infopspTemplates = informativePspAndTemplates.getRight();
-//    HashMap<String, PspInformation> infopspTemplatesMap = new HashMap<>();
-//    infopspTemplates.stream().forEach(k -> infopspTemplatesMap.put(k.getPsp(), k));
-//    configData.setPspInformationTemplates(infopspTemplatesMap);
-//
-//    List<CreditorInstitutionInformation> infopas = getInformativePa();
-//    HashMap<String, CreditorInstitutionInformation> infopasMap = new HashMap<>();
-//    infopas.stream().forEach(k -> infopasMap.put(k.getPa(), k));
-//    configData.setCreditorInstitutionInformations(infopasMap);
+    Pair<List<PspInformation>, List<PspInformation>> informativePspAndTemplates = getInformativePspAndTemplates();
 
-//    List<PspInformation> infopspTemplates = informativePspAndTemplates.getRight();
-//    HashMap<String, PspInformation> infopspTemplatesMap = new HashMap<>();
-//    infopspTemplates.stream().forEach(k -> infopspTemplatesMap.put(k.getPsp(), k));
-//    configData.setPspInformationTemplates(infopspTemplatesMap);
+    List<PspInformation> infopsps = informativePspAndTemplates.getLeft();
+    HashMap<String, PspInformation> infopspsMap = new HashMap<>();
+    infopsps.stream().forEach(k -> infopspsMap.put(k.getPsp(), k));
+    configData.setPspInformations(infopspsMap);
 
-//    List<CreditorInstitutionInformation> infopas = getInformativePa();
-//    HashMap<String, CreditorInstitutionInformation> infopasMap = new HashMap<>();
-//    infopas.stream().forEach(k -> infopasMap.put(k.getPa(), k));
-//    configData.setCreditorInstitutionInformations(infopasMap);
+    List<PspInformation> infopspTemplates = informativePspAndTemplates.getRight();
+    HashMap<String, PspInformation> infopspTemplatesMap = new HashMap<>();
+    infopspTemplates.stream().forEach(k -> infopspTemplatesMap.put(k.getPsp(), k));
+    configData.setPspInformationTemplates(infopspTemplatesMap);
+
+    List<CreditorInstitutionInformation> infopas = getInformativePa();
+    HashMap<String, CreditorInstitutionInformation> infopasMap = new HashMap<>();
+    infopas.stream().forEach(k -> infopasMap.put(k.getPa(), k));
+    configData.setCreditorInstitutionInformations(infopasMap);
 
     long endTime = System.nanoTime();
     long duration = (endTime - startTime) / 1000000;

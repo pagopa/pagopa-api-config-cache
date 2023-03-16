@@ -41,7 +41,6 @@ public class NodeCacheController {
   @GetMapping(value = "/v1", produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ConfigDataV1> cache() throws IOException {
     return ResponseEntity.ok(configService.newCacheV1());
-//    return ResponseEntity.ok(new ConfigDataV1());
   }
 
   @Operation(summary = "Get last node v1 cache version", security = {
