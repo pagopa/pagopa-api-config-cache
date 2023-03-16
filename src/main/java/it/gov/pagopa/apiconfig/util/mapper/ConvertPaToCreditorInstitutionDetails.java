@@ -1,12 +1,10 @@
 package it.gov.pagopa.apiconfig.util.mapper;
 
-import it.gov.pagopa.apiconfig.starter.entity.Pa;
-import it.gov.pagopa.apiconfig.model.node.v1.creditorinstitution.CreditorInstitutionAddress;
 import it.gov.pagopa.apiconfig.model.node.v1.creditorinstitution.CreditorInstitution;
-import it.gov.pagopa.apiconfig.util.CommonUtil;
+import it.gov.pagopa.apiconfig.model.node.v1.creditorinstitution.CreditorInstitutionAddress;
+import it.gov.pagopa.apiconfig.starter.entity.Pa;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
-
 
 public class ConvertPaToCreditorInstitutionDetails implements Converter<Pa, CreditorInstitution> {
 
@@ -16,7 +14,7 @@ public class ConvertPaToCreditorInstitutionDetails implements Converter<Pa, Cred
     return CreditorInstitution.builder()
         .creditorInstitutionCode(pa.getIdDominio())
         .enabled(pa.getEnabled())
-        .businessName(CommonUtil.deNull(pa.getRagioneSociale()))
+        .businessName(pa.getRagioneSociale())
         .address(CreditorInstitutionAddress.builder()
             .city(pa.getComuneDomicilioFiscale())
             .location(pa.getIndirizzoDomicilioFiscale())

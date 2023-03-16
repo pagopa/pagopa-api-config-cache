@@ -63,7 +63,7 @@ import it.gov.pagopa.apiconfig.starter.entity.InformativePaMaster;
 import it.gov.pagopa.apiconfig.starter.entity.Pa;
 import it.gov.pagopa.apiconfig.starter.entity.Psp;
 import it.gov.pagopa.apiconfig.starter.entity.PspCanaleTipoVersamentoCanale;
-import it.gov.pagopa.apiconfig.starter.repository.CanaliRepository;
+import it.gov.pagopa.apiconfig.starter.repository.CanaliViewRepository;
 import it.gov.pagopa.apiconfig.starter.repository.CdiDetailRepository;
 import it.gov.pagopa.apiconfig.starter.repository.CdiFasciaCostoServizioRepository;
 import it.gov.pagopa.apiconfig.starter.repository.CdiInformazioniServizioRepository;
@@ -194,7 +194,7 @@ public class ConfigService {
   @Autowired
   private PaRepository paRepository;
   @Autowired
-  private CanaliRepository canaliRepository;
+  private CanaliViewRepository canaliViewRepository;
   @Autowired
   private PspCanaleTipoVersamentoCanaleRepository pspCanaleTipoVersamentoCanaleRepository;
   @Autowired
@@ -331,22 +331,22 @@ public class ConfigService {
     ibans.stream().forEach(k -> ibansMap.put(k.getIdentifier(), k));
     configData.setIbans(ibansMap);
 
-    Pair<List<PspInformation>, List<PspInformation>> informativePspAndTemplates = getInformativePspAndTemplates();
-
-    List<PspInformation> infopsps = informativePspAndTemplates.getLeft();
-    HashMap<String, PspInformation> infopspsMap = new HashMap<>();
-    infopsps.stream().forEach(k -> infopspsMap.put(k.getPsp(), k));
-    configData.setPspInformations(infopspsMap);
-
-    List<PspInformation> infopspTemplates = informativePspAndTemplates.getRight();
-    HashMap<String, PspInformation> infopspTemplatesMap = new HashMap<>();
-    infopspTemplates.stream().forEach(k -> infopspTemplatesMap.put(k.getPsp(), k));
-    configData.setPspInformationTemplates(infopspTemplatesMap);
-
-    List<CreditorInstitutionInformation> infopas = getInformativePa();
-    HashMap<String, CreditorInstitutionInformation> infopasMap = new HashMap<>();
-    infopas.stream().forEach(k -> infopasMap.put(k.getPa(), k));
-    configData.setCreditorInstitutionInformations(infopasMap);
+//    Pair<List<PspInformation>, List<PspInformation>> informativePspAndTemplates = getInformativePspAndTemplates();
+//
+//    List<PspInformation> infopsps = informativePspAndTemplates.getLeft();
+//    HashMap<String, PspInformation> infopspsMap = new HashMap<>();
+//    infopsps.stream().forEach(k -> infopspsMap.put(k.getPsp(), k));
+//    configData.setPspInformations(infopspsMap);
+//
+//    List<PspInformation> infopspTemplates = informativePspAndTemplates.getRight();
+//    HashMap<String, PspInformation> infopspTemplatesMap = new HashMap<>();
+//    infopspTemplates.stream().forEach(k -> infopspTemplatesMap.put(k.getPsp(), k));
+//    configData.setPspInformationTemplates(infopspTemplatesMap);
+//
+//    List<CreditorInstitutionInformation> infopas = getInformativePa();
+//    HashMap<String, CreditorInstitutionInformation> infopasMap = new HashMap<>();
+//    infopas.stream().forEach(k -> infopasMap.put(k.getPa(), k));
+//    configData.setCreditorInstitutionInformations(infopasMap);
 
     long endTime = System.nanoTime();
     long duration = (endTime - startTime) / 1000000;
@@ -490,7 +490,7 @@ public class ConfigService {
   public List<Channel> getAllCanali() {
     log.info("loading Channels");
     return modelMapper.modelMapper()
-        .map(canaliRepository.findAllFetchingIntermediario(), new TypeToken<List<Channel>>() {
+        .map(canaliViewRepository.findAllFetchingIntermediario(), new TypeToken<List<Channel>>() {
         }.getType());
   }
 

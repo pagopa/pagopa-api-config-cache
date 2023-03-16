@@ -1,8 +1,7 @@
 package it.gov.pagopa.apiconfig.util.mapper;
 
-import it.gov.pagopa.apiconfig.starter.entity.Psp;
 import it.gov.pagopa.apiconfig.model.node.v1.psp.PaymentServiceProvider;
-import it.gov.pagopa.apiconfig.util.CommonUtil;
+import it.gov.pagopa.apiconfig.starter.entity.Psp;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
 
@@ -16,7 +15,7 @@ public class ConvertPspToPaymentServiceProviderDetails implements
         .pspCode(source.getIdPsp())
         .enabled(source.getEnabled())
         .description(source.getDescrizione())
-        .businessName(CommonUtil.deNull(source.getRagioneSociale()))
+        .businessName(source.getRagioneSociale())
         .abi(source.getAbi())
         .bic(source.getBic())
         .myBankCode(source.getCodiceMybank())

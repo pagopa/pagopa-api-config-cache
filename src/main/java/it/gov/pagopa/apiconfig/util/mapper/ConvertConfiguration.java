@@ -5,7 +5,6 @@ import it.gov.pagopa.apiconfig.starter.entity.ConfigurationKeys;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
 
-
 public class ConvertConfiguration implements Converter<ConfigurationKeys, ConfigurationKey> {
 
   @Override

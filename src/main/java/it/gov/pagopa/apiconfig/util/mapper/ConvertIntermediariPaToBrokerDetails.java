@@ -1,11 +1,9 @@
 package it.gov.pagopa.apiconfig.util.mapper;
 
-import it.gov.pagopa.apiconfig.starter.entity.IntermediariPa;
 import it.gov.pagopa.apiconfig.model.node.v1.creditorinstitution.BrokerCreditorInstitution;
-import it.gov.pagopa.apiconfig.util.CommonUtil;
+import it.gov.pagopa.apiconfig.starter.entity.IntermediariPa;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
-
 
 public class ConvertIntermediariPaToBrokerDetails implements
     Converter<IntermediariPa, BrokerCreditorInstitution> {
@@ -17,7 +15,7 @@ public class ConvertIntermediariPaToBrokerDetails implements
     return BrokerCreditorInstitution.builder()
         .enabled(source.getEnabled())
         .brokerCode(source.getIdIntermediarioPa())
-        .description(CommonUtil.deNull(source.getCodiceIntermediario()))
+        .description(source.getCodiceIntermediario())
         .extendedFaultBean(source.getFaultBeanEsteso())
         .build();
   }

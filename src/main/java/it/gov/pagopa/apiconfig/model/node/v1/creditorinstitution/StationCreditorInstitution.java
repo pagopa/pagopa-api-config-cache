@@ -9,13 +9,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-
-/**
- * Stations
- */
+/** Stations */
 @EqualsAndHashCode
 @Data
-
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
@@ -51,8 +47,14 @@ public class StationCreditorInstitution {
 
   @JsonIgnore
   public String getIdentifier() {
-    return stationCode + "_" + creditorInstitutionCode + "_" + auxDigit + "_" + applicationCode
-        + "_" + segregationCode;
+    return stationCode
+        + "_"
+        + creditorInstitutionCode
+        + "_"
+        + auxDigit
+        + "_"
+        + applicationCode
+        + "_"
+        + segregationCode;
   }
-
 }

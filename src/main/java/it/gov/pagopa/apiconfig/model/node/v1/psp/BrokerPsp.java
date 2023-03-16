@@ -9,13 +9,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-
-/**
- * BrokerDetails
- */
+/** BrokerDetails */
 @EqualsAndHashCode
 @Data
-
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
@@ -34,5 +30,4 @@ public class BrokerPsp {
 
   @JsonProperty(value = "extended_fault_bean", required = true)
   private Boolean extendedFaultBean;
-
 }

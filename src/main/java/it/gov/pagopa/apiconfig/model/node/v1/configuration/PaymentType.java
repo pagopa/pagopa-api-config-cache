@@ -8,13 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-
-/**
- * PaymentType
- */
+/** PaymentType */
 @Getter
 @Setter
-
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
@@ -26,6 +22,4 @@ public class PaymentType {
 
   @JsonProperty(value = "description")
   private String description;
-
-
 }

@@ -1,4 +1,4 @@
-package it.gov.pagopa.apiconfig.model.node.v1.configuration;
+package it.gov.pagopa.apiconfig.model.node.v1.common;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -14,6 +14,9 @@ public enum Protocol {
   }
 
   public static Protocol fromValue(String value) {
+    if(value == null){
+      return null;
+    }
     Optional<Protocol> protocol = Arrays.stream(Protocol.values())
         .filter(elem -> elem.value.equals(value))
         .findFirst();

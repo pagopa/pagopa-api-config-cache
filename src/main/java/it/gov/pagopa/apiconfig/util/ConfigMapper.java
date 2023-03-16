@@ -16,7 +16,7 @@ import it.gov.pagopa.apiconfig.model.node.v1.psp.BrokerPsp;
 import it.gov.pagopa.apiconfig.model.node.v1.psp.Channel;
 import it.gov.pagopa.apiconfig.model.node.v1.psp.PaymentServiceProvider;
 import it.gov.pagopa.apiconfig.starter.entity.CanaleTipoVersamento;
-import it.gov.pagopa.apiconfig.starter.entity.Canali;
+import it.gov.pagopa.apiconfig.starter.entity.CanaliView;
 import it.gov.pagopa.apiconfig.starter.entity.CdsServizio;
 import it.gov.pagopa.apiconfig.starter.entity.CdsSoggettoServizio;
 import it.gov.pagopa.apiconfig.starter.entity.Codifiche;
@@ -71,7 +71,7 @@ public class ConfigMapper {
     Converter<IntermediariPa, BrokerCreditorInstitution> convertIntermediariPaToBrokerDetails = new ConvertIntermediariPaToBrokerDetails();
     Converter<Psp, PaymentServiceProvider> convertPspToPaymentServiceProvider = new ConvertPspToPaymentServiceProviderDetails();
     Converter<IntermediariPsp, BrokerPsp> convertIntermediariPspToBrokerPspDetails = new ConvertIntermediariPspToBrokerPspDetails();
-    Converter<Canali, Channel> convertCanaliToChannelDetails = new ConvertCanaliToChannelDetails();
+    Converter<CanaliView, Channel> convertCanaliToChannelDetails = new ConvertCanaliToChannelDetails();
     Converter<CanaleTipoVersamento, PaymentType> convertCanaleTipoVersamentoToPaymentType = new ConvertCanaleTipoVersamentoToPaymentType();
     Converter<WfespPluginConf, Plugin> convertConfWfespPluginConf = new ConvertWfespPluginConfToWfespPluginConf();
     Converter<FtpServers, FtpServer> convertFtpServersFtpServer = new ConvertFtpServersToFtpServer();
@@ -97,7 +97,7 @@ public class ConfigMapper {
         .setConverter(convertPspToPaymentServiceProvider);
     mapper.createTypeMap(IntermediariPsp.class, BrokerPsp.class)
         .setConverter(convertIntermediariPspToBrokerPspDetails);
-    mapper.createTypeMap(Canali.class, Channel.class).setConverter(convertCanaliToChannelDetails);
+    mapper.createTypeMap(CanaliView.class, Channel.class).setConverter(convertCanaliToChannelDetails);
     mapper.createTypeMap(CanaleTipoVersamento.class, PaymentType.class)
         .setConverter(convertCanaleTipoVersamentoToPaymentType);
     mapper.createTypeMap(WfespPluginConf.class, Plugin.class)

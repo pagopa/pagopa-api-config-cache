@@ -10,19 +10,26 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-
-/**
- * FtpServer
- */
+/** FtpServer */
 @Getter
 @Setter
-
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
 @Builder
-@JsonPropertyOrder({"host", "port", "enabled", "username", "password", "root_path", "service",
-    "type", "in_path", "out_path", "history_path"})
+@JsonPropertyOrder({
+  "host",
+  "port",
+  "enabled",
+  "username",
+  "password",
+  "root_path",
+  "service",
+  "type",
+  "in_path",
+  "out_path",
+  "history_path"
+})
 public class FtpServer {
 
   @JsonProperty(value = "id", required = true)
@@ -61,10 +68,8 @@ public class FtpServer {
   @JsonProperty(value = "history_path", required = true)
   private String historyPath;
 
-
   @JsonIgnore
   public String getIdentifier() {
     return "" + this.hashCode();
   }
-
 }
