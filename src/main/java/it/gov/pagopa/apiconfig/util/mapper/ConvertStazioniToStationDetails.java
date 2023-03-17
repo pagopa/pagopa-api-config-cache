@@ -45,7 +45,7 @@ public class ConvertStazioniToStationDetails implements Converter<Stazioni, Stat
                 .build())
         .pofService(
             Service.builder()
-                .path(source.getServizioNmp())
+                .path(source.getServizioPof())
                 .targetHost(source.getTargetHostPof())
                 .targetPort(source.getTargetPortPof())
                 .targetPath(source.getTargetPathPof())
