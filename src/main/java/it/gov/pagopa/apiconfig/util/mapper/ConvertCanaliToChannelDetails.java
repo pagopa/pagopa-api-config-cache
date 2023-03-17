@@ -18,7 +18,7 @@ public class ConvertCanaliToChannelDetails implements Converter<CanaliView, Chan
   public Channel convert(MappingContext<CanaliView, Channel> context) {
     CanaliView source = context.getSource();
     Proxy proxy = null;
-    if(source.getProxyEnabled()){
+    if(source.getProxyEnabled() !=null && source.getProxyEnabled()){
       proxy = Proxy.builder()
           .proxyHost(source.getProxyHost())
           .proxyPort(source.getProxyPort())

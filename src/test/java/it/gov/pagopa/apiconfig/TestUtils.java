@@ -1,6 +1,7 @@
 package it.gov.pagopa.apiconfig;
 
 import it.gov.pagopa.apiconfig.starter.entity.Canali;
+import it.gov.pagopa.apiconfig.starter.entity.CanaliView;
 import it.gov.pagopa.apiconfig.starter.entity.CdiDetail;
 import it.gov.pagopa.apiconfig.starter.entity.CdiFasciaCostoServizio;
 import it.gov.pagopa.apiconfig.starter.entity.CdiInformazioniServizio;
@@ -79,19 +80,20 @@ public class TestUtils {
           .idPsp("idPsp2")
           .objId(2l)
           .build());
-  public static List<Canali> canali = Arrays.asList(
-      Canali.builder()
-          .intermediarioPsp(intpsp.get(0))
-          .protocollo("HTTP")
-          .idCanale("idCanale1")
-          .modelloPagamento("IMMEDIATO")
-          .build(),
-      Canali.builder()
-          .intermediarioPsp(intpsp.get(0))
-          .protocollo("HTTP")
-          .modelloPagamento("IMMEDIATO")
-          .idCanale("idCanale2")
-          .build());
+  public static List<CanaliView> canali =
+      Arrays.asList(
+          CanaliView.builder()
+              .intermediarioPsp(intpsp.get(0))
+              .protocollo("HTTP")
+              .idCanale("idCanale1")
+              .modelloPagamento("IMMEDIATO")
+              .build(),
+          CanaliView.builder()
+              .intermediarioPsp(intpsp.get(0))
+              .protocollo("HTTP")
+              .modelloPagamento("IMMEDIATO")
+              .idCanale("idCanale2")
+              .build());
 
   public static List<TipiVersamento> tipiVersamento = Arrays.asList(
       TipiVersamento.builder()

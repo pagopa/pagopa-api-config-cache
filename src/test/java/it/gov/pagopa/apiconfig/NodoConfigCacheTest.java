@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 import it.gov.pagopa.apiconfig.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.service.ConfigService;
-import it.gov.pagopa.apiconfig.starter.repository.CanaliRepository;
+import it.gov.pagopa.apiconfig.starter.repository.CanaliViewRepository;
 import it.gov.pagopa.apiconfig.starter.repository.CdiDetailRepository;
 import it.gov.pagopa.apiconfig.starter.repository.CdiFasciaCostoServizioRepository;
 import it.gov.pagopa.apiconfig.starter.repository.CdiInformazioniServizioRepository;
@@ -87,7 +87,7 @@ class NodoConfigCacheTest {
   @Mock
   private PaRepository paRepository;
   @Mock
-  private CanaliRepository canaliRepository;
+  private CanaliViewRepository canaliRepository;
   @Mock
   private PspCanaleTipoVersamentoCanaleRepository pspCanaleTipoVersamentoCanaleRepository;
   @Mock
