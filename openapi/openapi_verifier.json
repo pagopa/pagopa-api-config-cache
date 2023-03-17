@@ -4,7 +4,7 @@
     "title": "Api config cacher",
     "description": "Api config cacher",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.0.1"
+    "version": "0.1.0"
   },
   "servers": [
     {
