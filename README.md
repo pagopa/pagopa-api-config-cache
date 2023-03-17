@@ -10,7 +10,9 @@ TODO: generate a index with this tool: https://ecotrust-canada.github.io/markdow
 
 ## API Documentation 📖
 
-See the [OpenApi 3 here.](https://raw.githubusercontent.com/pagopa/pagopa-api-config-cache/main/openapi/openapi.json)
+See the OpenApi 3 for [Node here](https://raw.githubusercontent.com/pagopa/pagopa-api-config-cache/main/openapi/openapi_nodev1.json).
+
+See the OpenApi 3 for [Verifier here](https://raw.githubusercontent.com/pagopa/pagopa-api-config-cache/main/openapi/openapi_verifier.json).
 
 ---
 
@@ -54,6 +56,8 @@ from `./docker` directory
 Start the springboot application with this command:
 
 `mvn spring-boot:run -Dspring-boot.run.profiles=local`
+
+`mvn spring-boot:start -Dspring-boot.run.profiles=local`
 
 ### Spring Profiles
 

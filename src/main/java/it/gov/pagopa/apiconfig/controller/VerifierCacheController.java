@@ -28,8 +28,7 @@ public class VerifierCacheController {
   @Autowired
   private VerifierService verifierService;
 
-  @Operation(summary = "Get full node v1 config", security = {@SecurityRequirement(name = "ApiKey"),
-      @SecurityRequirement(name = "Authorization")}, tags = {"Creditor Institutions",})
+  @Operation(summary = "Get Creditor Institution list with Station v2", security = {@SecurityRequirement(name = "ApiKey")}, tags = {"VerifierCache",})
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ArrayList.class))),
       @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemJson.class))),
