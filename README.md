@@ -2,9 +2,20 @@
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pagopa_pagopa-api-config-cache&metric=alert_status)](https://sonarcloud.io/dashboard?id=TODO-set-your-id)
 
-API-Config Cache aims to generate customized cache data for stakeholder stored on the Redis cache.
+API-Config Cache aims to generate customized cache data stored on the Redis cache for the specific stakeholder needs.
 
-TODO: generate a index with this tool: https://ecotrust-canada.github.io/markdown-toc/
+- [Technology Stack](#technology-stack)
+- [Start project locally 🚀 `TODO`](#start-project-locally-----todo-)
+    * [Prerequisites](#prerequisites)
+    * [Run docker container](#run-docker-container)
+- [Develop locally 💻](#develop-locally---)
+    * [Prerequisites](#prerequisites-1)
+    * [Run the project](#run-the-project)
+    * [Spring Profiles](#spring-profiles)
+    * [Testing 🧪](#testing---)
+        + [Unit testing](#unit-testing)
+- [Contributors 👥](#contributors---)
+    * [Mainteiners](#mainteiners)
 
 ---
 
@@ -43,7 +54,7 @@ from `./docker` directory
 
 ---
 
-## Develop locally 💻 `TODO`
+## Develop locally 💻
 
 ### Prerequisites
 
