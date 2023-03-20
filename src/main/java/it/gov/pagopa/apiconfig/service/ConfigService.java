@@ -354,7 +354,7 @@ public class ConfigService {
 
     configData.setVersion("" + endTime);
 
-//    redisRepository.pushToRedisAsync(keyV1, keyV1Id, configData);
+    redisRepository.pushToRedisAsync(keyV1, keyV1Id, configData);
 
     return configData;
   }
