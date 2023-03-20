@@ -8,6 +8,8 @@ services:
     build:
       dockerfile: Dockerfile
       context: ../
+      args:
+        - github_token=${github_token}
     env_file:
       - ./config/.env
     ports:

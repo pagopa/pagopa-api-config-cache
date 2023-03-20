@@ -1,11 +1,6 @@
 #!/bin/bash
 set -e
 
-# install api-spec-converter if not present
-if [ $(npm list -g | grep -c api-spec-converter) -eq 0 ]; then
-  npm install -g api-spec-converter
-fi
-
 if ! $(curl --output /dev/null --silent --head --fail http://localhost:8080/actuator/info); then
   # create containers
   cd ../docker || exit

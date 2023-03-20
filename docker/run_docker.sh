@@ -38,6 +38,7 @@ fi
 
 export containerRegistry=${containerRegistry}
 export image=${image}
+export github_token="${GITHUB_TOKEN_READ_PACKAGES:-NOT_SET}"
 
 stack_name=$(cd .. && basename "$PWD")
 if [ "$RECREATE" = "--skip-recreate" ]; then
