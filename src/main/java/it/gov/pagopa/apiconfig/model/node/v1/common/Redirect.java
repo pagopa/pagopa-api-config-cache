@@ -24,7 +24,4 @@ public class Redirect {
 
   @JsonProperty(value = "query_string")
   private String queryString;
-
-
-
 }

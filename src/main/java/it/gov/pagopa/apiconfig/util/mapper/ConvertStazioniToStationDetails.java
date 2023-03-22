@@ -19,11 +19,13 @@ public class ConvertStazioniToStationDetails implements Converter<Stazioni, Stat
     Proxy proxy = null;
 
     if (Boolean.TRUE.equals(source.getProxyEnabled())) {
-      proxy = Proxy.builder()
-          .proxyHost(source.getProxyHost())
-          .proxyPort(source.getProxyPort())
-          .proxyUsername(source.getProxyUsername())
-          .proxyPassword(source.getProxyPassword()).build();
+      proxy =
+          Proxy.builder()
+              .proxyHost(source.getProxyHost())
+              .proxyPort(source.getProxyPort())
+              .proxyUsername(source.getProxyUsername())
+              .proxyPassword(source.getProxyPassword())
+              .build();
     }
 
     return Station.builder()
@@ -51,9 +53,7 @@ public class ConvertStazioniToStationDetails implements Converter<Stazioni, Stat
                 .targetPort(source.getTargetPortPof())
                 .targetPath(source.getTargetPathPof())
                 .build())
-        .mod4Service(
-            Service.builder().path(source.getServizio4Mod()).build()
-        )
+        .mod4Service(Service.builder().path(source.getServizio4Mod()).build())
         .mod4connection(
             Connection.builder()
                 .protocol(Protocol.fromValue(source.getProtocollo4Mod()))
@@ -61,12 +61,14 @@ public class ConvertStazioniToStationDetails implements Converter<Stazioni, Stat
                 .port(source.getPorta4Mod())
                 .build())
         .brokerCode(source.getIntermediarioPa().getIdIntermediarioPa())
-        .redirect(Redirect.builder()
-            .protocol(Protocol.fromValue(source.getRedirectProtocollo()))
-            .ip(source.getRedirectIp())
-            .port(source.getRedirectPort())
-            .path(source.getRedirectPath())
-            .queryString(source.getRedirectQueryString()).build())
+        .redirect(
+            Redirect.builder()
+                .protocol(Protocol.fromValue(source.getRedirectProtocollo()))
+                .ip(source.getRedirectIp())
+                .port(source.getRedirectPort())
+                .path(source.getRedirectPath())
+                .queryString(source.getRedirectQueryString())
+                .build())
         .proxy(proxy)
         .threadNumber(source.getNumThread())
         .timeouts(

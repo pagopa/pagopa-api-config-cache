@@ -15,12 +15,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-/**
- * StationDetails
- */
+/** StationDetails */
 @EqualsAndHashCode
 @Data
-
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
@@ -72,8 +69,7 @@ public class Station {
   @JsonProperty(value = "timeouts", required = true)
   private Timeouts timeouts;
 
-  @JsonIgnore
-  private Long brokerObjId;
+  @JsonIgnore private Long brokerObjId;
 
   @JsonProperty(value = "invio_rt_istantaneo", required = true)
   private Boolean rtInstantaneousDispatch;

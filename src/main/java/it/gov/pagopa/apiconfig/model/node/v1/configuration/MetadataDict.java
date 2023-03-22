@@ -26,5 +26,4 @@ public class MetadataDict {
 
   @JsonProperty(value = "end_date")
   private ZonedDateTime endDate;
-
 }

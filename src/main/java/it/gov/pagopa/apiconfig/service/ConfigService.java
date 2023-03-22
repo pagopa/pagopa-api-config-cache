@@ -786,9 +786,9 @@ public class ConfigService {
             .map(
                 i -> {
                   return PspInformation.builder()
-                          .psp(i.getInformativaPSP().get(0).getIdentificativoPSP())
-                          .informativa(toXml(i))
-                          .build();
+                      .psp(i.getInformativaPSP().get(0).getIdentificativoPSP())
+                      .informativa(toXml(i))
+                      .build();
                 })
             .collect(Collectors.toList());
 
@@ -1060,12 +1060,17 @@ public class ConfigService {
             .map(
                 i -> {
                   return CreditorInstitutionInformation.builder()
-                      .pa(i.getLeft()).informativa(toXml(i.getRight())).build();
+                      .pa(i.getLeft())
+                      .informativa(toXml(i.getRight()))
+                      .build();
                 })
             .collect(Collectors.toList());
 
-    CreditorInstitutionInformation informativaPAFull = CreditorInstitutionInformation.builder()
-        .pa("FULL").informativa(toXml(informativaPaFull)).build();
+    CreditorInstitutionInformation informativaPAFull =
+        CreditorInstitutionInformation.builder()
+            .pa("FULL")
+            .informativa(toXml(informativaPaFull))
+            .build();
 
     informativePaSingleCache.add(informativaPAFull);
     return informativePaSingleCache;

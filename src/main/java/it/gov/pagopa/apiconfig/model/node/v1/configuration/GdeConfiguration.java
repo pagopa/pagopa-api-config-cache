@@ -31,5 +31,4 @@ public class GdeConfiguration {
   public String getIdentifier() {
     return primitiva + "_" + type;
   }
-
 }

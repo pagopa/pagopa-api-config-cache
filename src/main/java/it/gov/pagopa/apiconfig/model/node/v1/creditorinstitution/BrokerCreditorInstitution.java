@@ -10,9 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * BrokerDetails
- */
+/** BrokerDetails */
 @EqualsAndHashCode
 @Builder
 @Getter
@@ -34,5 +32,4 @@ public class BrokerCreditorInstitution {
 
   @JsonProperty(value = "extended_fault_bean", required = true)
   private Boolean extendedFaultBean;
-
 }

@@ -5,8 +5,8 @@ import it.gov.pagopa.apiconfig.starter.entity.Psp;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
 
-public class ConvertPspToPaymentServiceProviderDetails implements
-    Converter<Psp, PaymentServiceProvider> {
+public class ConvertPspToPaymentServiceProviderDetails
+    implements Converter<Psp, PaymentServiceProvider> {
 
   @Override
   public PaymentServiceProvider convert(MappingContext<Psp, PaymentServiceProvider> context) {

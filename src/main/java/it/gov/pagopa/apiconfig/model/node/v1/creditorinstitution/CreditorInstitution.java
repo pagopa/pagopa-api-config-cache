@@ -10,13 +10,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * CreditorInstitution
- */
+/** CreditorInstitution */
 @EqualsAndHashCode
 @Getter
 @Setter
-
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
@@ -47,6 +44,4 @@ public class CreditorInstitution {
 
   @JsonProperty(value = "reporting_zip", required = true)
   private Boolean reportingZip;
-
-
 }

@@ -1,11 +1,11 @@
 package it.gov.pagopa.apiconfig;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import it.gov.pagopa.apiconfig.model.node.CacheVersion;import it.gov.pagopa.apiconfig.model.node.v1.ConfigDataV1;
+import it.gov.pagopa.apiconfig.model.node.CacheVersion;
+import it.gov.pagopa.apiconfig.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.service.ConfigService;
 import it.gov.pagopa.apiconfig.starter.repository.CanaliViewRepository;
@@ -44,78 +44,46 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.internal.matchers.Any;import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-//@SpringBootTest(classes = Application.class)
+// @SpringBootTest(classes = Application.class)
 @ExtendWith(MockitoExtension.class)
 class NodoConfigCacheTest {
 
-  @Mock
-  private RedisRepository redisRepository;
-  @Mock
-  private ConfigurationKeysRepository configurationKeysRepository;
-  @Mock
-  private IntermediariPaRepository intermediariPaRepository;
-  @Mock
-  private IntermediariPspRepository intermediariPspRepository;
-  @Mock
-  private CdsCategorieRepository cdsCategorieRepository;
-  @Mock
-  private CdsSoggettoRepository cdsSoggettoRepository;
-  @Mock
-  private CdsServizioRepository cdsServizioRepository;
-  @Mock
-  private CdsSoggettoServizioRepository cdsSoggettoServizioRepository;
-  @Mock
-  private GdeConfigRepository gdeConfigRepository;
-  @Mock
-  private DizionarioMetadatiRepository dizionarioMetadatiRepository;
-  @Mock
-  private FtpServersRepository ftpServersRepository;
-  @Mock
-  private TipiVersamentoRepository tipiVersamentoRepository;
-  @Mock
-  private WfespPluginConfRepository wfespPluginConfRepository;
-  @Mock
-  private CodifichePaRepository codifichePaRepository;
-  @Mock
-  private CodificheRepository codificheRepository;
-  @Mock
-  private IbanValidiPerPaRepository ibanValidiPerPaRepository;
-  @Mock
-  private StazioniRepository stazioniRepository;
-  @Mock
-  private PaStazionePaRepository paStazioniRepository;
-  @Mock
-  private PaRepository paRepository;
-  @Mock
-  private CanaliViewRepository canaliRepository;
-  @Mock
-  private PspCanaleTipoVersamentoCanaleRepository pspCanaleTipoVersamentoCanaleRepository;
-  @Mock
-  private PspRepository pspRepository;
-  @Mock
-  private CdiMasterValidRepository cdiMasterValidRepository;
-  @Mock
-  private CdiDetailRepository cdiDetailRepository;
-  @Mock
-  private CdiPreferenceRepository cdiPreferenceRepository;
-  @Mock
-  private CdiInformazioniServizioRepository cdiInformazioniServizioRepository;
-  @Mock
-  private CdiFasciaCostoServizioRepository cdiFasceRepository;
-  @Mock
-  private InformativePaMasterRepository informativePaMasterRepository;
-  @Mock
-  private InformativePaDetailRepository informativePaDetailRepository;
-  @Mock
-  private InformativePaFasceRepository informativePaFasceRepository;
+  @Mock private RedisRepository redisRepository;
+  @Mock private ConfigurationKeysRepository configurationKeysRepository;
+  @Mock private IntermediariPaRepository intermediariPaRepository;
+  @Mock private IntermediariPspRepository intermediariPspRepository;
+  @Mock private CdsCategorieRepository cdsCategorieRepository;
+  @Mock private CdsSoggettoRepository cdsSoggettoRepository;
+  @Mock private CdsServizioRepository cdsServizioRepository;
+  @Mock private CdsSoggettoServizioRepository cdsSoggettoServizioRepository;
+  @Mock private GdeConfigRepository gdeConfigRepository;
+  @Mock private DizionarioMetadatiRepository dizionarioMetadatiRepository;
+  @Mock private FtpServersRepository ftpServersRepository;
+  @Mock private TipiVersamentoRepository tipiVersamentoRepository;
+  @Mock private WfespPluginConfRepository wfespPluginConfRepository;
+  @Mock private CodifichePaRepository codifichePaRepository;
+  @Mock private CodificheRepository codificheRepository;
+  @Mock private IbanValidiPerPaRepository ibanValidiPerPaRepository;
+  @Mock private StazioniRepository stazioniRepository;
+  @Mock private PaStazionePaRepository paStazioniRepository;
+  @Mock private PaRepository paRepository;
+  @Mock private CanaliViewRepository canaliRepository;
+  @Mock private PspCanaleTipoVersamentoCanaleRepository pspCanaleTipoVersamentoCanaleRepository;
+  @Mock private PspRepository pspRepository;
+  @Mock private CdiMasterValidRepository cdiMasterValidRepository;
+  @Mock private CdiDetailRepository cdiDetailRepository;
+  @Mock private CdiPreferenceRepository cdiPreferenceRepository;
+  @Mock private CdiInformazioniServizioRepository cdiInformazioniServizioRepository;
+  @Mock private CdiFasciaCostoServizioRepository cdiFasceRepository;
+  @Mock private InformativePaMasterRepository informativePaMasterRepository;
+  @Mock private InformativePaDetailRepository informativePaDetailRepository;
+  @Mock private InformativePaFasceRepository informativePaFasceRepository;
 
-  @Spy
-  private ConfigMapper configMapper = new ConfigMapper();
+  @Spy private ConfigMapper configMapper = new ConfigMapper();
 
-  @InjectMocks
-  private ConfigService configService;
+  @InjectMocks private ConfigService configService;
 
   @BeforeEach
   void setUp() {
@@ -128,6 +96,7 @@ class NodoConfigCacheTest {
     CacheVersion cacheV1Id = configService.getCacheV1Id();
     assertThat(cacheV1Id.getVersion().equals(TestUtils.cacheId));
   }
+
   @Test
   void getCacheV1() throws Exception {
     when(configurationKeysRepository.findAll()).thenReturn(TestUtils.mockConfigurationKeys);
@@ -142,8 +111,8 @@ class NodoConfigCacheTest {
     when(cdiInformazioniServizioRepository.findAll()).thenReturn(TestUtils.cdiInformazioniServizio);
     when(canaliRepository.findAllFetchingIntermediario()).thenReturn(TestUtils.canali);
     when(tipiVersamentoRepository.findAll()).thenReturn(TestUtils.tipiVersamento);
-    when(pspCanaleTipoVersamentoCanaleRepository.findAllFetching()).thenReturn(
-        TestUtils.pspCanaliTv);
+    when(pspCanaleTipoVersamentoCanaleRepository.findAllFetching())
+        .thenReturn(TestUtils.pspCanaliTv);
     when(ftpServersRepository.findAll()).thenReturn(TestUtils.ftpServers);
     when(gdeConfigRepository.findAll()).thenReturn(TestUtils.gdeConfigurations);
     when(wfespPluginConfRepository.findAll()).thenReturn(TestUtils.plugins);
@@ -159,10 +128,14 @@ class NodoConfigCacheTest {
 
     ConfigDataV1 allData = configService.newCacheV1();
     assertThat(allData.getConfigurations())
-        .containsKey(TestUtils.mockConfigurationKeys.get(0).getConfigCategory() + "-"
-            + TestUtils.mockConfigurationKeys.get(0).getConfigKey())
-        .containsKey(TestUtils.mockConfigurationKeys.get(1).getConfigCategory() + "-"
-            + TestUtils.mockConfigurationKeys.get(1).getConfigKey());
+        .containsKey(
+            TestUtils.mockConfigurationKeys.get(0).getConfigCategory()
+                + "-"
+                + TestUtils.mockConfigurationKeys.get(0).getConfigKey())
+        .containsKey(
+            TestUtils.mockConfigurationKeys.get(1).getConfigCategory()
+                + "-"
+                + TestUtils.mockConfigurationKeys.get(1).getConfigKey());
     assertThat(allData.getMetadataDict())
         .containsKey(TestUtils.mockMetadataDicts.get(0).getKey())
         .containsKey(TestUtils.mockMetadataDicts.get(1).getKey());
@@ -186,17 +159,22 @@ class NodoConfigCacheTest {
         .containsKey(TestUtils.tipiVersamento.get(0).getTipoVersamento());
     assertThat(allData.getPspChannelPaymentTypes())
         .containsKey(
-            TestUtils.pspCanaliTv.get(0).getPsp().getIdPsp() + "_" + TestUtils.pspCanaliTv.get(0)
-                .getCanale().getIdCanale() + "_" + TestUtils.pspCanaliTv.get(0).getTipoVersamento()
-                .getTipoVersamento())
+            TestUtils.pspCanaliTv.get(0).getPsp().getIdPsp()
+                + "_"
+                + TestUtils.pspCanaliTv.get(0).getCanale().getIdCanale()
+                + "_"
+                + TestUtils.pspCanaliTv.get(0).getTipoVersamento().getTipoVersamento())
         .containsKey(
-            TestUtils.pspCanaliTv.get(1).getPsp().getIdPsp() + "_" + TestUtils.pspCanaliTv.get(1)
-                .getCanale().getIdCanale() + "_" + TestUtils.pspCanaliTv.get(1).getTipoVersamento()
-                .getTipoVersamento());
+            TestUtils.pspCanaliTv.get(1).getPsp().getIdPsp()
+                + "_"
+                + TestUtils.pspCanaliTv.get(1).getCanale().getIdCanale()
+                + "_"
+                + TestUtils.pspCanaliTv.get(1).getTipoVersamento().getTipoVersamento());
     assertThat(allData.getPspInformations())
         .containsKey(TestUtils.psps.get(0).getIdPsp())
         .containsKey(TestUtils.psps.get(1).getIdPsp())
-        .containsKey("FULL").containsKey("EMPTY");
+        .containsKey("FULL")
+        .containsKey("EMPTY");
     assertThat(allData.getPspInformationTemplates())
         .containsKey(TestUtils.psps.get(0).getIdPsp())
         .containsKey(TestUtils.psps.get(1).getIdPsp());
@@ -207,14 +185,26 @@ class NodoConfigCacheTest {
         .containsKey(TestUtils.ftpServers.get(0).getId().toString())
         .containsKey(TestUtils.ftpServers.get(1).getId().toString());
     assertThat(allData.getGdeConfigurations())
-        .containsKey(TestUtils.gdeConfigurations.get(0).getPrimitiva()+"_"+TestUtils.gdeConfigurations.get(0).getType())
-        .containsKey(TestUtils.gdeConfigurations.get(1).getPrimitiva()+"_"+TestUtils.gdeConfigurations.get(0).getType());
+        .containsKey(
+            TestUtils.gdeConfigurations.get(0).getPrimitiva()
+                + "_"
+                + TestUtils.gdeConfigurations.get(0).getType())
+        .containsKey(
+            TestUtils.gdeConfigurations.get(1).getPrimitiva()
+                + "_"
+                + TestUtils.gdeConfigurations.get(0).getType());
     assertThat(allData.getPlugins())
         .containsKey(TestUtils.plugins.get(0).getIdServPlugin())
         .containsKey(TestUtils.plugins.get(1).getIdServPlugin());
     assertThat(allData.getIbans())
-        .containsKey(TestUtils.ibans.get(0).getPa().getIdDominio()+"-"+TestUtils.ibans.get(0).getIbanAccredito())
-        .containsKey(TestUtils.ibans.get(1).getPa().getIdDominio()+"-"+TestUtils.ibans.get(1).getIbanAccredito());
+        .containsKey(
+            TestUtils.ibans.get(0).getPa().getIdDominio()
+                + "-"
+                + TestUtils.ibans.get(0).getIbanAccredito())
+        .containsKey(
+            TestUtils.ibans.get(1).getPa().getIdDominio()
+                + "-"
+                + TestUtils.ibans.get(1).getIbanAccredito());
     assertThat(allData.getCreditorInstitutionEncodings())
         .containsKey(TestUtils.pas.get(0).getIdDominio())
         .containsKey(TestUtils.pas.get(1).getIdDominio());
@@ -225,16 +215,26 @@ class NodoConfigCacheTest {
         .containsKey(TestUtils.stazioni.get(0).getIdStazione())
         .containsKey(TestUtils.stazioni.get(1).getIdStazione());
     assertThat(allData.getCreditorInstitutionStations())
-        .containsKey(TestUtils.paStazioniPa.get(0).getStazione().getIdStazione()+"_"+
-                TestUtils.paStazioniPa.get(0).getPa().getIdDominio()+"_"+
-            TestUtils.paStazioniPa.get(0).getAuxDigit()+"_"+
-            TestUtils.paStazioniPa.get(0).getProgressivo()+"_"+
-            TestUtils.paStazioniPa.get(0).getSegregazione())
-        .containsKey(TestUtils.paStazioniPa.get(1).getStazione().getIdStazione()+"_"+
-            TestUtils.paStazioniPa.get(1).getPa().getIdDominio()+"_"+
-            TestUtils.paStazioniPa.get(1).getAuxDigit()+"_"+
-            TestUtils.paStazioniPa.get(1).getProgressivo()+"_"+
-            TestUtils.paStazioniPa.get(1).getSegregazione());
+        .containsKey(
+            TestUtils.paStazioniPa.get(0).getStazione().getIdStazione()
+                + "_"
+                + TestUtils.paStazioniPa.get(0).getPa().getIdDominio()
+                + "_"
+                + TestUtils.paStazioniPa.get(0).getAuxDigit()
+                + "_"
+                + TestUtils.paStazioniPa.get(0).getProgressivo()
+                + "_"
+                + TestUtils.paStazioniPa.get(0).getSegregazione())
+        .containsKey(
+            TestUtils.paStazioniPa.get(1).getStazione().getIdStazione()
+                + "_"
+                + TestUtils.paStazioniPa.get(1).getPa().getIdDominio()
+                + "_"
+                + TestUtils.paStazioniPa.get(1).getAuxDigit()
+                + "_"
+                + TestUtils.paStazioniPa.get(1).getProgressivo()
+                + "_"
+                + TestUtils.paStazioniPa.get(1).getSegregazione());
 
     assertThat(allData.getCdsCategories())
         .containsKey(TestUtils.cdsCategorie.get(0).getDescription())
@@ -249,5 +249,4 @@ class NodoConfigCacheTest {
         .containsKey(TestUtils.cdsSoggettiServizi.get(0).getIdSoggettoServizio())
         .containsKey(TestUtils.cdsSoggettiServizi.get(1).getIdSoggettoServizio());
   }
-
 }

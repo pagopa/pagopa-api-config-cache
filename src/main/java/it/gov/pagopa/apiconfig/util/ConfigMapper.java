@@ -62,60 +62,93 @@ public class ConfigMapper {
     ModelMapper mapper = new ModelMapper();
     mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-    Converter<Pa, CreditorInstitution> convertPaToCreditorInstitutionDetails = new ConvertPaToCreditorInstitutionDetails();
-    Converter<ConfigurationKeys, ConfigurationKey> convertConfiguration = new ConvertConfiguration();
-    Converter<Stazioni, Station> convertStazioniToStationDetails = new ConvertStazioniToStationDetails();
-    Converter<CodifichePa, CreditorInstitutionEncoding> convertCodifichePaToEncoding = new ConvertCodifichePaToEncoding();
+    Converter<Pa, CreditorInstitution> convertPaToCreditorInstitutionDetails =
+        new ConvertPaToCreditorInstitutionDetails();
+    Converter<ConfigurationKeys, ConfigurationKey> convertConfiguration =
+        new ConvertConfiguration();
+    Converter<Stazioni, Station> convertStazioniToStationDetails =
+        new ConvertStazioniToStationDetails();
+    Converter<CodifichePa, CreditorInstitutionEncoding> convertCodifichePaToEncoding =
+        new ConvertCodifichePaToEncoding();
     Converter<Codifiche, Encoding> convertCodificheToEncoding = new ConvertCodificheToEncoding();
-    Converter<IbanValidiPerPa, Iban> convertIbanValidiPerPaToIban = new ConvertIbanValidiPerPaToIban();
-    Converter<IntermediariPa, BrokerCreditorInstitution> convertIntermediariPaToBrokerDetails = new ConvertIntermediariPaToBrokerDetails();
-    Converter<Psp, PaymentServiceProvider> convertPspToPaymentServiceProvider = new ConvertPspToPaymentServiceProviderDetails();
-    Converter<IntermediariPsp, BrokerPsp> convertIntermediariPspToBrokerPspDetails = new ConvertIntermediariPspToBrokerPspDetails();
-    Converter<CanaliView, Channel> convertCanaliToChannelDetails = new ConvertCanaliToChannelDetails();
-    Converter<CanaleTipoVersamento, PaymentType> convertCanaleTipoVersamentoToPaymentType = new ConvertCanaleTipoVersamentoToPaymentType();
-    Converter<WfespPluginConf, Plugin> convertConfWfespPluginConf = new ConvertWfespPluginConfToWfespPluginConf();
-    Converter<FtpServers, FtpServer> convertFtpServersFtpServer = new ConvertFtpServersToFtpServer();
-    Converter<TipiVersamento, PaymentType> convertTipiVersamentoPaymentType = new ConvertTipiVersamentoToPaymentType();
+    Converter<IbanValidiPerPa, Iban> convertIbanValidiPerPaToIban =
+        new ConvertIbanValidiPerPaToIban();
+    Converter<IntermediariPa, BrokerCreditorInstitution> convertIntermediariPaToBrokerDetails =
+        new ConvertIntermediariPaToBrokerDetails();
+    Converter<Psp, PaymentServiceProvider> convertPspToPaymentServiceProvider =
+        new ConvertPspToPaymentServiceProviderDetails();
+    Converter<IntermediariPsp, BrokerPsp> convertIntermediariPspToBrokerPspDetails =
+        new ConvertIntermediariPspToBrokerPspDetails();
+    Converter<CanaliView, Channel> convertCanaliToChannelDetails =
+        new ConvertCanaliToChannelDetails();
+    Converter<CanaleTipoVersamento, PaymentType> convertCanaleTipoVersamentoToPaymentType =
+        new ConvertCanaleTipoVersamentoToPaymentType();
+    Converter<WfespPluginConf, Plugin> convertConfWfespPluginConf =
+        new ConvertWfespPluginConfToWfespPluginConf();
+    Converter<FtpServers, FtpServer> convertFtpServersFtpServer =
+        new ConvertFtpServersToFtpServer();
+    Converter<TipiVersamento, PaymentType> convertTipiVersamentoPaymentType =
+        new ConvertTipiVersamentoToPaymentType();
     Converter<PaymentType, String> convertPaymentTypeString = new ConvertPaymentTypeToString();
-    Converter<PaymentType, TipiVersamento> convertPaymentTypeTipiVersamento = new ConvertPaymentTypeToTipiVersamento();
+    Converter<PaymentType, TipiVersamento> convertPaymentTypeTipiVersamento =
+        new ConvertPaymentTypeToTipiVersamento();
 
-    Converter<CdsServizio, CdsService> convertCdsServizioCdsCatService = new ConvertCdsServizioCdsCatService();
-    Converter<CdsSoggettoServizio, CdsSubjectService> convertCdsSoggettoServizioCdsSubjectService = new ConvertCdsSoggettoServizioCdsSubjectService();
+    Converter<CdsServizio, CdsService> convertCdsServizioCdsCatService =
+        new ConvertCdsServizioCdsCatService();
+    Converter<CdsSoggettoServizio, CdsSubjectService> convertCdsSoggettoServizioCdsSubjectService =
+        new ConvertCdsSoggettoServizioCdsSubjectService();
 
-    mapper.createTypeMap(Pa.class, CreditorInstitution.class)
+    mapper
+        .createTypeMap(Pa.class, CreditorInstitution.class)
         .setConverter(convertPaToCreditorInstitutionDetails);
-    mapper.createTypeMap(Stazioni.class, Station.class)
+    mapper
+        .createTypeMap(Stazioni.class, Station.class)
         .setConverter(convertStazioniToStationDetails);
-    mapper.createTypeMap(CodifichePa.class, CreditorInstitutionEncoding.class)
+    mapper
+        .createTypeMap(CodifichePa.class, CreditorInstitutionEncoding.class)
         .setConverter(convertCodifichePaToEncoding);
     mapper.createTypeMap(Codifiche.class, Encoding.class).setConverter(convertCodificheToEncoding);
-    mapper.createTypeMap(IbanValidiPerPa.class, Iban.class)
+    mapper
+        .createTypeMap(IbanValidiPerPa.class, Iban.class)
         .setConverter(convertIbanValidiPerPaToIban);
-    mapper.createTypeMap(IntermediariPa.class, BrokerCreditorInstitution.class)
+    mapper
+        .createTypeMap(IntermediariPa.class, BrokerCreditorInstitution.class)
         .setConverter(convertIntermediariPaToBrokerDetails);
-    mapper.createTypeMap(Psp.class, PaymentServiceProvider.class)
+    mapper
+        .createTypeMap(Psp.class, PaymentServiceProvider.class)
         .setConverter(convertPspToPaymentServiceProvider);
-    mapper.createTypeMap(IntermediariPsp.class, BrokerPsp.class)
+    mapper
+        .createTypeMap(IntermediariPsp.class, BrokerPsp.class)
         .setConverter(convertIntermediariPspToBrokerPspDetails);
-    mapper.createTypeMap(CanaliView.class, Channel.class).setConverter(convertCanaliToChannelDetails);
-    mapper.createTypeMap(CanaleTipoVersamento.class, PaymentType.class)
+    mapper
+        .createTypeMap(CanaliView.class, Channel.class)
+        .setConverter(convertCanaliToChannelDetails);
+    mapper
+        .createTypeMap(CanaleTipoVersamento.class, PaymentType.class)
         .setConverter(convertCanaleTipoVersamentoToPaymentType);
-    mapper.createTypeMap(WfespPluginConf.class, Plugin.class)
+    mapper
+        .createTypeMap(WfespPluginConf.class, Plugin.class)
         .setConverter(convertConfWfespPluginConf);
-    mapper.createTypeMap(FtpServers.class, FtpServer.class)
+    mapper
+        .createTypeMap(FtpServers.class, FtpServer.class)
         .setConverter(convertFtpServersFtpServer);
-    mapper.createTypeMap(TipiVersamento.class, PaymentType.class)
+    mapper
+        .createTypeMap(TipiVersamento.class, PaymentType.class)
         .setConverter(convertTipiVersamentoPaymentType);
     mapper.createTypeMap(PaymentType.class, String.class).setConverter(convertPaymentTypeString);
-    mapper.createTypeMap(PaymentType.class, TipiVersamento.class)
+    mapper
+        .createTypeMap(PaymentType.class, TipiVersamento.class)
         .setConverter(convertPaymentTypeTipiVersamento);
 
-    mapper.createTypeMap(CdsServizio.class, CdsService.class)
+    mapper
+        .createTypeMap(CdsServizio.class, CdsService.class)
         .setConverter(convertCdsServizioCdsCatService);
-    mapper.createTypeMap(CdsSoggettoServizio.class, CdsSubjectService.class)
+    mapper
+        .createTypeMap(CdsSoggettoServizio.class, CdsSubjectService.class)
         .setConverter(convertCdsSoggettoServizioCdsSubjectService);
 
-    mapper.createTypeMap(ConfigurationKeys.class, ConfigurationKey.class)
+    mapper
+        .createTypeMap(ConfigurationKeys.class, ConfigurationKey.class)
         .setConverter(convertConfiguration);
 
     return mapper;

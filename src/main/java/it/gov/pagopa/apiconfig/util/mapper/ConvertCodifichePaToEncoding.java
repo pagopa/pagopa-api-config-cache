@@ -6,8 +6,8 @@ import it.gov.pagopa.apiconfig.starter.entity.CodifichePa;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
 
-public class ConvertCodifichePaToEncoding implements
-    Converter<CodifichePa, CreditorInstitutionEncoding> {
+public class ConvertCodifichePaToEncoding
+    implements Converter<CodifichePa, CreditorInstitutionEncoding> {
 
   @Override
   public CreditorInstitutionEncoding convert(
@@ -16,7 +16,7 @@ public class ConvertCodifichePaToEncoding implements
     CodeTypeEnum codeType = getCodeType(source);
     return CreditorInstitutionEncoding.builder()
         .creditorInstitutionCode(source.getCodicePa())
-        .codeType(codeType!=null?codeType:null)
+        .codeType(codeType != null ? codeType : null)
         .encodingCode(source.getCodicePa())
         .build();
   }

@@ -46,7 +46,7 @@ public class Channel {
 
   @JsonProperty(value = "service")
   private Service service;
-  
+
   @JsonProperty(value = "service_nmp")
   private Service nmpService;
 
@@ -85,5 +85,4 @@ public class Channel {
 
   @JsonProperty(value = "primitive_version", required = true)
   private Integer primitiveVersion;
-
 }

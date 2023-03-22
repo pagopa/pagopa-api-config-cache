@@ -14,13 +14,12 @@ public enum Protocol {
   }
 
   public static Protocol fromValue(String value) {
-    if(value == null){
+    if (value == null) {
       return null;
     }
-    Optional<Protocol> protocol = Arrays.stream(Protocol.values())
-        .filter(elem -> elem.value.equals(value))
-        .findFirst();
-    if(protocol.isPresent()){
+    Optional<Protocol> protocol =
+        Arrays.stream(Protocol.values()).filter(elem -> elem.value.equals(value)).findFirst();
+    if (protocol.isPresent()) {
       return protocol.get();
     } else {
       return null;

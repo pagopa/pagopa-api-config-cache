@@ -16,16 +16,14 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
   @Value("${cors.configuration}")
   private String corsConfiguration;
 
-
   @SneakyThrows
   @Override
   public void addCorsMappings(CorsRegistry registry) {
-    AppCorsConfiguration appCorsConfiguration = new ObjectMapper().readValue(corsConfiguration,
-        AppCorsConfiguration.class);
-    registry.addMapping("/**")
+    AppCorsConfiguration appCorsConfiguration =
+        new ObjectMapper().readValue(corsConfiguration, AppCorsConfiguration.class);
+    registry
+        .addMapping("/**")
         .allowedOrigins(appCorsConfiguration.getOrigins())
         .allowedMethods(appCorsConfiguration.getMethods());
   }
 }
-
-

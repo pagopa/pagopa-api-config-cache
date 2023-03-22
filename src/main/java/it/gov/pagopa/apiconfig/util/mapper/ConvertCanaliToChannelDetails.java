@@ -17,24 +17,26 @@ public class ConvertCanaliToChannelDetails implements Converter<CanaliView, Chan
   public Channel convert(MappingContext<CanaliView, Channel> context) {
     CanaliView source = context.getSource();
     Proxy proxy = null;
-    if(source.getProxyEnabled() !=null && source.getProxyEnabled()){
-      proxy = Proxy.builder()
-          .proxyHost(source.getProxyHost())
-          .proxyPort(source.getProxyPort())
-          .proxyUsername(source.getProxyUsername())
-          .proxyPassword(source.getProxyPassword()).build();
+    if (source.getProxyEnabled() != null && source.getProxyEnabled()) {
+      proxy =
+          Proxy.builder()
+              .proxyHost(source.getProxyHost())
+              .proxyPort(source.getProxyPort())
+              .proxyUsername(source.getProxyUsername())
+              .proxyPassword(source.getProxyPassword())
+              .build();
     }
 
     return Channel.builder()
         .channelCode(source.getIdCanale())
         .description(source.getDescrizione())
         .enabled(source.getEnabled())
-        .connection(Connection
-            .builder()
-            .protocol(Protocol.fromValue(source.getProtocollo()))
-            .ip(source.getIp())
-            .port(source.getPorta())
-            .build())
+        .connection(
+            Connection.builder()
+                .protocol(Protocol.fromValue(source.getProtocollo()))
+                .ip(source.getIp())
+                .port(source.getPorta())
+                .build())
         .password(source.getPassword())
         .service(
             Service.builder()
@@ -60,12 +62,14 @@ public class ConvertCanaliToChannelDetails implements Converter<CanaliView, Chan
                 .timeoutC(source.getTimeoutC())
                 .build())
         .newFaultCode(source.getUseNewFaultCode())
-        .redirect(Redirect.builder()
-            .protocol(Protocol.fromValue(source.getRedirectProtocollo()))
-            .ip(source.getRedirectIp())
-            .port(source.getRedirectPort())
-            .path(source.getRedirectPath())
-            .queryString(source.getRedirectQueryString()).build())
+        .redirect(
+            Redirect.builder()
+                .protocol(Protocol.fromValue(source.getRedirectProtocollo()))
+                .ip(source.getRedirectIp())
+                .port(source.getRedirectPort())
+                .path(source.getRedirectPath())
+                .queryString(source.getRedirectQueryString())
+                .build())
         .paymentModel(source.getModelloPagamento())
         .rtPush(source.getRtPush())
         .recovery(source.getRecovery())
@@ -76,5 +80,4 @@ public class ConvertCanaliToChannelDetails implements Converter<CanaliView, Chan
         .servPlugin(source.getIdServPlugin())
         .build();
   }
-
 }

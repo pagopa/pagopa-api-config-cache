@@ -5,8 +5,8 @@ import it.gov.pagopa.apiconfig.starter.entity.IntermediariPsp;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
 
-public class ConvertIntermediariPspToBrokerPspDetails implements
-    Converter<IntermediariPsp, BrokerPsp> {
+public class ConvertIntermediariPspToBrokerPspDetails
+    implements Converter<IntermediariPsp, BrokerPsp> {
 
   @Override
   public BrokerPsp convert(MappingContext<IntermediariPsp, BrokerPsp> context) {
