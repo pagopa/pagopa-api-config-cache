@@ -20,5 +20,4 @@ public class Connection {
 
   @JsonProperty(value = "port", required = true)
   private Long port;
-
 }

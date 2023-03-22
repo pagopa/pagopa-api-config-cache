@@ -1,6 +1,5 @@
 package it.gov.pagopa.apiconfig.service;
 
-
 import it.gov.pagopa.apiconfig.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.repository.VerifierRepository;
 import java.util.List;
@@ -19,13 +18,10 @@ public class VerifierService {
   @Value("apicfg_${spring.database.id}_verifier_v1")
   private String keyV1;
 
-  @Autowired
-  private PlatformTransactionManager transactionManager;
-  @Autowired
-  private RedisRepository redisRepository;
+  @Autowired private PlatformTransactionManager transactionManager;
+  @Autowired private RedisRepository redisRepository;
 
-  @Autowired
-  private VerifierRepository paRepository;
+  @Autowired private VerifierRepository paRepository;
 
   public List<String> getPaV2() {
     List<String> allPaForVerifier = paRepository.findAllPaForVerifier();

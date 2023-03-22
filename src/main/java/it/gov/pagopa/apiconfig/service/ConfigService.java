@@ -785,12 +785,10 @@ public class ConfigService {
         informativePspSingle.stream()
             .map(
                 i -> {
-                  PspInformation informativaPSP =
-                      PspInformation.builder()
+                  return PspInformation.builder()
                           .psp(i.getInformativaPSP().get(0).getIdentificativoPSP())
                           .informativa(toXml(i))
                           .build();
-                  return informativaPSP;
                 })
             .collect(Collectors.toList());
 
@@ -1061,9 +1059,8 @@ public class ConfigService {
         informativePaSingle.stream()
             .map(
                 i -> {
-                  CreditorInstitutionInformation informativaPA = CreditorInstitutionInformation.builder()
+                  return CreditorInstitutionInformation.builder()
                       .pa(i.getLeft()).informativa(toXml(i.getRight())).build();
-                  return informativaPA;
                 })
             .collect(Collectors.toList());
 
