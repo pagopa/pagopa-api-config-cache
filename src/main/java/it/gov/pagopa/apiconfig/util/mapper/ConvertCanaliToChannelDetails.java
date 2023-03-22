@@ -7,7 +7,6 @@ import it.gov.pagopa.apiconfig.model.node.v1.common.Redirect;
 import it.gov.pagopa.apiconfig.model.node.v1.common.Service;
 import it.gov.pagopa.apiconfig.model.node.v1.common.Timeouts;
 import it.gov.pagopa.apiconfig.model.node.v1.psp.Channel;
-import it.gov.pagopa.apiconfig.model.node.v1.psp.PaymentModel;
 import it.gov.pagopa.apiconfig.starter.entity.CanaliView;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
@@ -77,10 +76,5 @@ public class ConvertCanaliToChannelDetails implements Converter<CanaliView, Chan
         .servPlugin(source.getIdServPlugin())
         .build();
   }
-
-  private PaymentModel getPaymentModel(String modelloPagamento) {
-    return PaymentModel.fromDatabaseValue(modelloPagamento);
-  }
-
 
 }

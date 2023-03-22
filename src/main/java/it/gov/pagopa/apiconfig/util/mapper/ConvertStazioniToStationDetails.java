@@ -17,7 +17,8 @@ public class ConvertStazioniToStationDetails implements Converter<Stazioni, Stat
   public Station convert(MappingContext<Stazioni, Station> context) {
     Stazioni source = context.getSource();
     Proxy proxy = null;
-    if (source.getProxyEnabled()) {
+
+    if (Boolean.TRUE.equals(source.getProxyEnabled())) {
       proxy = Proxy.builder()
           .proxyHost(source.getProxyHost())
           .proxyPort(source.getProxyPort())
