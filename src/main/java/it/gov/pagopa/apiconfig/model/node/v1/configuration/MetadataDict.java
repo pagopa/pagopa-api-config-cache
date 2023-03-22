@@ -12,7 +12,6 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class MetadataDict {

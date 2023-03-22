@@ -1,9 +1,11 @@
 package it.gov.pagopa.apiconfig;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import it.gov.pagopa.apiconfig.model.node.v1.ConfigDataV1;
+import it.gov.pagopa.apiconfig.model.node.CacheVersion;import it.gov.pagopa.apiconfig.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.service.ConfigService;
 import it.gov.pagopa.apiconfig.starter.repository.CanaliViewRepository;
@@ -42,7 +44,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.internal.matchers.Any;import org.mockito.junit.jupiter.MockitoExtension;
 
 //@SpringBootTest(classes = Application.class)
 @ExtendWith(MockitoExtension.class)
@@ -117,6 +119,17 @@ class NodoConfigCacheTest {
 
   @BeforeEach
   void setUp() {
+    org.springframework.test.util.ReflectionTestUtils.setField(configService, "keyV1Id", "value");
+  }
+
+  @Test
+  void getCacheV1Id() {
+    when(redisRepository.getStringByKeyId(anyString())).thenReturn(TestUtils.cacheId);
+    CacheVersion cacheV1Id = configService.getCacheV1Id();
+    assertThat(cacheV1Id.getVersion().equals(TestUtils.cacheId));
+  }
+  @Test
+  void getCacheV1() throws Exception {
     when(configurationKeysRepository.findAll()).thenReturn(TestUtils.mockConfigurationKeys);
     when(dizionarioMetadatiRepository.findAll()).thenReturn(TestUtils.mockMetadataDicts);
     when(paRepository.findAll()).thenReturn(TestUtils.pas);
@@ -131,10 +144,19 @@ class NodoConfigCacheTest {
     when(tipiVersamentoRepository.findAll()).thenReturn(TestUtils.tipiVersamento);
     when(pspCanaleTipoVersamentoCanaleRepository.findAllFetching()).thenReturn(
         TestUtils.pspCanaliTv);
-  }
+    when(ftpServersRepository.findAll()).thenReturn(TestUtils.ftpServers);
+    when(gdeConfigRepository.findAll()).thenReturn(TestUtils.gdeConfigurations);
+    when(wfespPluginConfRepository.findAll()).thenReturn(TestUtils.plugins);
+    when(ibanValidiPerPaRepository.findAllFetchingPas()).thenReturn(TestUtils.ibans);
+    when(codifichePaRepository.findAllFetchingCodifiche()).thenReturn(TestUtils.encodingsPA);
+    when(codificheRepository.findAll()).thenReturn(TestUtils.encodings);
+    when(stazioniRepository.findAllFetchingIntermediario()).thenReturn(TestUtils.stazioni);
+    when(paStazioniRepository.findAllFetching()).thenReturn(TestUtils.paStazioniPa);
+    when(cdsServizioRepository.findAllFetching()).thenReturn(TestUtils.cdsServizi);
+    when(cdsSoggettoServizioRepository.findAllFetching()).thenReturn(TestUtils.cdsSoggettiServizi);
+    when(cdsSoggettoRepository.findAll()).thenReturn(TestUtils.cdsSoggetti);
+    when(cdsCategorieRepository.findAll()).thenReturn(TestUtils.cdsCategorie);
 
-  @Test
-  void getCacheV1() throws Exception {
     ConfigDataV1 allData = configService.newCacheV1();
     assertThat(allData.getConfigurations())
         .containsKey(TestUtils.mockConfigurationKeys.get(0).getConfigCategory() + "-"
@@ -181,7 +203,51 @@ class NodoConfigCacheTest {
     assertThat(allData.getPspBrokers())
         .containsKey(TestUtils.intpsp.get(0).getIdIntermediarioPsp())
         .containsKey(TestUtils.intpsp.get(1).getIdIntermediarioPsp());
+    assertThat(allData.getFtpServers())
+        .containsKey(TestUtils.ftpServers.get(0).getId().toString())
+        .containsKey(TestUtils.ftpServers.get(1).getId().toString());
+    assertThat(allData.getGdeConfigurations())
+        .containsKey(TestUtils.gdeConfigurations.get(0).getPrimitiva()+"_"+TestUtils.gdeConfigurations.get(0).getType())
+        .containsKey(TestUtils.gdeConfigurations.get(1).getPrimitiva()+"_"+TestUtils.gdeConfigurations.get(0).getType());
+    assertThat(allData.getPlugins())
+        .containsKey(TestUtils.plugins.get(0).getIdServPlugin())
+        .containsKey(TestUtils.plugins.get(1).getIdServPlugin());
+    assertThat(allData.getIbans())
+        .containsKey(TestUtils.ibans.get(0).getPa().getIdDominio()+"-"+TestUtils.ibans.get(0).getIbanAccredito())
+        .containsKey(TestUtils.ibans.get(1).getPa().getIdDominio()+"-"+TestUtils.ibans.get(1).getIbanAccredito());
+    assertThat(allData.getCreditorInstitutionEncodings())
+        .containsKey(TestUtils.pas.get(0).getIdDominio())
+        .containsKey(TestUtils.pas.get(1).getIdDominio());
+    assertThat(allData.getEncodings())
+        .containsKey(TestUtils.encodings.get(0).getIdCodifica())
+        .containsKey(TestUtils.encodings.get(1).getIdCodifica());
+    assertThat(allData.getStations())
+        .containsKey(TestUtils.stazioni.get(0).getIdStazione())
+        .containsKey(TestUtils.stazioni.get(1).getIdStazione());
+    assertThat(allData.getCreditorInstitutionStations())
+        .containsKey(TestUtils.paStazioniPa.get(0).getStazione().getIdStazione()+"_"+
+                TestUtils.paStazioniPa.get(0).getPa().getIdDominio()+"_"+
+            TestUtils.paStazioniPa.get(0).getAuxDigit()+"_"+
+            TestUtils.paStazioniPa.get(0).getProgressivo()+"_"+
+            TestUtils.paStazioniPa.get(0).getSegregazione())
+        .containsKey(TestUtils.paStazioniPa.get(1).getStazione().getIdStazione()+"_"+
+            TestUtils.paStazioniPa.get(1).getPa().getIdDominio()+"_"+
+            TestUtils.paStazioniPa.get(1).getAuxDigit()+"_"+
+            TestUtils.paStazioniPa.get(1).getProgressivo()+"_"+
+            TestUtils.paStazioniPa.get(1).getSegregazione());
 
+    assertThat(allData.getCdsCategories())
+        .containsKey(TestUtils.cdsCategorie.get(0).getDescription())
+        .containsKey(TestUtils.cdsCategorie.get(1).getDescription());
+    assertThat(allData.getCdsServices())
+        .containsKey(TestUtils.cdsServizi.get(0).getIdServizio())
+        .containsKey(TestUtils.cdsServizi.get(1).getIdServizio());
+    assertThat(allData.getCdsSubjects())
+        .containsKey(TestUtils.cdsSoggetti.get(0).getCreditorInstitutionCode())
+        .containsKey(TestUtils.cdsSoggetti.get(1).getCreditorInstitutionCode());
+    assertThat(allData.getCdsSubjectServices())
+        .containsKey(TestUtils.cdsSoggettiServizi.get(0).getIdSoggettoServizio())
+        .containsKey(TestUtils.cdsSoggettiServizi.get(1).getIdSoggettoServizio());
   }
 
 }
