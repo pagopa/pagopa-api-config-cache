@@ -18,7 +18,7 @@ on:
   workflow_dispatch:
 
 env:
-  PROJECT_KEY: # TODO
+  PROJECT_KEY: pagopa_pagopa-api-config-cache
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
