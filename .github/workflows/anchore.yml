@@ -47,7 +47,6 @@ jobs:
         with:
           image: "localbuild/testimage:latest"
           output-format: sarif
-          acs-report-enable: true
           fail-build: true
           severity-cutoff: "high"
       - name: Upload Anchore Scan Report
