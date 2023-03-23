@@ -42,9 +42,7 @@ steps:
         sonar.projectVersion=$(Build.BuildNumber)
         sonar.sources=src/main/java
         sonar.tests=src/test/java
-        sonar.junit.reportPaths=target/test-reports
-        sonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
-
+        sonar.coverage.exclusions=**/imported/**
   - task: Maven@3
     displayName: 'Run Junit Test'
     inputs:
