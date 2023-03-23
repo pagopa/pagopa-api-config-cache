@@ -1,5 +1,7 @@
 package it.gov.pagopa.apiconfig.service;
 
+import it.gov.pagopa.apiconfig.exception.AppError;
+import it.gov.pagopa.apiconfig.exception.AppException;
 import it.gov.pagopa.apiconfig.imported.catalogodati.CtCostiServizio;
 import it.gov.pagopa.apiconfig.imported.catalogodati.CtFasciaCostoServizio;
 import it.gov.pagopa.apiconfig.imported.catalogodati.CtIdentificazioneServizio;
@@ -23,8 +25,17 @@ import it.gov.pagopa.apiconfig.imported.controparti.CtFasciaOraria;
 import it.gov.pagopa.apiconfig.imported.controparti.CtInformativaControparte;
 import it.gov.pagopa.apiconfig.imported.controparti.CtListaInformativeControparte;
 import it.gov.pagopa.apiconfig.imported.controparti.StTipoPeriodo;
-import it.gov.pagopa.apiconfig.exception.AppError;
-import it.gov.pagopa.apiconfig.exception.AppException;
+import it.gov.pagopa.apiconfig.imported.template.TplCostiServizio;
+import it.gov.pagopa.apiconfig.imported.template.TplFasciaCostoServizio;
+import it.gov.pagopa.apiconfig.imported.template.TplIdentificazioneServizio;
+import it.gov.pagopa.apiconfig.imported.template.TplInformativaDetail;
+import it.gov.pagopa.apiconfig.imported.template.TplInformativaMaster;
+import it.gov.pagopa.apiconfig.imported.template.TplInformativaPSP;
+import it.gov.pagopa.apiconfig.imported.template.TplInformazioniServizio;
+import it.gov.pagopa.apiconfig.imported.template.TplListaFasceCostoServizio;
+import it.gov.pagopa.apiconfig.imported.template.TplListaInformativaDetail;
+import it.gov.pagopa.apiconfig.imported.template.TplListaInformazioniServizio;
+import it.gov.pagopa.apiconfig.imported.template.TplListaParoleChiave;
 import it.gov.pagopa.apiconfig.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.model.node.v1.cds.CdsCategory;
@@ -91,17 +102,6 @@ import it.gov.pagopa.apiconfig.starter.repository.PspRepository;
 import it.gov.pagopa.apiconfig.starter.repository.StazioniRepository;
 import it.gov.pagopa.apiconfig.starter.repository.TipiVersamentoRepository;
 import it.gov.pagopa.apiconfig.starter.repository.WfespPluginConfRepository;
-import it.gov.pagopa.apiconfig.imported.template.TplCostiServizio;
-import it.gov.pagopa.apiconfig.imported.template.TplFasciaCostoServizio;
-import it.gov.pagopa.apiconfig.imported.template.TplIdentificazioneServizio;
-import it.gov.pagopa.apiconfig.imported.template.TplInformativaDetail;
-import it.gov.pagopa.apiconfig.imported.template.TplInformativaMaster;
-import it.gov.pagopa.apiconfig.imported.template.TplInformativaPSP;
-import it.gov.pagopa.apiconfig.imported.template.TplInformazioniServizio;
-import it.gov.pagopa.apiconfig.imported.template.TplListaFasceCostoServizio;
-import it.gov.pagopa.apiconfig.imported.template.TplListaInformativaDetail;
-import it.gov.pagopa.apiconfig.imported.template.TplListaInformazioniServizio;
-import it.gov.pagopa.apiconfig.imported.template.TplListaParoleChiave;
 import it.gov.pagopa.apiconfig.util.ConfigMapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -523,7 +523,8 @@ public class ConfigService {
   private String toXml(TplInformativaPSP element) {
     try {
       JAXBElement<TplInformativaPSP> informativaPSP =
-          new it.gov.pagopa.apiconfig.imported.template.ObjectFactory().createInformativaPSP(element);
+          new it.gov.pagopa.apiconfig.imported.template.ObjectFactory()
+              .createInformativaPSP(element);
       JAXBContext jc = JAXBContext.newInstance(element.getClass());
       Marshaller marshaller = jc.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
