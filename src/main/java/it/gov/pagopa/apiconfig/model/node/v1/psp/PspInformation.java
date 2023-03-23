@@ -17,8 +17,7 @@ import lombok.ToString;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PspInformation {
 
-  @JsonIgnore
-  private String psp;
+  @JsonIgnore private String psp;
 
   @JsonProperty(value = "informativa", required = true)
   private String informativa;

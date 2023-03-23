@@ -34,12 +34,11 @@ public class RedisConfig {
 
   @Bean
   public LettuceConnectionFactory redisConnectionFactory() {
-    RedisStandaloneConfiguration redisConfiguration = new RedisStandaloneConfiguration(redisHost,
-        redisPort);
+    RedisStandaloneConfiguration redisConfiguration =
+        new RedisStandaloneConfiguration(redisHost, redisPort);
     redisConfiguration.setPassword(redisPwd);
-    LettuceClientConfiguration lettuceConfig = LettuceClientConfiguration.builder()
-        .useSsl()
-        .build();
+    LettuceClientConfiguration lettuceConfig =
+        LettuceClientConfiguration.builder().useSsl().build();
     return new LettuceConnectionFactory(redisConfiguration, lettuceConfig);
   }
 
@@ -54,5 +53,4 @@ public class RedisConfig {
     template.setConnectionFactory(connectionFactory);
     return template;
   }
-
 }

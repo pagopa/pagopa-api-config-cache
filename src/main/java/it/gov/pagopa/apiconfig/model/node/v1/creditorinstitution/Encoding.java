@@ -8,9 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-/**
- * Encoding
- */
+/** Encoding */
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
@@ -22,9 +20,6 @@ public class Encoding {
   @JsonProperty(value = "code_type", required = true)
   private String codeType;
 
-
   @JsonProperty(value = "description", required = true)
   private String description;
-
-
 }

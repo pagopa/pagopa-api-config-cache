@@ -36,5 +36,4 @@ public class CdsService {
   public String getIdentifier() {
     return serviceId;
   }
-
 }

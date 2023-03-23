@@ -8,9 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-/**
- * CreditorInstitutionAddress
- */
+/** CreditorInstitutionAddress */
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
@@ -33,6 +31,4 @@ public class CreditorInstitutionAddress {
 
   @JsonProperty(value = "tax_domicile")
   private String taxDomicile;
-
-
 }

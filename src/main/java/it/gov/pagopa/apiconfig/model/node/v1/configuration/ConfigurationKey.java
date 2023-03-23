@@ -9,10 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-
-/**
- * ConfigurationKey
- */
+/** ConfigurationKey */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -37,5 +34,4 @@ public class ConfigurationKey {
   public String getIdentifier() {
     return category + "-" + key;
   }
-
 }

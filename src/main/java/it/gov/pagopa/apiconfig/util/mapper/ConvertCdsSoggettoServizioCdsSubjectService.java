@@ -5,7 +5,8 @@ import it.gov.pagopa.apiconfig.starter.entity.CdsSoggettoServizio;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
 
-public class ConvertCdsSoggettoServizioCdsSubjectService implements Converter<CdsSoggettoServizio, CdsSubjectService>  {
+public class ConvertCdsSoggettoServizioCdsSubjectService
+    implements Converter<CdsSoggettoServizio, CdsSubjectService> {
   public CdsSubjectService convert(
       MappingContext<CdsSoggettoServizio, CdsSubjectService> mappingContext) {
     CdsSoggettoServizio source = mappingContext.getSource();

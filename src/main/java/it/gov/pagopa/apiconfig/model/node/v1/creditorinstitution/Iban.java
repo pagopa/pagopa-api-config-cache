@@ -12,9 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-/**
- * Iban
- */
+/** Iban */
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
@@ -39,10 +37,13 @@ public class Iban {
 
   @JsonProperty(value = "shop_id")
   private String idNegozio;
+
   @JsonProperty(value = "seller_bank_id")
   private String idSellerBank;
+
   @JsonProperty(value = "avvio_key")
   private String chiaveAvvio;
+
   @JsonProperty(value = "esito_key")
   private String chiaveEsito;
 
@@ -50,6 +51,4 @@ public class Iban {
   public String getIdentifier() {
     return creditorInstitutionCode + "-" + ibanValue;
   }
-
-
 }

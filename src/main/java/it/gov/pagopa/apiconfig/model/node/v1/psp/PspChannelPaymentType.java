@@ -8,9 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-
 @Data
-
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
@@ -19,8 +17,10 @@ public class PspChannelPaymentType {
 
   @JsonProperty(value = "psp_code", required = true)
   private String pspCode;
+
   @JsonProperty(value = "channel_code", required = true)
   private String channelCode;
+
   @JsonProperty(value = "payment_type", required = true)
   private String paymentType;
 
@@ -28,5 +28,4 @@ public class PspChannelPaymentType {
   public String getIdentifier() {
     return pspCode + "_" + channelCode + "_" + paymentType;
   }
-
 }

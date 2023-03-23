@@ -54,9 +54,7 @@ public class LoggingAspect {
     // all service methods
   }
 
-  /**
-   * Log essential info of application during the startup.
-   */
+  /** Log essential info of application during the startup. */
   @PostConstruct
   public void logStartup() {
     log.info("-> Starting {} version {} - environment {}", artifactId, version, environment);
@@ -77,22 +75,27 @@ public class LoggingAspect {
         .map(ps -> ((EnumerablePropertySource<?>) ps).getPropertyNames())
         .flatMap(Arrays::stream)
         .distinct()
-        .filter(prop -> !(prop.toLowerCase().contains("credentials") || prop.toLowerCase()
-            .contains("password") || prop.toLowerCase().contains("pass") || prop.toLowerCase()
-            .contains("pwd")))
+        .filter(
+            prop ->
+                !(prop.toLowerCase().contains("credentials")
+                    || prop.toLowerCase().contains("password")
+                    || prop.toLowerCase().contains("pass")
+                    || prop.toLowerCase().contains("pwd")))
         .forEach(prop -> log.debug("{}: {}", prop, env.getProperty(prop)));
   }
 
   @Before(value = "restController()")
   public void logApiInvocation(JoinPoint joinPoint) {
-    log.info("Invoking API operation {} - args: {}", joinPoint.getSignature().getName(),
+    log.info(
+        "Invoking API operation {} - args: {}",
+        joinPoint.getSignature().getName(),
         joinPoint.getArgs());
   }
 
   @AfterReturning(value = "restController()", returning = "result")
   public void returnApiInvocation(JoinPoint joinPoint, Object result) {
-    log.info("Successful API operation {} - result: {}", joinPoint.getSignature().getName(),
-        result);
+    log.info(
+        "Successful API operation {} - result: {}", joinPoint.getSignature().getName(), result);
   }
 
   @AfterReturning(value = "errorHandler()", returning = "result")
@@ -105,15 +108,17 @@ public class LoggingAspect {
     long startTime = System.currentTimeMillis();
     Object result = joinPoint.proceed();
     long endTime = System.currentTimeMillis();
-    log.trace("Time taken for Execution of {} is: {}ms", joinPoint.getSignature().toShortString(),
+    log.trace(
+        "Time taken for Execution of {} is: {}ms",
+        joinPoint.getSignature().toShortString(),
         (endTime - startTime));
     return result;
   }
 
   @Around(value = "repository() || service()")
   public Object logTrace(ProceedingJoinPoint joinPoint) throws Throwable {
-    log.debug("Call method {} - args: {}", joinPoint.getSignature().toShortString(),
-        joinPoint.getArgs());
+    log.debug(
+        "Call method {} - args: {}", joinPoint.getSignature().toShortString(), joinPoint.getArgs());
     Object result = joinPoint.proceed();
     log.debug("Return method {} - result: {}", joinPoint.getSignature().toShortString(), result);
     return result;

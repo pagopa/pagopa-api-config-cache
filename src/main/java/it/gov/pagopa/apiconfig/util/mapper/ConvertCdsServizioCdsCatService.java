@@ -1,8 +1,6 @@
 package it.gov.pagopa.apiconfig.util.mapper;
 
 import it.gov.pagopa.apiconfig.model.node.v1.cds.CdsService;
-import it.gov.pagopa.apiconfig.model.node.v1.psp.Channel;
-import it.gov.pagopa.apiconfig.starter.entity.Canali;
 import it.gov.pagopa.apiconfig.starter.entity.CdsServizio;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;

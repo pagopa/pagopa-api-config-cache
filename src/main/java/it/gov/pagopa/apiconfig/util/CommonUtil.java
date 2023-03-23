@@ -26,7 +26,6 @@ import org.xml.sax.SAXException;
 @UtilityClass
 public class CommonUtil {
 
-
   /**
    * @param timestamp {@link Timestamp} to convert
    * @return convert timestamp to {@link ZonedDateTime}
@@ -75,16 +74,16 @@ public class CommonUtil {
     return Optional.ofNullable(value).orElse(false);
   }
 
-
   /**
    * @param example filter
    * @return a new Example using the custom ExampleMatcher
    */
   public static <T> Example<T> getFilters(T example) {
-    ExampleMatcher matcher = ExampleMatcher.matching()
-        .withIgnoreNullValues()
-        .withIgnoreCase(true)
-        .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+    ExampleMatcher matcher =
+        ExampleMatcher.matching()
+            .withIgnoreNullValues()
+            .withIgnoreCase(true)
+            .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
     return Example.of(example, matcher);
   }
 
@@ -106,9 +105,9 @@ public class CommonUtil {
 
   /**
    * @param inputStream file xml to validate
-   * @param xsdUrl      url of XSD
-   * @throws SAXException       if XML is not valid
-   * @throws IOException        if XSD schema not found
+   * @param xsdUrl url of XSD
+   * @throws SAXException if XML is not valid
+   * @throws IOException if XSD schema not found
    * @throws XMLStreamException error during read XML
    */
   public static void syntaxValidation(InputStream inputStream, String xsdUrl)
@@ -148,7 +147,7 @@ public class CommonUtil {
 
   /**
    * @param headers header of the CSV file
-   * @param rows    data of the CSV file
+   * @param rows data of the CSV file
    * @return byte array of the CSV using commas (,) as separator
    */
   public static byte[] createCsv(List<String> headers, List<List<String>> rows) {
@@ -157,7 +156,6 @@ public class CommonUtil {
     rows.forEach(row -> csv.append(System.lineSeparator()).append(String.join(",", row)));
     return csv.toString().getBytes();
   }
-
 
   /**
    * @param env environment of the application
@@ -169,5 +167,4 @@ public class CommonUtil {
     }
     return "." + env.toLowerCase();
   }
-
 }

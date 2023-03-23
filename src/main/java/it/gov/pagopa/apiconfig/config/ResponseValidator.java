@@ -17,17 +17,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class ResponseValidator {
 
-  @Autowired
-  private Validator validator;
-
+  @Autowired private Validator validator;
 
   /**
    * This method validates the response annotated with the {@link javax.validation.constraints}
    *
    * @param joinPoint not used
-   * @param result    the response to validate
+   * @param result the response to validate
    */
-  @AfterReturning(pointcut = "execution(* it.gov.pagopa.apiconfig.controller.*.*(..))", returning = "result")
+  @AfterReturning(
+      pointcut = "execution(* it.gov.pagopa.apiconfig.controller.*.*(..))",
+      returning = "result")
   public void validateResponse(JoinPoint joinPoint, Object result) {
     if (result instanceof ResponseEntity) {
       validateResponse((ResponseEntity<?>) result);

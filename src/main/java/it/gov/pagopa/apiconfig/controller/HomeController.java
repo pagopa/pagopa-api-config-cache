@@ -14,7 +14,6 @@ public class HomeController {
   @Value("${server.servlet.context-path}")
   String basePath;
 
-
   /**
    * @return redirect to Swagger page documentation
    */
@@ -26,5 +25,4 @@ public class HomeController {
     }
     return new RedirectView(basePath + "swagger-ui.html");
   }
-
 }

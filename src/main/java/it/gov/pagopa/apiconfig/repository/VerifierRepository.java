@@ -7,8 +7,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface VerifierRepository extends JpaRepository<PaStazionePa, Long>{
-  @Query("select distinct(pa.idDominio) from PaStazionePa as paspa left join paspa.pa as pa left join paspa.stazione as staz"
-      + " where staz.versione = 2")
+public interface VerifierRepository extends JpaRepository<PaStazionePa, Long> {
+  @Query(
+      "select distinct(pa.idDominio) from PaStazionePa as paspa left join paspa.pa as pa left join"
+          + " paspa.stazione as staz where staz.versione = 2")
   List<String> findAllPaForVerifier();
 }

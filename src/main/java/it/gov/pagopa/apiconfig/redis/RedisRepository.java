@@ -12,8 +12,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class RedisRepository {
 
-  @Autowired
-  private RedisTemplate<String, Object> redisTemplate;
+  @Autowired private RedisTemplate<String, Object> redisTemplate;
 
   public void save(String key, Object value, long ttl) {
     redisTemplate.opsForValue().set(key, value, Duration.ofMinutes(ttl));
@@ -24,24 +23,25 @@ public class RedisRepository {
   }
 
   @Async
-  public void pushToRedisAsync(String key,String keyId,ConfigDataV1 configData) {
+  public void pushToRedisAsync(String key, String keyId, ConfigDataV1 configData) {
     try {
-      log.info("saving {} on redis",key);
+      log.info("saving {} on redis", key);
       save(key, configData, 1440);
       save(keyId, configData.getVersion(), 1440);
-      log.info("saved {} on redis,id {}",key, configData.getVersion());
+      log.info("saved {} on redis,id {}", key, configData.getVersion());
     } catch (Exception e) {
       log.error("could not save on redis", e);
     }
   }
+
   @Async
-  public void pushToRedisAsync(String key,Object object) {
+  public void pushToRedisAsync(String key, Object object) {
     try {
-      log.info("saving {} on redis",key);
+      log.info("saving {} on redis", key);
       save(key, object, 1440);
-      log.info("saved {} on redis",key);
+      log.info("saved {} on redis", key);
     } catch (Exception e) {
-      log.error("could not save "+key+"on redis", e);
+      log.error("could not save " + key + "on redis", e);
     }
   }
 
@@ -59,4 +59,3 @@ public class RedisRepository {
     }
   }
 }
-

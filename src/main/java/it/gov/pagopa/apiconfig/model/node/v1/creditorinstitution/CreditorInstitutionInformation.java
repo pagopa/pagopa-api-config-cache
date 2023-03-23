@@ -17,8 +17,7 @@ import lombok.ToString;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreditorInstitutionInformation {
 
-  @JsonIgnore
-  private String pa;
+  @JsonIgnore private String pa;
 
   @JsonProperty(value = "informativa", required = true)
   private String informativa;

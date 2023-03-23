@@ -9,9 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-/**
- * Encoding
- */
+/** Encoding */
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
@@ -21,7 +19,7 @@ import lombok.ToString;
 public class CreditorInstitutionEncoding {
 
   @JsonProperty(value = "code_type", required = true)
-  private String codeType;
+  private CodeTypeEnum codeType;
 
   @JsonProperty(value = "encoding_code", required = true)
   private String encodingCode;
@@ -29,16 +27,12 @@ public class CreditorInstitutionEncoding {
   @JsonProperty(value = "creditor_institution_code", required = true)
   private String creditorInstitutionCode;
 
-  @JsonIgnore
-  private Long paObjId;
+  @JsonIgnore private Long paObjId;
 
-  @JsonIgnore
-  private Long codificheObjId;
+  @JsonIgnore private Long codificheObjId;
 
   @JsonIgnore
   public String getIdentifier() {
     return encodingCode;
   }
-
-
 }

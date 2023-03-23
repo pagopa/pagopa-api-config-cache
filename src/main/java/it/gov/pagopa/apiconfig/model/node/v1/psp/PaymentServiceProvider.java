@@ -45,6 +45,4 @@ public class PaymentServiceProvider {
 
   @JsonProperty(value = "vat_number")
   private String vatNumber;
-
-
 }
