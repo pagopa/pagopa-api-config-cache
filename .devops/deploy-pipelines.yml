@@ -5,6 +5,14 @@ pr: none
 pool:
   vmImage: 'ubuntu-22.04'
 
+resources:
+  repositories:
+    - repository: pagopaCommons
+      type: github
+      name: pagopa/azure-pipeline-templates
+      ref: refs/tags/v3.9.0
+      endpoint: 'io-azure-devops-github-ro'
+
 parameters:
   - name: ENV
     displayName: Target Environment
@@ -47,6 +55,18 @@ parameters:
     values:
       - oracle
       - postgresql
+  - name: canary
+    type: boolean
+    default: true
+  - name: canaryWeight
+    type: number
+    default: 0
+    values:
+      - 0
+      - 10
+      - 30
+      - 50
+
 variables:
   USE_POSTGRESQL: ${{ eq( parameters.DATABASE,'postgresql') }}
   USE_ORACLE: ${{ eq( parameters.DATABASE,'oracle') }}
@@ -55,7 +75,10 @@ variables:
   imageRepository: '$(IMAGE_REPOSITORY_NAME)'
   nameSpace: '$(K8S_NAMESPACE)'
   FILE_CONFIG_PATH_CONFIGAPP: $(Build.SourcesDirectory)/helm/config/${{ parameters.ENV }}/application.properties
-
+  ${{ if parameters.canary }}:
+    appName: 'cache-canary'
+  ${{ else }}:
+    appName: 'cache'
   ${{ if eq(parameters['ENV'], 'dev') }}:
     dockerRegistryServiceConnection: $(DEV_CONTAINER_REGISTRY_SERVICE_CONN)
     dockerRegistryFqdn: $(DEV_CONTAINER_NAMESPACE)
@@ -64,7 +87,7 @@ variables:
     appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_DEV)"
     appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_DEV)"
     API_SUBSCRIPTION_KEY: $(DEV_API_SUBSCRIPTION_KEY)
-    appName: 'cache'
+    appName: $(appName)
     github_token_read_packages: '$(github_token_read_packages_dev)'
   ${{ if eq(parameters['ENV'], 'it') }}:
     dockerRegistryServiceConnection: $(DEV_CONTAINER_REGISTRY_SERVICE_CONN)
@@ -74,7 +97,7 @@ variables:
     appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_DEV)"
     appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_DEV)"
     API_SUBSCRIPTION_KEY: $(DEV_API_SUBSCRIPTION_KEY)
-    appName: 'cache-replica'
+    appName: '$(appName)-replica'
     github_token_read_packages: '$(github_token_read_packages_dev)'
   ${{ if eq(parameters['ENV'], 'uat') }}:
     dockerRegistryServiceConnection: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
@@ -84,7 +107,7 @@ variables:
     appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_UAT)"
     appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_UAT)"
     API_SUBSCRIPTION_KEY: $(UAT_API_SUBSCRIPTION_KEY)
-    appName: 'cache'
+    appName: $(appName)
     github_token_read_packages: '$(github_token_read_packages_uat)'
   ${{ if eq(parameters['ENV'], 'prf') }}:
     dockerRegistryServiceConnection: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
@@ -94,7 +117,7 @@ variables:
     appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_UAT)"
     appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_UAT)"
     API_SUBSCRIPTION_KEY: $(UAT_API_SUBSCRIPTION_KEY)
-    appName: 'cache-replica'
+    appName: '$(appName)-replica'
     github_token_read_packages: '$(github_token_read_packages_uat)'
   ${{ if eq(parameters['ENV'], 'prod') }}:
     dockerRegistryServiceConnection: $(PROD_CONTAINER_REGISTRY_SERVICE_CONN)
@@ -103,23 +126,13 @@ variables:
     poolImage: '$(deploy-pool-prod)'
     appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_PROD)"
     appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_PROD)"
-    appName: 'cache'
+    appName: $(appName)
     github_token_read_packages: '$(github_token_read_packages_prod)'
 
   ${{ if eq(variables['Build.SourceBranchName'], 'merge') }}:
     sourceBranch: "main" # force to main branch
   ${{ if ne(variables['Build.SourceBranchName'], 'merge') }}:
     sourceBranch: ${{ variables['Build.SourceBranchName'] }}
-
-
-
-resources:
-  repositories:
-    - repository: pagopaCommons
-      type: github
-      name: pagopa/azure-pipeline-templates
-      ref: refs/tags/v3.9.0
-      endpoint: 'io-azure-devops-github-ro'
 
 stages:
 
@@ -165,20 +178,18 @@ stages:
             persistCredentials: true
             clean: true
 
-#          - task: Cache@2
-#            inputs:
-#              key: 'maven | "$(Agent.OS)" | pom.xml'
-#              restoreKeys: |
-#                maven | "$(Agent.OS)"
-#                maven
-#              path: $(MAVEN_CACHE_FOLDER)
-#            displayName: Cache Maven local repo
+          - task: Cache@2
+            inputs:
+              key: 'maven | "$(Agent.OS)" | pom.xml'
+              restoreKeys: |
+                maven | "$(Agent.OS)"
+                maven
+              path: $(MAVEN_CACHE_FOLDER)
+            displayName: Cache Maven local repo
 
           - script: |
               git checkout $(sourceBranch)
             displayName: Checkout and update branch
-#          - bash: |
-#              sed -i 's/\${GITHUB_TOKEN_READ_PACKAGES}/$(github_token_read_packages)/g' pom.xml
           - template: templates/docker-release/template.yaml@pagopaCommons
             parameters:
               CONTAINER_REGISTRY_SERVICE_CONN: $(dockerRegistryServiceConnection)
@@ -215,10 +226,6 @@ stages:
                     git checkout $(sourceBranch)
                   displayName: Checkout and update branch
 
-                - script: |
-                    ls -la helm
-                  displayName: Check files
-
                 - template: templates/helm-microservice-chart-setup/template.yaml@pagopaCommons
                   parameters:
                     DEPLOY_VERSION: $(deploy_version)
@@ -237,3 +244,5 @@ stages:
                     ARGUMENTS: >-
                       --set postgresql.enabled="$(USE_POSTGRESQL)"
                       --set oracle.enabled="$(USE_ORACLE)"
+                      --set postgresql.canaryDelivery.create="${{ parameters.canary }}"
+                      --set postgresql.canaryDelivery.ingress.weightPercent="${{ parameters.canaryWeight }}"
