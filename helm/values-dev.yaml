@@ -48,8 +48,6 @@ basecache: &basecache
   canaryDelivery:
     ingress:
       header: true
-      bluegreen: true
-      weightPercent: 88
 # Configuration used to update image tag
 microservice-chart:
   !!merge <<: *basecache

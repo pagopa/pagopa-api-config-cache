@@ -64,23 +64,21 @@ if [ -n "$update" ]; then
   helm dep update $DIR
 fi
 
-echo "install $install $canary"
-
 if [ "$install" == 1 ]; then
   if [ "$canary" == 1 ]; then
-    echo "Installing canary version $version,weight $weight"
-    helm upgrade --dry-run --namespace $NAMESPACE --install --values $DIR/values-dev.yaml \
+    echo "Installing canary version $version"
+    helm upgrade --namespace $NAMESPACE --install --values $DIR/values-dev.yaml \
       --set oracle.enabled=false \
       --set postgresql.image.tag=$version \
       --set postgresql.canaryDelivery.create="true" \
-      $NAME-canary $DIR > dry.yaml
+      $NAME-canary $DIR
     exit 0
   else
     echo "Installing stable version $version"
-    helm upgrade  --dry-run --namespace $NAMESPACE --install --values $DIR/values-dev.yaml \
+    helm upgrade --namespace $NAMESPACE --install --values $DIR/values-dev.yaml \
       --set oracle.enabled=false \
       --set postgresql.image.tag=$version \
-      $NAME $DIR > dry.yaml
+      $NAME $DIR
     exit 0
   fi
 fi
