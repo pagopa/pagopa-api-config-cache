@@ -140,6 +140,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Transactional
 public class ConfigService {
 
+  @Value("#{'${canary}'=='true' ? '_canary' : ''}")
+  private String keySuffix;
+
   @Value("apicfg_${spring.database.id}_node_v1")
   private String keyV1;
 
@@ -325,15 +328,15 @@ public class ConfigService {
 
     configData.setVersion("" + endTime);
 
-    redisRepository.pushToRedisAsync(keyV1, keyV1Id, configData);
+    redisRepository.pushToRedisAsync(keyV1+keySuffix, keyV1Id+keySuffix, configData);
 
     return configData;
   }
 
   public CacheVersion getCacheV1Id() {
     String cacheId =
-        Optional.ofNullable(redisRepository.getStringByKeyId(keyV1Id))
-            .orElseThrow(() -> new AppException(AppError.CACHE_ID_NOT_FOUND, keyV1Id));
+        Optional.ofNullable(redisRepository.getStringByKeyId(keyV1Id+keySuffix))
+            .orElseThrow(() -> new AppException(AppError.CACHE_ID_NOT_FOUND, keyV1Id+keySuffix));
     return new CacheVersion(cacheId);
   }
 

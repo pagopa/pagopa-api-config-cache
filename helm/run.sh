@@ -52,16 +52,9 @@ while [[ "$#" -gt 0 ]]; do
     shift
 done
 
-if [ -n "$install" ]; then
+if [ "$install" == 1 ]; then
   if [ ! -n "$version" ]; then
     echo "Error: Version parameter required with --install." >&2
-    exit 1
-  fi
-fi
-
-if [ -n "$canary" ] && [ -n "$install" ]; then
-  if [ ! -n "$weight" ]; then
-    echo "Error: Weight parameter required with --install and --canary flag." >&2
     exit 1
   fi
 fi
@@ -71,28 +64,29 @@ if [ -n "$update" ]; then
   helm dep update $DIR
 fi
 
-if [ -n "$install" ] && [ "$install" -eq 1 ]; then
-  if [ -n "$canary" ]; then
+echo "install $install $canary"
+
+if [ "$install" == 1 ]; then
+  if [ "$canary" == 1 ]; then
     echo "Installing canary version $version,weight $weight"
-    helm upgrade --namespace $NAMESPACE --install --values $DIR/values-dev.yaml \
+    helm upgrade --dry-run --namespace $NAMESPACE --install --values $DIR/values-dev.yaml \
       --set oracle.enabled=false \
       --set postgresql.image.tag=$version \
       --set postgresql.canaryDelivery.create="true" \
-      --set postgresql.canaryDelivery.ingress.weightPercent="$weight" \
-      $NAME-canary $DIR
+      $NAME-canary $DIR > dry.yaml
     exit 0
   else
     echo "Installing stable version $version"
-    helm upgrade --namespace $NAMESPACE --install --values $DIR/values-dev.yaml \
+    helm upgrade  --dry-run --namespace $NAMESPACE --install --values $DIR/values-dev.yaml \
       --set oracle.enabled=false \
       --set postgresql.image.tag=$version \
-      $NAME $DIR
+      $NAME $DIR > dry.yaml
     exit 0
   fi
 fi
 
-if [ -n "$uninstall" ]; then
-  if [ -n "$canary" ]; then
+if [ "$uninstall" == 1 ]; then
+  if [ "$canary" == 1 ]; then
     echo "Uninstalling canary"
     helm uninstall --namespace $NAMESPACE --wait $NAME-canary
   else
