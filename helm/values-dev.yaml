@@ -45,6 +45,11 @@ basecache: &basecache
                 operator: In
                 values:
                   - user
+  canaryDelivery:
+    ingress:
+      header: true
+      bluegreen: true
+      weightPercent: 88
 # Configuration used to update image tag
 microservice-chart:
   !!merge <<: *basecache
