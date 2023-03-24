@@ -3,15 +3,14 @@ name: pagopa-api-cache-chart
 description: Microservice that handles calculation for pagoPA Advanced Fees Management
 type: application
 version: 0.0.1
-appVersion: 0.0.1
 dependencies:
   - name: microservice-chart
-    version: 1.21.0
-    repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
+    version: 2.8.0
+    repository: "file:///projects/pagopa/aks-microservice-chart-blueprint/charts/microservice-chart"
     alias: postgresql
     condition: postgresql.enabled
   - name: microservice-chart
-    version: 1.21.0
-    repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
+    version: 2.8.0
+    repository: "file:///projects/pagopa/aks-microservice-chart-blueprint/charts/microservice-chart"
     alias: oracle
     condition: oracle.enabled
