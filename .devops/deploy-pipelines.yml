@@ -58,14 +58,6 @@ parameters:
   - name: canary
     type: boolean
     default: true
-  - name: canaryWeight
-    type: number
-    default: 0
-    values:
-      - 0
-      - 10
-      - 30
-      - 50
 
 variables:
   USE_POSTGRESQL: ${{ eq( parameters.DATABASE,'postgresql') }}
@@ -245,4 +237,3 @@ stages:
                       --set postgresql.enabled="$(USE_POSTGRESQL)"
                       --set oracle.enabled="$(USE_ORACLE)"
                       --set postgresql.canaryDelivery.create="${{ parameters.canary }}"
-                      --set postgresql.canaryDelivery.ingress.weightPercent="${{ parameters.canaryWeight }}"
