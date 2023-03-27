@@ -136,7 +136,8 @@ variables:
 stages:
 
   # Create a release on GitHub
-  - stage: Release $(variables.SKIP_BUILD)
+  - stage: Release
+    displayName: Release $(variables.SKIP_BUILD)
     condition: not(variables.SKIP_BUILD)
     jobs:
       - job: make_release
