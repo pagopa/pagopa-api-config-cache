@@ -46,8 +46,6 @@ basecache: &basecache
                 values:
                   - user
 # Configuration used to update image tag
-microservice-chart:
-  !!merge <<: *basecache
 postgresql:
   !!merge <<: *basecache
   ingress:

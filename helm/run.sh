@@ -68,16 +68,15 @@ if [ "$install" == 1 ]; then
   if [ "$canary" == 1 ]; then
     echo "Installing canary version $version"
     helm upgrade --namespace $NAMESPACE --install --values $DIR/values-dev.yaml \
-      --set oracle.enabled=false \
-      --set postgresql.image.tag=$version \
-      --set postgresql.canaryDelivery.create="true" \
+      --set basecache.image.tag=$version \
+      --set basecache.canaryDelivery.create="true" \
       $NAME-canary $DIR
     exit 0
   else
     echo "Installing stable version $version"
     helm upgrade --namespace $NAMESPACE --install --values $DIR/values-dev.yaml \
-      --set oracle.enabled=false \
       --set postgresql.image.tag=$version \
+      --set oracle.image.tag=$version \
       $NAME $DIR
     exit 0
   fi
