@@ -150,13 +150,13 @@ public class TestUtils {
   public static List<CdiMasterValid> cdiMasterValid =
       Arrays.asList(
           CdiMasterValid.builder()
-              .psp(psps.get(0))
+              .fkPsp(psps.get(0))
               .cdiDetail(Arrays.asList(cdiDetail.get(0)))
               .stornoPagamento(true)
               .marcaBolloDigitale(true)
               .build(),
           CdiMasterValid.builder()
-              .psp(psps.get(1))
+              .fkPsp(psps.get(1))
               .cdiDetail(Arrays.asList(cdiDetail.get(1)))
               .stornoPagamento(true)
               .marcaBolloDigitale(true)
@@ -164,13 +164,13 @@ public class TestUtils {
   public static List<CdiFasciaCostoServizio> cdiFasciaCostoServizio =
       Arrays.asList(
           CdiFasciaCostoServizio.builder()
-              .cdiDetail(cdiDetail.get(0))
+              .fkCdiDetail(cdiDetail.get(0))
               .costoFisso(10d)
               .importoMassimo(10d)
               .valoreCommissione(10d)
               .build(),
           CdiFasciaCostoServizio.builder()
-              .cdiDetail(cdiDetail.get(1))
+              .fkCdiDetail(cdiDetail.get(1))
               .costoFisso(10d)
               .importoMassimo(10d)
               .valoreCommissione(10d)
@@ -181,8 +181,8 @@ public class TestUtils {
           CdiPreference.builder().costoConvenzione(10d).cdiDetail(cdiDetail.get(1)).build());
   public static List<CdiInformazioniServizio> cdiInformazioniServizio =
       Arrays.asList(
-          CdiInformazioniServizio.builder().cdiDetail(cdiDetail.get(0)).codiceLingua("IT").build(),
-          CdiInformazioniServizio.builder().cdiDetail(cdiDetail.get(1)).codiceLingua("IT").build());
+          CdiInformazioniServizio.builder().fkCdiDetail(cdiDetail.get(0)).codiceLingua("IT").build(),
+          CdiInformazioniServizio.builder().fkCdiDetail(cdiDetail.get(1)).codiceLingua("IT").build());
   public static List<FtpServers> ftpServers =
       Arrays.asList(FtpServers.builder().id(0L).build(), FtpServers.builder().id(1L).build());
   public static List<GdeConfig> gdeConfigurations =
@@ -206,13 +206,13 @@ public class TestUtils {
   public static List<CodifichePa> encodingsPA =
       Arrays.asList(
           CodifichePa.builder()
-              .pa(pas.get(0))
-              .codifica(encodings.get(0))
+              .fkPa(pas.get(0))
+              .fkCodifica(encodings.get(0))
               .codicePa(pas.get(0).getIdDominio())
               .build(),
           CodifichePa.builder()
-              .pa(pas.get(1))
-              .codifica(encodings.get(1))
+              .fkPa(pas.get(1))
+              .fkCodifica(encodings.get(1))
               .codicePa(pas.get(1).getIdDominio())
               .build());
   public static List<Stazioni> stazioni =
@@ -232,8 +232,8 @@ public class TestUtils {
               .build());
   public static List<PaStazionePa> paStazioniPa =
       Arrays.asList(
-          PaStazionePa.builder().objId(1l).pa(pas.get(0)).stazione(stazioni.get(0)).build(),
-          PaStazionePa.builder().objId(2l).pa(pas.get(1)).stazione(stazioni.get(1)).build());
+          PaStazionePa.builder().objId(1l).pa(pas.get(0)).fkStazione(stazioni.get(0)).build(),
+          PaStazionePa.builder().objId(2l).pa(pas.get(1)).fkStazione(stazioni.get(1)).build());
 
   public static List<CdsCategoria> cdsCategorie =
       Arrays.asList(

@@ -28,8 +28,8 @@ public class ConvertCodifichePaToEncoding
    * @return {@link CreditorInstitutionEncoding.CodeTypeEnum}
    */
   private CodeTypeEnum getCodeType(CodifichePa source) {
-    if (source != null && source.getCodifica() != null) {
-      return CodeTypeEnum.fromValue(source.getCodifica().getIdCodifica());
+    if (source != null && source.getFkCodifica() != null) {
+      return CodeTypeEnum.fromValue(source.getFkCodifica().getIdCodifica());
     } else {
       return null;
     }

@@ -216,7 +216,7 @@ class NodoConfigCacheTest {
         .containsKey(TestUtils.stazioni.get(1).getIdStazione());
     assertThat(allData.getCreditorInstitutionStations())
         .containsKey(
-            TestUtils.paStazioniPa.get(0).getStazione().getIdStazione()
+            TestUtils.paStazioniPa.get(0).getFkStazione().getIdStazione()
                 + "_"
                 + TestUtils.paStazioniPa.get(0).getPa().getIdDominio()
                 + "_"
@@ -226,7 +226,7 @@ class NodoConfigCacheTest {
                 + "_"
                 + TestUtils.paStazioniPa.get(0).getSegregazione())
         .containsKey(
-            TestUtils.paStazioniPa.get(1).getStazione().getIdStazione()
+            TestUtils.paStazioniPa.get(1).getFkStazione().getIdStazione()
                 + "_"
                 + TestUtils.paStazioniPa.get(1).getPa().getIdDominio()
                 + "_"
