@@ -163,7 +163,7 @@ stages:
   # Create a release on GitHub
   - stage: GetVersion
     dependsOn: Release
-    condition: and(not(or(failed(), canceled())), not(parameters.uninstall) )
+    condition: and(not(or(failed(), canceled())), not( ${{ parameters.uninstall }} ) )
     jobs:
       - job: get_version
         steps:
