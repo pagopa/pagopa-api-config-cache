@@ -58,7 +58,7 @@ parameters:
     default: false
 
 variables:
-  SKIP_BUILD: ${{ or( eq( parameters.SEMVER, 'skip'), parameters.uninstall }}
+  SKIP_BUILD: ${{ or( eq( parameters.SEMVER, 'skip'), parameters.uninstall ) }}
   USE_POSTGRESQL: ${{ eq( parameters.DATABASE,'postgresql') }}
   USE_ORACLE: ${{ eq( parameters.DATABASE,'oracle') }}
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
