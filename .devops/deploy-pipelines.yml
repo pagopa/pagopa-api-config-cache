@@ -58,11 +58,11 @@ parameters:
   - name: uninstall
     displayName: Uninstall deployment
     type: boolean
-    default: true
+    default: false
   - name: canary
     displayName: Canary deployment
     type: boolean
-    default: true
+    default: false
 
 variables:
   USE_POSTGRESQL: ${{ eq( parameters.DATABASE,'postgresql') }}
