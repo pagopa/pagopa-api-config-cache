@@ -167,7 +167,7 @@ stages:
   # Build and Push Docker Image
   - stage: Build
     dependsOn: Release
-    condition: and(succeeded(), eq(${{ parameters.SKIP_BUILD }}, false))
+    condition: and(succeeded(), or(eq(${{ parameters.SKIP_BUILD }}, false),eq(${{ parameters.uninstall }}, false))
     variables:
       current_version: $[ stageDependencies.Release.make_release.outputs['current_version.value'] ]
     jobs:
