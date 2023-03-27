@@ -48,6 +48,10 @@ parameters:
     values:
       - oracle
       - postgresql
+  - name: deployOnly
+    displayName: Run only deploy steps
+    type: boolean
+    default: false
   - name: uninstall
     displayName: Uninstall deployment
     type: boolean
@@ -58,7 +62,7 @@ parameters:
     default: false
 
 variables:
-  SKIP_BUILD: ${{ or( eq( parameters.SEMVER, 'skip'), parameters.uninstall ) }}
+  SKIP_BUILD: ${{ or( parameters.deployOnly , parameters.uninstall ) }}
   USE_POSTGRESQL: ${{ eq( parameters.DATABASE,'postgresql') }}
   USE_ORACLE: ${{ eq( parameters.DATABASE,'oracle') }}
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
@@ -171,7 +175,7 @@ stages:
     dependsOn: GetVersion
     condition: and(succeeded(), not(variables.SKIP_BUILD))
     variables:
-      current_version: $[ stageDependencies.Release.get_version.outputs['current_version.value'] ]
+      current_version: $[ stageDependencies.GetVersion.get_version.outputs['current_version.value'] ]
     jobs:
       - job: "build"
         workspace:
@@ -209,7 +213,7 @@ stages:
       - Release
       - Build
     variables:
-      deploy_version: $[ stageDependencies.Release.get_version.outputs['current_version.value'] ]
+      deploy_version: $[ stageDependencies.GetVersion.get_version.outputs['current_version.value'] ]
     jobs:
       - deployment: "deploy"
         workspace:
