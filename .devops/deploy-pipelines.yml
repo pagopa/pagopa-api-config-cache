@@ -203,7 +203,22 @@ stages:
     variables:
       deploy_version: $[ stageDependencies.GetVersion.get_version.outputs['current_version.value'] ]
     jobs:
+      - job: manual_approval
+        condition: or(and( ${{ parameters.uninstall }}, not(${{ parameters.canary }})), eq('${{ parameters.ENV }}', 'prod') )
+        pool: server
+        displayName: "Approval PROD 50% -> STABLE"
+        timeoutInMinutes: 70
+        steps:
+          - task: ManualValidation@0
+            timeoutInMinutes: 60
+            inputs:
+              notifyUsers: |
+                $(APPROVE_NOTIFY_GROUP)
+                $(APPROVE_NOTIFY_ADMIN)
+              instructions: "Please approve or reject ${{ parameters['ENV'] }} canary deploy (traffic: 50% -> STABLE) '$(deploy_version)'"
+              onTimeout: 'reject'
       - deployment: "deploy"
+        dependsOn: manual_approval
         workspace:
           clean: all
         pool:
