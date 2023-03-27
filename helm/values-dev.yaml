@@ -80,3 +80,6 @@ oracle:
     envSecrets:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "oracle-db-cfg-password"
+microservice-chart:
+  image:
+    tag: 0.1.2
