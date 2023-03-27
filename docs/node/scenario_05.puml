@@ -1,17 +1,13 @@
 /'
-Scenario 01:
-  Node retrieves cache and no cache is present on Redis
+Scenario 05:
+  Stakeholder (e.g. API-Config, SelfCare) refreshes cache data
 '/
 @startuml
-Node -> APIM: <b>/stakeholders/node/cache/schemas/v1</b>
-APIM -> APIM: No <b>refresh</b> is required
-APIM -> Redis: Check <b>apicfg_*_node_v1</b> exists
-note right
-  <b>*</b> regards the database version (o or p)
-end note
-Redis --> APIM: No cache found
+Stakeholder -> APIM: <b>/stakeholders/node/cache/schemas/v1?refresh=true</b>
+APIM -> APIM: Check <b>refresh</b> is required
 APIM -> "API Config\nCache": <b>/stakeholders/node/cache/schemas/v1
 "API Config\nCache" -> Redis: Save cache data with key <b>apicfg_*_node_v1</b>
+"API Config\nCache" -> Redis: Save cache version with key <b>apicfg_*_node_v1_id</b>
 note right
   <b>*</b> regards the database version (o or p)
 end note
@@ -20,5 +16,4 @@ APIM [#ff0000]--> Redis: Save cache data
 note right
   this is a necessary workaround to allow APIM to read cache on Redis
 end note
-APIM --> Node: Return cache data
 @enduml
