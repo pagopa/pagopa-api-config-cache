@@ -41,13 +41,6 @@ parameters:
     values:
       - False
       - True
-  - name: "SKIP_BUILD"
-    displayName: "Skip Build"
-    type: boolean
-    default: False
-    values:
-      - False
-      - True
   - name: DATABASE
     displayName: Database to use
     type: string
@@ -65,6 +58,7 @@ parameters:
     default: false
 
 variables:
+  SKIP_BUILD: ${{ or( eq( parameters.SEMVER, 'skip'), parameters.uninstall }}
   USE_POSTGRESQL: ${{ eq( parameters.DATABASE,'postgresql') }}
   USE_ORACLE: ${{ eq( parameters.DATABASE,'oracle') }}
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
@@ -139,7 +133,7 @@ stages:
 
   # Create a release on GitHub
   - stage: Release
-    condition: or( eq(${{ parameters.SKIP_BUILD }}, false), eq(${{ parameters.uninstall }}, false) , not(eq(${{ parameters.SEMVER  }}, "skip")))
+    condition: not($(SKIP_BUILD))
     jobs:
       - job: make_release
         workspace:
@@ -174,7 +168,7 @@ stages:
   # Build and Push Docker Image
   - stage: Build
     dependsOn: GetVersion
-    condition: and(succeeded(), or( eq(${{ parameters.SKIP_BUILD }}, false), eq(${{ parameters.uninstall }}, false)))
+    condition: and(succeeded(), not($(SKIP_BUILD)))
     variables:
       current_version: $[ stageDependencies.Release.get_version.outputs['current_version.value'] ]
     jobs:
@@ -209,7 +203,7 @@ stages:
 
   # Deploy on K8s with Helm
   - stage: Deploy
-    condition: succeeded('Build')
+    condition: or(succeeded(), $(SKIP_BUILD))
     dependsOn:
       - Release
       - Build
