@@ -12,7 +12,7 @@
 
   <groupId>it.gov.pagopa.api-config</groupId>
   <artifactId>cache</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
   <name>API-Config Cacher</name>
   <description>Generate cache for regarding dei Pagamenti configuration</description>
 
@@ -24,6 +24,7 @@
     <postgresql.version>42.5.4</postgresql.version>
     <oracle.version>21.4.0.0</oracle.version>
     <modelmapper.version>3.1.0</modelmapper.version>
+    <sonar.coverage.exclusions>**/imported/**</sonar.coverage.exclusions>
   </properties>
 
   <repositories>
@@ -203,7 +204,7 @@
               <xsdOptions>
                 <xsdOption>
                   <xsd>${basedir}/src/main/resources/xsd/sanp3.3.1/CatalogoDatiInformativiPSP.xsd</xsd>
-                  <packagename>it.gov.pagopa.apiconfig.catalogodati</packagename>
+                  <packagename>it.gov.pagopa.apiconfig.imported.catalogodati</packagename>
                 </xsdOption>
               </xsdOptions>
             </configuration>
@@ -219,7 +220,7 @@
               <xsdOptions>
                 <xsdOption>
                   <xsd>${basedir}/src/main/resources/xsd/sanp3.3.1/TabellaDelleContropartiEstesa_1_2_0.xsd</xsd>
-                  <packagename>it.gov.pagopa.apiconfig.controparti</packagename>
+                  <packagename>it.gov.pagopa.apiconfig.imported.controparti</packagename>
                 </xsdOption>
               </xsdOptions>
             </configuration>
@@ -235,7 +236,7 @@
               <xsdOptions>
                 <xsdOption>
                   <xsd>${basedir}/src/main/resources/xsd/sanp3.3.1/TemplateInformativa_1_0_11.xsd</xsd>
-                  <packagename>it.gov.pagopa.apiconfig.template</packagename>
+                  <packagename>it.gov.pagopa.apiconfig.imported.template</packagename>
                 </xsdOption>
               </xsdOptions>
             </configuration>

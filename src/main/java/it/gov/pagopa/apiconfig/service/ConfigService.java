@@ -1,30 +1,41 @@
 package it.gov.pagopa.apiconfig.service;
 
-import it.gov.pagopa.apiconfig.catalogodati.CtCostiServizio;
-import it.gov.pagopa.apiconfig.catalogodati.CtFasciaCostoServizio;
-import it.gov.pagopa.apiconfig.catalogodati.CtIdentificazioneServizio;
-import it.gov.pagopa.apiconfig.catalogodati.CtInformativaDetail;
-import it.gov.pagopa.apiconfig.catalogodati.CtInformativaMaster;
-import it.gov.pagopa.apiconfig.catalogodati.CtInformativaPSP;
-import it.gov.pagopa.apiconfig.catalogodati.CtInformazioniServizio;
-import it.gov.pagopa.apiconfig.catalogodati.CtListaConvenzioni;
-import it.gov.pagopa.apiconfig.catalogodati.CtListaFasceCostoServizio;
-import it.gov.pagopa.apiconfig.catalogodati.CtListaInformativaDetail;
-import it.gov.pagopa.apiconfig.catalogodati.CtListaInformativePSP;
-import it.gov.pagopa.apiconfig.catalogodati.CtListaInformazioniServizio;
-import it.gov.pagopa.apiconfig.catalogodati.CtListaParoleChiave;
-import it.gov.pagopa.apiconfig.catalogodati.StCodiceLingua;
-import it.gov.pagopa.apiconfig.catalogodati.StParoleChiave;
-import it.gov.pagopa.apiconfig.catalogodati.StTipoVersamento;
-import it.gov.pagopa.apiconfig.controparti.CtContoAccredito;
-import it.gov.pagopa.apiconfig.controparti.CtErogazione;
-import it.gov.pagopa.apiconfig.controparti.CtErogazioneServizio;
-import it.gov.pagopa.apiconfig.controparti.CtFasciaOraria;
-import it.gov.pagopa.apiconfig.controparti.CtInformativaControparte;
-import it.gov.pagopa.apiconfig.controparti.CtListaInformativeControparte;
-import it.gov.pagopa.apiconfig.controparti.StTipoPeriodo;
 import it.gov.pagopa.apiconfig.exception.AppError;
 import it.gov.pagopa.apiconfig.exception.AppException;
+import it.gov.pagopa.apiconfig.imported.catalogodati.CtCostiServizio;
+import it.gov.pagopa.apiconfig.imported.catalogodati.CtFasciaCostoServizio;
+import it.gov.pagopa.apiconfig.imported.catalogodati.CtIdentificazioneServizio;
+import it.gov.pagopa.apiconfig.imported.catalogodati.CtInformativaDetail;
+import it.gov.pagopa.apiconfig.imported.catalogodati.CtInformativaMaster;
+import it.gov.pagopa.apiconfig.imported.catalogodati.CtInformativaPSP;
+import it.gov.pagopa.apiconfig.imported.catalogodati.CtInformazioniServizio;
+import it.gov.pagopa.apiconfig.imported.catalogodati.CtListaConvenzioni;
+import it.gov.pagopa.apiconfig.imported.catalogodati.CtListaFasceCostoServizio;
+import it.gov.pagopa.apiconfig.imported.catalogodati.CtListaInformativaDetail;
+import it.gov.pagopa.apiconfig.imported.catalogodati.CtListaInformativePSP;
+import it.gov.pagopa.apiconfig.imported.catalogodati.CtListaInformazioniServizio;
+import it.gov.pagopa.apiconfig.imported.catalogodati.CtListaParoleChiave;
+import it.gov.pagopa.apiconfig.imported.catalogodati.StCodiceLingua;
+import it.gov.pagopa.apiconfig.imported.catalogodati.StParoleChiave;
+import it.gov.pagopa.apiconfig.imported.catalogodati.StTipoVersamento;
+import it.gov.pagopa.apiconfig.imported.controparti.CtContoAccredito;
+import it.gov.pagopa.apiconfig.imported.controparti.CtErogazione;
+import it.gov.pagopa.apiconfig.imported.controparti.CtErogazioneServizio;
+import it.gov.pagopa.apiconfig.imported.controparti.CtFasciaOraria;
+import it.gov.pagopa.apiconfig.imported.controparti.CtInformativaControparte;
+import it.gov.pagopa.apiconfig.imported.controparti.CtListaInformativeControparte;
+import it.gov.pagopa.apiconfig.imported.controparti.StTipoPeriodo;
+import it.gov.pagopa.apiconfig.imported.template.TplCostiServizio;
+import it.gov.pagopa.apiconfig.imported.template.TplFasciaCostoServizio;
+import it.gov.pagopa.apiconfig.imported.template.TplIdentificazioneServizio;
+import it.gov.pagopa.apiconfig.imported.template.TplInformativaDetail;
+import it.gov.pagopa.apiconfig.imported.template.TplInformativaMaster;
+import it.gov.pagopa.apiconfig.imported.template.TplInformativaPSP;
+import it.gov.pagopa.apiconfig.imported.template.TplInformazioniServizio;
+import it.gov.pagopa.apiconfig.imported.template.TplListaFasceCostoServizio;
+import it.gov.pagopa.apiconfig.imported.template.TplListaInformativaDetail;
+import it.gov.pagopa.apiconfig.imported.template.TplListaInformazioniServizio;
+import it.gov.pagopa.apiconfig.imported.template.TplListaParoleChiave;
 import it.gov.pagopa.apiconfig.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.model.node.v1.cds.CdsCategory;
@@ -91,17 +102,6 @@ import it.gov.pagopa.apiconfig.starter.repository.PspRepository;
 import it.gov.pagopa.apiconfig.starter.repository.StazioniRepository;
 import it.gov.pagopa.apiconfig.starter.repository.TipiVersamentoRepository;
 import it.gov.pagopa.apiconfig.starter.repository.WfespPluginConfRepository;
-import it.gov.pagopa.apiconfig.template.TplCostiServizio;
-import it.gov.pagopa.apiconfig.template.TplFasciaCostoServizio;
-import it.gov.pagopa.apiconfig.template.TplIdentificazioneServizio;
-import it.gov.pagopa.apiconfig.template.TplInformativaDetail;
-import it.gov.pagopa.apiconfig.template.TplInformativaMaster;
-import it.gov.pagopa.apiconfig.template.TplInformativaPSP;
-import it.gov.pagopa.apiconfig.template.TplInformazioniServizio;
-import it.gov.pagopa.apiconfig.template.TplListaFasceCostoServizio;
-import it.gov.pagopa.apiconfig.template.TplListaInformativaDetail;
-import it.gov.pagopa.apiconfig.template.TplListaInformazioniServizio;
-import it.gov.pagopa.apiconfig.template.TplListaParoleChiave;
 import it.gov.pagopa.apiconfig.util.ConfigMapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -523,7 +523,8 @@ public class ConfigService {
   private String toXml(TplInformativaPSP element) {
     try {
       JAXBElement<TplInformativaPSP> informativaPSP =
-          new it.gov.pagopa.apiconfig.template.ObjectFactory().createInformativaPSP(element);
+          new it.gov.pagopa.apiconfig.imported.template.ObjectFactory()
+              .createInformativaPSP(element);
       JAXBContext jc = JAXBContext.newInstance(element.getClass());
       Marshaller marshaller = jc.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
@@ -540,7 +541,7 @@ public class ConfigService {
   private String toXml(CtListaInformativePSP element) {
     try {
       JAXBElement<CtListaInformativePSP> informativaPSP =
-          new it.gov.pagopa.apiconfig.catalogodati.ObjectFactory()
+          new it.gov.pagopa.apiconfig.imported.catalogodati.ObjectFactory()
               .createListaInformativePSP(element);
       JAXBContext jc = JAXBContext.newInstance(element.getClass());
       Marshaller marshaller = jc.createMarshaller();
@@ -558,7 +559,7 @@ public class ConfigService {
   private String toXml(CtListaInformativeControparte element) {
     try {
       JAXBElement<CtListaInformativeControparte> informativaPA =
-          new it.gov.pagopa.apiconfig.controparti.ObjectFactory()
+          new it.gov.pagopa.apiconfig.imported.controparti.ObjectFactory()
               .createListaInformativeControparte(element);
       JAXBContext jc = JAXBContext.newInstance(element.getClass());
       Marshaller marshaller = jc.createMarshaller();
@@ -890,8 +891,8 @@ public class ConfigService {
     tplInformativaDetail.setPriorita(daCompilare);
     tplInformativaDetail.setTipoVersamento(
         Objects.isNull(tv)
-            ? it.gov.pagopa.apiconfig.template.StTipoVersamento.BBT
-            : it.gov.pagopa.apiconfig.template.StTipoVersamento.fromValue(tv));
+            ? it.gov.pagopa.apiconfig.imported.template.StTipoVersamento.BBT
+            : it.gov.pagopa.apiconfig.imported.template.StTipoVersamento.fromValue(tv));
     tplInformativaDetail.setModelloPagamento(Objects.isNull(modello) ? 0 : modello.intValue());
     tplInformativaDetail.setIdentificativoIntermediario(
         Objects.isNull(idInter) ? daCompilare : idInter);
@@ -925,16 +926,16 @@ public class ConfigService {
     TplListaInformazioniServizio info = new TplListaInformazioniServizio();
 
     Arrays.asList(
-            it.gov.pagopa.apiconfig.template.StCodiceLingua.IT,
-            it.gov.pagopa.apiconfig.template.StCodiceLingua.EN,
-            it.gov.pagopa.apiconfig.template.StCodiceLingua.DE,
-            it.gov.pagopa.apiconfig.template.StCodiceLingua.FR,
-            it.gov.pagopa.apiconfig.template.StCodiceLingua.SL)
+            it.gov.pagopa.apiconfig.imported.template.StCodiceLingua.IT,
+            it.gov.pagopa.apiconfig.imported.template.StCodiceLingua.EN,
+            it.gov.pagopa.apiconfig.imported.template.StCodiceLingua.DE,
+            it.gov.pagopa.apiconfig.imported.template.StCodiceLingua.FR,
+            it.gov.pagopa.apiconfig.imported.template.StCodiceLingua.SL)
         .stream()
         .forEach(
             l -> {
               TplInformazioniServizio infoser = new TplInformazioniServizio();
-              infoser.setCodiceLingua(it.gov.pagopa.apiconfig.template.StCodiceLingua.IT);
+              infoser.setCodiceLingua(it.gov.pagopa.apiconfig.imported.template.StCodiceLingua.IT);
               infoser.setDescrizioneServizio(daCompilare);
               infoser.setDescrizioneServizio(daCompilare);
               infoser.setUrlInformazioniCanale(daCompilare);
