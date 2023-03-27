@@ -70,10 +70,6 @@ variables:
   imageRepository: '$(IMAGE_REPOSITORY_NAME)'
   nameSpace: '$(K8S_NAMESPACE)'
   FILE_CONFIG_PATH_CONFIGAPP: $(Build.SourcesDirectory)/helm/config/${{ parameters.ENV }}/application.properties
-  ${{ if parameters.uninstall }}:
-    HELM_COMMAND: 'uninstall'
-  ${{ else }}:
-    HELM_COMMAND: 'upgrade'
   ${{ if parameters.canary }}:
     appName: 'cache-canary'
   ${{ else }}:
@@ -188,7 +184,7 @@ stages:
 
           - task: Cache@2
             inputs:
-              key: 'maven | "$(Agent.OS)" | pom.xml'
+              key: '"maven" | "$(Agent.OS)" | pom.xml'
               restoreKeys: |
                 maven | "$(Agent.OS)"
                 maven
@@ -243,21 +239,17 @@ stages:
                 - ${{ if parameters.uninstall }}:
                   - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
                     parameters:
-                      COMMAND: $(HELM_COMMAND)
+                      COMMAND: "uninstall"
                       DO_DEPLOY: true
                       ENV: ${{ parameters['ENV'] }}
                       KUBERNETES_SERVICE_CONN: ${{ variables.kubernetesServiceConnection }}
                       NAMESPACE: $(nameSpace)
-                      APP_NAME: $(appFinalName)
-                      VALUE_FILE: "helm/values-${{ parameters['ENV'] }}.yaml"
-                      DEPLOY_VERSION: $(deploy_version)
                       APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
                       APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
                       ARGUMENTS: $(appFinalName)
                 - ${{ if not( parameters.uninstall ) }}:
                     - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
                       parameters:
-                        COMMAND: $(HELM_COMMAND)
                         DO_DEPLOY: true
                         ENV: ${{ parameters['ENV'] }}
                         KUBERNETES_SERVICE_CONN: ${{ variables.kubernetesServiceConnection }}
