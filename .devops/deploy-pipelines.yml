@@ -159,7 +159,6 @@ stages:
   # Create a release on GitHub
   - stage: GetVersion
     dependsOn: Release
-    condition: and(succeeded(), not(variables.SKIP_BUILD))
     jobs:
       - job: get_version
         steps:
