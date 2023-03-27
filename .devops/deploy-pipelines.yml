@@ -159,6 +159,7 @@ stages:
   # Create a release on GitHub
   - stage: GetVersion
     dependsOn: Release
+    condition: not(or(failed(), canceled()))
     jobs:
       - job: get_version
         steps:
