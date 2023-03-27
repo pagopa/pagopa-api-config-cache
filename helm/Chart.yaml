@@ -6,15 +6,11 @@ version: 0.0.1
 dependencies:
   - name: microservice-chart
     version: 3.0.0
-#    repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
-    repository: "https://cesarecaccuri.github.io/aks-microservice-chart-blueprint"
-#    repository: "file:///projects/pagopa/blueprint/charts/microservice-chart"
+    repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
     alias: postgresql
     condition: postgresql.enabled
   - name: microservice-chart
     version: 3.0.0
-#    repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
-    repository: "https://cesarecaccuri.github.io/aks-microservice-chart-blueprint"
-#    repository: "file:///projects/pagopa/blueprint/charts/microservice-chart"
+    repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
     alias: oracle
     condition: oracle.enabled
