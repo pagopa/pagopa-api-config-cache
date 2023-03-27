@@ -65,7 +65,7 @@ public class ConvertStazioniToStationDetails implements Converter<Stazioni, Stat
             Redirect.builder()
                 .protocol(Protocol.fromValue(source.getRedirectProtocollo()))
                 .ip(source.getRedirectIp())
-                .port(source.getRedirectPort())
+                .port(source.getRedirectPorta())
                 .path(source.getRedirectPath())
                 .queryString(source.getRedirectQueryString())
                 .build())
