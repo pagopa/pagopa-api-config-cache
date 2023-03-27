@@ -65,8 +65,6 @@ variables:
   SKIP_BUILD: ${{ or( parameters.deployOnly , parameters.uninstall ) }}
   USE_POSTGRESQL: ${{ eq( parameters.DATABASE,'postgresql') }}
   USE_ORACLE: ${{ eq( parameters.DATABASE,'oracle') }}
-  MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
-  MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
   imageRepository: '$(IMAGE_REPOSITORY_NAME)'
   nameSpace: '$(K8S_NAMESPACE)'
   FILE_CONFIG_PATH_CONFIGAPP: $(Build.SourcesDirectory)/helm/config/${{ parameters.ENV }}/application.properties
@@ -182,18 +180,10 @@ stages:
             persistCredentials: true
             clean: true
 
-          - task: Cache@2
-            inputs:
-              key: '"maven" | "$(Agent.OS)" | pom.xml'
-              restoreKeys: |
-                maven | "$(Agent.OS)"
-                maven
-              path: $(MAVEN_CACHE_FOLDER)
-            displayName: Cache Maven local repo
-
           - script: |
               git checkout $(sourceBranch)
             displayName: Checkout and update branch
+
           - template: templates/docker-release/template.yaml@pagopaCommons
             parameters:
               CONTAINER_REGISTRY_SERVICE_CONN: $(dockerRegistryServiceConnection)
