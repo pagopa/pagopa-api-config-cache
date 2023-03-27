@@ -239,22 +239,36 @@ stages:
                   parameters:
                     DEPLOY_VERSION: $(deploy_version)
 
-                - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
-                  parameters:
-                    COMMAND: $(HELM_COMMAND)
-                    DO_DEPLOY: true
-                    ENV: ${{ parameters['ENV'] }}
-                    KUBERNETES_SERVICE_CONN: ${{ variables.kubernetesServiceConnection }}
-                    NAMESPACE: $(nameSpace)
-                    APP_NAME: $(appFinalName)
-                    VALUE_FILE: "helm/values-${{ parameters['ENV'] }}.yaml"
-                    DEPLOY_VERSION: $(deploy_version)
-                    APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
-                    APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
-                    ARGUMENTS: >-
-                      --set postgresql.image.tag=$(deploy_version)
-                      --set postgresql.enabled="$(USE_POSTGRESQL)"
-                      --set postgresql.canaryDelivery.create="${{ parameters.canary }}"
-                      --set oracle.image.tag=$(deploy_version)
-                      --set oracle.enabled="$(USE_ORACLE)"
-                      --set oracle.canaryDelivery.create="${{ parameters.canary }}"
+                - ${{ if parameters.uninstall }}:
+                  - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
+                    parameters:
+                      COMMAND: $(HELM_COMMAND)
+                      DO_DEPLOY: true
+                      ENV: ${{ parameters['ENV'] }}
+                      KUBERNETES_SERVICE_CONN: ${{ variables.kubernetesServiceConnection }}
+                      NAMESPACE: $(nameSpace)
+                      APP_NAME: $(appFinalName)
+                      VALUE_FILE: "helm/values-${{ parameters['ENV'] }}.yaml"
+                      DEPLOY_VERSION: $(deploy_version)
+                      APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
+                      APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
+                - ${{ if not( parameters.uninstall ) }}:
+                    - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
+                      parameters:
+                        COMMAND: $(HELM_COMMAND)
+                        DO_DEPLOY: true
+                        ENV: ${{ parameters['ENV'] }}
+                        KUBERNETES_SERVICE_CONN: ${{ variables.kubernetesServiceConnection }}
+                        NAMESPACE: $(nameSpace)
+                        APP_NAME: $(appFinalName)
+                        VALUE_FILE: "helm/values-${{ parameters['ENV'] }}.yaml"
+                        DEPLOY_VERSION: $(deploy_version)
+                        APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
+                        APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
+                        ARGUMENTS: >-
+                          --set postgresql.image.tag=$(deploy_version)
+                          --set postgresql.enabled="$(USE_POSTGRESQL)"
+                          --set postgresql.canaryDelivery.create="${{ parameters.canary }}"
+                          --set oracle.image.tag=$(deploy_version)
+                          --set oracle.enabled="$(USE_ORACLE)"
+                          --set oracle.canaryDelivery.create="${{ parameters.canary }}"
