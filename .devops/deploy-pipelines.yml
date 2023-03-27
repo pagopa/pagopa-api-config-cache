@@ -133,7 +133,7 @@ stages:
 
   # Create a release on GitHub
   - stage: Release
-    condition: not($(SKIP_BUILD))
+    condition: not(variables.SKIP_BUILD)
     jobs:
       - job: make_release
         workspace:
@@ -168,7 +168,7 @@ stages:
   # Build and Push Docker Image
   - stage: Build
     dependsOn: GetVersion
-    condition: and(succeeded(), not($(SKIP_BUILD)))
+    condition: and(succeeded(), not(variables.SKIP_BUILD))
     variables:
       current_version: $[ stageDependencies.Release.get_version.outputs['current_version.value'] ]
     jobs:
@@ -203,7 +203,7 @@ stages:
 
   # Deploy on K8s with Helm
   - stage: Deploy
-    condition: or(succeeded(), $(SKIP_BUILD))
+    condition: or(succeeded(), variables.SKIP_BUILD)
     dependsOn:
       - Release
       - Build
