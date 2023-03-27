@@ -211,6 +211,7 @@ stages:
     condition: or(succeeded(), variables.SKIP_BUILD)
     dependsOn:
       - Release
+      - GetVersion
       - Build
     variables:
       deploy_version: $[ stageDependencies.GetVersion.get_version.outputs['current_version.value'] ]
@@ -230,6 +231,7 @@ stages:
                   fetchDepth: 1
 
                 - script: |
+                    echo "deploy version is $(deploy_version)"
                     git checkout $(sourceBranch)
                   displayName: Checkout and update branch
 
