@@ -10,7 +10,7 @@ resources:
     - repository: pagopaCommons
       type: github
       name: pagopa/azure-pipeline-templates
-      ref: refs/tags/v3.9.0
+      ref: helm_command
       endpoint: 'io-azure-devops-github-ro'
 
 parameters:
@@ -55,7 +55,12 @@ parameters:
     values:
       - oracle
       - postgresql
+  - name: uninstall
+    displayName: Uninstall deployment
+    type: boolean
+    default: true
   - name: canary
+    displayName: Canary deployment
     type: boolean
     default: true
 
@@ -67,6 +72,10 @@ variables:
   imageRepository: '$(IMAGE_REPOSITORY_NAME)'
   nameSpace: '$(K8S_NAMESPACE)'
   FILE_CONFIG_PATH_CONFIGAPP: $(Build.SourcesDirectory)/helm/config/${{ parameters.ENV }}/application.properties
+  ${{ if parameters.uninstall }}:
+    HELM_COMMAND: 'uninstall'
+  ${{ else }}:
+    HELM_COMMAND: 'upgrade'
   ${{ if parameters.canary }}:
     appName: 'cache-canary'
   ${{ else }}:
@@ -224,6 +233,7 @@ stages:
 
                 - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
                   parameters:
+                    COMMAND: $(HELM_COMMAND)
                     DO_DEPLOY: true
                     ENV: ${{ parameters['ENV'] }}
                     KUBERNETES_SERVICE_CONN: ${{ variables.kubernetesServiceConnection }}
@@ -234,6 +244,9 @@ stages:
                     APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
                     APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
                     ARGUMENTS: >-
+                      --set postgresql.image.tag=${{ parameters.DEPLOY_VERSION }}
                       --set postgresql.enabled="$(USE_POSTGRESQL)"
-                      --set oracle.enabled="$(USE_ORACLE)"
                       --set postgresql.canaryDelivery.create="${{ parameters.canary }}"
+                      --set oracle.image.tag=${{ parameters.DEPLOY_VERSION }}
+                      --set oracle.enabled="$(USE_ORACLE)"
+                      --set oracle.canaryDelivery.create="${{ parameters.canary }}"

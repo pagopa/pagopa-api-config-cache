@@ -67,10 +67,12 @@ fi
 if [ "$install" == 1 ]; then
   if [ "$canary" == 1 ]; then
     echo "Installing canary version $version"
-    helm upgrade --namespace $NAMESPACE --install --values $DIR/values-dev.yaml \
-      --set basecache.image.tag=$version \
-      --set basecache.canaryDelivery.create="true" \
-      $NAME-canary $DIR
+    helm upgrade --dry-run --namespace $NAMESPACE --install --values $DIR/values-dev.yaml \
+      --set postgresql.image.tag=$version \
+      --set oracle.image.tag=$version \
+      --set postgresql.canaryDelivery.create="true" \
+      --set oracle.canaryDelivery.create="true" \
+      $NAME-canary $DIR > dry-github.yaml
     exit 0
   else
     echo "Installing stable version $version"
