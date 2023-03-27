@@ -139,6 +139,7 @@ stages:
 
   # Create a release on GitHub
   - stage: Release
+    condition: or( eq(${{ parameters.SKIP_BUILD }}, false), eq(${{ parameters.uninstall }}, false) , not(eq(${{ parameters.SEMVER  }}, "skip")))
     jobs:
       - job: make_release
         workspace:
@@ -158,18 +159,24 @@ stages:
               customHelmStep: |
                 VALUES_FILE="helm/values-${{ parameters['ENV'] }}.yaml"
                 if [[ -f "$VALUES_FILE" ]]; then
-                  yq -i ".microservice-chart.image.tag = \"$(next_version.value)\"" "$VALUES_FILE"
+                  yq -i ".basecache.image.tag = \"$(next_version.value)\"" "$VALUES_FILE"
                   git add "$VALUES_FILE"
                 fi
-
+  # Create a release on GitHub
+  - stage: GetVersion
+    dependsOn: Release
+    jobs:
+      - job: get_version
+        steps:
+          - checkout: self
           - template: templates/maven-github-current-version/template.yaml@pagopaCommons
 
   # Build and Push Docker Image
   - stage: Build
-    dependsOn: Release
+    dependsOn: GetVersion
     condition: and(succeeded(), or( eq(${{ parameters.SKIP_BUILD }}, false), eq(${{ parameters.uninstall }}, false)))
     variables:
-      current_version: $[ stageDependencies.Release.make_release.outputs['current_version.value'] ]
+      current_version: $[ stageDependencies.Release.get_version.outputs['current_version.value'] ]
     jobs:
       - job: "build"
         workspace:
@@ -202,12 +209,12 @@ stages:
 
   # Deploy on K8s with Helm
   - stage: Deploy
-    condition: or(succeeded('Build'),eq(${{ parameters.SKIP_BUILD }}, true))
+    condition: succeeded('Build')
     dependsOn:
       - Release
       - Build
     variables:
-      deploy_version: $[ stageDependencies.Release.make_release.outputs['current_version.value'] ]
+      deploy_version: $[ stageDependencies.Release.get_version.outputs['current_version.value'] ]
     jobs:
       - deployment: "deploy"
         workspace:
