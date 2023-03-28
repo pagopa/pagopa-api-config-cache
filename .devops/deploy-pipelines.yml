@@ -211,12 +211,14 @@ stages:
           - task: ManualValidation@0
             timeoutInMinutes: 60
             inputs:
-              notifyUsers: |
-                $(APPROVE_NOTIFY_GROUP)
-                $(APPROVE_NOTIFY_ADMIN)
+              notifyUsers: ""
+#              |
+#                $(APPROVE_NOTIFY_GROUP)
+#                $(APPROVE_NOTIFY_ADMIN)
               instructions: "Please approve or reject ${{ parameters['ENV'] }} \n uninstall:${{ parameters.uninstall }},canary ${{ parameters.canary }}"
               onTimeout: 'reject'
       - deployment: "deploy"
+        condition: in(dependencies.manual_approval.result, 'Succeeded', 'Skipped')
         pool:
           name: $(poolImage)
         environment: ${{ parameters['ENV'] }}
