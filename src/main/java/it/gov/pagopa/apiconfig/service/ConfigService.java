@@ -579,20 +579,22 @@ public class ConfigService {
   }
 
   public Pair<List<PspInformation>, List<PspInformation>> getInformativePspAndTemplates() {
+    List<Psp> psps = pspRepository.findAll();
     List<CdiPreference> preferences = cdiPreferenceRepository.findAll();
     List<CdiFasciaCostoServizio> allFasce = cdiFasceRepository.findAll();
-    List<CdiMasterValid> masters = cdiMasterValidRepository.findAllFetching();
+    List<CdiMasterValid> masters = cdiMasterValidRepository.findAll();
     List<CdiDetail> details = cdiDetailRepository.findAll();
     List<CdiInformazioniServizio> allInformazioni = cdiInformazioniServizioRepository.findAll();
 
     List<PspInformation> informativePsp =
-        getInformativePsp(masters,details, preferences, allFasce, allInformazioni);
+        getInformativePsp(psps,masters,details, preferences, allFasce, allInformazioni);
     List<PspInformation> templateInformativePsp = getTemplateInformativePsp(masters);
 
     return Pair.of(informativePsp, templateInformativePsp);
   }
 
   public List<PspInformation> getInformativePsp(
+      List<Psp> psps,
       List<CdiMasterValid> masters,
       List<CdiDetail> details,
       List<CdiPreference> preferences,
@@ -607,7 +609,7 @@ public class ConfigService {
             })
             .map(
                 cdiMaster -> {
-                  Psp psp = cdiMaster.getPsp();
+                  Psp psp = psps.stream().filter(p->p.getObjId().equals(cdiMaster.getPsp().getObjId())).findFirst().get();
                   CtInformativaPSP ctInformativaPSP = new CtInformativaPSP();
                   ctInformativaPSP.setCodiceABI(psp.getAbi());
                   ctInformativaPSP.setCodiceBIC(psp.getBic());

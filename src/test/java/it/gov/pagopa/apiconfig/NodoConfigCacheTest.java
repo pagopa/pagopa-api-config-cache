@@ -105,7 +105,7 @@ class NodoConfigCacheTest {
     when(pspRepository.findAll()).thenReturn(TestUtils.psps);
     when(intermediariPaRepository.findAll()).thenReturn(TestUtils.intpas);
     when(intermediariPspRepository.findAll()).thenReturn(TestUtils.intpsp);
-    when(cdiMasterValidRepository.findAllFetching()).thenReturn(TestUtils.cdiMasterValid);
+    when(cdiMasterValidRepository.findAll()).thenReturn(TestUtils.cdiMasterValid);
     when(cdiDetailRepository.findAll()).thenReturn(TestUtils.cdiDetail);
     when(cdiPreferenceRepository.findAll()).thenReturn(TestUtils.cdiPreference);
     when(cdiFasceRepository.findAll()).thenReturn(TestUtils.cdiFasciaCostoServizio);
