@@ -35,7 +35,7 @@
   </repositories>
 
   <dependencies>
-  
+
     <dependency>
       <groupId>it.gov.pagopa.api-config</groupId>
       <artifactId>starter</artifactId>
