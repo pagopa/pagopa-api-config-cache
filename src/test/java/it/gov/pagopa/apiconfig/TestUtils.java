@@ -4,6 +4,7 @@ import it.gov.pagopa.apiconfig.starter.entity.CanaliView;
 import it.gov.pagopa.apiconfig.starter.entity.CdiDetail;
 import it.gov.pagopa.apiconfig.starter.entity.CdiFasciaCostoServizio;
 import it.gov.pagopa.apiconfig.starter.entity.CdiInformazioniServizio;
+import it.gov.pagopa.apiconfig.starter.entity.CdiMaster;
 import it.gov.pagopa.apiconfig.starter.entity.CdiMasterValid;
 import it.gov.pagopa.apiconfig.starter.entity.CdiPreference;
 import it.gov.pagopa.apiconfig.starter.entity.CdsCategoria;
@@ -138,6 +139,7 @@ public class TestUtils {
               .priorita(1L)
               .modelloPagamento(1L)
               .pspCanaleTipoVersamento(pspCanaliTv.get(0))
+              .cdiMaster(CdiMaster.builder().id(1L).build())
               .build(),
           CdiDetail.builder()
               .id(2L)
@@ -145,17 +147,20 @@ public class TestUtils {
               .priorita(2L)
               .modelloPagamento(2L)
               .pspCanaleTipoVersamento(pspCanaliTv.get(1))
+              .cdiMaster(CdiMaster.builder().id(2L).build())
               .build());
 
   public static List<CdiMasterValid> cdiMasterValid =
       Arrays.asList(
           CdiMasterValid.builder()
+              .id(1L)
               .fkPsp(psps.get(0))
               .cdiDetail(Arrays.asList(cdiDetail.get(0)))
               .stornoPagamento(true)
               .marcaBolloDigitale(true)
               .build(),
           CdiMasterValid.builder()
+              .id(2L)
               .fkPsp(psps.get(1))
               .cdiDetail(Arrays.asList(cdiDetail.get(1)))
               .stornoPagamento(true)

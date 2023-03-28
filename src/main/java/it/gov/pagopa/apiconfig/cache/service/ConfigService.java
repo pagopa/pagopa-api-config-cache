@@ -96,7 +96,33 @@ import it.gov.pagopa.apiconfig.imported.template.TplListaFasceCostoServizio;
 import it.gov.pagopa.apiconfig.imported.template.TplListaInformativaDetail;
 import it.gov.pagopa.apiconfig.imported.template.TplListaInformazioniServizio;
 import it.gov.pagopa.apiconfig.imported.template.TplListaParoleChiave;
-import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
+import it.gov.pagopa.apiconfig.model.node.CacheVersion;
+import it.gov.pagopa.apiconfig.model.node.v1.ConfigDataV1;
+import it.gov.pagopa.apiconfig.model.node.v1.cds.CdsCategory;
+import it.gov.pagopa.apiconfig.model.node.v1.cds.CdsService;
+import it.gov.pagopa.apiconfig.model.node.v1.cds.CdsSubject;
+import it.gov.pagopa.apiconfig.model.node.v1.cds.CdsSubjectService;
+import it.gov.pagopa.apiconfig.model.node.v1.configuration.ConfigurationKey;
+import it.gov.pagopa.apiconfig.model.node.v1.configuration.FtpServer;
+import it.gov.pagopa.apiconfig.model.node.v1.configuration.GdeConfiguration;
+import it.gov.pagopa.apiconfig.model.node.v1.configuration.MetadataDict;
+import it.gov.pagopa.apiconfig.model.node.v1.configuration.PaymentType;
+import it.gov.pagopa.apiconfig.model.node.v1.configuration.Plugin;
+import it.gov.pagopa.apiconfig.model.node.v1.creditorinstitution.BrokerCreditorInstitution;
+import it.gov.pagopa.apiconfig.model.node.v1.creditorinstitution.CreditorInstitution;
+import it.gov.pagopa.apiconfig.model.node.v1.creditorinstitution.CreditorInstitutionEncoding;
+import it.gov.pagopa.apiconfig.model.node.v1.creditorinstitution.CreditorInstitutionInformation;
+import it.gov.pagopa.apiconfig.model.node.v1.creditorinstitution.Encoding;
+import it.gov.pagopa.apiconfig.model.node.v1.creditorinstitution.Iban;
+import it.gov.pagopa.apiconfig.model.node.v1.creditorinstitution.Station;
+import it.gov.pagopa.apiconfig.model.node.v1.creditorinstitution.StationCreditorInstitution;
+import it.gov.pagopa.apiconfig.model.node.v1.psp.BrokerPsp;
+import it.gov.pagopa.apiconfig.model.node.v1.psp.Channel;
+import it.gov.pagopa.apiconfig.model.node.v1.psp.PaymentServiceProvider;
+import it.gov.pagopa.apiconfig.model.node.v1.psp.PspChannelPaymentType;
+import it.gov.pagopa.apiconfig.model.node.v1.psp.PspInformation;
+import it.gov.pagopa.apiconfig.redis.RedisRepository;
+import it.gov.pagopa.apiconfig.starter.entity.CdiDetail;
 import it.gov.pagopa.apiconfig.starter.entity.CdiFasciaCostoServizio;
 import it.gov.pagopa.apiconfig.starter.entity.CdiInformazioniServizio;
 import it.gov.pagopa.apiconfig.starter.entity.CdiMasterValid;
@@ -586,10 +612,11 @@ public class ConfigService {
     List<CdiPreference> preferences = cdiPreferenceRepository.findAll();
     List<CdiFasciaCostoServizio> allFasce = cdiFasceRepository.findAll();
     List<CdiMasterValid> masters = cdiMasterValidRepository.findAllFetching();
+    List<CdiDetail> details = cdiDetailRepository.findAll();
     List<CdiInformazioniServizio> allInformazioni = cdiInformazioniServizioRepository.findAll();
 
     List<PspInformation> informativePsp =
-        getInformativePsp(masters, preferences, allFasce, allInformazioni);
+        getInformativePsp(masters,details, preferences, allFasce, allInformazioni);
     List<PspInformation> templateInformativePsp = getTemplateInformativePsp(masters);
 
     return Pair.of(informativePsp, templateInformativePsp);
@@ -597,6 +624,7 @@ public class ConfigService {
 
   public List<PspInformation> getInformativePsp(
       List<CdiMasterValid> masters,
+      List<CdiDetail> details,
       List<CdiPreference> preferences,
       List<CdiFasciaCostoServizio> allFasce,
       List<CdiInformazioniServizio> allInformazioni) {
@@ -604,7 +632,9 @@ public class ConfigService {
 
     List<CtListaInformativePSP> informativePspSingle =
         masters.stream()
-            .filter(m -> !m.getCdiDetail().isEmpty())
+            .filter(m -> {
+              return details.stream().filter(d->d.getCdiMaster().getId().equals(m.getId())).findAny().isPresent();
+            })
             .map(
                 cdiMaster -> {
                   Psp psp = cdiMaster.getFkPsp();
@@ -635,8 +665,8 @@ public class ConfigService {
                   ctInformativaPSP.setInformativaMaster(ctInformativaMaster);
                   ctInformativaPSP.setIdentificativoFlusso(cdiMaster.getIdInformativaPsp());
 
-                  List<CtInformativaDetail> details =
-                      cdiMaster.getCdiDetail().stream()
+                  List<CtInformativaDetail> masterdetails =
+                      details.stream().filter(d->d.getCdiMaster().getId().equals(cdiMaster.getId()))
                           .filter(
                               d ->
                                   !d.getPspCanaleTipoVersamento()
@@ -775,7 +805,7 @@ public class ConfigService {
                               })
                           .collect(Collectors.toList());
                   CtListaInformativaDetail listaInformativaDetail = new CtListaInformativaDetail();
-                  listaInformativaDetail.getInformativaDetail().addAll(details);
+                  listaInformativaDetail.getInformativaDetail().addAll(masterdetails);
                   ctInformativaPSP.setListaInformativaDetail(listaInformativaDetail);
 
                   CtListaInformativePSP ctListaInformativePSP = new CtListaInformativePSP();

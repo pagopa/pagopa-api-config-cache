@@ -78,6 +78,7 @@ if [ "$install" == 1 ]; then
     echo "Installing stable version $version"
     helm upgrade --namespace $NAMESPACE --install --values $DIR/values-dev.yaml \
       --set postgresql.image.tag=$version \
+      --set postgresql.enabled=false \
       --set oracle.image.tag=$version \
       $NAME $DIR
     exit 0
