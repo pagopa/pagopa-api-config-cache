@@ -41,13 +41,14 @@ parameters:
     values:
       - False
       - True
-  - name: DATABASE
-    displayName: Database to use
-    type: string
-    default: postgresql
-    values:
-      - oracle
-      - postgresql
+  - name: USE_ORACLE
+    displayName: Install Oracle Version
+    type: boolean
+    default: false
+  - name: USE_POSTGRESQL
+    displayName: Install Postgresql Version
+    type: boolean
+    default: true
   - name: deployOnly
     displayName: Run only deploy steps
     type: boolean
@@ -63,8 +64,6 @@ parameters:
 
 variables:
   SKIP_BUILD: ${{ or( parameters.deployOnly , parameters.uninstall ) }}
-  USE_POSTGRESQL: ${{ eq( parameters.DATABASE,'postgresql') }}
-  USE_ORACLE: ${{ eq( parameters.DATABASE,'oracle') }}
   imageRepository: '$(IMAGE_REPOSITORY_NAME)'
   nameSpace: '$(K8S_NAMESPACE)'
   FILE_CONFIG_PATH_CONFIGAPP: $(Build.SourcesDirectory)/helm/config/${{ parameters.ENV }}/application.properties
