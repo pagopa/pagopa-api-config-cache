@@ -218,9 +218,6 @@ stages:
               instructions: "Please approve or reject ${{ parameters['ENV'] }} \n uninstall:${{ parameters.uninstall }},canary ${{ parameters.canary }}"
               onTimeout: 'reject'
       - deployment: "deploy"
-        dependsOn: manual_approval
-        workspace:
-          clean: all
         pool:
           name: $(poolImage)
         environment: ${{ parameters['ENV'] }}
