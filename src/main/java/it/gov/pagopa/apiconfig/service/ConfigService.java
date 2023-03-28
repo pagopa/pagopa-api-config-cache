@@ -62,6 +62,7 @@ import it.gov.pagopa.apiconfig.model.node.v1.psp.PaymentServiceProvider;
 import it.gov.pagopa.apiconfig.model.node.v1.psp.PspChannelPaymentType;
 import it.gov.pagopa.apiconfig.model.node.v1.psp.PspInformation;
 import it.gov.pagopa.apiconfig.redis.RedisRepository;
+import it.gov.pagopa.apiconfig.starter.entity.CdiDetail;
 import it.gov.pagopa.apiconfig.starter.entity.CdiFasciaCostoServizio;
 import it.gov.pagopa.apiconfig.starter.entity.CdiInformazioniServizio;
 import it.gov.pagopa.apiconfig.starter.entity.CdiMasterValid;
@@ -581,10 +582,11 @@ public class ConfigService {
     List<CdiPreference> preferences = cdiPreferenceRepository.findAll();
     List<CdiFasciaCostoServizio> allFasce = cdiFasceRepository.findAll();
     List<CdiMasterValid> masters = cdiMasterValidRepository.findAllFetching();
+    List<CdiDetail> details = cdiDetailRepository.findAll();
     List<CdiInformazioniServizio> allInformazioni = cdiInformazioniServizioRepository.findAll();
 
     List<PspInformation> informativePsp =
-        getInformativePsp(masters, preferences, allFasce, allInformazioni);
+        getInformativePsp(masters,details, preferences, allFasce, allInformazioni);
     List<PspInformation> templateInformativePsp = getTemplateInformativePsp(masters);
 
     return Pair.of(informativePsp, templateInformativePsp);
@@ -592,6 +594,7 @@ public class ConfigService {
 
   public List<PspInformation> getInformativePsp(
       List<CdiMasterValid> masters,
+      List<CdiDetail> details,
       List<CdiPreference> preferences,
       List<CdiFasciaCostoServizio> allFasce,
       List<CdiInformazioniServizio> allInformazioni) {
@@ -599,7 +602,9 @@ public class ConfigService {
 
     List<CtListaInformativePSP> informativePspSingle =
         masters.stream()
-            .filter(m -> !m.getCdiDetail().isEmpty())
+            .filter(m -> {
+              return details.stream().filter(d->d.getCdiMaster().getId().equals(m.getId())).findAny().isPresent();
+            })
             .map(
                 cdiMaster -> {
                   Psp psp = cdiMaster.getPsp();
@@ -630,8 +635,8 @@ public class ConfigService {
                   ctInformativaPSP.setInformativaMaster(ctInformativaMaster);
                   ctInformativaPSP.setIdentificativoFlusso(cdiMaster.getIdInformativaPsp());
 
-                  List<CtInformativaDetail> details =
-                      cdiMaster.getCdiDetail().stream()
+                  List<CtInformativaDetail> masterdetails =
+                      details.stream().filter(d->d.getCdiMaster().getId().equals(cdiMaster.getId()))
                           .filter(
                               d ->
                                   !d.getPspCanaleTipoVersamento()
@@ -770,7 +775,7 @@ public class ConfigService {
                               })
                           .collect(Collectors.toList());
                   CtListaInformativaDetail listaInformativaDetail = new CtListaInformativaDetail();
-                  listaInformativaDetail.getInformativaDetail().addAll(details);
+                  listaInformativaDetail.getInformativaDetail().addAll(masterdetails);
                   ctInformativaPSP.setListaInformativaDetail(listaInformativaDetail);
 
                   CtListaInformativePSP ctListaInformativePSP = new CtListaInformativePSP();
