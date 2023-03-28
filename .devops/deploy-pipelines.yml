@@ -183,14 +183,14 @@ stages:
               git checkout $(sourceBranch)
             displayName: Checkout and update branch
 
-#          - template: templates/docker-release/template.yaml@pagopaCommons
-#            parameters:
-#              CONTAINER_REGISTRY_SERVICE_CONN: $(dockerRegistryServiceConnection)
-#              CONTAINER_REGISTRY_FQDN: $(dockerRegistryFqdn)
-#              DOCKER_IMAGE_NAME: $(imageRepository)
-#              DOCKER_IMAGE_TAG: $(current_version)
-#              FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
-#              DOCKER_BUILD_ARGS: --build-arg github_token="$(github_token_read_packages)"
+          - template: templates/docker-release/template.yaml@pagopaCommons
+            parameters:
+              CONTAINER_REGISTRY_SERVICE_CONN: $(dockerRegistryServiceConnection)
+              CONTAINER_REGISTRY_FQDN: $(dockerRegistryFqdn)
+              DOCKER_IMAGE_NAME: $(imageRepository)
+              DOCKER_IMAGE_TAG: $(current_version)
+              FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
+              DOCKER_BUILD_ARGS: --build-arg github_token="$(github_token_read_packages)"
 
   # Deploy on K8s with Helm
   - stage: Deploy
@@ -203,7 +203,7 @@ stages:
       deploy_version: $[ stageDependencies.GetVersion.get_version.outputs['current_version.value'] ]
     jobs:
       - job: manual_approval
-        condition: or(and( ${{ parameters.uninstall }}, not(${{ parameters.canary }})), eq('${{ parameters.ENV }}', 'dev') )
+        condition: or(and( ${{ parameters.uninstall }}, not(${{ parameters.canary }})), eq('${{ parameters.ENV }}', 'prod') )
         pool: server
         displayName: "Manual approval"
         timeoutInMinutes: 70
@@ -211,10 +211,9 @@ stages:
           - task: ManualValidation@0
             timeoutInMinutes: 60
             inputs:
-              notifyUsers: ""
-#              |
-#                $(APPROVE_NOTIFY_GROUP)
-#                $(APPROVE_NOTIFY_ADMIN)
+              notifyUsers: |
+                $(APPROVE_NOTIFY_GROUP)
+                $(APPROVE_NOTIFY_ADMIN)
               instructions: "Please approve or reject ${{ parameters['ENV'] }} \n uninstall:${{ parameters.uninstall }},canary ${{ parameters.canary }}"
               onTimeout: 'reject'
       - deployment: "deploy"
@@ -239,33 +238,33 @@ stages:
                   parameters:
                     DEPLOY_VERSION: $(deploy_version)
 
-#                - ${{ if parameters.uninstall }}:
-#                  - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
-#                    parameters:
-#                      COMMAND: "uninstall"
-#                      DO_DEPLOY: true
-#                      ENV: ${{ parameters['ENV'] }}
-#                      KUBERNETES_SERVICE_CONN: ${{ variables.kubernetesServiceConnection }}
-#                      NAMESPACE: $(nameSpace)
-#                      APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
-#                      APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
-#                      ARGUMENTS: $(appFinalName)
-#                - ${{ if not( parameters.uninstall ) }}:
-#                    - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
-#                      parameters:
-#                        DO_DEPLOY: true
-#                        ENV: ${{ parameters['ENV'] }}
-#                        KUBERNETES_SERVICE_CONN: ${{ variables.kubernetesServiceConnection }}
-#                        NAMESPACE: $(nameSpace)
-#                        APP_NAME: $(appFinalName)
-#                        VALUE_FILE: "helm/values-${{ parameters['ENV'] }}.yaml"
-#                        DEPLOY_VERSION: $(deploy_version)
-#                        APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
-#                        APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
-#                        ARGUMENTS: >-
-#                          --set postgresql.image.tag=$(deploy_version)
-#                          --set postgresql.enabled="$(USE_POSTGRESQL)"
-#                          --set postgresql.canaryDelivery.create="${{ parameters.canary }}"
-#                          --set oracle.image.tag=$(deploy_version)
-#                          --set oracle.enabled="$(USE_ORACLE)"
-#                          --set oracle.canaryDelivery.create="${{ parameters.canary }}"
+                - ${{ if parameters.uninstall }}:
+                  - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
+                    parameters:
+                      COMMAND: "uninstall"
+                      DO_DEPLOY: true
+                      ENV: ${{ parameters['ENV'] }}
+                      KUBERNETES_SERVICE_CONN: ${{ variables.kubernetesServiceConnection }}
+                      NAMESPACE: $(nameSpace)
+                      APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
+                      APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
+                      ARGUMENTS: $(appFinalName)
+                - ${{ if not( parameters.uninstall ) }}:
+                    - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
+                      parameters:
+                        DO_DEPLOY: true
+                        ENV: ${{ parameters['ENV'] }}
+                        KUBERNETES_SERVICE_CONN: ${{ variables.kubernetesServiceConnection }}
+                        NAMESPACE: $(nameSpace)
+                        APP_NAME: $(appFinalName)
+                        VALUE_FILE: "helm/values-${{ parameters['ENV'] }}.yaml"
+                        DEPLOY_VERSION: $(deploy_version)
+                        APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
+                        APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
+                        ARGUMENTS: >-
+                          --set postgresql.image.tag=$(deploy_version)
+                          --set postgresql.enabled="$(USE_POSTGRESQL)"
+                          --set postgresql.canaryDelivery.create="${{ parameters.canary }}"
+                          --set oracle.image.tag=$(deploy_version)
+                          --set oracle.enabled="$(USE_ORACLE)"
+                          --set oracle.canaryDelivery.create="${{ parameters.canary }}"
