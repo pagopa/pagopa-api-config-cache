@@ -4,13 +4,11 @@ description: Microservice that handles calculation for pagoPA Advanced Fees Mana
 type: application
 version: 0.0.1
 dependencies:
-  - name: microservice-chart
+  - name: postgresql
     version: 3.0.0
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
-    alias: postgresql
     condition: postgresql.enabled
-  - name: microservice-chart
+  - name: oracle
     version: 3.0.0
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
-    alias: oracle
     condition: oracle.enabled

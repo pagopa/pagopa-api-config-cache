@@ -137,6 +137,10 @@ stages:
         workspace:
           clean: all
         steps:
+          - bash: |
+              buildname="$(Build.BuildNumber) ${{ parameters.ENV }}"
+              echo "##vso[build.addbuildtag]${{ parameters.ENV }}"
+              echo "##vso[build.updatebuildnumber]$buildname"
           - checkout: self
             clean: true
             persistCredentials: true
