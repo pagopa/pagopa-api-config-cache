@@ -204,7 +204,7 @@ stages:
 
   # Deploy on K8s with Helm
   - stage: Deploy
-    condition: or(succeeded(), ${{ variables.SKIP_BUILD }})
+    condition: or(succeeded('GetVersion'), ${{ variables.SKIP_BUILD }})
     dependsOn:
       - Release
       - GetVersion
