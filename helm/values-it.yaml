@@ -28,6 +28,7 @@ basecache: &basecache
     REDIS_HOST: "pagopa-d-redis.redis.cache.windows.net"
     REDIS_PORT: "6380"
     JAVA_OPTS: "-Dspring.jpa.show-sql=true"
+    CANARY: "true"
   secretProvider: &azureSecretProvider
     create: true
     envSecrets: &envSecret
@@ -52,7 +53,7 @@ postgresql:
   !!merge <<: *basecache
   ingress:
     !!merge <<: *ingress
-    path: /api-config-cache/p(/|$)(.*)
+    path: /api-config-cache-replica/p(/|$)(.*)
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-cache-postgresql"
@@ -69,7 +70,7 @@ oracle:
   !!merge <<: *basecache
   ingress:
     !!merge <<: *ingress
-    path: /api-config-cache/o(/|$)(.*)
+    path: /api-config-cache-replica/o(/|$)(.*)
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-cache-oracle"

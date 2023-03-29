@@ -1,7 +1,7 @@
 basecache: &basecache
   namespace: "apiconfig"
   image:
-    repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
+    repository: pagopaucommonacr.azurecr.io/pagopaapiconfigcache
     tag: "0.1.2"
   livenessProbe:
     httpGet:
@@ -15,7 +15,7 @@ basecache: &basecache
     initialDelaySeconds: 30
   ingress: &ingress
     create: true
-    host: "weudev.apiconfig.internal.dev.platform.pagopa.it"
+    host: "weuuat.apiconfig.internal.uat.platform.pagopa.it"
   resources:
     requests:
       memory: "512Mi"
@@ -25,16 +25,17 @@ basecache: &basecache
       cpu: "1"
   envConfig: &envConfig
     AZURE_INSIGHTS_ENABLED: "true"
-    REDIS_HOST: "pagopa-d-redis.redis.cache.windows.net"
+    REDIS_HOST: "pagopa-u-redis.redis.cache.windows.net"
     REDIS_PORT: "6380"
     JAVA_OPTS: "-Dspring.jpa.show-sql=true"
+    CANARY: "true"
   secretProvider: &azureSecretProvider
     create: true
     envSecrets: &envSecret
-      APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-d-connection-string"
+      APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-u-connection-string"
       REDIS_PWD: "redis-password"
     keyvault:
-      name: "pagopa-d-apiconfig-kv"
+      name: "pagopa-u-apiconfig-kv"
       tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
   tmpVolumeMount:
     create: true
@@ -52,11 +53,11 @@ postgresql:
   !!merge <<: *basecache
   ingress:
     !!merge <<: *ingress
-    path: /api-config-cache/p(/|$)(.*)
+    path: /api-config-cache-replica/p(/|$)(.*)
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-cache-postgresql"
-    DB_CONFIG_URL: "jdbc:postgresql://pagopa-d-weu-nodo-flexible-postgresql.postgres.database.azure.com:6432/nodo?sslmode=require&prepareThreshold=0&currentSchema=cfg"
+    DB_CONFIG_URL: "jdbc:postgresql://pagopa-u-weu-nodo-flexible-postgresql.postgres.database.azure.com:6432/nodo?sslmode=require&prepareThreshold=0&currentSchema=cfg"
     DB_CONFIG_USER: "cfg"
     DB_CONFIG_DRIVER: "org.postgresql.Driver"
     DATABASE_ID: "p"
@@ -69,7 +70,7 @@ oracle:
   !!merge <<: *basecache
   ingress:
     !!merge <<: *ingress
-    path: /api-config-cache/o(/|$)(.*)
+    path: /api-config-cache-replica/o(/|$)(.*)
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-cache-oracle"
