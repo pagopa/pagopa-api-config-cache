@@ -171,9 +171,9 @@ stages:
 
   # Build and Push Docker Image
   - stage: Build
-    ${{ if $(SKIP_BUILD) }}:
+    ${{ if or( parameters.deployOnly , parameters.uninstall ) }}:
       displayName: "Build skipped"
-    ${{ if not($(SKIP_BUILD)) }}:
+    ${{ if not(or( parameters.deployOnly , parameters.uninstall )) }}:
       displayName: "Build"
     dependsOn: GetVersion
     condition: and(succeeded(), not(${{ variables.SKIP_BUILD }}))
