@@ -164,18 +164,24 @@ stages:
     condition: and(not(or(failed(), canceled())), not( ${{ parameters.uninstall }} ) )
     jobs:
       - job: get_version
+        displayName: "Get release version"
         steps:
           - checkout: self
           - template: templates/maven-github-current-version/template.yaml@pagopaCommons
 
   # Build and Push Docker Image
   - stage: Build
+    ${{ if $(SKIP_BUILD) }}:
+      displayName: "Build skipped"
+    ${{ if not($(SKIP_BUILD)) }}:
+      displayName: "Build"
     dependsOn: GetVersion
     condition: and(succeeded(), not(${{ variables.SKIP_BUILD }}))
     variables:
       current_version: $[ stageDependencies.GetVersion.get_version.outputs['current_version.value'] ]
     jobs:
-      - job: "build"
+      - job: build
+        displayName: "Building version"
         workspace:
           clean: all
         steps:
