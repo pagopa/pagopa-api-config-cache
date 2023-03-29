@@ -268,8 +268,8 @@ stages:
                         APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
                         ARGUMENTS: >-
                           --set postgresql.image.tag=$(deploy_version)
-                          --set postgresql.enabled="$(USE_POSTGRESQL)"
+                          --set postgresql.enabled="${{ parameters.USE_POSTGRESQL }}"
                           --set postgresql.canaryDelivery.create="${{ parameters.canary }}"
                           --set oracle.image.tag=$(deploy_version)
-                          --set oracle.enabled="$(USE_ORACLE)"
+                          --set oracle.enabled="${{ parameters.USE_ORACLE }}"
                           --set oracle.canaryDelivery.create="${{ parameters.canary }}"
