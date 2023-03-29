@@ -227,6 +227,8 @@ stages:
         condition: in(dependencies.manual_approval.result, 'Succeeded', 'Skipped')
         pool:
           name: $(poolImage)
+        workspace:
+          clean: all
         environment: ${{ parameters['ENV'] }}
         strategy:
           runOnce:
