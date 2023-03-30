@@ -122,6 +122,7 @@ import it.gov.pagopa.apiconfig.model.node.v1.psp.PaymentServiceProvider;
 import it.gov.pagopa.apiconfig.model.node.v1.psp.PspChannelPaymentType;
 import it.gov.pagopa.apiconfig.model.node.v1.psp.PspInformation;
 import it.gov.pagopa.apiconfig.redis.RedisRepository;
+import it.gov.pagopa.apiconfig.repository.CdsSoggettoServizioRepositoryCustom;
 import it.gov.pagopa.apiconfig.starter.entity.CdiDetail;
 import it.gov.pagopa.apiconfig.starter.entity.CdiFasciaCostoServizio;
 import it.gov.pagopa.apiconfig.starter.entity.CdiInformazioniServizio;
@@ -143,7 +144,6 @@ import it.gov.pagopa.apiconfig.starter.repository.CdiPreferenceRepository;
 import it.gov.pagopa.apiconfig.starter.repository.CdsCategorieRepository;
 import it.gov.pagopa.apiconfig.starter.repository.CdsServizioRepository;
 import it.gov.pagopa.apiconfig.starter.repository.CdsSoggettoRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdsSoggettoServizioRepository;
 import it.gov.pagopa.apiconfig.starter.repository.CodifichePaRepository;
 import it.gov.pagopa.apiconfig.starter.repository.CodificheRepository;
 import it.gov.pagopa.apiconfig.starter.repository.ConfigurationKeysRepository;
@@ -194,7 +194,7 @@ public class ConfigService {
   @Autowired private CdsCategorieRepository cdsCategorieRepository;
   @Autowired private CdsSoggettoRepository cdsSoggettoRepository;
   @Autowired private CdsServizioRepository cdsServizioRepository;
-  @Autowired private CdsSoggettoServizioRepository cdsSoggettoServizioRepository;
+  @Autowired private CdsSoggettoServizioRepositoryCustom cdsSoggettoServizioRepository;
   @Autowired private GdeConfigRepository gdeConfigRepository;
   @Autowired private DizionarioMetadatiRepository dizionarioMetadatiRepository;
   @Autowired private FtpServersRepository ftpServersRepository;
@@ -424,7 +424,7 @@ public class ConfigService {
     return modelMapper
         .modelMapper()
         .map(
-            cdsSoggettoServizioRepository.findAllFetching(),
+            cdsSoggettoServizioRepository.findAllFetchingStations(),
             new TypeToken<List<CdsSubjectService>>() {}.getType());
   }
 
