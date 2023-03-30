@@ -244,6 +244,7 @@ stages:
               steps:
                 - checkout: self
                   persistCredentials: true
+                  clean: true
 
                 - script: |
                     echo "deploy version is $(deploy_version)"
