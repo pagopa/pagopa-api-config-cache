@@ -1,6 +1,8 @@
 package it.gov.pagopa.apiconfig.cache.model.node.v1;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsCategory;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsService;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsSubject;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsSubjectService;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.configuration.ConfigurationKey;
@@ -22,8 +24,6 @@ import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.Channel;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.PaymentServiceProvider;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.PspChannelPaymentType;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.PspInformation;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsCategory;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsService;
 import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;

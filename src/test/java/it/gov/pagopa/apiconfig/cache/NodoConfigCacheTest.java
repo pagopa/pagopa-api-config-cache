@@ -1,4 +1,4 @@
-package it.gov.pagopa.apiconfig;
+package it.gov.pagopa.apiconfig.cache;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;

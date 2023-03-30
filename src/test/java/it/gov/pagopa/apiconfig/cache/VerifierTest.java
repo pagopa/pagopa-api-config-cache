@@ -1,8 +1,9 @@
-package it.gov.pagopa.apiconfig;
+package it.gov.pagopa.apiconfig.cache;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.when;
 
+import it.gov.pagopa.apiconfig.cache.TestUtils;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.repository.VerifierRepository;
 import it.gov.pagopa.apiconfig.cache.service.VerifierService;

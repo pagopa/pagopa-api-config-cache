@@ -1,4 +1,4 @@
-package it.gov.pagopa.apiconfig;
+package it.gov.pagopa.apiconfig.cache;
 
 import it.gov.pagopa.apiconfig.starter.entity.CanaliView;
 import it.gov.pagopa.apiconfig.starter.entity.CdiDetail;

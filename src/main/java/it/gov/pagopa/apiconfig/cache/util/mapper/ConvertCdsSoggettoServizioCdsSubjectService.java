@@ -1,7 +1,7 @@
 package it.gov.pagopa.apiconfig.cache.util.mapper;
 
-import it.gov.pagopa.apiconfig.model.node.v1.cds.CdsSubjectService;
-import it.gov.pagopa.apiconfig.model.node.v1.cds.CdsSubjectService.CdsSubjectServiceBuilder;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsSubjectService;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsSubjectService.CdsSubjectServiceBuilder;
 import it.gov.pagopa.apiconfig.starter.entity.CdsSoggettoServizio;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;

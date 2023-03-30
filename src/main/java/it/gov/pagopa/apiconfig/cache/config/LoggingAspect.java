@@ -39,12 +39,12 @@ public class LoggingAspect {
     // all rest controllers
   }
 
-  @Pointcut("execution(* it.gov.pagopa.apiconfig.repository..*.*(..))")
+  @Pointcut("execution(* it.gov.pagopa.apiconfig.cache.repository..*.*(..))")
   public void repository() {
     // all repository methods
   }
 
-  @Pointcut("execution(* it.gov.pagopa.apiconfig.service..*.*(..))")
+  @Pointcut("execution(* it.gov.pagopa.apiconfig.cache.service..*.*(..))")
   public void service() {
     // all service methods
   }
