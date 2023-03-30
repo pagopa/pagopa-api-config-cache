@@ -163,6 +163,8 @@ stages:
         displayName: "Get release version"
         steps:
           - checkout: self
+            clean: true
+            persistCredentials: true
           - template: templates/maven-github-current-version/template.yaml@pagopaCommons
 
   # Build and Push Docker Image
