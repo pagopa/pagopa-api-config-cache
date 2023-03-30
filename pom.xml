@@ -204,7 +204,7 @@
               <xsdOptions>
                 <xsdOption>
                   <xsd>${basedir}/src/main/resources/xsd/sanp3.3.1/CatalogoDatiInformativiPSP.xsd</xsd>
-                  <packagename>it.gov.pagopa.apiconfig.imported.catalogodati</packagename>
+                  <packagename>it.gov.pagopa.apiconfig.cache.imported.catalogodati</packagename>
                 </xsdOption>
               </xsdOptions>
             </configuration>
@@ -220,7 +220,7 @@
               <xsdOptions>
                 <xsdOption>
                   <xsd>${basedir}/src/main/resources/xsd/sanp3.3.1/TabellaDelleContropartiEstesa_1_2_0.xsd</xsd>
-                  <packagename>it.gov.pagopa.apiconfig.imported.controparti</packagename>
+                  <packagename>it.gov.pagopa.apiconfig.cache.imported.controparti</packagename>
                 </xsdOption>
               </xsdOptions>
             </configuration>
@@ -236,7 +236,7 @@
               <xsdOptions>
                 <xsdOption>
                   <xsd>${basedir}/src/main/resources/xsd/sanp3.3.1/TemplateInformativa_1_0_11.xsd</xsd>
-                  <packagename>it.gov.pagopa.apiconfig.imported.template</packagename>
+                  <packagename>it.gov.pagopa.apiconfig.cache.imported.template</packagename>
                 </xsdOption>
               </xsdOptions>
             </configuration>
