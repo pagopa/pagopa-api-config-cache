@@ -239,7 +239,6 @@ stages:
               steps:
                 - checkout: self
                   persistCredentials: true
-                  fetchDepth: 1
 
                 - script: |
                     echo "deploy version is $(deploy_version)"
