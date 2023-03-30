@@ -34,4 +34,10 @@ public class CdsSubjectService {
 
   @JsonProperty(value = "fee", required = true)
   private Boolean fee;
+
+  @JsonProperty(value = "station_code")
+  private String stationCode;
+
+  @JsonProperty(value = "service_description")
+  private String serviceDescription;
 }
