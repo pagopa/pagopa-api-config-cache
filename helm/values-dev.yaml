@@ -27,7 +27,6 @@ basecache: &basecache
     AZURE_INSIGHTS_ENABLED: "true"
     REDIS_HOST: "pagopa-d-redis.redis.cache.windows.net"
     REDIS_PORT: "6380"
-    JAVA_OPTS: "-Dspring.jpa.show-sql=true"
   secretProvider: &azureSecretProvider
     create: true
     envSecrets: &envSecret
@@ -56,7 +55,7 @@ postgresql:
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-cache-postgresql"
-    DB_CONFIG_URL: "jdbc:postgresql://pagopa-d-weu-nodo-flexible-postgresql.postgres.database.azure.com:6432/nodo?sslmode=require&prepareThreshold=0&currentSchema=cfg"
+    DB_CONFIG_URL: "jdbc:postgresql://ndp.d.db-nodo-pagamenti.com:6432/nodo?sslmode=require&prepareThreshold=0&currentSchema=cfg"
     DB_CONFIG_USER: "cfg"
     DB_CONFIG_DRIVER: "org.postgresql.Driver"
     DATABASE_ID: "p"

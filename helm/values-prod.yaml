@@ -27,7 +27,6 @@ basecache: &basecache
     AZURE_INSIGHTS_ENABLED: "true"
     REDIS_HOST: "pagopa-p-redis.redis.cache.windows.net"
     REDIS_PORT: "6380"
-    JAVA_OPTS: "-Dspring.jpa.show-sql=true"
   secretProvider: &azureSecretProvider
     create: true
     envSecrets: &envSecret
