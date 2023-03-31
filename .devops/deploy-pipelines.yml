@@ -63,6 +63,7 @@ parameters:
     default: false
 
 variables:
+  github_token_read_packages: '$(github_token_read_packages_dev)'
   SKIP_BUILD: ${{ or( parameters.deployOnly , parameters.uninstall ) }}
   imageRepository: '$(IMAGE_REPOSITORY_NAME)'
   nameSpace: '$(K8S_NAMESPACE)'
@@ -80,7 +81,6 @@ variables:
     appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_DEV)"
     API_SUBSCRIPTION_KEY: $(DEV_API_SUBSCRIPTION_KEY)
     appFinalName: $(appName)
-    github_token_read_packages: '$(github_token_read_packages_dev)'
   ${{ if eq(parameters['ENV'], 'it') }}:
     dockerRegistryServiceConnection: $(DEV_CONTAINER_REGISTRY_SERVICE_CONN)
     dockerRegistryFqdn: $(DEV_CONTAINER_NAMESPACE)
@@ -90,7 +90,6 @@ variables:
     appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_DEV)"
     API_SUBSCRIPTION_KEY: $(DEV_API_SUBSCRIPTION_KEY)
     appFinalName: '$(appName)-replica'
-    github_token_read_packages: '$(github_token_read_packages_dev)'
   ${{ if eq(parameters['ENV'], 'uat') }}:
     dockerRegistryServiceConnection: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
     dockerRegistryFqdn: $(UAT_CONTAINER_NAMESPACE)
@@ -100,7 +99,6 @@ variables:
     appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_UAT)"
     API_SUBSCRIPTION_KEY: $(UAT_API_SUBSCRIPTION_KEY)
     appFinalName: $(appName)
-    github_token_read_packages: '$(github_token_read_packages_uat)'
   ${{ if eq(parameters['ENV'], 'prf') }}:
     dockerRegistryServiceConnection: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
     dockerRegistryFqdn: $(UAT_CONTAINER_NAMESPACE)
@@ -110,7 +108,6 @@ variables:
     appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_UAT)"
     API_SUBSCRIPTION_KEY: $(UAT_API_SUBSCRIPTION_KEY)
     appFinalName: '$(appName)-replica'
-    github_token_read_packages: '$(github_token_read_packages_uat)'
   ${{ if eq(parameters['ENV'], 'prod') }}:
     dockerRegistryServiceConnection: $(PROD_CONTAINER_REGISTRY_SERVICE_CONN)
     dockerRegistryFqdn: $(PROD_CONTAINER_NAMESPACE)
@@ -119,7 +116,6 @@ variables:
     appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_PROD)"
     appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_PROD)"
     appFinalName: $(appName)
-    github_token_read_packages: '$(github_token_read_packages_prod)'
 
   ${{ if eq(variables['Build.SourceBranchName'], 'merge') }}:
     sourceBranch: "main" # force to main branch
