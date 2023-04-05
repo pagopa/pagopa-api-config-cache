@@ -93,8 +93,8 @@ if [ "$install" == 1 ]; then
     echo "Installing canary version $version"
     helm upgrade --dry-run --namespace $NAMESPACE --install --values $DIR/values-dev.yaml \
       --set postgresql.image.tag=$version \
-      --set oracle.image.tag=$version \
       --set postgresql.canaryDelivery.create="true" \
+      --set oracle.image.tag=$version \
       --set oracle.canaryDelivery.create="true" \
       $NAME-canary $DIR > dry-github.yaml
     exit 0
@@ -102,8 +102,11 @@ if [ "$install" == 1 ]; then
     echo "Installing stable version $version"
     helm upgrade --namespace $NAMESPACE --install --values $DIR/values-dev.yaml \
       --set postgresql.image.tag=$version \
-      --set postgresql.enabled=false \
+      --set postgresql.enabled=true \
       --set oracle.image.tag=$version \
+      --set oracle.enabled=true \
+      --set oracledev.image.tag=$version \
+      --set oracledev.enabled=true \
       $NAME $DIR
     exit 0
   fi
