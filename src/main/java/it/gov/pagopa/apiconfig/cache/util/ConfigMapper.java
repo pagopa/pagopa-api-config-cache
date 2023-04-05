@@ -1,5 +1,6 @@
 package it.gov.pagopa.apiconfig.cache.util;
 
+import it.gov.pagopa.apiconfig.cache.entity.CdsSoggettoServizioCustom;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsService;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsSubjectService;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.configuration.ConfigurationKey;
@@ -15,22 +16,6 @@ import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.Station;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.BrokerPsp;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.Channel;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.PaymentServiceProvider;
-import it.gov.pagopa.apiconfig.starter.entity.CanaleTipoVersamento;
-import it.gov.pagopa.apiconfig.starter.entity.CanaliView;
-import it.gov.pagopa.apiconfig.starter.entity.CdsServizio;
-import it.gov.pagopa.apiconfig.starter.entity.CdsSoggettoServizio;
-import it.gov.pagopa.apiconfig.starter.entity.Codifiche;
-import it.gov.pagopa.apiconfig.starter.entity.CodifichePa;
-import it.gov.pagopa.apiconfig.starter.entity.ConfigurationKeys;
-import it.gov.pagopa.apiconfig.starter.entity.FtpServers;
-import it.gov.pagopa.apiconfig.starter.entity.IbanValidiPerPa;
-import it.gov.pagopa.apiconfig.starter.entity.IntermediariPa;
-import it.gov.pagopa.apiconfig.starter.entity.IntermediariPsp;
-import it.gov.pagopa.apiconfig.starter.entity.Pa;
-import it.gov.pagopa.apiconfig.starter.entity.Psp;
-import it.gov.pagopa.apiconfig.starter.entity.Stazioni;
-import it.gov.pagopa.apiconfig.starter.entity.TipiVersamento;
-import it.gov.pagopa.apiconfig.starter.entity.WfespPluginConf;
 import it.gov.pagopa.apiconfig.cache.util.mapper.ConvertCanaleTipoVersamentoToPaymentType;
 import it.gov.pagopa.apiconfig.cache.util.mapper.ConvertCanaliToChannelDetails;
 import it.gov.pagopa.apiconfig.cache.util.mapper.ConvertCdsServizioCdsCatService;
@@ -49,6 +34,21 @@ import it.gov.pagopa.apiconfig.cache.util.mapper.ConvertPspToPaymentServiceProvi
 import it.gov.pagopa.apiconfig.cache.util.mapper.ConvertStazioniToStationDetails;
 import it.gov.pagopa.apiconfig.cache.util.mapper.ConvertTipiVersamentoToPaymentType;
 import it.gov.pagopa.apiconfig.cache.util.mapper.ConvertWfespPluginConfToWfespPluginConf;
+import it.gov.pagopa.apiconfig.starter.entity.CanaleTipoVersamento;
+import it.gov.pagopa.apiconfig.starter.entity.CanaliView;
+import it.gov.pagopa.apiconfig.starter.entity.CdsServizio;
+import it.gov.pagopa.apiconfig.starter.entity.Codifiche;
+import it.gov.pagopa.apiconfig.starter.entity.CodifichePa;
+import it.gov.pagopa.apiconfig.starter.entity.ConfigurationKeys;
+import it.gov.pagopa.apiconfig.starter.entity.FtpServers;
+import it.gov.pagopa.apiconfig.starter.entity.IbanValidiPerPa;
+import it.gov.pagopa.apiconfig.starter.entity.IntermediariPa;
+import it.gov.pagopa.apiconfig.starter.entity.IntermediariPsp;
+import it.gov.pagopa.apiconfig.starter.entity.Pa;
+import it.gov.pagopa.apiconfig.starter.entity.Psp;
+import it.gov.pagopa.apiconfig.starter.entity.Stazioni;
+import it.gov.pagopa.apiconfig.starter.entity.TipiVersamento;
+import it.gov.pagopa.apiconfig.starter.entity.WfespPluginConf;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -95,7 +95,7 @@ public class ConfigMapper {
 
     Converter<CdsServizio, CdsService> convertCdsServizioCdsCatService =
         new ConvertCdsServizioCdsCatService();
-    Converter<CdsSoggettoServizio, CdsSubjectService> convertCdsSoggettoServizioCdsSubjectService =
+    Converter<CdsSoggettoServizioCustom, CdsSubjectService> convertCdsSoggettoServizioCdsSubjectService =
         new ConvertCdsSoggettoServizioCdsSubjectService();
 
     mapper
@@ -144,7 +144,7 @@ public class ConfigMapper {
         .createTypeMap(CdsServizio.class, CdsService.class)
         .setConverter(convertCdsServizioCdsCatService);
     mapper
-        .createTypeMap(CdsSoggettoServizio.class, CdsSubjectService.class)
+        .createTypeMap(CdsSoggettoServizioCustom.class, CdsSubjectService.class)
         .setConverter(convertCdsSoggettoServizioCdsSubjectService);
 
     mapper

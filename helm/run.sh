@@ -4,6 +4,8 @@ DIR=.
 NAME=cache
 NAMESPACE=apiconfig
 
+location=weu
+
 usage() {
   echo "Usage: $0 [--update] [--canary] [--install] [--uninstall] [--weight <percentage>] [--version <version>]" 1>&2;
   echo ""
@@ -35,6 +37,12 @@ while [[ "$#" -gt 0 ]]; do
             shift
             weight="$1"
             ;;
+        --weu)
+            location="weu"
+            ;;
+        --neu)
+            location="neu"
+            ;;
         --version)
             shift
             version="$1"
@@ -63,6 +71,22 @@ if [ -n "$update" ]; then
   echo "Updating dependencies"
   helm dep update $DIR
 fi
+
+if [ "$location" == "weu" ]; then
+  valuesFile=$location-dev/values-dev.yaml
+  context="pagopa-d-$location-dev-aks"
+else
+  valuesFile=$location-dev/values-dev.yaml
+  context="pagopa-d-$location-dev-aks"
+fi
+
+echo "Using
+context      | $context
+valuesFile   | $valuesFile
+"
+
+
+kubectl config use-context $context
 
 if [ "$install" == 1 ]; then
   if [ "$canary" == 1 ]; then
