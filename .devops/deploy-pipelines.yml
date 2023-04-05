@@ -96,7 +96,6 @@ variables:
     WEU_poolImage: '$(deploy-pool-dev)'
     WEU_appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_DEV)"
     WEU_appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_DEV)"
-    NEU_kubernetesServiceConnection: 'pagopa-neu-nodo-aks-dev'
     NEU_dockerRegistryFqdn: $(DEV_CONTAINER_NAMESPACE)
     NEU_kubernetesServiceConnection: '$(DEV_KUBERNETES_SERVICE_CONN)'
     NEU_poolImage: 'pagopa-neu-dev-linux'
