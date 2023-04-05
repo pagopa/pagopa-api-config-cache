@@ -2,7 +2,7 @@ basecache: &basecache
   namespace: "apiconfig"
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
-    tag: "0.1.7"
+    tag: "0.1.8"
   livenessProbe:
     httpGet:
       path: /actuator/health/liveness
