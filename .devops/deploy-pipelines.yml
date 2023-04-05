@@ -235,8 +235,10 @@ stages:
 
   # Create a release on GitHub
   - stage: GetVersion
-    dependsOn: Build
-    condition: in(stageDependencies.Build.result, 'Succeeded', 'Skipped')
+    dependsOn:
+      - Build
+      - Release
+    condition: and(in(stageDependencies.Build.result, 'Succeeded', 'Skipped'),in(stageDependencies.Release.result, 'Succeeded', 'Skipped'))
     jobs:
       - job: get_version
         displayName: "Get release version"
