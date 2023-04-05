@@ -204,7 +204,6 @@ stages:
       displayName: "Build skipped"
     ${{ if not(or( parameters.deployOnly , parameters.uninstall )) }}:
       displayName: "Build"
-    dependsOn: GetVersion
     condition: and(succeeded(), not(${{ variables.SKIP_BUILD }}))
     variables:
       current_version: $[ stageDependencies.GetVersion.get_version.outputs['current_version.value'] ]
