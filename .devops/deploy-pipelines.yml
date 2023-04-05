@@ -14,6 +14,20 @@ resources:
       endpoint: 'io-azure-devops-github-ro'
 
 parameters:
+  - name: "WEU"
+    displayName: "Deploy in WEU"
+    type: boolean
+    default: True
+    values:
+      - False
+      - True
+  - name: "NEU"
+    displayName: "Deploy in NEU"
+    type: boolean
+    default: False
+    values:
+      - False
+      - True
   - name: ENV
     displayName: Target Environment
     type: string
@@ -67,54 +81,88 @@ variables:
   SKIP_BUILD: ${{ or( parameters.deployOnly , parameters.uninstall ) }}
   imageRepository: '$(IMAGE_REPOSITORY_NAME)'
   nameSpace: '$(K8S_NAMESPACE)'
-  FILE_CONFIG_PATH_CONFIGAPP: $(Build.SourcesDirectory)/helm/config/${{ parameters.ENV }}/application.properties
+
+  WEU_value_file: "helm/weu-${{ parameters['ENV'] }}/values-${{ parameters['ENV'] }}.yaml"
+  NEU_value_file: "helm/neu-${{ parameters['ENV'] }}/values-${{ parameters['ENV'] }}.yaml"
+
   ${{ if parameters.canary }}:
     appName: 'cache-canary'
   ${{ else }}:
     appName: 'cache'
   ${{ if eq(parameters['ENV'], 'dev') }}:
-    dockerRegistryServiceConnection: $(DEV_CONTAINER_REGISTRY_SERVICE_CONN)
-    dockerRegistryFqdn: $(DEV_CONTAINER_NAMESPACE)
-    kubernetesServiceConnection: '$(DEV_KUBERNETES_SERVICE_CONN)'
-    poolImage: '$(deploy-pool-dev)'
-    appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_DEV)"
-    appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_DEV)"
+    WEU_dockerRegistryServiceConnection: $(DEV_CONTAINER_REGISTRY_SERVICE_CONN)
+    WEU_dockerRegistryFqdn: $(DEV_CONTAINER_NAMESPACE)
+    WEU_kubernetesServiceConnection: '$(DEV_KUBERNETES_SERVICE_CONN)'
+    WEU_poolImage: '$(deploy-pool-dev)'
+    WEU_appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_DEV)"
+    WEU_appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_DEV)"
+    NEU_kubernetesServiceConnection: 'pagopa-neu-nodo-aks-dev'
+    NEU_dockerRegistryFqdn: $(DEV_CONTAINER_NAMESPACE)
+    NEU_kubernetesServiceConnection: '$(DEV_KUBERNETES_SERVICE_CONN)'
+    NEU_poolImage: 'pagopa-neu-dev-linux'
+    NEU_appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_DEV)"
+    NEU_appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_DEV)"
     API_SUBSCRIPTION_KEY: $(DEV_API_SUBSCRIPTION_KEY)
     appFinalName: $(appName)
   ${{ if eq(parameters['ENV'], 'it') }}:
-    dockerRegistryServiceConnection: $(DEV_CONTAINER_REGISTRY_SERVICE_CONN)
-    dockerRegistryFqdn: $(DEV_CONTAINER_NAMESPACE)
-    kubernetesServiceConnection: '$(DEV_KUBERNETES_SERVICE_CONN)'
-    poolImage: '$(deploy-pool-dev)'
-    appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_DEV)"
-    appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_DEV)"
+    WEU_dockerRegistryServiceConnection: $(DEV_CONTAINER_REGISTRY_SERVICE_CONN)
+    WEU_dockerRegistryFqdn: $(DEV_CONTAINER_NAMESPACE)
+    WEU_kubernetesServiceConnection: '$(DEV_KUBERNETES_SERVICE_CONN)'
+    WEU_poolImage: '$(deploy-pool-dev)'
+    WEU_appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_DEV)"
+    WEU_appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_DEV)"
+    NEU_dockerRegistryServiceConnection: $(DEV_CONTAINER_REGISTRY_SERVICE_CONN)
+    NEU_dockerRegistryFqdn: $(DEV_CONTAINER_NAMESPACE)
+    NEU_kubernetesServiceConnection: 'pagopa-neu-nodo-aks-dev'
+    NEU_poolImage: 'pagopa-neu-dev-linux'
+    NEU_appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_DEV)"
+    NEU_appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_DEV)"
     API_SUBSCRIPTION_KEY: $(DEV_API_SUBSCRIPTION_KEY)
     appFinalName: '$(appName)-replica'
   ${{ if eq(parameters['ENV'], 'uat') }}:
-    dockerRegistryServiceConnection: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
-    dockerRegistryFqdn: $(UAT_CONTAINER_NAMESPACE)
-    kubernetesServiceConnection: '$(UAT_KUBERNETES_SERVICE_CONN)'
-    poolImage: '$(deploy-pool-uat)'
-    appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_UAT)"
-    appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_UAT)"
+    WEU_dockerRegistryServiceConnection: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
+    WEU_dockerRegistryFqdn: $(UAT_CONTAINER_NAMESPACE)
+    WEU_kubernetesServiceConnection: '$(UAT_KUBERNETES_SERVICE_CONN)'
+    WEU_poolImage: '$(deploy-pool-uat)'
+    WEU_appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_UAT)"
+    WEU_appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_UAT)"
+    NEU_dockerRegistryServiceConnection: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
+    NEU_dockerRegistryFqdn: $(UAT_CONTAINER_NAMESPACE)
+    NEU_kubernetesServiceConnection: '$(UAT_KUBERNETES_SERVICE_CONN)'
+    NEU_poolImage: '$(deploy-pool-uat)'
+    NEU_appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_UAT)"
+    NEU_appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_UAT)"
     API_SUBSCRIPTION_KEY: $(UAT_API_SUBSCRIPTION_KEY)
     appFinalName: $(appName)
   ${{ if eq(parameters['ENV'], 'prf') }}:
-    dockerRegistryServiceConnection: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
-    dockerRegistryFqdn: $(UAT_CONTAINER_NAMESPACE)
-    kubernetesServiceConnection: '$(UAT_KUBERNETES_SERVICE_CONN)'
-    poolImage: '$(deploy-pool-uat)'
-    appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_UAT)"
-    appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_UAT)"
+    WEU_dockerRegistryServiceConnection: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
+    WEU_dockerRegistryFqdn: $(UAT_CONTAINER_NAMESPACE)
+    WEU_kubernetesServiceConnection: '$(UAT_KUBERNETES_SERVICE_CONN)'
+    WEU_poolImage: '$(deploy-pool-uat)'
+    WEU_appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_UAT)"
+    WEU_appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_UAT)"
+    NEU_dockerRegistryServiceConnection: $(UAT_CONTAINER_REGISTRY_SERVICE_CONN)
+    NEU_dockerRegistryFqdn: $(UAT_CONTAINER_NAMESPACE)
+    NEU_kubernetesServiceConnection: '$(UAT_KUBERNETES_SERVICE_CONN)'
+    NEU_poolImage: '$(deploy-pool-uat)'
+    NEU_appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_UAT)"
+    NEU_appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_UAT)"
     API_SUBSCRIPTION_KEY: $(UAT_API_SUBSCRIPTION_KEY)
     appFinalName: '$(appName)-replica'
   ${{ if eq(parameters['ENV'], 'prod') }}:
-    dockerRegistryServiceConnection: $(PROD_CONTAINER_REGISTRY_SERVICE_CONN)
-    dockerRegistryFqdn: $(PROD_CONTAINER_NAMESPACE)
-    kubernetesServiceConnection: '$(PROD_KUBERNETES_SERVICE_CONN)'
-    poolImage: '$(deploy-pool-prod)'
-    appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_PROD)"
-    appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_PROD)"
+    WEU_dockerRegistryServiceConnection: $(PROD_CONTAINER_REGISTRY_SERVICE_CONN)
+    WEU_dockerRegistryFqdn: $(PROD_CONTAINER_NAMESPACE)
+    WEU_kubernetesServiceConnection: '$(PROD_KUBERNETES_SERVICE_CONN)'
+    WEU_poolImage: '$(deploy-pool-prod)'
+    WEU_appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_PROD)"
+    WEU_appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_PROD)"
+    NEU_dockerRegistryServiceConnection: $(PROD_CONTAINER_REGISTRY_SERVICE_CONN)
+    NEU_dockerRegistryFqdn: $(PROD_CONTAINER_NAMESPACE)
+    NEU_kubernetesServiceConnection: '$(PROD_KUBERNETES_SERVICE_CONN)'
+    NEU_poolImage: '$(deploy-pool-prod)'
+    NEU_appInsightsServiceConn: "$(TF_APPINSIGHTS_SERVICE_CONN_PROD)"
+    NEU_appInsightsResourceId: "$(TF_APPINSIGHTS_RESOURCE_ID_PROD)"
+    API_SUBSCRIPTION_KEY: $(UAT_API_SUBSCRIPTION_KEY)
     appFinalName: $(appName)
 
   ${{ if eq(variables['Build.SourceBranchName'], 'merge') }}:
@@ -194,8 +242,8 @@ stages:
 
           - template: templates/docker-release/template.yaml@pagopaCommons
             parameters:
-              CONTAINER_REGISTRY_SERVICE_CONN: $(dockerRegistryServiceConnection)
-              CONTAINER_REGISTRY_FQDN: $(dockerRegistryFqdn)
+              CONTAINER_REGISTRY_SERVICE_CONN: $(WEU_dockerRegistryServiceConnection)
+              CONTAINER_REGISTRY_FQDN: $(WEU_dockerRegistryFqdn)
               DOCKER_IMAGE_NAME: $(imageRepository)
               DOCKER_IMAGE_TAG: $(current_version)
               FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
@@ -225,65 +273,129 @@ stages:
                 $(APPROVE_NOTIFY_ADMIN)
               instructions: "Please approve or reject ${{ parameters['ENV'] }} \n uninstall:${{ parameters.uninstall }},canary ${{ parameters.canary }}"
               onTimeout: 'reject'
-      - deployment: "deploy"
-        displayName: "Deploy ${{ parameters.ENV }}"
-        dependsOn: manual_approval
-        condition: in(dependencies.manual_approval.result, 'Succeeded', 'Skipped')
-        pool:
-          name: $(poolImage)
-        workspace:
-          clean: all
-        environment: ${{ parameters['ENV'] }}
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                - checkout: self
-                  persistCredentials: true
-                  clean: true
+      - ${{ if parameters.WEU }}:
+        - deployment: "deploy_weu"
+          displayName: "Deploy ${{ parameters['ENV'] }} WEU"
+          dependsOn: manual_approval
+          condition: in(dependencies.manual_approval.result, 'Succeeded', 'Skipped')
+          pool:
+            name: $(poolImage)
+          workspace:
+            clean: all
+          environment: ${{ parameters['ENV'] }}
+          strategy:
+            runOnce:
+              deploy:
+                steps:
+                  - checkout: self
+                    persistCredentials: true
+                    clean: true
 
-                - script: |
-                    echo "deploy version is $(deploy_version)"
-                    git checkout $(sourceBranch)
-                  displayName: Checkout and update branch
+                  - script: |
+                      echo "deploy version is $(deploy_version)"
+                      git checkout $(sourceBranch)
+                    displayName: Checkout and update branch
 
-                - template: templates/helm-microservice-chart-setup/template.yaml@pagopaCommons
-                  parameters:
-                    DEPLOY_VERSION: $(deploy_version)
-
-                - ${{ if parameters.uninstall }}:
-                  - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
+                  - template: templates/helm-microservice-chart-setup/template.yaml@pagopaCommons
                     parameters:
-                      COMMAND: "uninstall"
-                      DO_DEPLOY: true
-                      ENV: ${{ parameters['ENV'] }}
-                      KUBERNETES_SERVICE_CONN: ${{ variables.kubernetesServiceConnection }}
-                      NAMESPACE: $(nameSpace)
-                      APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
-                      APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
-                      ARGUMENTS: $(appFinalName)
-                - ${{ if not( parameters.uninstall ) }}:
+                      DEPLOY_VERSION: $(deploy_version)
+
+                  - ${{ if parameters.uninstall }}:
                     - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
                       parameters:
+                        COMMAND: "uninstall"
                         DO_DEPLOY: true
                         ENV: ${{ parameters['ENV'] }}
-                        KUBERNETES_SERVICE_CONN: ${{ variables.kubernetesServiceConnection }}
+                        KUBERNETES_SERVICE_CONN: ${{ variables.WEU_kubernetesServiceConnection }}
                         NAMESPACE: $(nameSpace)
-                        APP_NAME: $(appFinalName)
-                        VALUE_FILE: "helm/values-${{ parameters['ENV'] }}.yaml"
+                        APPINSIGHTS_SERVICE_CONN: ${{ variables.WEU_appInsightsServiceConn }}
+                        APPINSIGHTS_RESOURCE_ID: ${{ variables.WEU_appInsightsResourceId }}
+                        ARGUMENTS: $(appFinalName)
+                  - ${{ if not( parameters.uninstall ) }}:
+                      - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
+                        parameters:
+                          DO_DEPLOY: true
+                          ENV: ${{ parameters['ENV'] }}
+                          KUBERNETES_SERVICE_CONN: ${{ variables.WEU_kubernetesServiceConnection }}
+                          NAMESPACE: $(nameSpace)
+                          APP_NAME: $(appFinalName)
+                          VALUE_FILE: $(WEU_value_file)
+                          DEPLOY_VERSION: $(deploy_version)
+                          APPINSIGHTS_SERVICE_CONN: ${{ variables.WEU_appInsightsServiceConn }}
+                          APPINSIGHTS_RESOURCE_ID: ${{ variables.WEU_appInsightsResourceId }}
+                          ARGUMENTS: >-
+                            --set postgresql.forceRedeploy=true
+                            --set postgresql.image.tag=$(deploy_version)
+                            --set postgresql.enabled="${{ parameters.USE_POSTGRESQL }}"
+                            --set postgresql.canaryDelivery.create="${{ parameters.canary }}"
+                            --set oracle.forceRedeploy=true
+                            --set oracle.image.tag=$(deploy_version)
+                            --set oracle.enabled="${{ parameters.USE_ORACLE }}"
+                            --set oracle.canaryDelivery.create="${{ parameters.canary }}"
+                            --set oracledev.forceRedeploy=true
+                            --set oracledev.image.tag=$(deploy_version)
+                            --set oracledev.enabled="${{ parameters.USE_ORACLE }}"
+                            --set oracledev.canaryDelivery.create="${{ parameters.canary }}"
+      - ${{ if parameters.NEU }}:
+          - deployment: "deploy_neu"
+            displayName: "Deploy ${{ parameters['ENV'] }} NEU"
+            dependsOn: manual_approval
+            condition: in(dependencies.manual_approval.result, 'Succeeded', 'Skipped')
+            pool:
+              name: $(poolImage)
+            workspace:
+              clean: all
+            environment: ${{ parameters['ENV'] }}
+            strategy:
+              runOnce:
+                deploy:
+                  steps:
+                    - checkout: self
+                      persistCredentials: true
+                      clean: true
+
+                    - script: |
+                        echo "deploy version is $(deploy_version)"
+                        git checkout $(sourceBranch)
+                      displayName: Checkout and update branch
+
+                    - template: templates/helm-microservice-chart-setup/template.yaml@pagopaCommons
+                      parameters:
                         DEPLOY_VERSION: $(deploy_version)
-                        APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
-                        APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
-                        ARGUMENTS: >-
-                          --set postgresql.forceRedeploy=true
-                          --set postgresql.image.tag=$(deploy_version)
-                          --set postgresql.enabled="${{ parameters.USE_POSTGRESQL }}"
-                          --set postgresql.canaryDelivery.create="${{ parameters.canary }}"
-                          --set oracle.forceRedeploy=true
-                          --set oracle.image.tag=$(deploy_version)
-                          --set oracle.enabled="${{ parameters.USE_ORACLE }}"
-                          --set oracle.canaryDelivery.create="${{ parameters.canary }}"
-                          --set oracledev.forceRedeploy=true
-                          --set oracledev.image.tag=$(deploy_version)
-                          --set oracledev.enabled="${{ parameters.USE_ORACLE }}"
-                          --set oracledev.canaryDelivery.create="${{ parameters.canary }}"
+
+                    - ${{ if parameters.uninstall }}:
+                        - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
+                          parameters:
+                            COMMAND: "uninstall"
+                            DO_DEPLOY: true
+                            ENV: ${{ parameters['ENV'] }}
+                            KUBERNETES_SERVICE_CONN: ${{ variables.NEU_kubernetesServiceConnection }}
+                            NAMESPACE: $(nameSpace)
+                            APPINSIGHTS_SERVICE_CONN: ${{ variables.NEU_appInsightsServiceConn }}
+                            APPINSIGHTS_RESOURCE_ID: ${{ variables.NEU_appInsightsResourceId }}
+                            ARGUMENTS: $(appFinalName)
+                    - ${{ if not( parameters.uninstall ) }}:
+                        - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
+                          parameters:
+                            DO_DEPLOY: true
+                            ENV: ${{ parameters['ENV'] }}
+                            KUBERNETES_SERVICE_CONN: ${{ variables.NEU_kubernetesServiceConnection }}
+                            NAMESPACE: $(nameSpace)
+                            APP_NAME: $(appFinalName)
+                            VALUE_FILE: $(NEU_value_file)
+                            DEPLOY_VERSION: $(deploy_version)
+                            APPINSIGHTS_SERVICE_CONN: ${{ variables.NEU_appInsightsServiceConn }}
+                            APPINSIGHTS_RESOURCE_ID: ${{ variables.NEU_appInsightsResourceId }}
+                            ARGUMENTS: >-
+                              --set postgresql.forceRedeploy=true
+                              --set postgresql.image.tag=$(deploy_version)
+                              --set postgresql.enabled="${{ parameters.USE_POSTGRESQL }}"
+                              --set postgresql.canaryDelivery.create="${{ parameters.canary }}"
+                              --set oracle.forceRedeploy=true
+                              --set oracle.image.tag=$(deploy_version)
+                              --set oracle.enabled="${{ parameters.USE_ORACLE }}"
+                              --set oracle.canaryDelivery.create="${{ parameters.canary }}"
+                              --set oracledev.forceRedeploy=true
+                              --set oracledev.image.tag=$(deploy_version)
+                              --set oracledev.enabled="${{ parameters.USE_ORACLE }}"
+                              --set oracledev.canaryDelivery.create="${{ parameters.canary }}"
