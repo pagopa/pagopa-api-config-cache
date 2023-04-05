@@ -197,23 +197,6 @@ stages:
                   yq -i ".basecache.image.tag = \"$(next_version.value)\"" "$VALUES_FILE"
                   git add "$VALUES_FILE"
                 fi
-  # Create a release on GitHub
-  - stage: GetVersion
-    dependsOn: Release
-    condition: and(not(or(failed(), canceled())), not( ${{ parameters.uninstall }} ) )
-    jobs:
-      - job: get_version
-        displayName: "Get release version"
-        steps:
-          - checkout: self
-            persistCredentials: true
-            clean: true
-
-          - script: |
-              git checkout $(sourceBranch)
-            displayName: Checkout and update branch
-
-          - template: templates/maven-github-current-version/template.yaml@pagopaCommons
 
   # Build and Push Docker Image
   - stage: Build
@@ -248,9 +231,25 @@ stages:
               FORCE_REPLACE_DOCKER_IMAGE: ${{ parameters.FORCE_REPLACE_DOCKER_IMAGE }}
               DOCKER_BUILD_ARGS: --build-arg github_token="$(github_token_read_packages)"
 
+  # Create a release on GitHub
+  - stage: GetVersion
+    jobs:
+      - job: get_version
+        displayName: "Get release version"
+        steps:
+          - checkout: self
+            persistCredentials: true
+            clean: true
+
+          - script: |
+              git checkout $(sourceBranch)
+            displayName: Checkout and update branch
+
+          - template: templates/maven-github-current-version/template.yaml@pagopaCommons
+
   # Deploy on K8s with Helm
   - stage: Deploy
-    condition: or(succeeded('GetVersion'), ${{ variables.SKIP_BUILD }})
+    condition: succeeded()
     dependsOn:
       - Release
       - GetVersion
@@ -278,7 +277,7 @@ stages:
           dependsOn: manual_approval
           condition: in(dependencies.manual_approval.result, 'Succeeded', 'Skipped')
           pool:
-            name: $(poolImage)
+            name: $(WEU_poolImage)
           workspace:
             clean: all
           environment: ${{ parameters['ENV'] }}
@@ -341,7 +340,7 @@ stages:
             dependsOn: manual_approval
             condition: in(dependencies.manual_approval.result, 'Succeeded', 'Skipped')
             pool:
-              name: $(poolImage)
+              name: $(NEU_poolImage)
             workspace:
               clean: all
             environment: ${{ parameters['ENV'] }}
