@@ -91,7 +91,7 @@ kubectl config use-context $context
 if [ "$install" == 1 ]; then
   if [ "$canary" == 1 ]; then
     echo "Installing canary version $version"
-    helm upgrade --dry-run --namespace $NAMESPACE --install --values $DIR/values-dev.yaml \
+    helm upgrade --dry-run --namespace $NAMESPACE --install --values $valuesFile \
       --set postgresql.image.tag=$version \
       --set postgresql.canaryDelivery.create="true" \
       --set oracle.image.tag=$version \
@@ -100,7 +100,7 @@ if [ "$install" == 1 ]; then
     exit 0
   else
     echo "Installing stable version $version"
-    helm upgrade --namespace $NAMESPACE --install --values $DIR/values-dev.yaml \
+    helm upgrade --namespace $NAMESPACE --install --values $valuesFile \
       --set postgresql.image.tag=$version \
       --set postgresql.enabled=true \
       --set oracle.image.tag=$version \
