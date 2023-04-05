@@ -252,9 +252,7 @@ stages:
   - stage: Deploy
     condition: succeeded()
     dependsOn:
-      - Release
       - GetVersion
-      - Build
     variables:
       deploy_version: $[ stageDependencies.GetVersion.get_version.outputs['current_version.value'] ]
     jobs:
