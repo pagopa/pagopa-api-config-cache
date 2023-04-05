@@ -283,3 +283,7 @@ stages:
                           --set oracle.image.tag=$(deploy_version)
                           --set oracle.enabled="${{ parameters.USE_ORACLE }}"
                           --set oracle.canaryDelivery.create="${{ parameters.canary }}"
+                          --set oracledev.forceRedeploy=true
+                          --set oracledev.image.tag=$(deploy_version)
+                          --set oracledev.enabled="${{ parameters.USE_ORACLE }}"
+                          --set oracledev.canaryDelivery.create="${{ parameters.canary }}"
