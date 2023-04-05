@@ -250,6 +250,7 @@ stages:
 
   # Deploy on K8s with Helm
   - stage: Deploy
+    condition: always()
     dependsOn:
       - GetVersion
     variables:
