@@ -275,9 +275,11 @@ stages:
                         APPINSIGHTS_SERVICE_CONN: ${{ variables.appInsightsServiceConn }}
                         APPINSIGHTS_RESOURCE_ID: ${{ variables.appInsightsResourceId }}
                         ARGUMENTS: >-
+                          --set postgresql.forceRedeploy=true
                           --set postgresql.image.tag=$(deploy_version)
                           --set postgresql.enabled="${{ parameters.USE_POSTGRESQL }}"
                           --set postgresql.canaryDelivery.create="${{ parameters.canary }}"
+                          --set oracle.forceRedeploy=true
                           --set oracle.image.tag=$(deploy_version)
                           --set oracle.enabled="${{ parameters.USE_ORACLE }}"
                           --set oracle.canaryDelivery.create="${{ parameters.canary }}"
