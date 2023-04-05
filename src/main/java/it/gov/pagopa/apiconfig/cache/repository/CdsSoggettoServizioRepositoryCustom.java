@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CdsSoggettoServizioRepositoryCustom extends JpaRepository<CdsSoggettoServizioCustom, Long> {
-  @Query("SELECT e FROM CdsSoggettoServizio e LEFT JOIN FETCH e.soggetto LEFT JOIN FETCH e.servizio LEFT JOIN FETCH e.stazione")
+  @Query("SELECT e FROM CdsSoggettoServizioCustom e LEFT JOIN FETCH e.soggetto LEFT JOIN FETCH e.servizio LEFT JOIN FETCH e.stazione")
   List<CdsSoggettoServizioCustom> findAllFetchingStations();
 }
 
