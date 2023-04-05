@@ -251,8 +251,6 @@ stages:
   # Deploy on K8s with Helm
   - stage: Deploy
     condition: succeeded()
-    dependsOn:
-      - GetVersion
     variables:
       deploy_version: $[ stageDependencies.GetVersion.get_version.outputs['current_version.value'] ]
     jobs:
