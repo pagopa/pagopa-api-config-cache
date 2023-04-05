@@ -277,7 +277,7 @@ stages:
               onTimeout: 'reject'
       - ${{ if parameters.WEU }}:
         - deployment: "deploy_weu"
-          displayName: "Deploy ${{ parameters['ENV'] }} WEU"
+          displayName: "Deploy ${{ parameters['ENV'] }} WEU $(deploy_version)"
           dependsOn: manual_approval
           condition: in(dependencies.manual_approval.result, 'Succeeded', 'Skipped')
           pool:
