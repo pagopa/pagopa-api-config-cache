@@ -1,5 +1,6 @@
 package it.gov.pagopa.apiconfig.cache;
 
+import it.gov.pagopa.apiconfig.cache.entity.CdsSoggettoServizioCustom;
 import it.gov.pagopa.apiconfig.starter.entity.CanaliView;
 import it.gov.pagopa.apiconfig.starter.entity.CdiDetail;
 import it.gov.pagopa.apiconfig.starter.entity.CdiFasciaCostoServizio;
@@ -255,14 +256,14 @@ public class TestUtils {
           CdsSoggetto.builder().id(1l).creditorInstitutionCode(pas.get(0).getIdDominio()).build(),
           CdsSoggetto.builder().id(2l).creditorInstitutionCode(pas.get(1).getIdDominio()).build());
 
-  public static List<CdsSoggettoServizio> cdsSoggettiServizi =
+  public static List<CdsSoggettoServizioCustom> cdsSoggettiServizi =
       Arrays.asList(
-          CdsSoggettoServizio.builder()
+          CdsSoggettoServizioCustom.builder()
               .id(1l)
               .servizio(cdsServizi.get(0))
               .soggetto(cdsSoggetti.get(0))
               .build(),
-          CdsSoggettoServizio.builder()
+          CdsSoggettoServizioCustom.builder()
               .id(2l)
               .servizio(cdsServizi.get(1))
               .soggetto(cdsSoggetti.get(1))
