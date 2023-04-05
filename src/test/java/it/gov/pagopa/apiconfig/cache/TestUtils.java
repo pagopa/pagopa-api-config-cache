@@ -11,7 +11,6 @@ import it.gov.pagopa.apiconfig.starter.entity.CdiPreference;
 import it.gov.pagopa.apiconfig.starter.entity.CdsCategoria;
 import it.gov.pagopa.apiconfig.starter.entity.CdsServizio;
 import it.gov.pagopa.apiconfig.starter.entity.CdsSoggetto;
-import it.gov.pagopa.apiconfig.starter.entity.CdsSoggettoServizio;
 import it.gov.pagopa.apiconfig.starter.entity.Codifiche;
 import it.gov.pagopa.apiconfig.starter.entity.CodifichePa;
 import it.gov.pagopa.apiconfig.starter.entity.ConfigurationKeys;
