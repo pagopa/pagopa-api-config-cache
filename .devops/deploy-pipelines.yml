@@ -224,7 +224,7 @@ stages:
     ${{ if or( parameters.deployOnly , parameters.uninstall ) }}:
       displayName: "Build skipped"
     ${{ if not(or( parameters.deployOnly , parameters.uninstall )) }}:
-      displayName: "Build"
+      displayName: "Build $(current_version)"
     dependsOn: GetVersion
     condition: and(succeeded(), not(${{ variables.SKIP_BUILD }}))
     variables:
