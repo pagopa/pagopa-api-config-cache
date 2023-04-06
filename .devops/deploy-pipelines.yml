@@ -220,14 +220,14 @@ stages:
           - template: templates/maven-github-current-version/template.yaml@pagopaCommons
   # Build and Push Docker Image
   - stage: Build
+    variables:
+      current_version: $[ stageDependencies.GetVersion.get_version.outputs['current_version.value'] ]
     ${{ if or( parameters.deployOnly , parameters.uninstall ) }}:
       displayName: "Build skipped"
     ${{ if not(or( parameters.deployOnly , parameters.uninstall )) }}:
-      displayName: "Build $(current_version)"
+      displayName: "Build $[ variables.current_version]"
     dependsOn: GetVersion
     condition: and(succeeded(), not(${{ variables.SKIP_BUILD }}))
-    variables:
-      current_version: $[ stageDependencies.GetVersion.get_version.outputs['current_version.value'] ]
     jobs:
       - job: build
         displayName: "Building version"
