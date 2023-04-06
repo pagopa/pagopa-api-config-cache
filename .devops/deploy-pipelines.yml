@@ -225,12 +225,12 @@ stages:
     ${{ if or( parameters.deployOnly , parameters.uninstall ) }}:
       displayName: "Build skipped"
     ${{ if not(or( parameters.deployOnly , parameters.uninstall )) }}:
-      displayName: "Build $[ variables.current_version]"
+      displayName: "Build"
     dependsOn: GetVersion
     condition: and(succeeded(), not(${{ variables.SKIP_BUILD }}))
     jobs:
       - job: build
-        displayName: "Building version"
+        displayName: "Building version $(current_version)"
         workspace:
           clean: all
         steps:
@@ -254,150 +254,151 @@ stages:
 
 
   # Deploy on K8s with Helm
-#  - stage: Deploy
-#    condition: in(stageDependencies.GetVersion.result, 'Succeeded')
-#    dependsOn:
-#      - GetVersion
-#    variables:
-#      deploy_version: $[ stageDependencies.GetVersion.get_version.outputs['current_version.value'] ]
-#    jobs:
-#      - job: manual_approval
-#        condition: or(and( ${{ parameters.uninstall }}, not(${{ parameters.canary }})), eq('${{ parameters.ENV }}', 'prod') )
-#        pool: server
-#        displayName: "Manual approval"
-#        timeoutInMinutes: 70
-#        steps:
-#          - task: ManualValidation@0
-#            timeoutInMinutes: 60
-#            inputs:
-#              notifyUsers: |
-#                $(APPROVE_NOTIFY_GROUP)
-#                $(APPROVE_NOTIFY_ADMIN)
-#              instructions: "Please approve or reject ${{ parameters['ENV'] }} \n uninstall:${{ parameters.uninstall }},canary ${{ parameters.canary }}"
-#              onTimeout: 'reject'
-#      - ${{ if parameters.WEU }}:
-#        - deployment: "deploy_weu"
-#          displayName: "Deploy ${{ parameters['ENV'] }} WEU $(deploy_version)"
-#          dependsOn: manual_approval
-#          condition: in(dependencies.manual_approval.result, 'Succeeded', 'Skipped')
-#          pool:
-#            name: $(WEU_poolImage)
-#          workspace:
-#            clean: all
-#          environment: ${{ parameters['ENV'] }}
-#          strategy:
-#            runOnce:
-#              deploy:
-#                steps:
-#                  - checkout: self
-#                    persistCredentials: true
-#                    clean: true
-#
-#                  - script: |
-#                      echo "deploy version is $(deploy_version)"
-#                      git checkout $(sourceBranch)
-#                    displayName: Checkout and update branch
-#
-#                  - template: templates/helm-microservice-chart-setup/template.yaml@pagopaCommons
-#                    parameters:
-#                      DEPLOY_VERSION: $(deploy_version)
-#
-#                  - ${{ if parameters.uninstall }}:
-#                    - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
-#                      parameters:
-#                        COMMAND: "uninstall"
-#                        DO_DEPLOY: true
-#                        ENV: ${{ parameters['ENV'] }}
-#                        KUBERNETES_SERVICE_CONN: ${{ variables.WEU_kubernetesServiceConnection }}
-#                        NAMESPACE: $(nameSpace)
-#                        APPINSIGHTS_SERVICE_CONN: ${{ variables.WEU_appInsightsServiceConn }}
-#                        APPINSIGHTS_RESOURCE_ID: ${{ variables.WEU_appInsightsResourceId }}
-#                        ARGUMENTS: $(appFinalName)
-#                  - ${{ if not( parameters.uninstall ) }}:
-#                      - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
-#                        parameters:
-#                          DO_DEPLOY: true
-#                          ENV: ${{ parameters['ENV'] }}
-#                          KUBERNETES_SERVICE_CONN: ${{ variables.WEU_kubernetesServiceConnection }}
-#                          NAMESPACE: $(nameSpace)
-#                          APP_NAME: $(appFinalName)
-#                          VALUE_FILE: $(WEU_value_file)
-#                          DEPLOY_VERSION: $(deploy_version)
-#                          APPINSIGHTS_SERVICE_CONN: ${{ variables.WEU_appInsightsServiceConn }}
-#                          APPINSIGHTS_RESOURCE_ID: ${{ variables.WEU_appInsightsResourceId }}
-#                          ARGUMENTS: >-
-#                            --set postgresql.forceRedeploy=true
-#                            --set postgresql.image.tag=$(deploy_version)
-#                            --set postgresql.enabled="${{ parameters.USE_POSTGRESQL }}"
-#                            --set postgresql.canaryDelivery.create="${{ parameters.canary }}"
-#                            --set oracle.forceRedeploy=true
-#                            --set oracle.image.tag=$(deploy_version)
-#                            --set oracle.enabled="${{ parameters.USE_ORACLE }}"
-#                            --set oracle.canaryDelivery.create="${{ parameters.canary }}"
-#                            --set oracledev.forceRedeploy=true
-#                            --set oracledev.image.tag=$(deploy_version)
-#                            --set oracledev.enabled="${{ parameters.USE_ORACLE }}"
-#                            --set oracledev.canaryDelivery.create="${{ parameters.canary }}"
-#      - ${{ if parameters.NEU }}:
-#          - deployment: "deploy_neu"
-#            displayName: "Deploy ${{ parameters['ENV'] }} NEU"
-#            dependsOn: manual_approval
-#            condition: in(dependencies.manual_approval.result, 'Succeeded', 'Skipped')
-#            pool:
-#              name: $(NEU_poolImage)
-#            workspace:
-#              clean: all
-#            environment: ${{ parameters['ENV'] }}
-#            strategy:
-#              runOnce:
-#                deploy:
-#                  steps:
-#                    - checkout: self
-#                      persistCredentials: true
-#                      clean: true
-#
-#                    - script: |
-#                        echo "deploy version is $(deploy_version)"
-#                        git checkout $(sourceBranch)
-#                      displayName: Checkout and update branch
-#
-#                    - template: templates/helm-microservice-chart-setup/template.yaml@pagopaCommons
-#                      parameters:
-#                        DEPLOY_VERSION: $(deploy_version)
-#
-#                    - ${{ if parameters.uninstall }}:
-#                        - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
-#                          parameters:
-#                            COMMAND: "uninstall"
-#                            DO_DEPLOY: true
-#                            ENV: ${{ parameters['ENV'] }}
-#                            KUBERNETES_SERVICE_CONN: ${{ variables.NEU_kubernetesServiceConnection }}
-#                            NAMESPACE: $(nameSpace)
-#                            APPINSIGHTS_SERVICE_CONN: ${{ variables.NEU_appInsightsServiceConn }}
-#                            APPINSIGHTS_RESOURCE_ID: ${{ variables.NEU_appInsightsResourceId }}
-#                            ARGUMENTS: $(appFinalName)
-#                    - ${{ if not( parameters.uninstall ) }}:
-#                        - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
-#                          parameters:
-#                            DO_DEPLOY: true
-#                            ENV: ${{ parameters['ENV'] }}
-#                            KUBERNETES_SERVICE_CONN: ${{ variables.NEU_kubernetesServiceConnection }}
-#                            NAMESPACE: $(nameSpace)
-#                            APP_NAME: $(appFinalName)
-#                            VALUE_FILE: $(NEU_value_file)
-#                            DEPLOY_VERSION: $(deploy_version)
-#                            APPINSIGHTS_SERVICE_CONN: ${{ variables.NEU_appInsightsServiceConn }}
-#                            APPINSIGHTS_RESOURCE_ID: ${{ variables.NEU_appInsightsResourceId }}
-#                            ARGUMENTS: >-
-#                              --set postgresql.forceRedeploy=true
-#                              --set postgresql.image.tag=$(deploy_version)
-#                              --set postgresql.enabled="${{ parameters.USE_POSTGRESQL }}"
-#                              --set postgresql.canaryDelivery.create="${{ parameters.canary }}"
-#                              --set oracle.forceRedeploy=true
-#                              --set oracle.image.tag=$(deploy_version)
-#                              --set oracle.enabled="${{ parameters.USE_ORACLE }}"
-#                              --set oracle.canaryDelivery.create="${{ parameters.canary }}"
-#                              --set oracledev.forceRedeploy=true
-#                              --set oracledev.image.tag=$(deploy_version)
-#                              --set oracledev.enabled="${{ parameters.USE_ORACLE }}"
-#                              --set oracledev.canaryDelivery.create="${{ parameters.canary }}"
+  - stage: Deploy
+    condition: in(stageDependencies.GetVersion.result, 'Succeeded')
+    dependsOn:
+      - GetVersion
+      - Build
+    variables:
+      deploy_version: $[ stageDependencies.GetVersion.get_version.outputs['current_version.value'] ]
+    jobs:
+      - job: manual_approval
+        condition: or(and( ${{ parameters.uninstall }}, not(${{ parameters.canary }})), eq('${{ parameters.ENV }}', 'prod') )
+        pool: server
+        displayName: "Manual approval"
+        timeoutInMinutes: 70
+        steps:
+          - task: ManualValidation@0
+            timeoutInMinutes: 60
+            inputs:
+              notifyUsers: |
+                $(APPROVE_NOTIFY_GROUP)
+                $(APPROVE_NOTIFY_ADMIN)
+              instructions: "Please approve or reject ${{ parameters['ENV'] }} \n uninstall:${{ parameters.uninstall }},canary ${{ parameters.canary }}"
+              onTimeout: 'reject'
+      - ${{ if parameters.WEU }}:
+        - deployment: "deploy_weu"
+          displayName: "Deploy ${{ parameters['ENV'] }} WEU $(deploy_version)"
+          dependsOn: manual_approval
+          condition: in(dependencies.manual_approval.result, 'Succeeded', 'Skipped')
+          pool:
+            name: $(WEU_poolImage)
+          workspace:
+            clean: all
+          environment: ${{ parameters['ENV'] }}
+          strategy:
+            runOnce:
+              deploy:
+                steps:
+                  - checkout: self
+                    persistCredentials: true
+                    clean: true
+
+                  - script: |
+                      echo "deploy version is $(deploy_version)"
+                      git checkout $(sourceBranch)
+                    displayName: Checkout and update branch
+
+                  - template: templates/helm-microservice-chart-setup/template.yaml@pagopaCommons
+                    parameters:
+                      DEPLOY_VERSION: $(deploy_version)
+
+                  - ${{ if parameters.uninstall }}:
+                    - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
+                      parameters:
+                        COMMAND: "uninstall"
+                        DO_DEPLOY: true
+                        ENV: ${{ parameters['ENV'] }}
+                        KUBERNETES_SERVICE_CONN: ${{ variables.WEU_kubernetesServiceConnection }}
+                        NAMESPACE: $(nameSpace)
+                        APPINSIGHTS_SERVICE_CONN: ${{ variables.WEU_appInsightsServiceConn }}
+                        APPINSIGHTS_RESOURCE_ID: ${{ variables.WEU_appInsightsResourceId }}
+                        ARGUMENTS: $(appFinalName)
+                  - ${{ if not( parameters.uninstall ) }}:
+                      - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
+                        parameters:
+                          DO_DEPLOY: true
+                          ENV: ${{ parameters['ENV'] }}
+                          KUBERNETES_SERVICE_CONN: ${{ variables.WEU_kubernetesServiceConnection }}
+                          NAMESPACE: $(nameSpace)
+                          APP_NAME: $(appFinalName)
+                          VALUE_FILE: $(WEU_value_file)
+                          DEPLOY_VERSION: $(deploy_version)
+                          APPINSIGHTS_SERVICE_CONN: ${{ variables.WEU_appInsightsServiceConn }}
+                          APPINSIGHTS_RESOURCE_ID: ${{ variables.WEU_appInsightsResourceId }}
+                          ARGUMENTS: >-
+                            --set postgresql.forceRedeploy=true
+                            --set postgresql.image.tag=$(deploy_version)
+                            --set postgresql.enabled="${{ parameters.USE_POSTGRESQL }}"
+                            --set postgresql.canaryDelivery.create="${{ parameters.canary }}"
+                            --set oracle.forceRedeploy=true
+                            --set oracle.image.tag=$(deploy_version)
+                            --set oracle.enabled="${{ parameters.USE_ORACLE }}"
+                            --set oracle.canaryDelivery.create="${{ parameters.canary }}"
+                            --set oracledev.forceRedeploy=true
+                            --set oracledev.image.tag=$(deploy_version)
+                            --set oracledev.enabled="${{ parameters.USE_ORACLE }}"
+                            --set oracledev.canaryDelivery.create="${{ parameters.canary }}"
+      - ${{ if parameters.NEU }}:
+          - deployment: "deploy_neu"
+            displayName: "Deploy ${{ parameters['ENV'] }} NEU"
+            dependsOn: manual_approval
+            condition: in(dependencies.manual_approval.result, 'Succeeded', 'Skipped')
+            pool:
+              name: $(NEU_poolImage)
+            workspace:
+              clean: all
+            environment: ${{ parameters['ENV'] }}
+            strategy:
+              runOnce:
+                deploy:
+                  steps:
+                    - checkout: self
+                      persistCredentials: true
+                      clean: true
+
+                    - script: |
+                        echo "deploy version is $(deploy_version)"
+                        git checkout $(sourceBranch)
+                      displayName: Checkout and update branch
+
+                    - template: templates/helm-microservice-chart-setup/template.yaml@pagopaCommons
+                      parameters:
+                        DEPLOY_VERSION: $(deploy_version)
+
+                    - ${{ if parameters.uninstall }}:
+                        - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
+                          parameters:
+                            COMMAND: "uninstall"
+                            DO_DEPLOY: true
+                            ENV: ${{ parameters['ENV'] }}
+                            KUBERNETES_SERVICE_CONN: ${{ variables.NEU_kubernetesServiceConnection }}
+                            NAMESPACE: $(nameSpace)
+                            APPINSIGHTS_SERVICE_CONN: ${{ variables.NEU_appInsightsServiceConn }}
+                            APPINSIGHTS_RESOURCE_ID: ${{ variables.NEU_appInsightsResourceId }}
+                            ARGUMENTS: $(appFinalName)
+                    - ${{ if not( parameters.uninstall ) }}:
+                        - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
+                          parameters:
+                            DO_DEPLOY: true
+                            ENV: ${{ parameters['ENV'] }}
+                            KUBERNETES_SERVICE_CONN: ${{ variables.NEU_kubernetesServiceConnection }}
+                            NAMESPACE: $(nameSpace)
+                            APP_NAME: $(appFinalName)
+                            VALUE_FILE: $(NEU_value_file)
+                            DEPLOY_VERSION: $(deploy_version)
+                            APPINSIGHTS_SERVICE_CONN: ${{ variables.NEU_appInsightsServiceConn }}
+                            APPINSIGHTS_RESOURCE_ID: ${{ variables.NEU_appInsightsResourceId }}
+                            ARGUMENTS: >-
+                              --set postgresql.forceRedeploy=true
+                              --set postgresql.image.tag=$(deploy_version)
+                              --set postgresql.enabled="${{ parameters.USE_POSTGRESQL }}"
+                              --set postgresql.canaryDelivery.create="${{ parameters.canary }}"
+                              --set oracle.forceRedeploy=true
+                              --set oracle.image.tag=$(deploy_version)
+                              --set oracle.enabled="${{ parameters.USE_ORACLE }}"
+                              --set oracle.canaryDelivery.create="${{ parameters.canary }}"
+                              --set oracledev.forceRedeploy=true
+                              --set oracledev.image.tag=$(deploy_version)
+                              --set oracledev.enabled="${{ parameters.USE_ORACLE }}"
+                              --set oracledev.canaryDelivery.create="${{ parameters.canary }}"
