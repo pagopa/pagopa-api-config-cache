@@ -1,10 +1,11 @@
 #!/bin/bash
 
 DIR=.
-NAME=cache
 NAMESPACE=apiconfig
 
 location=weu
+env=dev
+NAME=cache
 
 usage() {
   echo "Usage: $0 [--update] [--canary] [--install] [--uninstall] [--weight <percentage>] [--version <version>]" 1>&2;
@@ -32,6 +33,10 @@ while [[ "$#" -gt 0 ]]; do
             ;;
         --uninstall)
             uninstall=1
+            ;;
+        --it)
+            env="it"
+            NAME="$NAME"-replica
             ;;
         --weight)
             shift
@@ -73,10 +78,10 @@ if [ -n "$update" ]; then
 fi
 
 if [ "$location" == "weu" ]; then
-  valuesFile=$location-dev/values-dev.yaml
+  valuesFile=$location-$env/values-$env.yaml
   context="pagopa-d-$location-dev-aks"
 else
-  valuesFile=$location-dev/values-dev.yaml
+  valuesFile=$location-$env/values-$env.yaml
   context="pagopa-d-$location-dev-aks"
 fi
 
@@ -106,7 +111,7 @@ if [ "$install" == 1 ]; then
       --set oracle.image.tag=$version \
       --set oracle.enabled=true \
       --set oracledev.image.tag=$version \
-      --set oracledev.enabled=true \
+      --set oracledev.enabled=false \
       $NAME $DIR
     exit 0
   fi

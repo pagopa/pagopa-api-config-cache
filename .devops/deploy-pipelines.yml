@@ -230,7 +230,7 @@ stages:
     condition: and(succeeded(), not(${{ variables.SKIP_BUILD }}))
     jobs:
       - job: build
-        displayName: "Building version $(current_version)"
+        displayName: "Building version"
         workspace:
           clean: all
         steps:
@@ -276,7 +276,7 @@ stages:
               onTimeout: 'reject'
       - ${{ if parameters.WEU }}:
         - deployment: "deploy_weu"
-          displayName: "Deploy ${{ parameters['ENV'] }} WEU $(deploy_version)"
+          displayName: "Deploy ${{ parameters['ENV'] }} WEU"
           dependsOn: manual_approval
           condition: in(dependencies.manual_approval.result, 'Succeeded', 'Skipped')
           pool:
