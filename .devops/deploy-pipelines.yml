@@ -238,8 +238,6 @@ stages:
             persistCredentials: true
             clean: true
           - script: |
-              echo "$(current_version)"
-          - script: |
               git checkout $(sourceBranch)
             displayName: Checkout and update branch
 
