@@ -203,7 +203,6 @@ stages:
   # Get version to build and deploy
   - stage: GetVersion
     dependsOn:
-      - Build
       - Release
     condition: in(stageDependencies.Release.result, 'Succeeded', 'Skipped')
     jobs:
