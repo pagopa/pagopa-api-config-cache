@@ -63,6 +63,7 @@ import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.PspChannelPaymentType;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.PspInformation;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.repository.CdsSoggettoServizioRepositoryCustom;
+import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
 import it.gov.pagopa.apiconfig.starter.entity.CdiDetail;
 import it.gov.pagopa.apiconfig.starter.entity.CdiFasciaCostoServizio;
 import it.gov.pagopa.apiconfig.starter.entity.CdiInformazioniServizio;
@@ -103,7 +104,6 @@ import it.gov.pagopa.apiconfig.starter.repository.PspRepository;
 import it.gov.pagopa.apiconfig.starter.repository.StazioniRepository;
 import it.gov.pagopa.apiconfig.starter.repository.TipiVersamentoRepository;
 import it.gov.pagopa.apiconfig.starter.repository.WfespPluginConfRepository;
-import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -323,15 +323,15 @@ public class ConfigService {
 
     configData.setVersion("" + endTime);
 
-    redisRepository.pushToRedisAsync(keyV1+keySuffix, keyV1Id+keySuffix, configData);
+    redisRepository.pushToRedisAsync(keyV1 + keySuffix, keyV1Id + keySuffix, configData);
 
     return configData;
   }
 
   public CacheVersion getCacheV1Id() {
     String cacheId =
-        Optional.ofNullable(redisRepository.getStringByKeyId(keyV1Id+keySuffix))
-            .orElseThrow(() -> new AppException(AppError.CACHE_ID_NOT_FOUND, keyV1Id+keySuffix));
+        Optional.ofNullable(redisRepository.getStringByKeyId(keyV1Id + keySuffix))
+            .orElseThrow(() -> new AppException(AppError.CACHE_ID_NOT_FOUND, keyV1Id + keySuffix));
     return new CacheVersion(cacheId);
   }
 
@@ -581,7 +581,7 @@ public class ConfigService {
     List<CdiInformazioniServizio> allInformazioni = cdiInformazioniServizioRepository.findAll();
 
     List<PspInformation> informativePsp =
-        getInformativePsp(psps,masters,details, preferences, allFasce, allInformazioni);
+        getInformativePsp(psps, masters, details, preferences, allFasce, allInformazioni);
     List<PspInformation> templateInformativePsp = getTemplateInformativePsp(masters);
 
     return Pair.of(informativePsp, templateInformativePsp);
@@ -598,12 +598,20 @@ public class ConfigService {
 
     List<CtListaInformativePSP> informativePspSingle =
         masters.stream()
-            .filter(m -> {
-              return details.stream().filter(d->d.getCdiMaster().getId().equals(m.getId())).findAny().isPresent();
-            })
+            .filter(
+                m -> {
+                  return details.stream()
+                      .filter(d -> d.getCdiMaster().getId().equals(m.getId()))
+                      .findAny()
+                      .isPresent();
+                })
             .map(
                 cdiMaster -> {
-                  Psp psp = psps.stream().filter(p->p.getObjId().equals(cdiMaster.getPsp().getObjId())).findFirst().get();
+                  Psp psp =
+                      psps.stream()
+                          .filter(p -> p.getObjId().equals(cdiMaster.getPsp().getObjId()))
+                          .findFirst()
+                          .get();
                   CtInformativaPSP ctInformativaPSP = new CtInformativaPSP();
                   ctInformativaPSP.setCodiceABI(psp.getAbi());
                   ctInformativaPSP.setCodiceBIC(psp.getBic());
@@ -632,7 +640,8 @@ public class ConfigService {
                   ctInformativaPSP.setIdentificativoFlusso(cdiMaster.getIdInformativaPsp());
 
                   List<CtInformativaDetail> masterdetails =
-                      details.stream().filter(d->d.getCdiMaster().getId().equals(cdiMaster.getId()))
+                      details.stream()
+                          .filter(d -> d.getCdiMaster().getId().equals(cdiMaster.getId()))
                           .filter(
                               d ->
                                   !d.getPspCanaleTipoVersamento()
@@ -939,7 +948,8 @@ public class ConfigService {
         .forEach(
             l -> {
               TplInformazioniServizio infoser = new TplInformazioniServizio();
-              infoser.setCodiceLingua(it.gov.pagopa.apiconfig.cache.imported.template.StCodiceLingua.IT);
+              infoser.setCodiceLingua(
+                  it.gov.pagopa.apiconfig.cache.imported.template.StCodiceLingua.IT);
               infoser.setDescrizioneServizio(daCompilare);
               infoser.setDescrizioneServizio(daCompilare);
               infoser.setUrlInformazioniCanale(daCompilare);

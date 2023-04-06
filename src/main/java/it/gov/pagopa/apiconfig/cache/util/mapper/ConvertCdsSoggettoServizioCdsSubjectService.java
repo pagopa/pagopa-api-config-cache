@@ -11,16 +11,16 @@ public class ConvertCdsSoggettoServizioCdsSubjectService
   public CdsSubjectService convert(
       MappingContext<CdsSoggettoServizioCustom, CdsSubjectService> mappingContext) {
     CdsSoggettoServizioCustom source = mappingContext.getSource();
-    CdsSubjectServiceBuilder build = CdsSubjectService.builder()
-        .service(source.getServizio().getIdServizio())
-        .subjectServiceId(source.getIdSoggettoServizio())
-        .startDate(source.getDataInizioValidita())
-        .endDate(source.getDataFineValidita())
-        .fee(source.getCommissione())
-        .subject(source.getSoggetto().getCreditorInstitutionCode())
-
-        .serviceDescription(source.getDescrizioneServizio());
-    if(source.getStazionePa()!=null){
+    CdsSubjectServiceBuilder build =
+        CdsSubjectService.builder()
+            .service(source.getServizio().getIdServizio())
+            .subjectServiceId(source.getIdSoggettoServizio())
+            .startDate(source.getDataInizioValidita())
+            .endDate(source.getDataFineValidita())
+            .fee(source.getCommissione())
+            .subject(source.getSoggetto().getCreditorInstitutionCode())
+            .serviceDescription(source.getDescrizioneServizio());
+    if (source.getStazionePa() != null) {
       build.stationCode(source.getStazionePa().getStazione().getIdStazione());
     }
     return build.build();

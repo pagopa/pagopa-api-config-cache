@@ -123,7 +123,8 @@ class NodoConfigCacheTest {
     when(stazioniRepository.findAllFetchingIntermediario()).thenReturn(TestUtils.stazioni);
     when(paStazioniRepository.findAllFetching()).thenReturn(TestUtils.paStazioniPa);
     when(cdsServizioRepository.findAllFetching()).thenReturn(TestUtils.cdsServizi);
-    when(cdsSoggettoServizioRepository.findAllFetchingStations()).thenReturn(TestUtils.cdsSoggettiServizi);
+    when(cdsSoggettoServizioRepository.findAllFetchingStations())
+        .thenReturn(TestUtils.cdsSoggettiServizi);
     when(cdsSoggettoRepository.findAll()).thenReturn(TestUtils.cdsSoggetti);
     when(cdsCategorieRepository.findAll()).thenReturn(TestUtils.cdsCategorie);
 
