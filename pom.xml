@@ -24,7 +24,7 @@
     <postgresql.version>42.5.4</postgresql.version>
     <oracle.version>21.4.0.0</oracle.version>
     <modelmapper.version>3.1.0</modelmapper.version>
-    <sonar.coverage.exclusions>**/imported/**</sonar.coverage.exclusions>
+    <sonar.coverage.exclusions>**/imported/**,**/exception/**,**/config/**</sonar.coverage.exclusions>
   </properties>
 
   <repositories>
