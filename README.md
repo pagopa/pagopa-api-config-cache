@@ -1,6 +1,6 @@
 # pagoPA API-Config Cache
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pagopa_pagopa-api-config-cache&metric=alert_status)](https://sonarcloud.io/dashboard?id=TODO-set-your-id)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pagopa_pagopa-api-config-cache&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=pagopa_pagopa-api-config-cache)
 
 API-Config Cache aims to generate customized cache data stored on the Redis cache for the specific stakeholder needs.
 
