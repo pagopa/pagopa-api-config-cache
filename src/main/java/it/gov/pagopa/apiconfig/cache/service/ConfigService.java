@@ -62,7 +62,6 @@ import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.PaymentServiceProvider;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.PspChannelPaymentType;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.PspInformation;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
-import it.gov.pagopa.apiconfig.cache.repository.CdsSoggettoServizioRepositoryCustom;
 import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
 import it.gov.pagopa.apiconfig.starter.entity.CdiDetail;
 import it.gov.pagopa.apiconfig.starter.entity.CdiFasciaCostoServizio;
@@ -85,6 +84,7 @@ import it.gov.pagopa.apiconfig.starter.repository.CdiPreferenceRepository;
 import it.gov.pagopa.apiconfig.starter.repository.CdsCategorieRepository;
 import it.gov.pagopa.apiconfig.starter.repository.CdsServizioRepository;
 import it.gov.pagopa.apiconfig.starter.repository.CdsSoggettoRepository;
+import it.gov.pagopa.apiconfig.starter.repository.CdsSoggettoServizioRepository;
 import it.gov.pagopa.apiconfig.starter.repository.CodifichePaRepository;
 import it.gov.pagopa.apiconfig.starter.repository.CodificheRepository;
 import it.gov.pagopa.apiconfig.starter.repository.ConfigurationKeysRepository;
@@ -109,7 +109,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -120,6 +122,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import javax.transaction.Transactional;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -129,6 +132,12 @@ import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
+import org.modelmapper.TypeToken;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @Slf4j
 @Service
@@ -158,7 +167,7 @@ public class ConfigService {
   @Autowired private CdsCategorieRepository cdsCategorieRepository;
   @Autowired private CdsSoggettoRepository cdsSoggettoRepository;
   @Autowired private CdsServizioRepository cdsServizioRepository;
-  @Autowired private CdsSoggettoServizioRepositoryCustom cdsSoggettoServizioRepository;
+  @Autowired private CdsSoggettoServizioRepository cdsSoggettoServizioRepository;
   @Autowired private GdeConfigRepository gdeConfigRepository;
   @Autowired private DizionarioMetadatiRepository dizionarioMetadatiRepository;
   @Autowired private FtpServersRepository ftpServersRepository;
@@ -576,7 +585,9 @@ public class ConfigService {
     List<Psp> psps = pspRepository.findAll();
     List<CdiPreference> preferences = cdiPreferenceRepository.findAll();
     List<CdiFasciaCostoServizio> allFasce = cdiFasceRepository.findAll();
-    List<CdiMasterValid> masters = cdiMasterValidRepository.findAll();
+    List<CdiMasterValid> masters = StreamSupport
+        .stream(cdiMasterValidRepository.findAll().spliterator(), false)
+        .collect(Collectors.toList());
     List<CdiDetail> details = cdiDetailRepository.findAll();
     List<CdiInformazioniServizio> allInformazioni = cdiInformazioniServizioRepository.findAll();
 
@@ -601,7 +612,7 @@ public class ConfigService {
             .filter(
                 m -> {
                   return details.stream()
-                      .filter(d -> d.getCdiMaster().getId().equals(m.getId()))
+                      .filter(d -> d.getFkCdiMaster().getId().equals(m.getId()))
                       .findAny()
                       .isPresent();
                 })
@@ -609,7 +620,7 @@ public class ConfigService {
                 cdiMaster -> {
                   Psp psp =
                       psps.stream()
-                          .filter(p -> p.getObjId().equals(cdiMaster.getPsp().getObjId()))
+                          .filter(p -> p.getObjId().equals(cdiMaster.getFkPsp().getObjId()))
                           .findFirst()
                           .get();
                   CtInformativaPSP ctInformativaPSP = new CtInformativaPSP();
@@ -641,7 +652,7 @@ public class ConfigService {
 
                   List<CtInformativaDetail> masterdetails =
                       details.stream()
-                          .filter(d -> d.getCdiMaster().getId().equals(cdiMaster.getId()))
+                          .filter(d -> d.getFkCdiMaster().getId().equals(cdiMaster.getId()))
                           .filter(
                               d ->
                                   !d.getPspCanaleTipoVersamento()

@@ -1,6 +1,5 @@
 package it.gov.pagopa.apiconfig.cache;
 
-import it.gov.pagopa.apiconfig.cache.entity.CdsSoggettoServizioCustom;
 import it.gov.pagopa.apiconfig.starter.entity.CanaliView;
 import it.gov.pagopa.apiconfig.starter.entity.CdiDetail;
 import it.gov.pagopa.apiconfig.starter.entity.CdiFasciaCostoServizio;
@@ -11,6 +10,7 @@ import it.gov.pagopa.apiconfig.starter.entity.CdiPreference;
 import it.gov.pagopa.apiconfig.starter.entity.CdsCategoria;
 import it.gov.pagopa.apiconfig.starter.entity.CdsServizio;
 import it.gov.pagopa.apiconfig.starter.entity.CdsSoggetto;
+import it.gov.pagopa.apiconfig.starter.entity.CdsSoggettoServizio;
 import it.gov.pagopa.apiconfig.starter.entity.Codifiche;
 import it.gov.pagopa.apiconfig.starter.entity.CodifichePa;
 import it.gov.pagopa.apiconfig.starter.entity.ConfigurationKeys;
@@ -139,7 +139,7 @@ public class TestUtils {
               .priorita(1L)
               .modelloPagamento(1L)
               .pspCanaleTipoVersamento(pspCanaliTv.get(0))
-              .cdiMaster(CdiMaster.builder().id(1L).build())
+              .fkCdiMaster(CdiMaster.builder().id(1L).build())
               .build(),
           CdiDetail.builder()
               .id(2L)
@@ -147,7 +147,7 @@ public class TestUtils {
               .priorita(2L)
               .modelloPagamento(2L)
               .pspCanaleTipoVersamento(pspCanaliTv.get(1))
-              .cdiMaster(CdiMaster.builder().id(2L).build())
+              .fkCdiMaster(CdiMaster.builder().id(2L).build())
               .build());
 
   public static List<CdiMasterValid> cdiMasterValid =
@@ -255,14 +255,14 @@ public class TestUtils {
           CdsSoggetto.builder().id(1l).creditorInstitutionCode(pas.get(0).getIdDominio()).build(),
           CdsSoggetto.builder().id(2l).creditorInstitutionCode(pas.get(1).getIdDominio()).build());
 
-  public static List<CdsSoggettoServizioCustom> cdsSoggettiServizi =
+  public static List<CdsSoggettoServizio> cdsSoggettiServizi =
       Arrays.asList(
-          CdsSoggettoServizioCustom.builder()
+          CdsSoggettoServizio.builder()
               .id(1l)
               .servizio(cdsServizi.get(0))
               .soggetto(cdsSoggetti.get(0))
               .build(),
-          CdsSoggettoServizioCustom.builder()
+          CdsSoggettoServizio.builder()
               .id(2l)
               .servizio(cdsServizi.get(1))
               .soggetto(cdsSoggetti.get(1))

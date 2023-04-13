@@ -1,16 +1,16 @@
 package it.gov.pagopa.apiconfig.cache.util.mapper;
 
-import it.gov.pagopa.apiconfig.cache.entity.CdsSoggettoServizioCustom;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsSubjectService;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsSubjectService.CdsSubjectServiceBuilder;
+import it.gov.pagopa.apiconfig.starter.entity.CdsSoggettoServizio;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
 
 public class ConvertCdsSoggettoServizioCdsSubjectService
-    implements Converter<CdsSoggettoServizioCustom, CdsSubjectService> {
+    implements Converter<CdsSoggettoServizio, CdsSubjectService> {
   public CdsSubjectService convert(
-      MappingContext<CdsSoggettoServizioCustom, CdsSubjectService> mappingContext) {
-    CdsSoggettoServizioCustom source = mappingContext.getSource();
+      MappingContext<CdsSoggettoServizio, CdsSubjectService> mappingContext) {
+    CdsSoggettoServizio source = mappingContext.getSource();
     CdsSubjectServiceBuilder build =
         CdsSubjectService.builder()
             .service(source.getServizio().getIdServizio())
@@ -21,7 +21,7 @@ public class ConvertCdsSoggettoServizioCdsSubjectService
             .subject(source.getSoggetto().getCreditorInstitutionCode())
             .serviceDescription(source.getDescrizioneServizio());
     if (source.getStazionePa() != null) {
-      build.stationCode(source.getStazionePa().getStazione().getIdStazione());
+      build.stationCode(source.getStazionePa().getFkStazione().getIdStazione());
     }
     return build.build();
   }

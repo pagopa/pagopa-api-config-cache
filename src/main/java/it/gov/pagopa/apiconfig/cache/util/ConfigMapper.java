@@ -1,6 +1,5 @@
 package it.gov.pagopa.apiconfig.cache.util;
 
-import it.gov.pagopa.apiconfig.cache.entity.CdsSoggettoServizioCustom;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsService;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsSubjectService;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.configuration.ConfigurationKey;
@@ -37,6 +36,7 @@ import it.gov.pagopa.apiconfig.cache.util.mapper.ConvertWfespPluginConfToWfespPl
 import it.gov.pagopa.apiconfig.starter.entity.CanaleTipoVersamento;
 import it.gov.pagopa.apiconfig.starter.entity.CanaliView;
 import it.gov.pagopa.apiconfig.starter.entity.CdsServizio;
+import it.gov.pagopa.apiconfig.starter.entity.CdsSoggettoServizio;
 import it.gov.pagopa.apiconfig.starter.entity.Codifiche;
 import it.gov.pagopa.apiconfig.starter.entity.CodifichePa;
 import it.gov.pagopa.apiconfig.starter.entity.ConfigurationKeys;
@@ -95,7 +95,7 @@ public class ConfigMapper {
 
     Converter<CdsServizio, CdsService> convertCdsServizioCdsCatService =
         new ConvertCdsServizioCdsCatService();
-    Converter<CdsSoggettoServizioCustom, CdsSubjectService>
+    Converter<CdsSoggettoServizio, CdsSubjectService>
         convertCdsSoggettoServizioCdsSubjectService =
             new ConvertCdsSoggettoServizioCdsSubjectService();
 
@@ -145,7 +145,7 @@ public class ConfigMapper {
         .createTypeMap(CdsServizio.class, CdsService.class)
         .setConverter(convertCdsServizioCdsCatService);
     mapper
-        .createTypeMap(CdsSoggettoServizioCustom.class, CdsSubjectService.class)
+        .createTypeMap(CdsSoggettoServizio.class, CdsSubjectService.class)
         .setConverter(convertCdsSoggettoServizioCdsSubjectService);
 
     mapper
