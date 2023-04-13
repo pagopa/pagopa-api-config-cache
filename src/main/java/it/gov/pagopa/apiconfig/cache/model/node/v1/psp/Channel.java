@@ -2,11 +2,11 @@ package it.gov.pagopa.apiconfig.cache.model.node.v1.psp;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Connection;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Proxy;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Redirect;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Service;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Timeouts;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Connection;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

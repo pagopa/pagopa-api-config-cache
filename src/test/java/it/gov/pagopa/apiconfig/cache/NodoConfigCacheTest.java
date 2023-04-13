@@ -1,4 +1,4 @@
-package it.gov.pagopa.apiconfig;
+package it.gov.pagopa.apiconfig.cache;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -8,6 +8,7 @@ import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.service.ConfigService;
+import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
 import it.gov.pagopa.apiconfig.starter.repository.CanaliViewRepository;
 import it.gov.pagopa.apiconfig.starter.repository.CdiDetailRepository;
 import it.gov.pagopa.apiconfig.starter.repository.CdiFasciaCostoServizioRepository;
@@ -37,7 +38,6 @@ import it.gov.pagopa.apiconfig.starter.repository.PspRepository;
 import it.gov.pagopa.apiconfig.starter.repository.StazioniRepository;
 import it.gov.pagopa.apiconfig.starter.repository.TipiVersamentoRepository;
 import it.gov.pagopa.apiconfig.starter.repository.WfespPluginConfRepository;
-import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -105,7 +105,8 @@ class NodoConfigCacheTest {
     when(pspRepository.findAll()).thenReturn(TestUtils.psps);
     when(intermediariPaRepository.findAll()).thenReturn(TestUtils.intpas);
     when(intermediariPspRepository.findAll()).thenReturn(TestUtils.intpsp);
-    when(cdiMasterValidRepository.findAllFetching()).thenReturn(TestUtils.cdiMasterValid);
+    when(cdiMasterValidRepository.findAll()).thenReturn(TestUtils.cdiMasterValid);
+    when(cdiDetailRepository.findAll()).thenReturn(TestUtils.cdiDetail);
     when(cdiPreferenceRepository.findAll()).thenReturn(TestUtils.cdiPreference);
     when(cdiFasceRepository.findAll()).thenReturn(TestUtils.cdiFasciaCostoServizio);
     when(cdiInformazioniServizioRepository.findAll()).thenReturn(TestUtils.cdiInformazioniServizio);
@@ -122,7 +123,8 @@ class NodoConfigCacheTest {
     when(stazioniRepository.findAllFetchingIntermediario()).thenReturn(TestUtils.stazioni);
     when(paStazioniRepository.findAllFetching()).thenReturn(TestUtils.paStazioniPa);
     when(cdsServizioRepository.findAllFetching()).thenReturn(TestUtils.cdsServizi);
-    when(cdsSoggettoServizioRepository.findAllFetching()).thenReturn(TestUtils.cdsSoggettiServizi);
+    when(cdsSoggettoServizioRepository.findAllFetchingStations())
+        .thenReturn(TestUtils.cdsSoggettiServizi);
     when(cdsSoggettoRepository.findAll()).thenReturn(TestUtils.cdsSoggetti);
     when(cdsCategorieRepository.findAll()).thenReturn(TestUtils.cdsCategorie);
 

@@ -15,6 +15,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Transactional
 public class VerifierService {
 
+  @Value("#{'${canary}'=='true' ? '_canary' : ''}")
+  private String keySuffix;
+
   @Value("apicfg_${spring.database.id}_verifier_v1")
   private String keyV1;
 
@@ -25,7 +28,7 @@ public class VerifierService {
 
   public List<String> getPaV2() {
     List<String> allPaForVerifier = paRepository.findAllPaForVerifier();
-    redisRepository.pushToRedisAsync(keyV1, allPaForVerifier);
+    redisRepository.pushToRedisAsync(keyV1 + keySuffix, allPaForVerifier);
     return allPaForVerifier;
   }
 }

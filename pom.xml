@@ -12,19 +12,19 @@
 
   <groupId>it.gov.pagopa.api-config</groupId>
   <artifactId>cache</artifactId>
-  <version>0.1.1</version>
+  <version>0.1.12</version>
   <name>API-Config Cacher</name>
   <description>Generate cache for regarding dei Pagamenti configuration</description>
 
   <properties>
     <java.version>11</java.version>
     <spring-version>2.7.7</spring-version>
-    <starter.version>1.1.0</starter.version>
+    <starter.version>1.2.0</starter.version>
     <springdoc.version>1.6.11</springdoc.version>
     <postgresql.version>42.5.4</postgresql.version>
     <oracle.version>21.4.0.0</oracle.version>
     <modelmapper.version>3.1.0</modelmapper.version>
-    <sonar.coverage.exclusions>**/imported/**</sonar.coverage.exclusions>
+    <sonar.coverage.exclusions>**/imported/**,**/exception/**,**/config/**</sonar.coverage.exclusions>
   </properties>
 
   <repositories>
@@ -35,7 +35,7 @@
   </repositories>
 
   <dependencies>
-  
+
     <dependency>
       <groupId>it.gov.pagopa.api-config</groupId>
       <artifactId>starter</artifactId>
@@ -110,12 +110,6 @@
       <artifactId>lombok</artifactId>
       <optional>true</optional>
     </dependency>
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -206,7 +200,7 @@
               <xsdOptions>
                 <xsdOption>
                   <xsd>${basedir}/src/main/resources/xsd/sanp3.3.1/CatalogoDatiInformativiPSP.xsd</xsd>
-                  <packagename>it.gov.pagopa.apiconfig.imported.catalogodati</packagename>
+                  <packagename>it.gov.pagopa.apiconfig.cache.imported.catalogodati</packagename>
                 </xsdOption>
               </xsdOptions>
             </configuration>
@@ -222,7 +216,7 @@
               <xsdOptions>
                 <xsdOption>
                   <xsd>${basedir}/src/main/resources/xsd/sanp3.3.1/TabellaDelleContropartiEstesa_1_2_0.xsd</xsd>
-                  <packagename>it.gov.pagopa.apiconfig.imported.controparti</packagename>
+                  <packagename>it.gov.pagopa.apiconfig.cache.imported.controparti</packagename>
                 </xsdOption>
               </xsdOptions>
             </configuration>
@@ -238,7 +232,7 @@
               <xsdOptions>
                 <xsdOption>
                   <xsd>${basedir}/src/main/resources/xsd/sanp3.3.1/TemplateInformativa_1_0_11.xsd</xsd>
-                  <packagename>it.gov.pagopa.apiconfig.imported.template</packagename>
+                  <packagename>it.gov.pagopa.apiconfig.cache.imported.template</packagename>
                 </xsdOption>
               </xsdOptions>
             </configuration>

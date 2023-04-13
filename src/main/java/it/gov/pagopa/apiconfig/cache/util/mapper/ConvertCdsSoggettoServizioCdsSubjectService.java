@@ -1,6 +1,7 @@
 package it.gov.pagopa.apiconfig.cache.util.mapper;
 
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsSubjectService;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsSubjectService.CdsSubjectServiceBuilder;
 import it.gov.pagopa.apiconfig.starter.entity.CdsSoggettoServizio;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
@@ -10,13 +11,18 @@ public class ConvertCdsSoggettoServizioCdsSubjectService
   public CdsSubjectService convert(
       MappingContext<CdsSoggettoServizio, CdsSubjectService> mappingContext) {
     CdsSoggettoServizio source = mappingContext.getSource();
-    return CdsSubjectService.builder()
-        .service(source.getServizio().getIdServizio())
-        .subjectServiceId(source.getIdSoggettoServizio())
-        .startDate(source.getDataInizioValidita())
-        .endDate(source.getDataFineValidita())
-        .fee(source.getCommissione())
-        .subject(source.getSoggetto().getCreditorInstitutionCode())
-        .build();
+    CdsSubjectServiceBuilder build =
+        CdsSubjectService.builder()
+            .service(source.getServizio().getIdServizio())
+            .subjectServiceId(source.getIdSoggettoServizio())
+            .startDate(source.getDataInizioValidita())
+            .endDate(source.getDataFineValidita())
+            .fee(source.getCommissione())
+            .subject(source.getSoggetto().getCreditorInstitutionCode())
+            .serviceDescription(source.getDescrizioneServizio());
+    if (source.getStazionePa() != null) {
+      build.stationCode(source.getStazionePa().getFkStazione().getIdStazione());
+    }
+    return build.build();
   }
 }

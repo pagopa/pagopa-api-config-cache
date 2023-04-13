@@ -26,7 +26,7 @@ public class ResponseValidator {
    * @param result the response to validate
    */
   @AfterReturning(
-      pointcut = "execution(* it.gov.pagopa.apiconfig.controller.*.*(..))",
+      pointcut = "execution(* it.gov.pagopa.apiconfig.cache.controller.*.*(..))",
       returning = "result")
   public void validateResponse(JoinPoint joinPoint, Object result) {
     if (result instanceof ResponseEntity) {
