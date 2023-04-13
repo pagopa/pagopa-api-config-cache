@@ -11,6 +11,7 @@ import it.gov.pagopa.apiconfig.cache.service.ConfigService;
 import it.gov.pagopa.apiconfig.cache.service.VerifierService;
 import java.io.IOException;
 import java.util.Arrays;
+import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -30,6 +31,7 @@ class ControllerTest {
 
   @MockBean private ConfigService configService;
   @MockBean private VerifierService verifierService;
+  @MockBean private EntityManager entityManager;
 
   @BeforeEach
   void setUp() throws IOException {
