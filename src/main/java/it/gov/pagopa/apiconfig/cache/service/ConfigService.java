@@ -610,12 +610,7 @@ public class ConfigService {
     List<CtListaInformativePSP> informativePspSingle =
         masters.stream()
             .filter(
-                m -> {
-                  return details.stream()
-                      .filter(d -> d.getFkCdiMaster().getId().equals(m.getId()))
-                      .findAny()
-                      .isPresent();
-                })
+                m -> details.stream().anyMatch(d -> d.getFkCdiMaster().getId().equals(m.getId())))
             .map(
                 cdiMaster -> {
                   Psp psp =
@@ -811,12 +806,11 @@ public class ConfigService {
     List<PspInformation> informativePspSingleCache =
         informativePspSingle.stream()
             .map(
-                i -> {
-                  return PspInformation.builder()
-                      .psp(i.getInformativaPSP().get(0).getIdentificativoPSP())
-                      .informativa(toXml(i))
-                      .build();
-                })
+                i ->
+                    PspInformation.builder()
+                        .psp(i.getInformativaPSP().get(0).getIdentificativoPSP())
+                        .informativa(toXml(i))
+                        .build())
             .collect(Collectors.toList());
 
     PspInformation informativaPSPFull =
@@ -1086,12 +1080,11 @@ public class ConfigService {
     List<CreditorInstitutionInformation> informativePaSingleCache =
         informativePaSingle.stream()
             .map(
-                i -> {
-                  return CreditorInstitutionInformation.builder()
-                      .pa(i.getLeft())
-                      .informativa(toXml(i.getRight()))
-                      .build();
-                })
+                i ->
+                    CreditorInstitutionInformation.builder()
+                        .pa(i.getLeft())
+                        .informativa(toXml(i.getRight()))
+                        .build())
             .collect(Collectors.toList());
 
     CreditorInstitutionInformation informativaPAFull =

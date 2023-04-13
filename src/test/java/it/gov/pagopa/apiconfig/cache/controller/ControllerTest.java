@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -48,21 +50,13 @@ class ControllerTest {
     mvc.perform(get(url)).andExpect(status().isOk());
   }
 
-  @Test
-  void getV1Cache() throws Exception {
-    String url = "/stakeholders/node/cache/schemas/v1";
-    mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
-  }
-
-  @Test
-  void getV1() throws Exception {
-    String url = "/stakeholders/node/cache/schemas/v1/id";
-    mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
-  }
-
-  @Test
-  void verifier() throws Exception {
-    String url = "/stakeholders/verifier/cache";
+  @ParameterizedTest
+  @CsvSource({
+    "/stakeholders/node/cache/schemas/v1",
+    "/stakeholders/node/cache/schemas/v1/id",
+    "/stakeholders/verifier/cache"
+  })
+  void testGets(String url) throws Exception {
     mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
   }
 
