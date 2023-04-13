@@ -5,10 +5,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import it.gov.pagopa.apiconfig.Application;
-import it.gov.pagopa.apiconfig.model.node.CacheVersion;
-import it.gov.pagopa.apiconfig.model.node.v1.ConfigDataV1;
-import it.gov.pagopa.apiconfig.service.ConfigService;
-import it.gov.pagopa.apiconfig.service.VerifierService;
+import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
+import it.gov.pagopa.apiconfig.cache.service.ConfigService;
+import it.gov.pagopa.apiconfig.cache.service.VerifierService;
 import java.io.IOException;
 import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;

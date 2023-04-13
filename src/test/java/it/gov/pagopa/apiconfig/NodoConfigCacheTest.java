@@ -4,10 +4,10 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import it.gov.pagopa.apiconfig.model.node.CacheVersion;
-import it.gov.pagopa.apiconfig.model.node.v1.ConfigDataV1;
-import it.gov.pagopa.apiconfig.redis.RedisRepository;
-import it.gov.pagopa.apiconfig.service.ConfigService;
+import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
+import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
+import it.gov.pagopa.apiconfig.cache.service.ConfigService;
 import it.gov.pagopa.apiconfig.starter.repository.CanaliViewRepository;
 import it.gov.pagopa.apiconfig.starter.repository.CdiDetailRepository;
 import it.gov.pagopa.apiconfig.starter.repository.CdiFasciaCostoServizioRepository;
@@ -37,7 +37,7 @@ import it.gov.pagopa.apiconfig.starter.repository.PspRepository;
 import it.gov.pagopa.apiconfig.starter.repository.StazioniRepository;
 import it.gov.pagopa.apiconfig.starter.repository.TipiVersamentoRepository;
 import it.gov.pagopa.apiconfig.starter.repository.WfespPluginConfRepository;
-import it.gov.pagopa.apiconfig.util.ConfigMapper;
+import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -216,7 +216,7 @@ class NodoConfigCacheTest {
         .containsKey(TestUtils.stazioni.get(1).getIdStazione());
     assertThat(allData.getCreditorInstitutionStations())
         .containsKey(
-            TestUtils.paStazioniPa.get(0).getStazione().getIdStazione()
+            TestUtils.paStazioniPa.get(0).getFkStazione().getIdStazione()
                 + "_"
                 + TestUtils.paStazioniPa.get(0).getPa().getIdDominio()
                 + "_"
@@ -226,7 +226,7 @@ class NodoConfigCacheTest {
                 + "_"
                 + TestUtils.paStazioniPa.get(0).getSegregazione())
         .containsKey(
-            TestUtils.paStazioniPa.get(1).getStazione().getIdStazione()
+            TestUtils.paStazioniPa.get(1).getFkStazione().getIdStazione()
                 + "_"
                 + TestUtils.paStazioniPa.get(1).getPa().getIdDominio()
                 + "_"

@@ -3,9 +3,9 @@ package it.gov.pagopa.apiconfig;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.when;
 
-import it.gov.pagopa.apiconfig.redis.RedisRepository;
-import it.gov.pagopa.apiconfig.repository.VerifierRepository;
-import it.gov.pagopa.apiconfig.service.VerifierService;
+import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
+import it.gov.pagopa.apiconfig.cache.repository.VerifierRepository;
+import it.gov.pagopa.apiconfig.cache.service.VerifierService;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
