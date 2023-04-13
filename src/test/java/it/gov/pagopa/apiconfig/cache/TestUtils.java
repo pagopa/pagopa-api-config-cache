@@ -186,8 +186,14 @@ public class TestUtils {
           CdiPreference.builder().costoConvenzione(10d).cdiDetail(cdiDetail.get(1)).build());
   public static List<CdiInformazioniServizio> cdiInformazioniServizio =
       Arrays.asList(
-          CdiInformazioniServizio.builder().fkCdiDetail(cdiDetail.get(0)).codiceLingua("IT").build(),
-          CdiInformazioniServizio.builder().fkCdiDetail(cdiDetail.get(1)).codiceLingua("IT").build());
+          CdiInformazioniServizio.builder()
+              .fkCdiDetail(cdiDetail.get(0))
+              .codiceLingua("IT")
+              .build(),
+          CdiInformazioniServizio.builder()
+              .fkCdiDetail(cdiDetail.get(1))
+              .codiceLingua("IT")
+              .build());
   public static List<FtpServers> ftpServers =
       Arrays.asList(FtpServers.builder().id(0L).build(), FtpServers.builder().id(1L).build());
   public static List<GdeConfig> gdeConfigurations =

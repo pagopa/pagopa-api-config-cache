@@ -585,9 +585,9 @@ public class ConfigService {
     List<Psp> psps = pspRepository.findAll();
     List<CdiPreference> preferences = cdiPreferenceRepository.findAll();
     List<CdiFasciaCostoServizio> allFasce = cdiFasceRepository.findAll();
-    List<CdiMasterValid> masters = StreamSupport
-        .stream(cdiMasterValidRepository.findAll().spliterator(), false)
-        .collect(Collectors.toList());
+    List<CdiMasterValid> masters =
+        StreamSupport.stream(cdiMasterValidRepository.findAll().spliterator(), false)
+            .collect(Collectors.toList());
     List<CdiDetail> details = cdiDetailRepository.findAll();
     List<CdiInformazioniServizio> allInformazioni = cdiInformazioniServizioRepository.findAll();
 
@@ -675,7 +675,9 @@ public class ConfigService {
                                     allInformazioni.stream()
                                         .filter(
                                             ii ->
-                                                ii.getFkCdiDetail().getId().equals(cdiDetail.getId()))
+                                                ii.getFkCdiDetail()
+                                                    .getId()
+                                                    .equals(cdiDetail.getId()))
                                         .filter(info -> info.getCodiceLingua().equals("IT"))
                                         .collect(Collectors.toList())
                                         .get(0);
@@ -1148,8 +1150,7 @@ public class ConfigService {
             t.getHour(), t.getMinute(), t.getSecond(), DatatypeConstants.FIELD_UNDEFINED);
   }
 
-  private XMLGregorianCalendar tsToXmlGC(Timestamp ts)
-      throws DatatypeConfigurationException {
+  private XMLGregorianCalendar tsToXmlGC(Timestamp ts) throws DatatypeConfigurationException {
     if (ts == null) {
       return null;
     }

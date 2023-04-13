@@ -95,9 +95,8 @@ public class ConfigMapper {
 
     Converter<CdsServizio, CdsService> convertCdsServizioCdsCatService =
         new ConvertCdsServizioCdsCatService();
-    Converter<CdsSoggettoServizio, CdsSubjectService>
-        convertCdsSoggettoServizioCdsSubjectService =
-            new ConvertCdsSoggettoServizioCdsSubjectService();
+    Converter<CdsSoggettoServizio, CdsSubjectService> convertCdsSoggettoServizioCdsSubjectService =
+        new ConvertCdsSoggettoServizioCdsSubjectService();
 
     mapper
         .createTypeMap(Pa.class, CreditorInstitution.class)
