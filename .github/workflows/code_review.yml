@@ -55,8 +55,8 @@ jobs:
           -Dsonar.organization=pagopa
           -Dsonar.projectKey=${{ env.PROJECT_KEY }}
           -Dsonar.coverage.jacoco.xmlReportPaths=./target/site/jacoco/jacoco.xml
-          -Dsonar.coverage.exclusions="**/config/*,**/*Mock*,**/model/**,**/entity/*"
-          -Dsonar.cpd.exclusions="**/model/**,**/entity/*"
+          -Dsonar.coverage.exclusions="**/imported/**,**/exception/**,**/config/**"
+          -Dsonar.cpd.exclusions="**/model/**"
           -Dsonar.host.url=https://sonarcloud.io
           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
           -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
