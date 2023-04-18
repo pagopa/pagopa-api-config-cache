@@ -15,7 +15,7 @@ public class ConvertCodifichePaToEncoding
     CodifichePa source = context.getSource();
     CodeTypeEnum codeType = getCodeType(source);
     return CreditorInstitutionEncoding.builder()
-        .creditorInstitutionCode(source.getCodicePa())
+        .creditorInstitutionCode(source.getFkPa().getIdDominio())
         .codeType(codeType != null ? codeType : null)
         .encodingCode(source.getCodicePa())
         .build();
