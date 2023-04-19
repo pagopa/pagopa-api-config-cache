@@ -19,7 +19,7 @@ import lombok.ToString;
 public class CreditorInstitutionEncoding {
 
   @JsonProperty(value = "code_type", required = true)
-  private CodeTypeEnum codeType;
+  private String codeType;
 
   @JsonProperty(value = "encoding_code", required = true)
   private String encodingCode;
