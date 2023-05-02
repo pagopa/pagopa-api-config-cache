@@ -12,14 +12,14 @@
 
   <groupId>it.gov.pagopa.api-config</groupId>
   <artifactId>cache</artifactId>
-  <version>0.2.1</version>
+  <version>0.2.2</version>
   <name>API-Config Cacher</name>
-  <description>Generate cache for regarding dei Pagamenti configuration</description>
+  <description>Generate cache for regarding Nodo dei Pagamenti configuration</description>
 
   <properties>
     <java.version>11</java.version>
     <spring-version>2.7.7</spring-version>
-    <starter.version>1.2.0</starter.version>
+    <starter.version>1.4.0</starter.version>
     <springdoc.version>1.6.11</springdoc.version>
     <postgresql.version>42.5.4</postgresql.version>
     <oracle.version>21.4.0.0</oracle.version>
