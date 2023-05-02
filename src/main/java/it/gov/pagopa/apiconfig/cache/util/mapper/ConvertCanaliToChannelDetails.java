@@ -77,6 +77,7 @@ public class ConvertCanaliToChannelDetails implements Converter<CanaliView, Chan
         .agid(source.getAgidChannel())
         .primitiveVersion(source.getVersionePrimitive())
         .flagIo(source.getFlagIo())
+        .flagPspCp(source.getFlagPspCp())
         .servPlugin(source.getIdServPlugin())
         .build();
   }
