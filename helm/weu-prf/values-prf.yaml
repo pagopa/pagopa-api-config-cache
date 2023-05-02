@@ -51,7 +51,7 @@ postgresql:
   !!merge <<: *basecache
   ingress:
     !!merge <<: *ingress
-    path: /api-config-cache-replica/pr(/|$)(.*)
+    path: /api-config-cache/pr(/|$)(.*)
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-cache-postgresql"
@@ -68,7 +68,7 @@ oracle:
   !!merge <<: *basecache
   ingress:
     !!merge <<: *ingress
-    path: /api-config-cache-replica/or(/|$)(.*)
+    path: /api-config-cache/or(/|$)(.*)
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-cache-oracle"
