@@ -82,5 +82,3 @@ oracle:
     envSecrets:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "oracle-db-cfg-password"
-oracledev:
-  enabled: false
