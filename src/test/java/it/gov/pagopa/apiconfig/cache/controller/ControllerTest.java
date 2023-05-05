@@ -11,6 +11,7 @@ import it.gov.pagopa.apiconfig.cache.service.ConfigService;
 import it.gov.pagopa.apiconfig.cache.service.VerifierService;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Optional;
 import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,8 +36,8 @@ class ControllerTest {
 
   @BeforeEach
   void setUp() throws IOException {
-    when(configService.getCacheV1Id()).thenReturn(new CacheVersion("1111"));
-    when(configService.newCacheV1()).thenReturn(new ConfigDataV1());
+    when(configService.getCacheV1Id("")).thenReturn(new CacheVersion("1111"));
+    when(configService.newCacheV1("", Optional.of(new String[]{}))).thenReturn(new ConfigDataV1());
     when(verifierService.getPaV2()).thenReturn(Arrays.asList("1", "2"));
   }
 
