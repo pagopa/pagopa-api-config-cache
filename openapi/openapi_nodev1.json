@@ -4,7 +4,7 @@
     "title" : "API-Config Cacher",
     "description" : "Generate cache for regarding Nodo dei Pagamenti configuration",
     "termsOfService" : "https://www.pagopa.gov.it/",
-    "version" : "0.2.2"
+    "version" : "0.3.2"
   },
   "servers" : [ {
     "url" : "http://localhost:8080",
@@ -17,21 +17,17 @@
         "summary" : "Get full node v1 config",
         "operationId" : "cache",
         "responses" : {
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
           "429" : {
             "description" : "Too many requests"
           },
           "500" : {
             "description" : "Service unavailable",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ProblemJson"
-                }
-              }
-            }
-          },
-          "400" : {
-            "description" : "Bad Request",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -50,11 +46,15 @@
               }
             }
           },
-          "403" : {
-            "description" : "Forbidden"
-          },
-          "401" : {
-            "description" : "Unauthorized"
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemJson"
+                }
+              }
+            }
           }
         },
         "security" : [ {
@@ -68,6 +68,15 @@
         "summary" : "Get last node v1 cache version",
         "operationId" : "idV1",
         "responses" : {
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          },
           "429" : {
             "description" : "Too many requests"
           },
@@ -81,22 +90,6 @@
               }
             }
           },
-          "400" : {
-            "description" : "Bad Request",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ProblemJson"
-                }
-              }
-            }
-          },
-          "403" : {
-            "description" : "Forbidden"
-          },
-          "404" : {
-            "description" : "Not Found"
-          },
           "200" : {
             "description" : "OK",
             "content" : {
@@ -107,8 +100,15 @@
               }
             }
           },
-          "401" : {
-            "description" : "Unauthorized"
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemJson"
+                }
+              }
+            }
           }
         },
         "security" : [ {

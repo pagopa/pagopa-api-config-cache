@@ -4,10 +4,11 @@
 
 FROM maven:3.8.4-jdk-11-slim as buildtime
 ARG github_token
+ARG maven_args
 ENV GITHUB_TOKEN_READ_PACKAGES=$github_token
 WORKDIR /build
 COPY . .
-RUN mvn package -DskipTests=true
+RUN mvn package -DskipTests=true $maven_args
 
 FROM adoptopenjdk/openjdk11:alpine-jre as builder
 COPY --from=buildtime /build/target/*.jar application.jar
