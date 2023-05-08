@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import it.gov.pagopa.apiconfig.cache.model.NodeCacheKey;
 import it.gov.pagopa.apiconfig.cache.model.ProblemJson;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
@@ -77,7 +78,7 @@ public class FdrCacheController {
   @GetMapping(
       value = "/v1",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ConfigDataV1> cache(@RequestParam Optional<String[]> keys) throws IOException {
+  public ResponseEntity<ConfigDataV1> cache(@RequestParam Optional<NodeCacheKey[]> keys) throws IOException {
     return ResponseEntity.ok(configService.newCacheV1(stakeholder,keys));
   }
 

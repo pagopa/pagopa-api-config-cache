@@ -36,6 +36,7 @@ import it.gov.pagopa.apiconfig.cache.imported.template.TplListaFasceCostoServizi
 import it.gov.pagopa.apiconfig.cache.imported.template.TplListaInformativaDetail;
 import it.gov.pagopa.apiconfig.cache.imported.template.TplListaInformazioniServizio;
 import it.gov.pagopa.apiconfig.cache.imported.template.TplListaParoleChiave;
+import it.gov.pagopa.apiconfig.cache.model.NodeCacheKey;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsCategory;
@@ -197,51 +198,51 @@ public class ConfigService {
   public ConfigDataV1 newCacheV1(String stakeholder) throws IOException {
     return newCacheV1(stakeholder,Optional.empty());
   }
-  public ConfigDataV1 newCacheV1(String stakeholder,Optional<String[]> keys) throws IOException {
+  public ConfigDataV1 newCacheV1(String stakeholder,Optional<NodeCacheKey[]> keys) throws IOException {
 
     boolean allKeys = keys.isEmpty();
-    List<String> list = keys.map(k->Arrays.asList(k)).orElse(new ArrayList<String>());
+    List<NodeCacheKey> list = keys.map(k->Arrays.asList(k)).orElse(new ArrayList<NodeCacheKey>());
 
     long startTime = System.nanoTime();
 
     ConfigDataV1 configData = new ConfigDataV1();
 
-    if (allKeys || list.contains("creditorInstitutionBrokers")) {
+    if (allKeys || list.contains(NodeCacheKey.creditorInstitutionBrokers)) {
       List<BrokerCreditorInstitution> intpa = getBrokerDetails();
       HashMap<String, BrokerCreditorInstitution> intpamap = new HashMap<>();
       intpa.stream().forEach(k -> intpamap.put(k.getBrokerCode(), k));
       configData.setCreditorInstitutionBrokers(intpamap);
     }
 
-    if (allKeys || list.contains("pspBrokers")) {
+    if (allKeys || list.contains(NodeCacheKey.pspBrokers)) {
       List<BrokerPsp> intpsp = getBrokerPspDetails();
       HashMap<String, BrokerPsp> intpspmap = new HashMap<>();
       intpsp.stream().forEach(k -> intpspmap.put(k.getBrokerPspCode(), k));
       configData.setPspBrokers(intpspmap);
     }
 
-    if (allKeys || list.contains("cdsCategories")) {
+    if (allKeys || list.contains(NodeCacheKey.cdsCategories)) {
       List<CdsCategory> cdscats = getCdsCategories();
       HashMap<String, CdsCategory> cdscatsMap = new HashMap<>();
       cdscats.stream().forEach(k -> cdscatsMap.put(k.getDescription(), k));
       configData.setCdsCategories(cdscatsMap);
     }
 
-    if (allKeys || list.contains("cdsServices")) {
+    if (allKeys || list.contains(NodeCacheKey.cdsServices)) {
       List<CdsService> cdsServices = getCdsServices();
       HashMap<String, CdsService> cdsServicesMap = new HashMap<>();
       cdsServices.stream().forEach(k -> cdsServicesMap.put(k.getIdentifier(), k));
       configData.setCdsServices(cdsServicesMap);
     }
 
-    if (allKeys || list.contains("cdsSubjects")) {
+    if (allKeys || list.contains(NodeCacheKey.cdsSubjects)) {
       List<CdsSubject> cdsSubjects = getCdsSubjects();
       HashMap<String, CdsSubject> cdsSubjectsMap = new HashMap<>();
       cdsSubjects.stream().forEach(k -> cdsSubjectsMap.put(k.getCreditorInstitutionCode(), k));
       configData.setCdsSubjects(cdsSubjectsMap);
     }
 
-    if (allKeys || list.contains("cdsSubjectServices")) {
+    if (allKeys || list.contains(NodeCacheKey.cdsSubjectServices)) {
       List<CdsSubjectService> cdsSubjectServices = getCdsSubjectServices();
       HashMap<String, CdsSubjectService> cdsSubjectServicesMap = new HashMap<>();
       cdsSubjectServices.stream()
@@ -249,130 +250,130 @@ public class ConfigService {
       configData.setCdsSubjectServices(cdsSubjectServicesMap);
     }
 
-    if (allKeys || list.contains("gdeConfigurations")) {
+    if (allKeys || list.contains(NodeCacheKey.gdeConfigurations)) {
       List<GdeConfiguration> gde = getGdeConfiguration();
       HashMap<String, GdeConfiguration> gdeMap = new HashMap<>();
       gde.stream().forEach(k -> gdeMap.put(k.getIdentifier(), k));
       configData.setGdeConfigurations(gdeMap);
     }
 
-    if (allKeys || list.contains("metadataDict")) {
+    if (allKeys || list.contains(NodeCacheKey.metadataDict)) {
       List<MetadataDict> meta = getMetadataDict();
       HashMap<String, MetadataDict> metaMap = new HashMap<>();
       meta.stream().forEach(k -> metaMap.put(k.getKey(), k));
       configData.setMetadataDict(metaMap);
     }
 
-    if (allKeys || list.contains("configurations")) {
+    if (allKeys || list.contains(NodeCacheKey.configurations)) {
       List<ConfigurationKey> configurationKeyList = getConfigurationKeys();
       HashMap<String, ConfigurationKey> configMap = new HashMap<>();
       configurationKeyList.stream().forEach(k -> configMap.put(k.getIdentifier(), k));
       configData.setConfigurations(configMap);
     }
 
-    if (allKeys || list.contains("ftpServers")) {
+    if (allKeys || list.contains(NodeCacheKey.ftpServers)) {
       List<FtpServer> ftpservers = getFtpServers();
       HashMap<String, FtpServer> ftpserversMap = new HashMap<>();
       ftpservers.stream().forEach(k -> ftpserversMap.put(k.getId().toString(), k));
       configData.setFtpServers(ftpserversMap);
     }
 
-    if (allKeys || list.contains("languages")) {
+    if (allKeys || list.contains(NodeCacheKey.languages)) {
       HashMap<String, String> codiciLingua = new HashMap<>();
       codiciLingua.put("IT", "IT");
       codiciLingua.put("DE", "DE");
       configData.setLanguages(codiciLingua);
     }
 
-    if (allKeys || list.contains("plugins")) {
+    if (allKeys || list.contains(NodeCacheKey.plugins)) {
       List<Plugin> plugins = getWfespPluginConfigurations();
       HashMap<String, Plugin> pluginsMap = new HashMap<>();
       plugins.stream().forEach(k -> pluginsMap.put(k.getIdServPlugin(), k));
       configData.setPlugins(pluginsMap);
     }
 
-    if (allKeys || list.contains("psps")) {
+    if (allKeys || list.contains(NodeCacheKey.psps)) {
       List<PaymentServiceProvider> psps = getAllPaymentServiceProviders();
       HashMap<String, PaymentServiceProvider> pspMap = new HashMap<>();
       psps.stream().forEach(k -> pspMap.put(k.getPspCode(), k));
       configData.setPsps(pspMap);
     }
 
-    if (allKeys || list.contains("channels")) {
+    if (allKeys || list.contains(NodeCacheKey.channels)) {
       List<Channel> canali = getAllCanali();
       HashMap<String, Channel> canalimap = new HashMap<>();
       canali.stream().forEach(k -> canalimap.put(k.getChannelCode(), k));
       configData.setChannels(canalimap);
     }
 
-    if (allKeys || list.contains("paymentTypes")) {
+    if (allKeys || list.contains(NodeCacheKey.paymentTypes)) {
       List<PaymentType> tipiv = getPaymentTypes();
       HashMap<String, PaymentType> tipivMap = new HashMap<>();
       tipiv.stream().forEach(k -> tipivMap.put(k.getPaymentTypeCode(), k));
       configData.setPaymentTypes(tipivMap);
     }
 
-    if (allKeys || list.contains("pspChannelPaymentTypes")) {
+    if (allKeys || list.contains(NodeCacheKey.pspChannelPaymentTypes)) {
       List<PspChannelPaymentType> pspChannels = getPaymentServiceProvidersChannels();
       HashMap<String, PspChannelPaymentType> pspChannelsMap = new HashMap<>();
       pspChannels.stream().forEach(k -> pspChannelsMap.put(k.getIdentifier(), k));
       configData.setPspChannelPaymentTypes(pspChannelsMap);
     }
 
-    if(allKeys || list.contains("creditorInstitutions")){
+    if(allKeys || list.contains(NodeCacheKey.creditorInstitutions)){
       List<CreditorInstitution> pas = getCreditorInstitutions();
       HashMap<String, CreditorInstitution> pamap = new HashMap<>();
       pas.stream().forEach(k -> pamap.put(k.getCreditorInstitutionCode(), k));
       configData.setCreditorInstitutions(pamap);
     }
 
-    if (allKeys || list.contains("encodings")) {
+    if (allKeys || list.contains(NodeCacheKey.encodings)) {
       List<Encoding> encodings = getEncodings();
       HashMap<String, Encoding> encodingsMap = new HashMap<>();
       encodings.stream().forEach(k -> encodingsMap.put(k.getCodeType(), k));
       configData.setEncodings(encodingsMap);
     }
 
-    if (allKeys || list.contains("creditorInstitutionEncodings")) {
+    if (allKeys || list.contains(NodeCacheKey.creditorInstitutionEncodings)) {
       List<CreditorInstitutionEncoding> ciencodings = getCreditorInstitutionEncodings();
       HashMap<String, CreditorInstitutionEncoding> ciencodingsMap = new HashMap<>();
       ciencodings.stream().forEach(k -> ciencodingsMap.put(k.getIdentifier(), k));
       configData.setCreditorInstitutionEncodings(ciencodingsMap);
     }
 
-    if (allKeys || list.contains("creditorInstitutionStations")) {
+    if (allKeys || list.contains(NodeCacheKey.creditorInstitutionStations)) {
       List<StationCreditorInstitution> paspa = findAllPaStazioniPa();
       HashMap<String, StationCreditorInstitution> paspamap = new HashMap<>();
       paspa.stream().forEach(k -> paspamap.put(k.getIdentifier(), k));
       configData.setCreditorInstitutionStations(paspamap);
     }
 
-    if (allKeys || list.contains("stations")) {
+    if (allKeys || list.contains(NodeCacheKey.stations)) {
       List<Station> stazioni = findAllStazioni();
       HashMap<String, Station> stazionimap = new HashMap<>();
       stazioni.stream().forEach(k -> stazionimap.put(k.getStationCode(), k));
       configData.setStations(stazionimap);
     }
 
-    if (allKeys || list.contains("ibans")) {
+    if (allKeys || list.contains(NodeCacheKey.ibans)) {
       List<Iban> ibans = getCurrentIbans();
       HashMap<String, Iban> ibansMap = new HashMap<>();
       ibans.stream().forEach(k -> ibansMap.put(k.getIdentifier(), k));
       configData.setIbans(ibansMap);
     }
 
-    if (allKeys || list.contains("pspInformations") || list.contains("pspInformationTemplates")) {
+    if (allKeys || list.contains(NodeCacheKey.pspInformations) || list.contains(NodeCacheKey.pspInformationTemplates)) {
       Pair<List<PspInformation>, List<PspInformation>> informativePspAndTemplates =
           getInformativePspAndTemplates();
 
-      if (list.contains("pspInformations")) {
+      if (list.contains(NodeCacheKey.pspInformations)) {
         List<PspInformation> infopsps = informativePspAndTemplates.getLeft();
         HashMap<String, PspInformation> infopspsMap = new HashMap<>();
         infopsps.stream().forEach(k -> infopspsMap.put(k.getPsp(), k));
         configData.setPspInformations(infopspsMap);
       }
 
-      if (list.contains("pspInformationTemplates")) {
+      if (list.contains(NodeCacheKey.pspInformationTemplates)) {
         List<PspInformation> infopspTemplates = informativePspAndTemplates.getRight();
         HashMap<String, PspInformation> infopspTemplatesMap = new HashMap<>();
         infopspTemplates.stream().forEach(k -> infopspTemplatesMap.put(k.getPsp(), k));
@@ -380,7 +381,7 @@ public class ConfigService {
       }
     }
 
-    if (allKeys || list.contains("creditorInstitutionInformations")) {
+    if (allKeys || list.contains(NodeCacheKey.creditorInstitutionInformations)) {
       List<CreditorInstitutionInformation> infopas = getInformativePa();
       HashMap<String, CreditorInstitutionInformation> infopasMap = new HashMap<>();
       infopas.stream().forEach(k -> infopasMap.put(k.getPa(), k));
