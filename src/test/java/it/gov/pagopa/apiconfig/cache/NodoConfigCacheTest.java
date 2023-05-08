@@ -87,9 +87,12 @@ class NodoConfigCacheTest {
 
   @InjectMocks private ConfigService configService;
 
+
+
   @BeforeEach
   void setUp() {
     org.springframework.test.util.ReflectionTestUtils.setField(configService, "keyV1Id", "value");
+    org.springframework.test.util.ReflectionTestUtils.setField(configService, "keyV1", "value");
   }
 
   @Test
@@ -130,7 +133,7 @@ class NodoConfigCacheTest {
     when(cdsSoggettoRepository.findAll()).thenReturn(TestUtils.cdsSoggetti);
     when(cdsCategorieRepository.findAll()).thenReturn(TestUtils.cdsCategorie);
 
-    ConfigDataV1 allData = configService.newCacheV1("", Optional.of(new String[]{}));
+    ConfigDataV1 allData = configService.newCacheV1("node", Optional.empty());
     assertThat(allData.getConfigurations())
         .containsKey(
             TestUtils.mockConfigurationKeys.get(0).getConfigCategory()

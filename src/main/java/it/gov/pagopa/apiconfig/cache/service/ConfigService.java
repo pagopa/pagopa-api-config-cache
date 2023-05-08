@@ -366,14 +366,14 @@ public class ConfigService {
       Pair<List<PspInformation>, List<PspInformation>> informativePspAndTemplates =
           getInformativePspAndTemplates();
 
-      if (list.contains(NodeCacheKey.pspInformations)) {
+      if (allKeys || list.contains(NodeCacheKey.pspInformations)) {
         List<PspInformation> infopsps = informativePspAndTemplates.getLeft();
         HashMap<String, PspInformation> infopspsMap = new HashMap<>();
         infopsps.stream().forEach(k -> infopspsMap.put(k.getPsp(), k));
         configData.setPspInformations(infopspsMap);
       }
 
-      if (list.contains(NodeCacheKey.pspInformationTemplates)) {
+      if (allKeys || list.contains(NodeCacheKey.pspInformationTemplates)) {
         List<PspInformation> infopspTemplates = informativePspAndTemplates.getRight();
         HashMap<String, PspInformation> infopspTemplatesMap = new HashMap<>();
         infopspTemplates.stream().forEach(k -> infopspTemplatesMap.put(k.getPsp(), k));
