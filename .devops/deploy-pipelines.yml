@@ -75,6 +75,10 @@ parameters:
     displayName: Canary deployment
     type: boolean
     default: false
+  - name: oracledev
+    displayName: Oracle DEV
+    type: boolean
+    default: false
 
 variables:
   github_token_read_packages: '$(github_token_read_packages_dev)'
@@ -335,7 +339,7 @@ stages:
                             --set oracle.canaryDelivery.create="${{ parameters.canary }}"
                             --set oracledev.forceRedeploy=true
                             --set oracledev.image.tag=$(deploy_version)
-                            --set oracledev.enabled="${{ parameters.USE_ORACLE }}"
+                            --set oracledev.enabled="${{ parameters.oracledev }}"
                             --set oracledev.canaryDelivery.create="${{ parameters.canary }}"
       - ${{ if parameters.NEU }}:
           - deployment: "deploy_neu"

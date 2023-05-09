@@ -18,5 +18,4 @@ public class ConvertCodifichePaToEncoding
         .encodingCode(source.getCodicePa())
         .build();
   }
-
 }
