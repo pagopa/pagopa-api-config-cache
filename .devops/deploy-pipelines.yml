@@ -174,10 +174,11 @@ stages:
 
   # Create a release on GitHub
   - stage: Release
-    ${{ if or( parameters.deployOnly , parameters.uninstall ) }}:
+    ${{ if parameters.uninstall }}:
       displayName: "Release skipped"
-    ${{ if not(or( parameters.deployOnly , parameters.uninstall )) }}:
+    ${{ if not( parameters.uninstall ) }}:
       displayName: "Release"
+    condition: not( parameters.uninstall )
     jobs:
       - job: make_release
         workspace:
