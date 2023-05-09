@@ -331,13 +331,13 @@ stages:
                           targetType: "inline"
                           script: |
                             IMAGE_ARGS=""
-                            if [ "${{ parameters.USE_POSTGRESQL }}" = "True" ];
+                            if [ "${{ parameters.USE_POSTGRESQL }}" = "True" ]; then
                              IMAGE_ARGS="$IMAGE_ARGS --set postgresql.image.tag=$(deploy_version) --set postgresql.forceRedeploy=true --set postgresql.enabled="${{ parameters.USE_POSTGRESQL }}"" 
                             fi
-                            if [ "${{ parameters.USE_ORACLE }}" = "True" ];
+                            if [ "${{ parameters.USE_ORACLE }}" = "True" ]; then
                              IMAGE_ARGS="$IMAGE_ARGS --set oracle.image.tag=$(deploy_version) --set oracle.forceRedeploy=true --set oracle.enabled="${{ parameters.USE_ORACLE }}"" 
                             fi
-                            if [ "${{ parameters.USE_ORACLE_DEV }}" = "True" ];
+                            if [ "${{ parameters.USE_ORACLE_DEV }}" = "True" ]; then
                              IMAGE_ARGS="$IMAGE_ARGS --set oracledev.image.tag=$(deploy_version) --set oracledev.forceRedeploy=true --set oracledev.enabled="${{ parameters.USE_ORACLE_DEV }}"" 
                             fi
                           failOnStderr: true
