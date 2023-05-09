@@ -63,6 +63,10 @@ parameters:
     displayName: Install Postgresql Version
     type: boolean
     default: true
+  - name: oracledev
+    displayName: Oracle DEV
+    type: boolean
+    default: false
   - name: deployOnly
     displayName: Run only deploy steps
     type: boolean
@@ -335,7 +339,7 @@ stages:
                             --set oracle.canaryDelivery.create="${{ parameters.canary }}"
                             --set oracledev.forceRedeploy=true
                             --set oracledev.image.tag=$(deploy_version)
-                            --set oracledev.enabled="${{ parameters.USE_ORACLE }}"
+                            --set oracledev.enabled="${{ parameters.oracledev }}"
                             --set oracledev.canaryDelivery.create="${{ parameters.canary }}"
       - ${{ if parameters.NEU }}:
           - deployment: "deploy_neu"
@@ -398,5 +402,5 @@ stages:
                               --set oracle.canaryDelivery.create="${{ parameters.canary }}"
                               --set oracledev.forceRedeploy=true
                               --set oracledev.image.tag=$(deploy_version)
-                              --set oracledev.enabled="${{ parameters.USE_ORACLE }}"
+                              --set oracledev.enabled="${{ parameters.oracledev }}"
                               --set oracledev.canaryDelivery.create="${{ parameters.canary }}"
