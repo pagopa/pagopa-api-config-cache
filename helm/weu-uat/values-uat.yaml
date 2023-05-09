@@ -81,4 +81,4 @@ oracle:
     !!merge <<: *azureSecretProvider
     envSecrets:
       !!merge <<: *envSecret
-      DB_CONFIG_PASSWORD: "oracle-db-cfg-password"
+      DB_CONFIG_PASSWORD: "oracle-db-cfg-password-tmp"
