@@ -1,6 +1,7 @@
 package it.gov.pagopa.apiconfig.cache.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +17,8 @@ import lombok.ToString;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AppInfo {
 
-  private String name;
-  private String version;
-  private String environment;
+  @NotNull private String name;
+  @NotNull private String version;
+  @NotNull private String environment;
+  private String dbConnection;
 }
