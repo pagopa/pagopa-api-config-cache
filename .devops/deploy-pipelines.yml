@@ -196,14 +196,14 @@ stages:
               gitHubConnection: $(GITHUB_CONNECTION)
               semver: "${{ parameters.SEMVER }}"
               customHelmStep: |
-                if [ "${{ parameters.WEU }}" = "True" ];
+                if [[ "${{ parameters.WEU }}" = "True" ]];
                   VALUES_FILE="$(WEU_value_file)"
                   if [[ -f "$VALUES_FILE" ]]; then
                     yq -i ".basecache.image.tag = \"$(next_version.value)\"" "$VALUES_FILE"
                     git add "$VALUES_FILE"
                   fi
                 fi
-                if [ "${{ parameters.NEU }}" = "True" ];
+                if [[ "${{ parameters.NEU }}" = "True" ]];
                   VALUES_FILE="$(NEU_value_file)"
                   if [[ -f "$VALUES_FILE" ]]; then
                     yq -i ".basecache.image.tag = \"$(next_version.value)\"" "$VALUES_FILE"
