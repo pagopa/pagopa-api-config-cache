@@ -257,7 +257,7 @@ stages:
 
   # Deploy on K8s with Helm
   - stage: Deploy
-    condition: in(stageDependencies.GetVersion.result, 'Succeeded')
+    condition: and( in(stageDependencies.GetVersion.result, 'Succeeded'), in(stageDependencies.Build.result, 'Succeeded'))
     dependsOn:
       - GetVersion
       - Build
