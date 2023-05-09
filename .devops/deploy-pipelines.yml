@@ -63,7 +63,7 @@ parameters:
     displayName: Install Postgresql Version
     type: boolean
     default: true
-  - name: oracledev
+  - name: USE_ORACLE_DEV
     displayName: Oracle DEV
     type: boolean
     default: false
@@ -314,6 +314,23 @@ stages:
                         APPINSIGHTS_RESOURCE_ID: ${{ variables.WEU_appInsightsResourceId }}
                         ARGUMENTS: $(appFinalName)
                   - ${{ if not( parameters.uninstall ) }}:
+                      - task: Bash@3
+                        name: setupArgs
+                        displayName: "Setup image set args"
+                        inputs:
+                          targetType: "inline"
+                          script: |
+                            IMAGE_ARGS=""
+                            if [ "${{ parameters.USE_POSTGRESQL }}" = "True" ];
+                             IMAGE_ARGS="$IMAGE_ARGS --set postgresql.image.tag=$(deploy_version) --set postgresql.forceRedeploy=true --set postgresql.enabled="${{ parameters.USE_POSTGRESQL }}"" 
+                            fi
+                            if [ "${{ parameters.USE_ORACLE }}" = "True" ];
+                             IMAGE_ARGS="$IMAGE_ARGS --set oracle.image.tag=$(deploy_version) --set oracle.forceRedeploy=true --set oracle.enabled="${{ parameters.USE_ORACLE }}"" 
+                            fi
+                            if [ "${{ parameters.USE_ORACLE_DEV }}" = "True" ];
+                             IMAGE_ARGS="$IMAGE_ARGS --set oracledev.image.tag=$(deploy_version) --set oracledev.forceRedeploy=true --set oracledev.enabled="${{ parameters.USE_ORACLE_DEV }}"" 
+                            fi
+                          failOnStderr: true
                       - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
                         parameters:
                           DO_DEPLOY: true
@@ -326,18 +343,10 @@ stages:
                           APPINSIGHTS_SERVICE_CONN: ${{ variables.WEU_appInsightsServiceConn }}
                           APPINSIGHTS_RESOURCE_ID: ${{ variables.WEU_appInsightsResourceId }}
                           ARGUMENTS: >-
-                            --set postgresql.forceRedeploy=true
-                            --set postgresql.image.tag=$(deploy_version)
-                            --set postgresql.enabled="${{ parameters.USE_POSTGRESQL }}"
                             --set postgresql.canaryDelivery.create="${{ parameters.canary }}"
-                            --set oracle.forceRedeploy=true
-                            --set oracle.image.tag=$(deploy_version)
-                            --set oracle.enabled="${{ parameters.USE_ORACLE }}"
                             --set oracle.canaryDelivery.create="${{ parameters.canary }}"
-                            --set oracledev.forceRedeploy=true
-                            --set oracledev.image.tag=$(deploy_version)
-                            --set oracledev.enabled="${{ parameters.oracledev }}"
                             --set oracledev.canaryDelivery.create="${{ parameters.canary }}"
+                            $IMAGE_ARGS
       - ${{ if parameters.NEU }}:
           - deployment: "deploy_neu"
             displayName: "Deploy ${{ parameters['ENV'] }} NEU"
