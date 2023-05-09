@@ -85,4 +85,7 @@ public class Channel {
 
   @JsonProperty(value = "primitive_version", required = true)
   private Integer primitiveVersion;
+
+  @JsonProperty(value = "flag_psp_cp", required = true)
+  private Boolean flagPspCp;
 }
