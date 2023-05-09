@@ -21,9 +21,7 @@ API-Config Cache aims to generate customized cache data stored on the Redis cach
 
 ## API Documentation 📖
 
-See the OpenApi 3 for [Node here](https://editor.swagger.io/?url=https://raw.githubusercontent.com/pagopa/pagopa-api-config-cache/main/openapi/openapi_nodev1.json).
-
-See the OpenApi 3 for [Verifier here](https://editor.swagger.io/?url=https://raw.githubusercontent.com/pagopa/pagopa-api-config-cache/main/openapi/openapi_verifier.json).
+See the OpenApi 3 [link](https://editor.swagger.io/?url=https://raw.githubusercontent.com/pagopa/pagopa-api-config-cache/main/openapi/openapi.json).
 
 ---
 
