@@ -178,7 +178,7 @@ stages:
       displayName: "Release skipped"
     ${{ if not( parameters.uninstall ) }}:
       displayName: "Release"
-    condition: not( parameters.uninstall )
+    condition: not( ${{ parameters.uninstall }})
     jobs:
       - job: make_release
         workspace:
