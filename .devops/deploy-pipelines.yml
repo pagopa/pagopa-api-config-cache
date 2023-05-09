@@ -340,6 +340,7 @@ stages:
                             if [ "${{ parameters.USE_ORACLE_DEV }}" = "True" ]; then
                              IMAGE_ARGS="$IMAGE_ARGS --set oracledev.image.tag=$(deploy_version) --set oracledev.forceRedeploy=true --set oracledev.enabled="${{ parameters.USE_ORACLE_DEV }}"" 
                             fi
+                            echo "##vso[task.setvariable variable=IMAGE_ARGS;isOutput=true]$IMAGE_ARGS"
                           failOnStderr: true
                       - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
                         parameters:
@@ -356,7 +357,7 @@ stages:
                             --set postgresql.canaryDelivery.create="${{ parameters.canary }}"
                             --set oracle.canaryDelivery.create="${{ parameters.canary }}"
                             --set oracledev.canaryDelivery.create="${{ parameters.canary }}"
-                            $IMAGE_ARGS
+                            $(setupArgs.IMAGE_ARGS)
       - ${{ if parameters.NEU }}:
           - deployment: "deploy_neu"
             displayName: "Deploy ${{ parameters['ENV'] }} NEU"
