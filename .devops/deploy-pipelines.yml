@@ -168,10 +168,7 @@ variables:
     API_SUBSCRIPTION_KEY: $(UAT_API_SUBSCRIPTION_KEY)
     appFinalName: $(appName)
 
-  ${{ if eq(variables['Build.SourceBranchName'], 'merge') }}:
-    sourceBranch: "main" # force to main branch
-  ${{ if ne(variables['Build.SourceBranchName'], 'merge') }}:
-    sourceBranch: ${{ variables['Build.SourceBranchName'] }}
+  BRANCH_NAME: ${{ replace(variables['Build.SourceBranch'], 'refs/heads/', '') }}
 
 stages:
 
@@ -193,7 +190,7 @@ stages:
 
           - template: templates/maven-github-release/template.yaml@pagopaCommons
             parameters:
-              release_branch: $(sourceBranch)
+              release_branch: $(BRANCH_NAME)
               gitEmail: $(GIT_EMAIL)
               gitUsername: $(GIT_USERNAME)
               gitHubConnection: $(GITHUB_CONNECTION)
@@ -218,7 +215,7 @@ stages:
             clean: true
 
           - script: |
-              git checkout $(sourceBranch)
+              git checkout $(BRANCH_NAME)
             displayName: Checkout and update branch
 
           - template: templates/maven-github-current-version/template.yaml@pagopaCommons
@@ -242,7 +239,7 @@ stages:
             persistCredentials: true
             clean: true
           - script: |
-              git checkout $(sourceBranch)
+              git checkout $(BRANCH_NAME)
             displayName: Checkout and update branch
 
           - template: templates/docker-release/template.yaml@pagopaCommons
@@ -298,7 +295,7 @@ stages:
 
                   - script: |
                       echo "deploy version is $(deploy_version)"
-                      git checkout $(sourceBranch)
+                      git checkout $(BRANCH_NAME)
                     displayName: Checkout and update branch
 
                   - template: templates/helm-microservice-chart-setup/template.yaml@pagopaCommons
@@ -361,7 +358,7 @@ stages:
 
                     - script: |
                         echo "deploy version is $(deploy_version)"
-                        git checkout $(sourceBranch)
+                        git checkout $(BRANCH_NAME)
                       displayName: Checkout and update branch
 
                     - template: templates/helm-microservice-chart-setup/template.yaml@pagopaCommons
