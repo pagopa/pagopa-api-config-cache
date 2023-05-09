@@ -17,17 +17,8 @@
         "summary" : "Get full node v1 config",
         "operationId" : "cache",
         "responses" : {
-          "401" : {
-            "description" : "Unauthorized"
-          },
-          "403" : {
-            "description" : "Forbidden"
-          },
-          "429" : {
-            "description" : "Too many requests"
-          },
-          "500" : {
-            "description" : "Service unavailable",
+          "400" : {
+            "description" : "Bad Request",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -35,6 +26,15 @@
                 }
               }
             }
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "401" : {
+            "description" : "Unauthorized"
           },
           "200" : {
             "description" : "OK",
@@ -46,8 +46,8 @@
               }
             }
           },
-          "400" : {
-            "description" : "Bad Request",
+          "500" : {
+            "description" : "Service unavailable",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -68,28 +68,6 @@
         "summary" : "Get last node v1 cache version",
         "operationId" : "idV1",
         "responses" : {
-          "401" : {
-            "description" : "Unauthorized"
-          },
-          "403" : {
-            "description" : "Forbidden"
-          },
-          "404" : {
-            "description" : "Not Found"
-          },
-          "429" : {
-            "description" : "Too many requests"
-          },
-          "500" : {
-            "description" : "Service unavailable",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ProblemJson"
-                }
-              }
-            }
-          },
           "200" : {
             "description" : "OK",
             "content" : {
@@ -102,6 +80,28 @@
           },
           "400" : {
             "description" : "Bad Request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "500" : {
+            "description" : "Service unavailable",
             "content" : {
               "application/json" : {
                 "schema" : {
