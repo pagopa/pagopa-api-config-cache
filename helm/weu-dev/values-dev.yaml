@@ -48,7 +48,7 @@ postgresql:
   !!merge <<: *basecache
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
-    tag: "0.2.5"
+    tag: "0.2.6"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cache/p(/|$)(.*)
