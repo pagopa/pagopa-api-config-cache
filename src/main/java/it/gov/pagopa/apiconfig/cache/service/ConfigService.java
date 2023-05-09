@@ -677,7 +677,7 @@ public class ConfigService {
                                         .collect(Collectors.toList());
                                 CtListaInformazioniServizio ctListaInformazioniServizio =
                                     new CtListaInformazioniServizio();
-                                if(it.size()>0){
+                                if (it.size() > 0) {
                                   CtInformazioniServizio ctInformazioniServizio =
                                       new CtInformazioniServizio();
                                   ctInformazioniServizio.setDescrizioneServizio(
@@ -692,8 +692,6 @@ public class ConfigService {
                                       .getInformazioniServizio()
                                       .add(ctInformazioniServizio);
                                 }
-
-
 
                                 List<CtFasciaCostoServizio> fasce =
                                     allFasce.stream()
