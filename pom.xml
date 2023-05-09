@@ -12,7 +12,7 @@
 
   <groupId>it.gov.pagopa.api-config</groupId>
   <artifactId>cache</artifactId>
-  <version>0.2.4</version>
+  <version>0.2.5</version>
   <name>API-Config Cacher</name>
   <description>Generate cache for regarding Nodo dei Pagamenti configuration</description>
 
