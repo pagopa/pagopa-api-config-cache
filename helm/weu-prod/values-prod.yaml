@@ -59,6 +59,7 @@ postgresql:
     DB_CONFIG_USER: "cfg"
     DB_CONFIG_DRIVER: "org.postgresql.Driver"
     DATABASE_ID: "p"
+    HEALTHCHECK_QUERY: "select 1"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:
@@ -77,6 +78,7 @@ oracle:
     DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
     JAVA_OPTS: "-Dspring.jpa.show-sql=false"
     DATABASE_ID: "o"
+    HEALTHCHECK_QUERY: "select 1 from dual"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:

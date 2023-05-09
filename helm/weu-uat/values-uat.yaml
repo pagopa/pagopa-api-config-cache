@@ -59,6 +59,7 @@ postgresql:
     DB_CONFIG_USER: "cfg"
     DB_CONFIG_DRIVER: "org.postgresql.Driver"
     DATABASE_ID: "p"
+    HEALTHCHECK_QUERY: "select 1"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:
@@ -72,13 +73,14 @@ oracle:
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-cache-oracle"
-    DB_CONFIG_URL: "jdbc:oracle:thin:@db-nodo-pagamenti.u.db-nodo-pagamenti.com:1524/NDPSPCA_PP_NODO4_CFG"
-    DB_CONFIG_USER: "PP_NODO4_CFG"
+    DB_CONFIG_URL: "jdbc:oracle:thin:@db-nodo-pagamenti.u.db-nodo-pagamenti.com:1524/NDPSPCA_NODO4_CFG"
+    DB_CONFIG_USER: "NODO4_CFG"
     DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
     JAVA_OPTS: "-Dspring.jpa.show-sql=false"
     DATABASE_ID: "o"
+    HEALTHCHECK_QUERY: "select 1 from dual"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:
       !!merge <<: *envSecret
-      DB_CONFIG_PASSWORD: "oracle-db-cfg-password"
+      DB_CONFIG_PASSWORD: "oracle-db-cfg-password-tmp"
