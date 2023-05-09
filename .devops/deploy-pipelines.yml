@@ -79,10 +79,6 @@ parameters:
     displayName: Canary deployment
     type: boolean
     default: false
-  - name: oracledev
-    displayName: Oracle DEV
-    type: boolean
-    default: false
 
 variables:
   github_token_read_packages: '$(github_token_read_packages_dev)'
