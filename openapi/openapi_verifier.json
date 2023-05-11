@@ -1,1 +1,8 @@
-{"title":"INTERNAL SERVER ERROR","status":500,"detail":"No OpenAPI resource found for group: verifier"}
+{
+  "title": "INTERNAL SERVER ERROR",
+  "status": 500,
+  "detail": "No OpenAPI resource found for group: verifier",
+  "info": {
+    "version": "0.3.2"
+  }
+}
