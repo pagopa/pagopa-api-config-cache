@@ -1,8 +1,5 @@
 basecache: &basecache
   namespace: "apiconfig"
-  image:
-    repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
-    tag: "0.1.8"
   livenessProbe:
     httpGet:
       path: /actuator/health/liveness
@@ -49,6 +46,9 @@ basecache: &basecache
 # Configuration used to update image tag
 postgresql:
   !!merge <<: *basecache
+  image:
+    repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
+    tag: "0.2.6"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cache/p(/|$)(.*)
@@ -59,6 +59,7 @@ postgresql:
     DB_CONFIG_USER: "cfg"
     DB_CONFIG_DRIVER: "org.postgresql.Driver"
     DATABASE_ID: "p"
+    HEALTHCHECK_QUERY: "select 1"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:
@@ -66,6 +67,9 @@ postgresql:
       DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
 oracle:
   !!merge <<: *basecache
+  image:
+    repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
+    tag: "0.2.1"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cache/o(/|$)(.*)
@@ -77,6 +81,7 @@ oracle:
     DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
     JAVA_OPTS: "-Dspring.jpa.show-sql=false"
     DATABASE_ID: "o"
+    HEALTHCHECK_QUERY: "select 1 from dual"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:
@@ -84,6 +89,9 @@ oracle:
       DB_CONFIG_PASSWORD: "oracle-db-cfg-password"
 oracledev:
   !!merge <<: *basecache
+  image:
+    repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
+    tag: "0.2.6"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cachedev/o(/|$)(.*)
@@ -95,6 +103,7 @@ oracledev:
     DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
     JAVA_OPTS: "-Dspring.jpa.show-sql=false"
     DATABASE_ID: "odev"
+    HEALTHCHECK_QUERY: "select 1 from dual"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:

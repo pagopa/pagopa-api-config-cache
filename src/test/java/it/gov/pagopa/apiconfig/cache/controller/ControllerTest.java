@@ -8,6 +8,7 @@ import it.gov.pagopa.apiconfig.Application;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.service.ConfigService;
+import it.gov.pagopa.apiconfig.cache.service.HealthCheckService;
 import it.gov.pagopa.apiconfig.cache.service.VerifierService;
 import java.io.IOException;
 import java.util.Arrays;
@@ -31,6 +32,7 @@ class ControllerTest {
   @Autowired private MockMvc mvc;
 
   @MockBean private ConfigService configService;
+  @MockBean private HealthCheckService healthCheckService;
   @MockBean private VerifierService verifierService;
   @MockBean private EntityManager entityManager;
 
@@ -39,6 +41,7 @@ class ControllerTest {
     when(configService.getCacheV1Id("")).thenReturn(new CacheVersion("1111"));
     when(configService.newCacheV1("", Optional.empty())).thenReturn(new ConfigDataV1());
     when(verifierService.getPaV2()).thenReturn(Arrays.asList("1", "2"));
+    when(healthCheckService.checkDatabaseConnection()).thenReturn(true);
   }
 
   @Test

@@ -732,7 +732,7 @@ public class ConfigService {
                                 ctIdentificazioneServizio.setLogoServizio(
                                     "".getBytes(StandardCharsets.UTF_8));
 
-                                CdiInformazioniServizio it =
+                                List<CdiInformazioniServizio> it =
                                     allInformazioni.stream()
                                         .filter(
                                             ii ->
@@ -740,23 +740,24 @@ public class ConfigService {
                                                     .getId()
                                                     .equals(cdiDetail.getId()))
                                         .filter(info -> info.getCodiceLingua().equals("IT"))
-                                        .collect(Collectors.toList())
-                                        .get(0);
-                                CtInformazioniServizio ctInformazioniServizio =
-                                    new CtInformazioniServizio();
-                                ctInformazioniServizio.setDescrizioneServizio(
-                                    it.getDescrizioneServizio());
-                                ctInformazioniServizio.setCodiceLingua(
-                                    StCodiceLingua.fromValue(it.getCodiceLingua()));
-                                ctInformazioniServizio.setDisponibilitaServizio(
-                                    it.getDisponibilitaServizio());
-                                ctInformazioniServizio.setUrlInformazioniCanale(
-                                    it.getUrlInformazioniCanale());
+                                        .collect(Collectors.toList());
                                 CtListaInformazioniServizio ctListaInformazioniServizio =
                                     new CtListaInformazioniServizio();
-                                ctListaInformazioniServizio
-                                    .getInformazioniServizio()
-                                    .add(ctInformazioniServizio);
+                                if (it.size() > 0) {
+                                  CtInformazioniServizio ctInformazioniServizio =
+                                      new CtInformazioniServizio();
+                                  ctInformazioniServizio.setDescrizioneServizio(
+                                      it.get(0).getDescrizioneServizio());
+                                  ctInformazioniServizio.setCodiceLingua(
+                                      StCodiceLingua.fromValue(it.get(0).getCodiceLingua()));
+                                  ctInformazioniServizio.setDisponibilitaServizio(
+                                      it.get(0).getDisponibilitaServizio());
+                                  ctInformazioniServizio.setUrlInformazioniCanale(
+                                      it.get(0).getUrlInformazioniCanale());
+                                  ctListaInformazioniServizio
+                                      .getInformazioniServizio()
+                                      .add(ctInformazioniServizio);
+                                }
 
                                 List<CtFasciaCostoServizio> fasce =
                                     allFasce.stream()

@@ -106,12 +106,14 @@ if [ "$install" == 1 ]; then
   else
     echo "Installing stable version $version"
     helm upgrade --namespace $NAMESPACE --install --values $valuesFile \
+      --set microservice-chart.image.tag=$version \
       --set postgresql.image.tag=$version \
       --set postgresql.enabled=true \
-      --set oracle.image.tag=$version \
-      --set oracle.enabled=true \
-      --set oracledev.image.tag=$version \
-      --set oracledev.enabled=false \
+      --set oracledev.image.tag=0.2.1 \
+      --set oracledev.enabled=true \
+      --set postgresql.canaryDelivery.create="False" \
+      --set oracle.canaryDelivery.create="False" \
+      --set oracledev.canaryDelivery.create="False" \
       $NAME $DIR
     exit 0
   fi
@@ -128,3 +130,14 @@ if [ "$uninstall" == 1 ]; then
 fi
 
 exit 0
+
+ \n--set microservice-chart.image.tag=0.2.5 --wait
+--set postgresql.canaryDelivery.create=False
+--set oracle.canaryDelivery.create=False
+--set oracledev.canaryDelivery.create=False
+--set postgresql.image.tag=0.2.5
+--set postgresql.forceRedeploy=true
+--set postgresql.enabled=True
+--set oracledev.image.tag=0.2.5
+--set oracledev.forceRedeploy=true
+--set oracledev.enabled=True

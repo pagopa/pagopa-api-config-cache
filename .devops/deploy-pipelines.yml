@@ -63,6 +63,10 @@ parameters:
     displayName: Install Postgresql Version
     type: boolean
     default: true
+  - name: USE_ORACLE_DEV
+    displayName: Oracle DEV
+    type: boolean
+    default: false
   - name: deployOnly
     displayName: Run only deploy steps
     type: boolean
@@ -164,20 +168,17 @@ variables:
     API_SUBSCRIPTION_KEY: $(UAT_API_SUBSCRIPTION_KEY)
     appFinalName: $(appName)
 
-  ${{ if eq(variables['Build.SourceBranchName'], 'merge') }}:
-    sourceBranch: "main" # force to main branch
-  ${{ if ne(variables['Build.SourceBranchName'], 'merge') }}:
-    sourceBranch: ${{ variables['Build.SourceBranchName'] }}
+  BRANCH_NAME: ${{ replace(variables['Build.SourceBranch'], 'refs/heads/', '') }}
 
 stages:
 
   # Create a release on GitHub
   - stage: Release
-    ${{ if or( parameters.deployOnly , parameters.uninstall ) }}:
+    ${{ if parameters.uninstall }}:
       displayName: "Release skipped"
-    ${{ if not(or( parameters.deployOnly , parameters.uninstall )) }}:
+    ${{ if not( parameters.uninstall ) }}:
       displayName: "Release"
-    condition: not(${{ variables.SKIP_BUILD }})
+    condition: not( ${{ parameters.uninstall }})
     jobs:
       - job: make_release
         workspace:
@@ -189,17 +190,43 @@ stages:
 
           - template: templates/maven-github-release/template.yaml@pagopaCommons
             parameters:
-              release_branch: $(sourceBranch)
+              release_branch: $(BRANCH_NAME)
               gitEmail: $(GIT_EMAIL)
               gitUsername: $(GIT_USERNAME)
               gitHubConnection: $(GITHUB_CONNECTION)
               semver: "${{ parameters.SEMVER }}"
               customHelmStep: |
-                VALUES_FILE="helm/values-${{ parameters['ENV'] }}.yaml"
-                if [[ -f "$VALUES_FILE" ]]; then
-                  yq -i ".basecache.image.tag = \"$(next_version.value)\"" "$VALUES_FILE"
-                  git add "$VALUES_FILE"
+                if [[ "${{ parameters.WEU }}" = "True" ]]; then
+                  VALUES_FILE="$(WEU_value_file)"
+                  if [[ -f "$VALUES_FILE" ]]; then
+                    if [ "${{ parameters.USE_POSTGRESQL }}" = "True" ]; then
+                      yq -i ".postgresql.image.tag = \"$(next_version.value)\"" "$VALUES_FILE"
+                    fi
+                    if [ "${{ parameters.USE_ORACLE }}" = "True" ]; then
+                      yq -i ".oracle.image.tag = \"$(next_version.value)\"" "$VALUES_FILE"
+                    fi
+                    if [ "${{ parameters.USE_ORACLE_DEV }}" = "True" ]; then
+                      yq -i ".oracledev.image.tag = \"$(next_version.value)\"" "$VALUES_FILE"
+                    fi
+                    git add "$VALUES_FILE"
+                  fi
                 fi
+                if [[ "${{ parameters.NEU }}" = "True" ]]; then
+                  VALUES_FILE="$(NEU_value_file)"
+                  if [[ -f "$VALUES_FILE" ]]; then
+                    if [ "${{ parameters.USE_POSTGRESQL }}" = "True" ]; then
+                      yq -i ".postgresql.image.tag = \"$(next_version.value)\"" "$VALUES_FILE"
+                    fi
+                    if [ "${{ parameters.USE_ORACLE }}" = "True" ]; then
+                      yq -i ".oracle.image.tag = \"$(next_version.value)\"" "$VALUES_FILE"
+                    fi
+                    if [ "${{ parameters.USE_ORACLE_DEV }}" = "True" ]; then
+                      yq -i ".oracledev.image.tag = \"$(next_version.value)\"" "$VALUES_FILE"
+                    fi
+                    git add "$VALUES_FILE"
+                  fi
+                fi
+
   # Get version to build and deploy
   - stage: GetVersion
     dependsOn:
@@ -214,7 +241,7 @@ stages:
             clean: true
 
           - script: |
-              git checkout $(sourceBranch)
+              git checkout $(BRANCH_NAME)
             displayName: Checkout and update branch
 
           - template: templates/maven-github-current-version/template.yaml@pagopaCommons
@@ -238,7 +265,7 @@ stages:
             persistCredentials: true
             clean: true
           - script: |
-              git checkout $(sourceBranch)
+              git checkout $(BRANCH_NAME)
             displayName: Checkout and update branch
 
           - template: templates/docker-release/template.yaml@pagopaCommons
@@ -294,7 +321,7 @@ stages:
 
                   - script: |
                       echo "deploy version is $(deploy_version)"
-                      git checkout $(sourceBranch)
+                      git checkout $(BRANCH_NAME)
                     displayName: Checkout and update branch
 
                   - template: templates/helm-microservice-chart-setup/template.yaml@pagopaCommons
@@ -313,6 +340,24 @@ stages:
                         APPINSIGHTS_RESOURCE_ID: ${{ variables.WEU_appInsightsResourceId }}
                         ARGUMENTS: $(appFinalName)
                   - ${{ if not( parameters.uninstall ) }}:
+                      - task: Bash@3
+                        name: setupArgs
+                        displayName: "Setup image set args"
+                        inputs:
+                          targetType: "inline"
+                          script: |
+                            IMAGE_ARGS=""
+                            if [ "${{ parameters.USE_POSTGRESQL }}" = "True" ]; then
+                             IMAGE_ARGS="$IMAGE_ARGS --set postgresql.image.tag=$(deploy_version) --set postgresql.forceRedeploy=true --set postgresql.enabled="${{ parameters.USE_POSTGRESQL }}"" 
+                            fi
+                            if [ "${{ parameters.USE_ORACLE }}" = "True" ]; then
+                             IMAGE_ARGS="$IMAGE_ARGS --set oracle.image.tag=$(deploy_version) --set oracle.forceRedeploy=true --set oracle.enabled="${{ parameters.USE_ORACLE }}"" 
+                            fi
+                            if [ "${{ parameters.USE_ORACLE_DEV }}" = "True" ]; then
+                             IMAGE_ARGS="$IMAGE_ARGS --set oracledev.image.tag=$(deploy_version) --set oracledev.forceRedeploy=true --set oracledev.enabled="${{ parameters.USE_ORACLE_DEV }}"" 
+                            fi
+                            echo "##vso[task.setvariable variable=IMAGE_ARGS;isOutput=true]$IMAGE_ARGS"
+                          failOnStderr: true
                       - template: templates/helm-microservice-chart-deploy/template.yaml@pagopaCommons
                         parameters:
                           DO_DEPLOY: true
@@ -325,18 +370,10 @@ stages:
                           APPINSIGHTS_SERVICE_CONN: ${{ variables.WEU_appInsightsServiceConn }}
                           APPINSIGHTS_RESOURCE_ID: ${{ variables.WEU_appInsightsResourceId }}
                           ARGUMENTS: >-
-                            --set postgresql.forceRedeploy=true
-                            --set postgresql.image.tag=$(deploy_version)
-                            --set postgresql.enabled="${{ parameters.USE_POSTGRESQL }}"
                             --set postgresql.canaryDelivery.create="${{ parameters.canary }}"
-                            --set oracle.forceRedeploy=true
-                            --set oracle.image.tag=$(deploy_version)
-                            --set oracle.enabled="${{ parameters.USE_ORACLE }}"
                             --set oracle.canaryDelivery.create="${{ parameters.canary }}"
-                            --set oracledev.forceRedeploy=true
-                            --set oracledev.image.tag=$(deploy_version)
-                            --set oracledev.enabled="${{ parameters.USE_ORACLE }}"
                             --set oracledev.canaryDelivery.create="${{ parameters.canary }}"
+                            $(setupArgs.IMAGE_ARGS)
       - ${{ if parameters.NEU }}:
           - deployment: "deploy_neu"
             displayName: "Deploy ${{ parameters['ENV'] }} NEU"
@@ -357,7 +394,7 @@ stages:
 
                     - script: |
                         echo "deploy version is $(deploy_version)"
-                        git checkout $(sourceBranch)
+                        git checkout $(BRANCH_NAME)
                       displayName: Checkout and update branch
 
                     - template: templates/helm-microservice-chart-setup/template.yaml@pagopaCommons
@@ -398,5 +435,5 @@ stages:
                               --set oracle.canaryDelivery.create="${{ parameters.canary }}"
                               --set oracledev.forceRedeploy=true
                               --set oracledev.image.tag=$(deploy_version)
-                              --set oracledev.enabled="${{ parameters.USE_ORACLE }}"
+                              --set oracledev.enabled="${{ parameters.oracledev }}"
                               --set oracledev.canaryDelivery.create="${{ parameters.canary }}"
