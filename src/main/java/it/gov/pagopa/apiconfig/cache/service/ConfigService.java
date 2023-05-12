@@ -196,12 +196,14 @@ public class ConfigService {
   @Autowired private InformativePaFasceRepository informativePaFasceRepository;
 
   public ConfigDataV1 newCacheV1(String stakeholder) throws IOException {
-    return newCacheV1(stakeholder,Optional.empty());
+    return newCacheV1(stakeholder, Optional.empty());
   }
-  public ConfigDataV1 newCacheV1(String stakeholder,Optional<NodeCacheKey[]> keys) throws IOException {
+
+  public ConfigDataV1 newCacheV1(String stakeholder, Optional<NodeCacheKey[]> keys)
+      throws IOException {
 
     boolean allKeys = keys.isEmpty();
-    List<NodeCacheKey> list = keys.map(k->Arrays.asList(k)).orElse(new ArrayList<NodeCacheKey>());
+    List<NodeCacheKey> list = keys.map(k -> Arrays.asList(k)).orElse(new ArrayList<NodeCacheKey>());
 
     long startTime = System.nanoTime();
 
@@ -320,7 +322,7 @@ public class ConfigService {
       configData.setPspChannelPaymentTypes(pspChannelsMap);
     }
 
-    if(allKeys || list.contains(NodeCacheKey.creditorInstitutions)){
+    if (allKeys || list.contains(NodeCacheKey.creditorInstitutions)) {
       List<CreditorInstitution> pas = getCreditorInstitutions();
       HashMap<String, CreditorInstitution> pamap = new HashMap<>();
       pas.stream().forEach(k -> pamap.put(k.getCreditorInstitutionCode(), k));
@@ -362,7 +364,9 @@ public class ConfigService {
       configData.setIbans(ibansMap);
     }
 
-    if (allKeys || list.contains(NodeCacheKey.pspInformations) || list.contains(NodeCacheKey.pspInformationTemplates)) {
+    if (allKeys
+        || list.contains(NodeCacheKey.pspInformations)
+        || list.contains(NodeCacheKey.pspInformationTemplates)) {
       Pair<List<PspInformation>, List<PspInformation>> informativePspAndTemplates =
           getInformativePspAndTemplates();
 
@@ -394,8 +398,8 @@ public class ConfigService {
 
     configData.setVersion("" + endTime);
 
-    String actualKey = keyV1.replace("{{stakeholder}}",stakeholder);
-    String actualKeyV1 = keyV1Id.replace("{{stakeholder}}",stakeholder);
+    String actualKey = keyV1.replace("{{stakeholder}}", stakeholder);
+    String actualKeyV1 = keyV1Id.replace("{{stakeholder}}", stakeholder);
 
     redisRepository.pushToRedisAsync(actualKey + keySuffix, actualKeyV1 + keySuffix, configData);
 
@@ -403,10 +407,11 @@ public class ConfigService {
   }
 
   public CacheVersion getCacheV1Id(String stakeholder) {
-    String actualKeyV1 = keyV1Id.replace("{{stakeholder}}",stakeholder);
+    String actualKeyV1 = keyV1Id.replace("{{stakeholder}}", stakeholder);
     String cacheId =
         Optional.ofNullable(redisRepository.getStringByKeyId(actualKeyV1 + keySuffix))
-            .orElseThrow(() -> new AppException(AppError.CACHE_ID_NOT_FOUND, actualKeyV1 + keySuffix));
+            .orElseThrow(
+                () -> new AppException(AppError.CACHE_ID_NOT_FOUND, actualKeyV1 + keySuffix));
     return new CacheVersion(cacheId);
   }
 

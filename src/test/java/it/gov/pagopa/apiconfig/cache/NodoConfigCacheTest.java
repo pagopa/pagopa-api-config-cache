@@ -38,7 +38,6 @@ import it.gov.pagopa.apiconfig.starter.repository.PspRepository;
 import it.gov.pagopa.apiconfig.starter.repository.StazioniRepository;
 import it.gov.pagopa.apiconfig.starter.repository.TipiVersamentoRepository;
 import it.gov.pagopa.apiconfig.starter.repository.WfespPluginConfRepository;
-import java.util.Arrays;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -86,8 +85,6 @@ class NodoConfigCacheTest {
   @Spy private ConfigMapper configMapper = new ConfigMapper();
 
   @InjectMocks private ConfigService configService;
-
-
 
   @BeforeEach
   void setUp() {

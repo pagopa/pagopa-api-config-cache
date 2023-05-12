@@ -78,8 +78,9 @@ public class FdrCacheController {
   @GetMapping(
       value = "/v1",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ConfigDataV1> cache(@RequestParam Optional<NodeCacheKey[]> keys) throws IOException {
-    return ResponseEntity.ok(configService.newCacheV1(stakeholder,keys));
+  public ResponseEntity<ConfigDataV1> cache(@RequestParam Optional<NodeCacheKey[]> keys)
+      throws IOException {
+    return ResponseEntity.ok(configService.newCacheV1(stakeholder, keys));
   }
 
   @Operation(

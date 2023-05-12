@@ -1,10 +1,9 @@
 package it.gov.pagopa.apiconfig.cache.model;
 
-
 public enum NodeCacheKey {
-  creditorInstitutions, 
-  creditorInstitutionBrokers, 
-  stations, 
+  creditorInstitutions,
+  creditorInstitutionBrokers,
+  stations,
   creditorInstitutionStations,
   encodings,
   creditorInstitutionEncodings,
@@ -27,4 +26,4 @@ public enum NodeCacheKey {
   languages,
   gdeConfigurations,
   metadataDict
-  }
+}
