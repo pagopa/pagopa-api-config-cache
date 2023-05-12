@@ -58,8 +58,7 @@ public class HomeController {
   @Operation(
       summary = "Return OK if application is started",
       security = {
-        @SecurityRequirement(name = "ApiKey"),
-        @SecurityRequirement(name = "Authorization")
+        @SecurityRequirement(name = "ApiKey")
       },
       tags = {"Home"})
   @ApiResponses(
