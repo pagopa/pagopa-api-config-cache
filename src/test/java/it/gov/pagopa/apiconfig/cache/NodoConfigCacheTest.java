@@ -38,6 +38,7 @@ import it.gov.pagopa.apiconfig.starter.repository.PspRepository;
 import it.gov.pagopa.apiconfig.starter.repository.StazioniRepository;
 import it.gov.pagopa.apiconfig.starter.repository.TipiVersamentoRepository;
 import it.gov.pagopa.apiconfig.starter.repository.WfespPluginConfRepository;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -88,12 +89,13 @@ class NodoConfigCacheTest {
   @BeforeEach
   void setUp() {
     org.springframework.test.util.ReflectionTestUtils.setField(configService, "keyV1Id", "value");
+    org.springframework.test.util.ReflectionTestUtils.setField(configService, "keyV1", "value");
   }
 
   @Test
   void getCacheV1Id() {
     when(redisRepository.getStringByKeyId(anyString())).thenReturn(TestUtils.cacheId);
-    CacheVersion cacheV1Id = configService.getCacheV1Id();
+    CacheVersion cacheV1Id = configService.getCacheV1Id("");
     assertThat(cacheV1Id.getVersion().equals(TestUtils.cacheId));
   }
 
@@ -128,7 +130,7 @@ class NodoConfigCacheTest {
     when(cdsSoggettoRepository.findAll()).thenReturn(TestUtils.cdsSoggetti);
     when(cdsCategorieRepository.findAll()).thenReturn(TestUtils.cdsCategorie);
 
-    ConfigDataV1 allData = configService.newCacheV1();
+    ConfigDataV1 allData = configService.newCacheV1("node", Optional.empty());
     assertThat(allData.getConfigurations())
         .containsKey(
             TestUtils.mockConfigurationKeys.get(0).getConfigCategory()

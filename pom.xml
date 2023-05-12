@@ -12,7 +12,7 @@
 
   <groupId>it.gov.pagopa.api-config</groupId>
   <artifactId>cache</artifactId>
-  <version>0.2.6</version>
+  <version>0.3.2</version>
   <name>API-Config Cacher</name>
   <description>Generate cache for regarding Nodo dei Pagamenti configuration</description>
 
@@ -116,8 +116,69 @@
       <scope>test</scope>
     </dependency>
 
+
   </dependencies>
 
+  <profiles>
+    <profile>
+      <id>openapi</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>com.h2database</groupId>
+          <artifactId>h2</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>sonar</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>0.8.7</version>
+            <configuration>
+              <excludes>
+              </excludes>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>report</id>
+                <phase>test</phase>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.sonarsource.scanner.maven</groupId>
+            <artifactId>sonar-maven-plugin</artifactId>
+            <version>3.9.1.2184</version>
+            <executions>
+              <execution>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sonar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
   <build>
     <plugins>
       <plugin>
@@ -125,42 +186,7 @@
         <artifactId>spring-boot-maven-plugin</artifactId>
         <version>${spring-version}</version>
       </plugin>
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.7</version>
-        <configuration>
-          <excludes>
-          </excludes>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>report</id>
-            <phase>test</phase>
-            <goals>
-              <goal>report</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.sonarsource.scanner.maven</groupId>
-        <artifactId>sonar-maven-plugin</artifactId>
-        <version>3.9.1.2184</version>
-        <executions>
-          <execution>
-            <phase>verify</phase>
-            <goals>
-              <goal>sonar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+
       <plugin>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-xjc-plugin</artifactId>

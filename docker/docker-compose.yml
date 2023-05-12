@@ -10,6 +10,7 @@ services:
       context: ../
       args:
         - github_token=${github_token}
+        - maven_args=-Popenapi -P!sonar
     env_file:
       - ./config/.env
     ports:

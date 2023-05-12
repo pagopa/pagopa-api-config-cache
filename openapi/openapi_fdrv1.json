@@ -11,11 +11,23 @@
     "description" : "Generated server url"
   } ],
   "paths" : {
-    "/stakeholders/node/cache/schemas/v1" : {
+    "/stakeholders/fdr/cache/schemas/v1" : {
       "get" : {
-        "tags" : [ "NodeCache" ],
-        "summary" : "Get full node v1 config",
+        "tags" : [ "FdrCache" ],
+        "summary" : "Get selected key of fdr v1 config",
         "operationId" : "cache",
+        "parameters" : [ {
+          "name" : "keys",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "enum" : [ "creditorInstitutions", "creditorInstitutionBrokers", "stations", "creditorInstitutionStations", "encodings", "creditorInstitutionEncodings", "ibans", "creditorInstitutionInformations", "psps", "pspBrokers", "paymentTypes", "pspChannelPaymentTypes", "plugins", "pspInformationTemplates", "pspInformations", "channels", "cdsServices", "cdsSubjects", "cdsSubjectServices", "cdsCategories", "configurations", "ftpServers", "languages", "gdeConfigurations", "metadataDict" ]
+            }
+          }
+        } ],
         "responses" : {
           "403" : {
             "description" : "Forbidden"
@@ -62,10 +74,10 @@
         } ]
       }
     },
-    "/stakeholders/node/cache/schemas/v1/id" : {
+    "/stakeholders/fdr/cache/schemas/v1/id" : {
       "get" : {
-        "tags" : [ "NodeCache" ],
-        "summary" : "Get last node v1 cache version",
+        "tags" : [ "FdrCache" ],
+        "summary" : "Get last fdr v1 cache version",
         "operationId" : "idV1",
         "responses" : {
           "200" : {

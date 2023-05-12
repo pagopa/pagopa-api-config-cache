@@ -12,6 +12,7 @@ import it.gov.pagopa.apiconfig.cache.service.HealthCheckService;
 import it.gov.pagopa.apiconfig.cache.service.VerifierService;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Optional;
 import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,8 +38,8 @@ class ControllerTest {
 
   @BeforeEach
   void setUp() throws IOException {
-    when(configService.getCacheV1Id()).thenReturn(new CacheVersion("1111"));
-    when(configService.newCacheV1()).thenReturn(new ConfigDataV1());
+    when(configService.getCacheV1Id("")).thenReturn(new CacheVersion("1111"));
+    when(configService.newCacheV1("", Optional.empty())).thenReturn(new ConfigDataV1());
     when(verifierService.getPaV2()).thenReturn(Arrays.asList("1", "2"));
     when(healthCheckService.checkDatabaseConnection()).thenReturn(true);
   }
@@ -59,7 +60,7 @@ class ControllerTest {
   @CsvSource({
     "/stakeholders/node/cache/schemas/v1",
     "/stakeholders/node/cache/schemas/v1/id",
-    "/stakeholders/verifier/cache"
+    "/stakeholders/verifier/cache/schemas/v1"
   })
   void testGets(String url) throws Exception {
     mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
