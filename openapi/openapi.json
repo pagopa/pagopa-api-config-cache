@@ -580,7 +580,7 @@
         }
       } ]
     },
-    "/stakeholders/verifier/cache" : {
+    "/stakeholders/verifier/cache/schemas/v1" : {
       "get" : {
         "tags" : [ "VerifierCache" ],
         "summary" : "Get Creditor Institution list with Station v2",

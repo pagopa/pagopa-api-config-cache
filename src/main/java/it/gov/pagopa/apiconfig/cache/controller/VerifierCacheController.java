@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/stakeholders/verifier/cache")
+@RequestMapping("/stakeholders/verifier/cache/schemas")
 @Validated
 @Slf4j
 public class VerifierCacheController {
@@ -69,7 +69,9 @@ public class VerifierCacheController {
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = ProblemJson.class)))
       })
-  @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
+  @GetMapping(
+      value = "/v1",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<List<String>> cache() {
     return ResponseEntity.ok(verifierService.getPaV2());
   }
