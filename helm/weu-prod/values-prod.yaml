@@ -68,7 +68,7 @@ postgresql:
 oracle:
   !!merge <<: *basecache
   image:
-    repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
+    repository: pagopapcommonacr.azurecr.io/pagopaapiconfigcache
     tag: "0.2.1"
   ingress:
     !!merge <<: *ingress
