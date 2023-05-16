@@ -69,7 +69,7 @@ oracle:
   !!merge <<: *basecache
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
-    tag: "0.2.1"
+    tag: "0.4.0"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cache/o(/|$)(.*)
