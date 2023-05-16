@@ -1,8 +1,5 @@
 basecache: &basecache
   namespace: "apiconfig"
-  image:
-    repository: pagopapcommonacr.azurecr.io/pagopaapiconfigcache
-    tag: "0.1.2"
   livenessProbe:
     httpGet:
       path: /actuator/health/liveness
@@ -49,6 +46,9 @@ basecache: &basecache
 # Configuration used to update image tag
 postgresql:
   !!merge <<: *basecache
+  image:
+    repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
+    tag: "0.4.0"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cache/p(/|$)(.*)
@@ -67,6 +67,9 @@ postgresql:
       DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
 oracle:
   !!merge <<: *basecache
+  image:
+    repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
+    tag: "0.2.1"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cache/o(/|$)(.*)
