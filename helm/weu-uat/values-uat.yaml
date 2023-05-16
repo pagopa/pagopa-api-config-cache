@@ -47,7 +47,7 @@ basecache: &basecache
 postgresql:
   !!merge <<: *basecache
   image:
-    repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
+    repository: pagopaucommonacr.azurecr.io/pagopaapiconfigcache
     tag: "0.4.0"
   ingress:
     !!merge <<: *ingress
@@ -68,7 +68,7 @@ postgresql:
 oracle:
   !!merge <<: *basecache
   image:
-    repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
+    repository: pagopaucommonacr.azurecr.io/pagopaapiconfigcache
     tag: "0.4.0"
   ingress:
     !!merge <<: *ingress
