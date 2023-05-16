@@ -87,3 +87,5 @@ oracle:
     envSecrets:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "oracle-db-cfg-password-tmp"
+oracledev:
+  enabled: false
