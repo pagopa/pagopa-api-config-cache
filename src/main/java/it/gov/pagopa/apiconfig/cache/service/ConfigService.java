@@ -901,73 +901,74 @@ public class ConfigService {
     List<PspInformation> templates = new ArrayList<>();
 
     psps.forEach(
-            psp -> {
-              try {
-                Optional<CdiMasterValid> masters =
-                    allMasters.stream()
-                        .filter(m -> m.getFkPsp().getObjId().equals(psp.getObjId()))
-                        .findFirst();
-                TplInformativaPSP tplInformativaPSP = new TplInformativaPSP();
-                tplInformativaPSP.setRagioneSociale(daCompilare);
-                tplInformativaPSP.setIdentificativoPSP(daCompilare);
-                tplInformativaPSP.setCodiceABI(
-                    Objects.isNull(psp.getAbi()) ? daCompilare : psp.getAbi());
-                tplInformativaPSP.setCodiceBIC(
-                    Objects.isNull(psp.getBic()) ? daCompilare : psp.getBic());
-                tplInformativaPSP.setIdentificativoFlusso(daCompilareFlusso);
-                tplInformativaPSP.setMybankIDVS(
-                    Objects.isNull(psp.getCodiceMybank()) ? daCompilare : psp.getCodiceMybank());
+        psp -> {
+          try {
+            Optional<CdiMasterValid> masters =
+                allMasters.stream()
+                    .filter(m -> m.getFkPsp().getObjId().equals(psp.getObjId()))
+                    .findFirst();
+            TplInformativaPSP tplInformativaPSP = new TplInformativaPSP();
+            tplInformativaPSP.setRagioneSociale(daCompilare);
+            tplInformativaPSP.setIdentificativoPSP(daCompilare);
+            tplInformativaPSP.setCodiceABI(
+                Objects.isNull(psp.getAbi()) ? daCompilare : psp.getAbi());
+            tplInformativaPSP.setCodiceBIC(
+                Objects.isNull(psp.getBic()) ? daCompilare : psp.getBic());
+            tplInformativaPSP.setIdentificativoFlusso(daCompilareFlusso);
+            tplInformativaPSP.setMybankIDVS(
+                Objects.isNull(psp.getCodiceMybank()) ? daCompilare : psp.getCodiceMybank());
 
-                TplInformativaMaster tplInformativaMaster = new TplInformativaMaster();
-                tplInformativaMaster.setLogoPSP(daCompilare);
-                tplInformativaMaster.setDataInizioValidita(daCompilare);
-                tplInformativaMaster.setDataPubblicazione(daCompilare);
-                tplInformativaMaster.setUrlConvenzioniPSP(daCompilare);
-                tplInformativaMaster.setUrlInformativaPSP(daCompilare);
-                tplInformativaMaster.setUrlInformazioniPSP(daCompilare);
-                tplInformativaMaster.setMarcaBolloDigitale(0);
-                tplInformativaMaster.setStornoPagamento(0);
-                tplInformativaPSP.setInformativaMaster(tplInformativaMaster);
+            TplInformativaMaster tplInformativaMaster = new TplInformativaMaster();
+            tplInformativaMaster.setLogoPSP(daCompilare);
+            tplInformativaMaster.setDataInizioValidita(daCompilare);
+            tplInformativaMaster.setDataPubblicazione(daCompilare);
+            tplInformativaMaster.setUrlConvenzioniPSP(daCompilare);
+            tplInformativaMaster.setUrlInformativaPSP(daCompilare);
+            tplInformativaMaster.setUrlInformazioniPSP(daCompilare);
+            tplInformativaMaster.setMarcaBolloDigitale(0);
+            tplInformativaMaster.setStornoPagamento(0);
+            tplInformativaPSP.setInformativaMaster(tplInformativaMaster);
 
-                if (masters.isEmpty()) {
-                  TplListaInformativaDetail tplListaInformativaDetail =
-                      new TplListaInformativaDetail();
-                  tplListaInformativaDetail
-                      .getInformativaDetail()
-                      .add(makeTplInformativaDetail(null, null, null, null));
-                  tplInformativaPSP.setListaInformativaDetail(tplListaInformativaDetail);
-                  templates.add(new PspInformation(psp.getIdPsp(), toXml(tplInformativaPSP)));
-                } else {
-                  tplInformativaPSP.setRagioneSociale(psp.getRagioneSociale());
-                  tplInformativaPSP.setIdentificativoPSP(psp.getIdPsp());
-                  TplListaInformativaDetail tplListaInformativaDetail =
-                      new TplListaInformativaDetail();
-                  masters.get().getCdiDetail().forEach(
-                          d ->
-                              tplListaInformativaDetail
-                                  .getInformativaDetail()
-                                  .add(
-                                      makeTplInformativaDetail(
-                                          d.getPspCanaleTipoVersamento().getCanale().getIdCanale(),
-                                          d.getPspCanaleTipoVersamento()
-                                              .getCanale()
-                                              .getIntermediarioPsp()
-                                              .getIdIntermediarioPsp(),
-                                          d.getPspCanaleTipoVersamento()
-                                              .getTipoVersamento()
-                                              .getTipoVersamento(),
-                                          d.getModelloPagamento())));
-                  tplInformativaPSP.setListaInformativaDetail(tplListaInformativaDetail);
-                  templates.add(new PspInformation(psp.getIdPsp(), toXml(tplInformativaPSP)));
-                }
-              } catch (Exception e) {
-                log.error(
-                    "errore creazione template informativa psp:"
-                        + psp.getIdPsp()
-                        + " error:"
-                        + e.getMessage());
-              }
-            });
+            if (masters.isEmpty()) {
+              TplListaInformativaDetail tplListaInformativaDetail = new TplListaInformativaDetail();
+              tplListaInformativaDetail
+                  .getInformativaDetail()
+                  .add(makeTplInformativaDetail(null, null, null, null));
+              tplInformativaPSP.setListaInformativaDetail(tplListaInformativaDetail);
+              templates.add(new PspInformation(psp.getIdPsp(), toXml(tplInformativaPSP)));
+            } else {
+              tplInformativaPSP.setRagioneSociale(psp.getRagioneSociale());
+              tplInformativaPSP.setIdentificativoPSP(psp.getIdPsp());
+              TplListaInformativaDetail tplListaInformativaDetail = new TplListaInformativaDetail();
+              masters
+                  .get()
+                  .getCdiDetail()
+                  .forEach(
+                      d ->
+                          tplListaInformativaDetail
+                              .getInformativaDetail()
+                              .add(
+                                  makeTplInformativaDetail(
+                                      d.getPspCanaleTipoVersamento().getCanale().getIdCanale(),
+                                      d.getPspCanaleTipoVersamento()
+                                          .getCanale()
+                                          .getIntermediarioPsp()
+                                          .getIdIntermediarioPsp(),
+                                      d.getPspCanaleTipoVersamento()
+                                          .getTipoVersamento()
+                                          .getTipoVersamento(),
+                                      d.getModelloPagamento())));
+              tplInformativaPSP.setListaInformativaDetail(tplListaInformativaDetail);
+              templates.add(new PspInformation(psp.getIdPsp(), toXml(tplInformativaPSP)));
+            }
+          } catch (Exception e) {
+            log.error(
+                "errore creazione template informativa psp:"
+                    + psp.getIdPsp()
+                    + " error:"
+                    + e.getMessage());
+          }
+        });
 
     return templates;
   }
@@ -1075,77 +1076,74 @@ public class ConfigService {
     CtListaInformativeControparte informativaPaFull = new CtListaInformativeControparte();
 
     pas.forEach(
-            pa -> {
-              log.debug("Processing pa:" + pa.getIdDominio());
-              CtListaInformativeControparte ctListaInformativeControparte =
-                  new CtListaInformativeControparte();
+        pa -> {
+          log.debug("Processing pa:" + pa.getIdDominio());
+          CtListaInformativeControparte ctListaInformativeControparte =
+              new CtListaInformativeControparte();
 
-              CtInformativaControparte ctInformativaControparte = new CtInformativaControparte();
-              ctInformativaControparte.setIdentificativoDominio(pa.getIdDominio());
-              ctInformativaControparte.setRagioneSociale(pa.getRagioneSociale());
-              ctInformativaControparte.setContactCenterEnteCreditore("contactCenterEnteCreditore");
-              ctInformativaControparte.setPagamentiPressoPSP(
-                  Boolean.TRUE.equals(pa.getPagamentoPressoPsp()) ? 1 : 0);
+          CtInformativaControparte ctInformativaControparte = new CtInformativaControparte();
+          ctInformativaControparte.setIdentificativoDominio(pa.getIdDominio());
+          ctInformativaControparte.setRagioneSociale(pa.getRagioneSociale());
+          ctInformativaControparte.setContactCenterEnteCreditore("contactCenterEnteCreditore");
+          ctInformativaControparte.setPagamentiPressoPSP(
+              Boolean.TRUE.equals(pa.getPagamentoPressoPsp()) ? 1 : 0);
 
-              List<IbanValidiPerPa> ibans =
-                  allIbans.stream()
-                      .filter(i -> i.getFkPa().equals(pa.getObjId()))
-                      .collect(Collectors.toList());
-              List<CtContoAccredito> contiaccredito = manageContiAccredito(ibans);
-              ctInformativaControparte.getInformativaContoAccredito().addAll(contiaccredito);
+          List<IbanValidiPerPa> ibans =
+              allIbans.stream()
+                  .filter(i -> i.getFkPa().equals(pa.getObjId()))
+                  .collect(Collectors.toList());
+          List<CtContoAccredito> contiaccredito = manageContiAccredito(ibans);
+          ctInformativaControparte.getInformativaContoAccredito().addAll(contiaccredito);
 
-              List<InformativePaMaster> masters =
-                  allMasters.stream()
-                      .filter(m -> m.getFkPa().getObjId().equals(pa.getObjId()))
-                      .collect(Collectors.toList());
-              InformativePaMaster master = null;
-              if (!masters.isEmpty()) {
-                master = masters.get(0);
-              }
-              if (master != null) {
-                try {
-                  ctInformativaControparte.setDataInizioValidita(
-                      tsToXmlGC(master.getDataInizioValidita()));
-                } catch (DatatypeConfigurationException e) {
-                  throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
-                }
-                List<InformativePaDetail> infodetails = master.getDetails();
+          List<InformativePaMaster> masters =
+              allMasters.stream()
+                  .filter(m -> m.getFkPa().getObjId().equals(pa.getObjId()))
+                  .collect(Collectors.toList());
+          InformativePaMaster master = null;
+          if (!masters.isEmpty()) {
+            master = masters.get(0);
+          }
+          if (master != null) {
+            try {
+              ctInformativaControparte.setDataInizioValidita(
+                  tsToXmlGC(master.getDataInizioValidita()));
+            } catch (DatatypeConfigurationException e) {
+              throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
+            }
+            List<InformativePaDetail> infodetails = master.getDetails();
 
-                List<CtErogazione> disponibilita =
-                    infodetails.stream()
-                        .filter(d -> d.getFlagDisponibilita())
-                        .map(d -> infoDetailToCtErogazione(allFasce, d))
-                        .collect(Collectors.toList());
-                List<CtErogazione> indisponibilita =
-                    infodetails.stream()
-                        .filter(d -> !d.getFlagDisponibilita())
-                        .map(d -> infoDetailToCtErogazione(allFasce, d))
-                        .collect(Collectors.toList());
-                CtErogazioneServizio ctErogazioneServizio = new CtErogazioneServizio();
-                ctErogazioneServizio.getDisponibilita().addAll(disponibilita);
-                ctErogazioneServizio.getIndisponibilita().addAll(indisponibilita);
-                ctInformativaControparte.setErogazioneServizio(ctErogazioneServizio);
-                ctListaInformativeControparte
-                    .getInformativaControparte()
-                    .add(ctInformativaControparte);
-              } else if (!contiaccredito.isEmpty()) {
-                ctInformativaControparte.setDataInizioValidita(
-                    contiaccredito.get(0).getDataAttivazioneIban());
-                ctListaInformativeControparte
-                    .getInformativaControparte()
-                    .add(ctInformativaControparte);
-              }
+            List<CtErogazione> disponibilita =
+                infodetails.stream()
+                    .filter(d -> d.getFlagDisponibilita())
+                    .map(d -> infoDetailToCtErogazione(allFasce, d))
+                    .collect(Collectors.toList());
+            List<CtErogazione> indisponibilita =
+                infodetails.stream()
+                    .filter(d -> !d.getFlagDisponibilita())
+                    .map(d -> infoDetailToCtErogazione(allFasce, d))
+                    .collect(Collectors.toList());
+            CtErogazioneServizio ctErogazioneServizio = new CtErogazioneServizio();
+            ctErogazioneServizio.getDisponibilita().addAll(disponibilita);
+            ctErogazioneServizio.getIndisponibilita().addAll(indisponibilita);
+            ctInformativaControparte.setErogazioneServizio(ctErogazioneServizio);
+            ctListaInformativeControparte.getInformativaControparte().add(ctInformativaControparte);
+          } else if (!contiaccredito.isEmpty()) {
+            ctInformativaControparte.setDataInizioValidita(
+                contiaccredito.get(0).getDataAttivazioneIban());
+            ctListaInformativeControparte.getInformativaControparte().add(ctInformativaControparte);
+          }
 
-              CreditorInstitutionInformation cii = CreditorInstitutionInformation.builder()
+          CreditorInstitutionInformation cii =
+              CreditorInstitutionInformation.builder()
                   .pa(pa.getIdDominio())
                   .informativa(toXml(ctListaInformativeControparte))
                   .build();
-              informativePaSingleCache.add(cii);
-              informativaPaFull
-                  .getInformativaControparte()
-                  .addAll(ctListaInformativeControparte.getInformativaControparte());
-              log.debug("Processed  pa:" + pa.getIdDominio());
-            });
+          informativePaSingleCache.add(cii);
+          informativaPaFull
+              .getInformativaControparte()
+              .addAll(ctListaInformativeControparte.getInformativaControparte());
+          log.debug("Processed  pa:" + pa.getIdDominio());
+        });
 
     log.debug("creating cache info full");
 

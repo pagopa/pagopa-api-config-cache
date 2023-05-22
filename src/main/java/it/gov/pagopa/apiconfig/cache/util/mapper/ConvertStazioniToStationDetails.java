@@ -53,7 +53,13 @@ public class ConvertStazioniToStationDetails implements Converter<Stazioni, Stat
                 .targetPort(source.getTargetPortPof())
                 .targetPath(source.getTargetPathPof())
                 .build())
-        .mod4Service(Service.builder().path(source.getServizio4Mod()).build())
+        .mod4Service(
+            Service.builder()
+                .path(source.getServizio4Mod())
+                .targetHost(source.getTargetHost())
+                .targetPort(source.getTargetPort())
+                .targetPath(source.getTargetPath())
+                .build())
         .mod4connection(
             Connection.builder()
                 .protocol(Protocol.fromValue(source.getProtocollo4Mod()))
