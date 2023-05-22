@@ -1071,7 +1071,7 @@ public class ConfigService {
     List<InformativePaFasce> allFasce = informativePaFasceRepository.findAll();
     List<Pa> pas = paRepository.findAll();
 
-    List<Pair<String, CtListaInformativeControparte>> informativePaSingle = new ArrayList<>();
+    List<CreditorInstitutionInformation> informativePaSingleCache = new ArrayList<>();
     CtListaInformativeControparte informativaPaFull = new CtListaInformativeControparte();
 
     pas.forEach(
@@ -1136,23 +1136,18 @@ public class ConfigService {
                     .add(ctInformativaControparte);
               }
 
-              informativePaSingle.add(Pair.of(pa.getIdDominio(), ctListaInformativeControparte));
+              CreditorInstitutionInformation cii = CreditorInstitutionInformation.builder()
+                  .pa(pa.getIdDominio())
+                  .informativa(toXml(ctListaInformativeControparte))
+                  .build();
+              informativePaSingleCache.add(cii);
               informativaPaFull
                   .getInformativaControparte()
                   .addAll(ctListaInformativeControparte.getInformativaControparte());
               log.debug("Processed  pa:" + pa.getIdDominio());
             });
 
-    log.debug("creating cache");
-    List<CreditorInstitutionInformation> informativePaSingleCache =
-        informativePaSingle.stream()
-            .map(
-                i ->
-                    CreditorInstitutionInformation.builder()
-                        .pa(i.getLeft())
-                        .informativa(toXml(i.getRight()))
-                        .build())
-            .collect(Collectors.toList());
+    log.debug("creating cache info full");
 
     CreditorInstitutionInformation informativaPAFull =
         CreditorInstitutionInformation.builder()
