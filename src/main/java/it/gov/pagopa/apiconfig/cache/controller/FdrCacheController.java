@@ -38,7 +38,7 @@ public class FdrCacheController {
   @Autowired private ConfigService configService;
 
   @PostConstruct
-  private void loadCacheFromRedis(){
+  private void loadCacheFromRedis() {
     cfgDataV1 = configService.loadFromRedis(stakeholder);
   }
 
@@ -87,11 +87,12 @@ public class FdrCacheController {
   @GetMapping(
       value = "/v1",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ConfigDataV1> cache(@RequestParam Optional<Boolean> refresh,@RequestParam Optional<NodeCacheKey[]> keys)
+  public ResponseEntity<ConfigDataV1> cache(
+      @RequestParam Optional<Boolean> refresh, @RequestParam Optional<NodeCacheKey[]> keys)
       throws IOException {
     Boolean cacheV1InProgress = configService.getCacheV1InProgress(stakeholder);
-    if(refresh.orElse(false) || cfgDataV1==null){
-      if(cacheV1InProgress){
+    if (refresh.orElse(false) || cfgDataV1 == null) {
+      if (cacheV1InProgress) {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
       }
       cfgDataV1 = configService.newCacheV1(stakeholder);

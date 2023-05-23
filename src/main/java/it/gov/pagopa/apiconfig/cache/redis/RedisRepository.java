@@ -16,6 +16,7 @@ public class RedisRepository {
   @Autowired
   @Qualifier("configData")
   private RedisTemplate<String, ConfigDataV1> redisTemplate;
+
   @Autowired
   @Qualifier("object")
   private RedisTemplate<String, Object> redisTemplateObj;
@@ -23,6 +24,7 @@ public class RedisRepository {
   public void save(String key, ConfigDataV1 value, long ttl) {
     redisTemplate.opsForValue().set(key, value, Duration.ofMinutes(ttl));
   }
+
   public void save(String key, Object value, long ttl) {
     redisTemplateObj.opsForValue().set(key, value, Duration.ofMinutes(ttl));
   }

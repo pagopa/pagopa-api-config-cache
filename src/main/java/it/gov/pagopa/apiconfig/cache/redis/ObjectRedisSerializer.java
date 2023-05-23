@@ -12,7 +12,6 @@ import org.springframework.data.redis.serializer.SerializationException;
 
 public class ObjectRedisSerializer<T> implements RedisSerializer<T> {
 
-
   @SneakyThrows
   @Override
   public byte[] serialize(T value) throws SerializationException {
@@ -27,12 +26,12 @@ public class ObjectRedisSerializer<T> implements RedisSerializer<T> {
   @SneakyThrows
   @Override
   public T deserialize(byte[] bytes) throws SerializationException {
-    if(bytes!=null){
+    if (bytes != null) {
       ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
       GZIPInputStream gzipIn = new GZIPInputStream(bais);
       ObjectInputStream objectIn = new ObjectInputStream(gzipIn);
-      return (T)objectIn.readObject();
-    } else{
+      return (T) objectIn.readObject();
+    } else {
       return null;
     }
   }

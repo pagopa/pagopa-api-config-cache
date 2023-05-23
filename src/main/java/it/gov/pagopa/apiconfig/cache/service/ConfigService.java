@@ -233,9 +233,9 @@ public class ConfigService {
     }
   }
 
-  public ConfigDataV1 loadFromRedis(String stakeholder){
+  public ConfigDataV1 loadFromRedis(String stakeholder) {
     String actualKey = keyV1.replace("{{stakeholder}}", stakeholder) + keySuffix;
-    log.info("Initializing cache ["+actualKey+"]");
+    log.info("Initializing cache [" + actualKey + "]");
     ConfigDataV1 o = redisRepository.getConfigDataV1(actualKey);
     return o;
   }
@@ -452,27 +452,27 @@ public class ConfigService {
     return configData;
   }
 
-  public void removeCacheV1InProgress(String stakeholder){
+  public void removeCacheV1InProgress(String stakeholder) {
     String actualKeyV1 = keyV1InProgress.replace("{{stakeholder}}", stakeholder) + keySuffix;
     redisRepository.remove(actualKeyV1);
   }
 
-  public void setCacheV1InProgress(String stakeholder){
+  public void setCacheV1InProgress(String stakeholder) {
     String actualKeyV1 = keyV1InProgress.replace("{{stakeholder}}", stakeholder) + keySuffix;
-    redisRepository.save(actualKeyV1,true,TTL_IN_PROGRESS);
+    redisRepository.save(actualKeyV1, true, TTL_IN_PROGRESS);
   }
 
-  public Boolean getCacheV1InProgress(String stakeholder){
+  public Boolean getCacheV1InProgress(String stakeholder) {
     String actualKeyV1 = keyV1InProgress.replace("{{stakeholder}}", stakeholder) + keySuffix;
-    return Optional.ofNullable(redisRepository.getBooleanByKeyId(actualKeyV1)).orElse(Boolean.FALSE);
+    return Optional.ofNullable(redisRepository.getBooleanByKeyId(actualKeyV1))
+        .orElse(Boolean.FALSE);
   }
 
   public CacheVersion getCacheV1Id(String stakeholder) {
     String actualKeyV1 = keyV1Id.replace("{{stakeholder}}", stakeholder) + keySuffix;
     String cacheId =
         Optional.ofNullable(redisRepository.getStringByKeyId(actualKeyV1))
-            .orElseThrow(
-                () -> new AppException(AppError.CACHE_ID_NOT_FOUND, actualKeyV1));
+            .orElseThrow(() -> new AppException(AppError.CACHE_ID_NOT_FOUND, actualKeyV1));
     return new CacheVersion(cacheId);
   }
 
@@ -590,9 +590,7 @@ public class ConfigService {
 
   public List<StationCreditorInstitution> findAllPaStazioniPa() {
     log.info("loading PaStations");
-    return paStazioniRepository
-        .findAllFetching()
-        .stream()
+    return paStazioniRepository.findAllFetching().stream()
         .map(
             s ->
                 new StationCreditorInstitution(
@@ -626,9 +624,7 @@ public class ConfigService {
 
   public List<PspChannelPaymentType> getPaymentServiceProvidersChannels() {
     log.info("loading PspChannels");
-    return pspCanaleTipoVersamentoCanaleRepository
-        .findAllFetching()
-        .stream()
+    return pspCanaleTipoVersamentoCanaleRepository.findAllFetching().stream()
         .map(
             p ->
                 new PspChannelPaymentType(
@@ -741,8 +737,7 @@ public class ConfigService {
     log.info("loading InformativePsp");
 
     List<CtListaInformativePSP> informativePspSingle =
-        masters
-            .stream()
+        masters.stream()
             .filter(
                 m -> details.stream().anyMatch(d -> d.getFkCdiMaster().getId().equals(m.getId())))
             .map(
@@ -780,8 +775,7 @@ public class ConfigService {
                   ctInformativaPSP.setIdentificativoFlusso(cdiMaster.getIdInformativaPsp());
 
                   List<CtInformativaDetail> masterdetails =
-                      details
-                          .stream()
+                      details.stream()
                           .filter(d -> d.getFkCdiMaster().getId().equals(cdiMaster.getId()))
                           .filter(
                               d ->
@@ -802,8 +796,7 @@ public class ConfigService {
                                     "".getBytes(StandardCharsets.UTF_8));
 
                                 List<CdiInformazioniServizio> it =
-                                    allInformazioni
-                                        .stream()
+                                    allInformazioni.stream()
                                         .filter(
                                             ii ->
                                                 ii.getFkCdiDetail()
@@ -830,8 +823,7 @@ public class ConfigService {
                                 }
 
                                 List<CtFasciaCostoServizio> fasce =
-                                    allFasce
-                                        .stream()
+                                    allFasce.stream()
                                         .filter(
                                             fas ->
                                                 fas.getFkCdiDetail()
@@ -858,8 +850,7 @@ public class ConfigService {
                                 ctListaFasceCostoServizio.getFasciaCostoServizio().addAll(fasce);
 
                                 List<CdiPreference> cdiPreferenceStream =
-                                    preferences
-                                        .stream()
+                                    preferences.stream()
                                         .filter(
                                             pref ->
                                                 pref.getCdiDetail()
@@ -867,8 +858,7 @@ public class ConfigService {
                                                     .equals(cdiDetail.getId()))
                                         .collect(Collectors.toList());
                                 List<String> buyers =
-                                    cdiPreferenceStream
-                                        .stream()
+                                    cdiPreferenceStream.stream()
                                         .map(p -> p.getBuyer())
                                         .collect(Collectors.toList());
                                 CtListaConvenzioni listaConvenzioni = new CtListaConvenzioni();
@@ -881,8 +871,7 @@ public class ConfigService {
                                     pspCanaleTipoVersamento.getCanale().getIdCanale());
 
                                 List<Double> costiConvenzione =
-                                    cdiPreferenceStream
-                                        .stream()
+                                    cdiPreferenceStream.stream()
                                         .map(p -> p.getCostoConvenzione() / costoConvenzioneFormat)
                                         .collect(Collectors.toList());
 
@@ -945,8 +934,7 @@ public class ConfigService {
     CtListaInformativePSP informativaEmpty = new CtListaInformativePSP();
 
     List<PspInformation> informativePspSingleCache =
-        informativePspSingle
-            .stream()
+        informativePspSingle.stream()
             .map(
                 i ->
                     PspInformation.builder()
@@ -975,8 +963,7 @@ public class ConfigService {
         psp -> {
           try {
             Optional<CdiMasterValid> masters =
-                allMasters
-                    .stream()
+                allMasters.stream()
                     .filter(m -> m.getFkPsp().getObjId().equals(psp.getObjId()))
                     .findFirst();
             TplInformativaPSP tplInformativaPSP = new TplInformativaPSP();
@@ -1109,8 +1096,7 @@ public class ConfigService {
   }
 
   private List<CtContoAccredito> manageContiAccredito(List<IbanValidiPerPa> ibans) {
-    return ibans
-        .stream()
+    return ibans.stream()
         .map(
             iban -> {
               String idNegozio = null;
@@ -1241,8 +1227,7 @@ public class ConfigService {
     List<CtFasciaOraria> fasce = new ArrayList<>();
     try {
       fasce =
-          allFasce
-              .stream()
+          allFasce.stream()
               .filter(f -> f.getFkInformativaPaDetail().getId().equals(det.getId()))
               .map(
                   f -> {
