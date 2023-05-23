@@ -199,6 +199,9 @@ public class ConfigService {
 
   private JAXBContext CtListaInformativePSPJaxbContext;
 
+  @Value("${pa.limit}")
+  private Integer limitPA;
+
   {
     try {
       CtListaInformativePSPJaxbContext = JAXBContext.newInstance(CtListaInformativePSP.class);
@@ -1116,7 +1119,8 @@ public class ConfigService {
     List<InformativePaFasce> allFasce = informativePaFasceRepository.findAll();
     // TODO fix
     List<Pa> pas0 = paRepository.findAll();
-    List<Pa> pas = pas0.subList(0, 1000);
+    List<Pa> pas = pas0.subList(0, limitPA);
+    log.info("PA LIMITED TO " + limitPA);
 
     List<CreditorInstitutionInformation> informativePaSingleCache = new ArrayList<>();
     CtListaInformativeControparte informativaPaFull = new CtListaInformativeControparte();
