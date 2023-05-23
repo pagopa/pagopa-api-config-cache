@@ -91,7 +91,7 @@ oracledev:
   !!merge <<: *basecache
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
-    tag: "0.4.1-2-comment_save_redis"
+    tag: "0.4.1-2-cache_without_apim"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cachedev/o(/|$)(.*)
