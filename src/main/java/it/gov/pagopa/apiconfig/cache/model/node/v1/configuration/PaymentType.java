@@ -1,6 +1,7 @@
 package it.gov.pagopa.apiconfig.cache.model.node.v1.configuration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +16,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Builder
-public class PaymentType {
+public class PaymentType implements Serializable {
 
   @JsonProperty(value = "payment_type", required = true)
   private String paymentTypeCode;

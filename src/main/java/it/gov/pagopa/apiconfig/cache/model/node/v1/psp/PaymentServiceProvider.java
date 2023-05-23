@@ -2,6 +2,7 @@ package it.gov.pagopa.apiconfig.cache.model.node.v1.psp;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
 import lombok.*;
 
 @EqualsAndHashCode
@@ -11,7 +12,7 @@ import lombok.*;
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
-public class PaymentServiceProvider {
+public class PaymentServiceProvider implements Serializable {
 
   @JsonProperty(value = "psp_code", required = true)
   private String pspCode;

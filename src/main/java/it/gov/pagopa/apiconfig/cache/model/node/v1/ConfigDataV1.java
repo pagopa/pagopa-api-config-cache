@@ -24,14 +24,14 @@ import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.Channel;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.PaymentServiceProvider;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.PspChannelPaymentType;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.PspInformation;
+import java.io.Serializable;
 import java.util.Map;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class ConfigDataV1 {
+public class ConfigDataV1 implements Serializable {
 
   @JsonProperty(required = true)
   private String version;

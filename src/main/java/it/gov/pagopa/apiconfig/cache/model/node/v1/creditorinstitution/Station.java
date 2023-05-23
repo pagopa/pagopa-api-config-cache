@@ -8,6 +8,7 @@ import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Proxy;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Redirect;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Service;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Timeouts;
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,7 +24,7 @@ import lombok.ToString;
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
-public class Station {
+public class Station implements Serializable {
 
   @JsonProperty(value = "station_code", required = true)
   private String stationCode;

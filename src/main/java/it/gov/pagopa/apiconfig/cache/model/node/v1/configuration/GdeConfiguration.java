@@ -2,6 +2,7 @@ package it.gov.pagopa.apiconfig.cache.model.node.v1.configuration;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class GdeConfiguration {
+public class GdeConfiguration implements Serializable {
 
   @JsonProperty(value = "primitive", required = true)
   private String primitiva;

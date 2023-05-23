@@ -1,6 +1,7 @@
 package it.gov.pagopa.apiconfig.cache.model.node.v1.cds;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +16,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Builder
-public class CdsSubjectService {
+public class CdsSubjectService implements Serializable {
 
   @JsonProperty(value = "subject", required = true)
   private String subject;
