@@ -112,6 +112,7 @@ if [ "$install" == 1 ]; then
       --set oracle.enabled=true \
       --set oracledev.image.tag=$version \
       --set oracledev.enabled=true \
+      --set oracledev.forceRedeploy=true \
       --set postgresql.canaryDelivery.create="False" \
       --set oracle.canaryDelivery.create="False" \
       --set oracledev.canaryDelivery.create="False" \

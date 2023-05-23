@@ -26,7 +26,7 @@ public class RedisRepository {
   public void pushToRedisAsync(String key, String keyId, ConfigDataV1 configData) {
     try {
       log.info("saving {} on redis", key);
-      //      save(key, configData, 1440);
+      save(key, configData, 1440);
       save(keyId, configData.getVersion(), 1440);
       log.info("saved {} on redis,id {}", key, configData.getVersion());
     } catch (Exception e) {
