@@ -108,13 +108,13 @@ if [ "$install" == 1 ]; then
     helm upgrade --namespace $NAMESPACE --install --values $valuesFile \
       --set postgresql.enabled=true \
       --set oracle.enabled=true \
-      --set oracledev.image.tag=$version \
       --set oracledev.enabled=true \
-      --set oracledev.forceRedeploy=true \
+      --set oracledev.image.tag=$version \
       --set postgresql.canaryDelivery.create="False" \
       --set oracle.canaryDelivery.create="False" \
       --set oracledev.canaryDelivery.create="False" \
       $NAME $DIR
+#      --set oracledev.forceRedeploy=true \
 #      --set oracle.image.tag=$version \
 #      --set postgresql.image.tag=$version \
     exit 0

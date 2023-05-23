@@ -119,7 +119,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -157,11 +156,16 @@ public class ConfigService {
   @Value("apicfg_${spring.database.id}_{{stakeholder}}_v1_id")
   private String keyV1Id;
 
+  @Value("apicfg_${spring.database.id}_{{stakeholder}}_v1_in_progress")
+  private String keyV1InProgress;
+
   private static String daCompilareFlusso =
       "DA COMPILARE (formato: [IDPSP]_dd-mm-yyyy - esempio: ESEMPIO_31-12-2001)";
   private static String daCompilare = "DA COMPILARE";
   private static String schemaInstance = "http://www.w3.org/2001/XMLSchema-instance";
   private static double costoConvenzioneFormat = 100d;
+  private static long TTL_IN_PROGRESS = 15;
+
   @Autowired private PlatformTransactionManager transactionManager;
   @Autowired private RedisRepository redisRepository;
   @Autowired private ConfigMapper modelMapper;
@@ -230,8 +234,9 @@ public class ConfigService {
   }
 
   public ConfigDataV1 loadFromRedis(String stakeholder){
-    String actualKey = keyV1.replace("{{stakeholder}}", stakeholder);
-    ConfigDataV1 o = redisRepository.getConfigDataV1(actualKey + keySuffix);
+    String actualKey = keyV1.replace("{{stakeholder}}", stakeholder) + keySuffix;
+    log.info("Initializing cache ["+actualKey+"]");
+    ConfigDataV1 o = redisRepository.getConfigDataV1(actualKey);
     return o;
   }
 
@@ -241,6 +246,8 @@ public class ConfigService {
 
   public ConfigDataV1 newCacheV1(String stakeholder, Optional<NodeCacheKey[]> keys)
       throws IOException {
+
+    setCacheV1InProgress(stakeholder);
 
     boolean allKeys = keys.isEmpty();
     List<NodeCacheKey> list = keys.map(k -> Arrays.asList(k)).orElse(new ArrayList<NodeCacheKey>());
@@ -437,19 +444,35 @@ public class ConfigService {
 
     configData.setVersion("" + endTime);
 
-    String actualKey = keyV1.replace("{{stakeholder}}", stakeholder);
-    String actualKeyV1 = keyV1Id.replace("{{stakeholder}}", stakeholder);
+    String actualKey = keyV1.replace("{{stakeholder}}", stakeholder) + keySuffix;
+    String actualKeyV1 = keyV1Id.replace("{{stakeholder}}", stakeholder) + keySuffix;
 
-    redisRepository.pushToRedisAsync(actualKey + keySuffix, actualKeyV1 + keySuffix, configData);
+    redisRepository.pushToRedisAsync(actualKey, actualKeyV1, configData);
+    removeCacheV1InProgress(stakeholder);
     return configData;
   }
 
+  public void removeCacheV1InProgress(String stakeholder){
+    String actualKeyV1 = keyV1InProgress.replace("{{stakeholder}}", stakeholder) + keySuffix;
+    redisRepository.remove(actualKeyV1);
+  }
+
+  public void setCacheV1InProgress(String stakeholder){
+    String actualKeyV1 = keyV1InProgress.replace("{{stakeholder}}", stakeholder) + keySuffix;
+    redisRepository.save(actualKeyV1,true,TTL_IN_PROGRESS);
+  }
+
+  public Boolean getCacheV1InProgress(String stakeholder){
+    String actualKeyV1 = keyV1InProgress.replace("{{stakeholder}}", stakeholder) + keySuffix;
+    return Optional.ofNullable(redisRepository.getBooleanByKeyId(actualKeyV1)).orElse(Boolean.FALSE);
+  }
+
   public CacheVersion getCacheV1Id(String stakeholder) {
-    String actualKeyV1 = keyV1Id.replace("{{stakeholder}}", stakeholder);
+    String actualKeyV1 = keyV1Id.replace("{{stakeholder}}", stakeholder) + keySuffix;
     String cacheId =
-        Optional.ofNullable(redisRepository.getStringByKeyId(actualKeyV1 + keySuffix))
+        Optional.ofNullable(redisRepository.getStringByKeyId(actualKeyV1))
             .orElseThrow(
-                () -> new AppException(AppError.CACHE_ID_NOT_FOUND, actualKeyV1 + keySuffix));
+                () -> new AppException(AppError.CACHE_ID_NOT_FOUND, actualKeyV1));
     return new CacheVersion(cacheId);
   }
 

@@ -58,12 +58,11 @@ public class RedisConfig {
   }
 
   @Bean
-  @Qualifier("string")
-  public RedisTemplate<String, String> redisObjectTemplateString(
-      final LettuceConnectionFactory connectionFactory, ObjectMapper objectMapper) {
-    RedisTemplate<String, String> template = new RedisTemplate<>();
+  @Qualifier("object")
+  public RedisTemplate<String, Object> redisObjectTemplate(final LettuceConnectionFactory connectionFactory,ObjectMapper objectMapper) {
+    RedisTemplate<String, Object> template = new RedisTemplate<>();
     template.setKeySerializer(new StringRedisSerializer());
-    final var jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(String.class);
+    final var jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
     jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
     template.setValueSerializer(jackson2JsonRedisSerializer);
     template.setConnectionFactory(connectionFactory);

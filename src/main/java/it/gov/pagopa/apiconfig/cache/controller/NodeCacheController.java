@@ -12,9 +12,11 @@ import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.service.ConfigService;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -86,7 +88,11 @@ public class NodeCacheController {
       value = "/v1",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ConfigDataV1> cache(@RequestParam Optional<Boolean> refresh) throws IOException {
+    Boolean cacheV1InProgress = configService.getCacheV1InProgress(stakeholder);
     if(refresh.orElse(false) || cfgDataV1==null){
+      if(cacheV1InProgress){
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+      }
       cfgDataV1 = configService.newCacheV1(stakeholder);
     }
     return ResponseEntity.ok(cfgDataV1);
