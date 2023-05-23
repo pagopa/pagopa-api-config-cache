@@ -199,6 +199,8 @@ public class ConfigService {
 
   private JAXBContext CtListaInformativePSPJaxbContext;
 
+  private ConfigDataV1 cfgDataV1 = new ConfigDataV1();
+
   @Value("${pa.limit}")
   private Integer limitPA;
 
@@ -231,12 +233,16 @@ public class ConfigService {
     }
   }
 
-  public ConfigDataV1 newCacheV1(String stakeholder) throws IOException {
-    return newCacheV1(stakeholder, Optional.empty());
+  public ConfigDataV1 newCacheV1(Boolean refresh,String stakeholder) throws IOException {
+    return newCacheV1(refresh,stakeholder, Optional.empty());
   }
 
-  public ConfigDataV1 newCacheV1(String stakeholder, Optional<NodeCacheKey[]> keys)
+  public ConfigDataV1 newCacheV1(Boolean refresh,String stakeholder, Optional<NodeCacheKey[]> keys)
       throws IOException {
+
+    if(!refresh){
+      return cfgDataV1;
+    }
 
     boolean allKeys = keys.isEmpty();
     List<NodeCacheKey> list = keys.map(k -> Arrays.asList(k)).orElse(new ArrayList<NodeCacheKey>());
@@ -437,7 +443,7 @@ public class ConfigService {
     String actualKeyV1 = keyV1Id.replace("{{stakeholder}}", stakeholder);
 
     redisRepository.pushToRedisAsync(actualKey + keySuffix, actualKeyV1 + keySuffix, configData);
-
+    cfgDataV1 = configData;
     return configData;
   }
 
@@ -1143,16 +1149,14 @@ public class ConfigService {
               Boolean.TRUE.equals(pa.getPagamentoPressoPsp()) ? 1 : 0);
 
           List<IbanValidiPerPa> ibans =
-              allIbans
-                  .stream()
+              allIbans.stream()
                   .filter(i -> i.getFkPa().equals(pa.getObjId()))
                   .collect(Collectors.toList());
           List<CtContoAccredito> contiaccredito = manageContiAccredito(ibans);
           ctInformativaControparte.getInformativaContoAccredito().addAll(contiaccredito);
 
           List<InformativePaMaster> masters =
-              allMasters
-                  .stream()
+              allMasters.stream()
                   .filter(m -> m.getFkPa().getObjId().equals(pa.getObjId()))
                   .collect(Collectors.toList());
           InformativePaMaster master = null;
@@ -1169,14 +1173,12 @@ public class ConfigService {
             List<InformativePaDetail> infodetails = master.getDetails();
 
             List<CtErogazione> disponibilita =
-                infodetails
-                    .stream()
+                infodetails.stream()
                     .filter(d -> d.getFlagDisponibilita())
                     .map(d -> infoDetailToCtErogazione(allFasce, d))
                     .collect(Collectors.toList());
             List<CtErogazione> indisponibilita =
-                infodetails
-                    .stream()
+                infodetails.stream()
                     .filter(d -> !d.getFlagDisponibilita())
                     .map(d -> infoDetailToCtErogazione(allFasce, d))
                     .collect(Collectors.toList());
@@ -1197,9 +1199,11 @@ public class ConfigService {
                   .informativa(toXml(ctListaInformativeControparte))
                   .build();
           informativePaSingleCache.add(cii);
-          informativaPaFull
-              .getInformativaControparte()
-              .addAll(ctListaInformativeControparte.getInformativaControparte());
+          if (pa.getEnabled()) {
+            informativaPaFull
+                .getInformativaControparte()
+                .addAll(ctListaInformativeControparte.getInformativaControparte());
+          }
           log.debug("Processed  pa:" + pa.getIdDominio());
         });
 

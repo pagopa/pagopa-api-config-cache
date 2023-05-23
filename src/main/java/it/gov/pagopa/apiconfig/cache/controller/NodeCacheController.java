@@ -11,6 +11,7 @@ import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.service.ConfigService;
 import java.io.IOException;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -75,8 +77,8 @@ public class NodeCacheController {
   @GetMapping(
       value = "/v1",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ConfigDataV1> cache() throws IOException {
-    return ResponseEntity.ok(configService.newCacheV1(stakeholder));
+  public ResponseEntity<ConfigDataV1> cache(@RequestParam Optional<Boolean> refresh) throws IOException {
+    return ResponseEntity.ok(configService.newCacheV1(refresh.orElse(false),stakeholder));
   }
 
   @Operation(
