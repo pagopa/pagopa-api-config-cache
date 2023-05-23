@@ -119,6 +119,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -199,8 +200,6 @@ public class ConfigService {
 
   private JAXBContext CtListaInformativePSPJaxbContext;
 
-  private ConfigDataV1 cfgDataV1 = new ConfigDataV1();
-
   @Value("${pa.limit}")
   private Integer limitPA;
 
@@ -233,16 +232,18 @@ public class ConfigService {
     }
   }
 
-  public ConfigDataV1 newCacheV1(Boolean refresh,String stakeholder) throws IOException {
-    return newCacheV1(refresh,stakeholder, Optional.empty());
+  public ConfigDataV1 loadFromRedis(String stakeholder){
+    String actualKey = keyV1.replace("{{stakeholder}}", stakeholder);
+    ConfigDataV1 o = redisRepository.getConfigDataV1(actualKey + keySuffix);
+    return o;
   }
 
-  public ConfigDataV1 newCacheV1(Boolean refresh,String stakeholder, Optional<NodeCacheKey[]> keys)
-      throws IOException {
+  public ConfigDataV1 newCacheV1(String stakeholder) throws IOException {
+    return newCacheV1(stakeholder, Optional.empty());
+  }
 
-    if(!refresh){
-      return cfgDataV1;
-    }
+  public ConfigDataV1 newCacheV1(String stakeholder, Optional<NodeCacheKey[]> keys)
+      throws IOException {
 
     boolean allKeys = keys.isEmpty();
     List<NodeCacheKey> list = keys.map(k -> Arrays.asList(k)).orElse(new ArrayList<NodeCacheKey>());
@@ -443,7 +444,6 @@ public class ConfigService {
     String actualKeyV1 = keyV1Id.replace("{{stakeholder}}", stakeholder);
 
     redisRepository.pushToRedisAsync(actualKey + keySuffix, actualKeyV1 + keySuffix, configData);
-    cfgDataV1 = configData;
     return configData;
   }
 

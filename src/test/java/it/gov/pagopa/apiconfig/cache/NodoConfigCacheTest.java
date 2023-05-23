@@ -130,7 +130,7 @@ class NodoConfigCacheTest {
     when(cdsSoggettoRepository.findAll()).thenReturn(TestUtils.cdsSoggetti);
     when(cdsCategorieRepository.findAll()).thenReturn(TestUtils.cdsCategorie);
 
-    ConfigDataV1 allData = configService.newCacheV1(Boolean.TRUE,"node", Optional.empty());
+    ConfigDataV1 allData = configService.newCacheV1("node", Optional.empty());
     assertThat(allData.getConfigurations())
         .containsKey(
             TestUtils.mockConfigurationKeys.get(0).getConfigCategory()

@@ -25,6 +25,7 @@ import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.PaymentServiceProvider;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.PspChannelPaymentType;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.PspInformation;
 import java.util.Map;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 

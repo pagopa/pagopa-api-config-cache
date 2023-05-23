@@ -12,6 +12,7 @@ import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.service.ConfigService;
 import java.io.IOException;
 import java.util.Optional;
+import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -30,7 +31,14 @@ public class NodeCacheController {
 
   private String stakeholder = "node";
 
+  private ConfigDataV1 cfgDataV1 = null;
+
   @Autowired private ConfigService configService;
+
+  @PostConstruct
+  private void loadCacheFromRedis(){
+    cfgDataV1 = configService.loadFromRedis(stakeholder);
+  }
 
   @Operation(
       summary = "Get full node v1 config",
@@ -78,7 +86,10 @@ public class NodeCacheController {
       value = "/v1",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ConfigDataV1> cache(@RequestParam Optional<Boolean> refresh) throws IOException {
-    return ResponseEntity.ok(configService.newCacheV1(refresh.orElse(false),stakeholder));
+    if(refresh.orElse(false) || cfgDataV1==null){
+      cfgDataV1 = configService.newCacheV1(stakeholder);
+    }
+    return ResponseEntity.ok(cfgDataV1);
   }
 
   @Operation(

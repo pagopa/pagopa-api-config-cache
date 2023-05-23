@@ -4,6 +4,7 @@ import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -12,21 +13,33 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class RedisRepository {
 
-  @Autowired private RedisTemplate<String, Object> redisTemplate;
+  @Autowired
+  @Qualifier("configData")
+  private RedisTemplate<String, ConfigDataV1> redisTemplate;
+  @Autowired
+  @Qualifier("string")
+  private RedisTemplate<String, String> redisTemplateString;
 
-  public void save(String key, Object value, long ttl) {
+  public void save(String key, ConfigDataV1 value, long ttl) {
     redisTemplate.opsForValue().set(key, value, Duration.ofMinutes(ttl));
   }
+  public void save(String key, String value, long ttl) {
+    redisTemplateString.opsForValue().set(key, value, Duration.ofMinutes(ttl));
+  }
 
-  public Object get(String key) {
+  public ConfigDataV1 getConfigDataV1(String key) {
     return redisTemplate.opsForValue().get(key);
+  }
+
+  public String getString(String key) {
+    return redisTemplateString.opsForValue().get(key);
   }
 
   @Async
   public void pushToRedisAsync(String key, String keyId, ConfigDataV1 configData) {
     try {
       log.info("saving {} on redis", key);
-//      save(key, configData, 1440);
+      save(key, configData, 1440);
       save(keyId, configData.getVersion(), 1440);
       log.info("saved {} on redis,id {}", key, configData.getVersion());
     } catch (Exception e) {
@@ -35,7 +48,7 @@ public class RedisRepository {
   }
 
   @Async
-  public void pushToRedisAsync(String key, Object object) {
+  public void pushToRedisAsync(String key, ConfigDataV1 object) {
     try {
       log.info("saving {} on redis", key);
       save(key, object, 1440);
@@ -48,7 +61,7 @@ public class RedisRepository {
   public String getStringByKeyId(String keyId) {
     Object v = null;
     try {
-      v = get(keyId);
+      v = getString(keyId);
     } catch (Exception e) {
       log.error("could not get key " + keyId + " from redis", e);
     }

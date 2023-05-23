@@ -3,6 +3,8 @@ package it.gov.pagopa.apiconfig.cache.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,11 +45,25 @@ public class RedisConfig {
   }
 
   @Bean
-  public RedisTemplate<String, Object> redisObjectTemplate(
+  @Qualifier("configData")
+  public RedisTemplate<String, ConfigDataV1> redisObjectTemplateConfigDataV1(
       final LettuceConnectionFactory connectionFactory, ObjectMapper objectMapper) {
-    RedisTemplate<String, Object> template = new RedisTemplate<>();
+    RedisTemplate<String, ConfigDataV1> template = new RedisTemplate<>();
     template.setKeySerializer(new StringRedisSerializer());
-    final var jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
+    final var jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(ConfigDataV1.class);
+    jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
+    template.setValueSerializer(jackson2JsonRedisSerializer);
+    template.setConnectionFactory(connectionFactory);
+    return template;
+  }
+
+  @Bean
+  @Qualifier("string")
+  public RedisTemplate<String, String> redisObjectTemplateString(
+      final LettuceConnectionFactory connectionFactory, ObjectMapper objectMapper) {
+    RedisTemplate<String, String> template = new RedisTemplate<>();
+    template.setKeySerializer(new StringRedisSerializer());
+    final var jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(String.class);
     jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
     template.setValueSerializer(jackson2JsonRedisSerializer);
     template.setConnectionFactory(connectionFactory);
