@@ -106,9 +106,7 @@ if [ "$install" == 1 ]; then
   else
     echo "Installing stable version $version"
     helm upgrade --namespace $NAMESPACE --install --values $valuesFile \
-      --set postgresql.image.tag=$version \
       --set postgresql.enabled=true \
-      --set oracle.image.tag=$version \
       --set oracle.enabled=true \
       --set oracledev.image.tag=$version \
       --set oracledev.enabled=true \
@@ -117,6 +115,8 @@ if [ "$install" == 1 ]; then
       --set oracle.canaryDelivery.create="False" \
       --set oracledev.canaryDelivery.create="False" \
       $NAME $DIR
+#      --set oracle.image.tag=$version \
+#      --set postgresql.image.tag=$version \
     exit 0
   fi
 fi
