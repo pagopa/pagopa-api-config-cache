@@ -39,7 +39,7 @@ class ControllerTest {
   @BeforeEach
   void setUp() throws IOException {
     when(configService.getCacheV1Id("")).thenReturn(new CacheVersion("1111"));
-    when(configService.newCacheV1("", Optional.empty())).thenReturn(new ConfigDataV1());
+    when(configService.newCacheV1(Boolean.TRUE,"", Optional.empty())).thenReturn(new ConfigDataV1());
     when(verifierService.getPaV2()).thenReturn(Arrays.asList("1", "2"));
     when(healthCheckService.checkDatabaseConnection()).thenReturn(true);
   }
