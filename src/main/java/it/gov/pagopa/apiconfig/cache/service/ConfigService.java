@@ -122,11 +122,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.transaction.Transactional;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
@@ -194,6 +196,37 @@ public class ConfigService {
   @Autowired private InformativePaMasterRepository informativePaMasterRepository;
   @Autowired private InformativePaDetailRepository informativePaDetailRepository;
   @Autowired private InformativePaFasceRepository informativePaFasceRepository;
+
+  private JAXBContext CtListaInformativePSPJaxbContext;
+
+  {
+    try {
+      CtListaInformativePSPJaxbContext = JAXBContext.newInstance(CtListaInformativePSP.class);
+    } catch (JAXBException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private JAXBContext TplInformativaPSPJaxbContext;
+
+  {
+    try {
+      TplInformativaPSPJaxbContext = JAXBContext.newInstance(TplInformativaPSP.class);
+    } catch (JAXBException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private JAXBContext CtListaInformativeControparteJaxbContext;
+
+  {
+    try {
+      CtListaInformativeControparteJaxbContext = JAXBContext.newInstance(CtListaInformativeControparte.class);
+    } catch (JAXBException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
 
   public ConfigDataV1 newCacheV1(String stakeholder) throws IOException {
     return newCacheV1(stakeholder, Optional.empty());
@@ -602,8 +635,7 @@ public class ConfigService {
       JAXBElement<TplInformativaPSP> informativaPSP =
           new it.gov.pagopa.apiconfig.cache.imported.template.ObjectFactory()
               .createInformativaPSP(element);
-      JAXBContext jc = JAXBContext.newInstance(element.getClass());
-      Marshaller marshaller = jc.createMarshaller();
+      Marshaller marshaller = TplInformativaPSPJaxbContext.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
       marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaInstance);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -615,13 +647,13 @@ public class ConfigService {
     }
   }
 
+
   private String toXml(CtListaInformativePSP element) {
     try {
       JAXBElement<CtListaInformativePSP> informativaPSP =
           new it.gov.pagopa.apiconfig.cache.imported.catalogodati.ObjectFactory()
               .createListaInformativePSP(element);
-      JAXBContext jc = JAXBContext.newInstance(element.getClass());
-      Marshaller marshaller = jc.createMarshaller();
+      Marshaller marshaller = CtListaInformativePSPJaxbContext.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
       marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaInstance);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -638,8 +670,7 @@ public class ConfigService {
       JAXBElement<CtListaInformativeControparte> informativaPA =
           new it.gov.pagopa.apiconfig.cache.imported.controparti.ObjectFactory()
               .createListaInformativeControparte(element);
-      JAXBContext jc = JAXBContext.newInstance(element.getClass());
-      Marshaller marshaller = jc.createMarshaller();
+      Marshaller marshaller = CtListaInformativeControparteJaxbContext.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
       marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaInstance);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -1074,9 +1105,13 @@ public class ConfigService {
 
     List<CreditorInstitutionInformation> informativePaSingleCache = new ArrayList<>();
     CtListaInformativeControparte informativaPaFull = new CtListaInformativeControparte();
-
+    AtomicLong count = new AtomicLong(0l);
+    int max = pas.size();
     pas.forEach(
         pa -> {
+          if(count.incrementAndGet()%100==0){
+            log.info("Processed "+count.get()+" of "+max);
+          }
           log.debug("Processing pa:" + pa.getIdDominio());
           CtListaInformativeControparte ctListaInformativeControparte =
               new CtListaInformativeControparte();
