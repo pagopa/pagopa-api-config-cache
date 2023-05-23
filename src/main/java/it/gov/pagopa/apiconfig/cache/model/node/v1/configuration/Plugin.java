@@ -1,6 +1,7 @@
 package it.gov.pagopa.apiconfig.cache.model.node.v1.configuration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +15,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Builder
-public class Plugin {
+public class Plugin implements Serializable {
 
   @JsonProperty(value = "id_serv_plugin", required = true)
   private String idServPlugin;

@@ -2,6 +2,7 @@ package it.gov.pagopa.apiconfig.cache.model.node.v1.configuration;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +17,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Builder
-public class ConfigurationKey {
+public class ConfigurationKey implements Serializable {
 
   @JsonProperty(value = "category", required = true)
   private String category;

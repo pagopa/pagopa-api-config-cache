@@ -11,13 +11,17 @@ import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.service.ConfigService;
 import java.io.IOException;
+import java.util.Optional;
+import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -28,7 +32,14 @@ public class NodeCacheController {
 
   private String stakeholder = "node";
 
+  private ConfigDataV1 cfgDataV1 = null;
+
   @Autowired private ConfigService configService;
+
+  @PostConstruct
+  private void loadCacheFromRedis() {
+    cfgDataV1 = configService.loadFromRedis(stakeholder);
+  }
 
   @Operation(
       summary = "Get full node v1 config",
@@ -75,8 +86,16 @@ public class NodeCacheController {
   @GetMapping(
       value = "/v1",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ConfigDataV1> cache() throws IOException {
-    return ResponseEntity.ok(configService.newCacheV1(stakeholder));
+  public ResponseEntity<ConfigDataV1> cache(@RequestParam Optional<Boolean> refresh)
+      throws IOException {
+    Boolean cacheV1InProgress = configService.getCacheV1InProgress(stakeholder);
+    if (refresh.orElse(false) || cfgDataV1 == null) {
+      if (cacheV1InProgress) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+      }
+      cfgDataV1 = configService.newCacheV1(stakeholder);
+    }
+    return ResponseEntity.ok(cfgDataV1);
   }
 
   @Operation(

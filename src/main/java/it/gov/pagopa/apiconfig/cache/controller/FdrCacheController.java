@@ -13,8 +13,10 @@ import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.service.ConfigService;
 import java.io.IOException;
 import java.util.Optional;
+import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +33,14 @@ public class FdrCacheController {
 
   private String stakeholder = "fdr";
 
+  private ConfigDataV1 cfgDataV1 = null;
+
   @Autowired private ConfigService configService;
+
+  @PostConstruct
+  private void loadCacheFromRedis() {
+    cfgDataV1 = configService.loadFromRedis(stakeholder);
+  }
 
   @Operation(
       summary = "Get selected key of fdr v1 config",
@@ -78,9 +87,17 @@ public class FdrCacheController {
   @GetMapping(
       value = "/v1",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ConfigDataV1> cache(@RequestParam Optional<NodeCacheKey[]> keys)
+  public ResponseEntity<ConfigDataV1> cache(
+      @RequestParam Optional<Boolean> refresh, @RequestParam Optional<NodeCacheKey[]> keys)
       throws IOException {
-    return ResponseEntity.ok(configService.newCacheV1(stakeholder, keys));
+    Boolean cacheV1InProgress = configService.getCacheV1InProgress(stakeholder);
+    if (refresh.orElse(false) || cfgDataV1 == null) {
+      if (cacheV1InProgress) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+      }
+      cfgDataV1 = configService.newCacheV1(stakeholder);
+    }
+    return ResponseEntity.ok(cfgDataV1);
   }
 
   @Operation(

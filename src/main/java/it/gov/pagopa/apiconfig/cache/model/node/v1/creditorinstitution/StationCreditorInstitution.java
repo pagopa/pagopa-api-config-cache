@@ -3,6 +3,7 @@ package it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,7 +17,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class StationCreditorInstitution {
+public class StationCreditorInstitution implements Serializable {
 
   @JsonProperty(value = "creditor_institution_code", required = true)
   private String creditorInstitutionCode;

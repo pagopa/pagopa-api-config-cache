@@ -1,9 +1,10 @@
 package it.gov.pagopa.apiconfig.cache.model.node.v1.common;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Optional;
 
-public enum Protocol {
+public enum Protocol implements Serializable {
   HTTPS("HTTPS"),
   HTTP("HTTP");
 

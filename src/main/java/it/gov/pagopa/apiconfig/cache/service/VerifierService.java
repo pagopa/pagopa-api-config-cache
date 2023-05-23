@@ -28,7 +28,7 @@ public class VerifierService {
 
   public List<String> getPaV2() {
     List<String> allPaForVerifier = paRepository.findAllPaForVerifier();
-    redisRepository.pushToRedisAsync(keyV1 + keySuffix, allPaForVerifier);
+    //    redisRepository.pushToRedisAsync(keyV1 + keySuffix, allPaForVerifier);
     return allPaForVerifier;
   }
 }

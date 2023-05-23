@@ -90,6 +90,8 @@ class NodoConfigCacheTest {
   void setUp() {
     org.springframework.test.util.ReflectionTestUtils.setField(configService, "keyV1Id", "value");
     org.springframework.test.util.ReflectionTestUtils.setField(configService, "keyV1", "value");
+    org.springframework.test.util.ReflectionTestUtils.setField(
+        configService, "keyV1InProgress", "value");
   }
 
   @Test

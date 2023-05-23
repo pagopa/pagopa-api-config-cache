@@ -2,6 +2,7 @@ package it.gov.pagopa.apiconfig.cache.model.node.v1.psp;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +18,7 @@ import lombok.ToString;
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
-public class BrokerPsp {
+public class BrokerPsp implements Serializable {
 
   @JsonProperty(value = "broker_psp_code", required = true)
   private String brokerPspCode;

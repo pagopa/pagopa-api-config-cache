@@ -3,6 +3,9 @@ package it.gov.pagopa.apiconfig.cache.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
+import it.gov.pagopa.apiconfig.cache.redis.ObjectRedisSerializer;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,6 +46,19 @@ public class RedisConfig {
   }
 
   @Bean
+  @Qualifier("configData")
+  public RedisTemplate<String, ConfigDataV1> redisObjectTemplateConfigDataV1(
+      final LettuceConnectionFactory connectionFactory, ObjectMapper objectMapper) {
+    RedisTemplate<String, ConfigDataV1> template = new RedisTemplate<>();
+    template.setKeySerializer(new StringRedisSerializer());
+    final var objectRedisSerializer = new ObjectRedisSerializer<ConfigDataV1>();
+    template.setValueSerializer(objectRedisSerializer);
+    template.setConnectionFactory(connectionFactory);
+    return template;
+  }
+
+  @Bean
+  @Qualifier("object")
   public RedisTemplate<String, Object> redisObjectTemplate(
       final LettuceConnectionFactory connectionFactory, ObjectMapper objectMapper) {
     RedisTemplate<String, Object> template = new RedisTemplate<>();

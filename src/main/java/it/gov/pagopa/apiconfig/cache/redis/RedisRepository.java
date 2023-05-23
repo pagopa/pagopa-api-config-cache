@@ -4,6 +4,7 @@ import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -12,14 +13,32 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class RedisRepository {
 
-  @Autowired private RedisTemplate<String, Object> redisTemplate;
+  @Autowired
+  @Qualifier("configData")
+  private RedisTemplate<String, ConfigDataV1> redisTemplate;
 
-  public void save(String key, Object value, long ttl) {
+  @Autowired
+  @Qualifier("object")
+  private RedisTemplate<String, Object> redisTemplateObj;
+
+  public void save(String key, ConfigDataV1 value, long ttl) {
     redisTemplate.opsForValue().set(key, value, Duration.ofMinutes(ttl));
   }
 
-  public Object get(String key) {
+  public void save(String key, Object value, long ttl) {
+    redisTemplateObj.opsForValue().set(key, value, Duration.ofMinutes(ttl));
+  }
+
+  public ConfigDataV1 getConfigDataV1(String key) {
     return redisTemplate.opsForValue().get(key);
+  }
+
+  public Object get(String key) {
+    return redisTemplateObj.opsForValue().get(key);
+  }
+
+  public void remove(String key) {
+    redisTemplateObj.delete(key);
   }
 
   @Async
@@ -35,7 +54,7 @@ public class RedisRepository {
   }
 
   @Async
-  public void pushToRedisAsync(String key, Object object) {
+  public void pushToRedisAsync(String key, ConfigDataV1 object) {
     try {
       log.info("saving {} on redis", key);
       save(key, object, 1440);
@@ -54,6 +73,20 @@ public class RedisRepository {
     }
     if (v != null) {
       return (String) v;
+    } else {
+      return null;
+    }
+  }
+
+  public Boolean getBooleanByKeyId(String keyId) {
+    Object v = null;
+    try {
+      v = get(keyId);
+    } catch (Exception e) {
+      log.error("could not get key " + keyId + " from redis", e);
+    }
+    if (v != null) {
+      return (Boolean) v;
     } else {
       return null;
     }
