@@ -93,7 +93,7 @@ oracledev:
 oracleprod:
   !!merge <<: *basecache
   image:
-    repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
+    repository: pagopapcommonacr.azurecr.io/pagopaapiconfigcache
     tag: "0.5.0-nocolumns"
   ingress:
     !!merge <<: *ingress
