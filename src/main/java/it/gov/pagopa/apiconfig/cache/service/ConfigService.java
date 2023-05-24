@@ -456,6 +456,7 @@ public class ConfigService {
       removeCacheV1InProgress(stakeholder);
       return null;
     }
+    removeCacheV1InProgress(stakeholder);
     return configData;
   }
 
