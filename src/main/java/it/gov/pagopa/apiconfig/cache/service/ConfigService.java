@@ -252,7 +252,6 @@ public class ConfigService {
     ConfigDataV1 configData = new ConfigDataV1();
 
     try {
-
       boolean allKeys = keys.isEmpty();
       List<NodeCacheKey> list =
           keys.map(k -> Arrays.asList(k)).orElse(new ArrayList<NodeCacheKey>());
@@ -454,7 +453,7 @@ public class ConfigService {
     } catch (Exception e) {
       log.error("Errore creazione cache", e);
       removeCacheV1InProgress(stakeholder);
-      return null;
+      throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
     }
     removeCacheV1InProgress(stakeholder);
     return configData;
