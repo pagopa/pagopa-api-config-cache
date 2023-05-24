@@ -109,13 +109,15 @@ if [ "$install" == 1 ]; then
       --set postgresql.enabled=true \
       --set oracle.enabled=true \
       --set oracledev.enabled=true \
-      --set oracle.image.tag=$version \
-      --set oracledev.image.tag=$version \
-      --set postgresql.image.tag=$version \
+      --set oracleprod.enabled=true \
+      --set oracleprod.image.tag=0.5.0-nocolumns \
       --set postgresql.canaryDelivery.create="False" \
       --set oracle.canaryDelivery.create="False" \
       --set oracledev.canaryDelivery.create="False" \
       $NAME $DIR
+#      --set oracle.image.tag=$version \
+#      --set oracledev.image.tag=$version \
+#      --set postgresql.image.tag=$version \
 #      --set oracledev.forceRedeploy=true \
     exit 0
   fi

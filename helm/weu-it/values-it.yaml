@@ -89,3 +89,5 @@ oracle:
       DB_CONFIG_PASSWORD: "oracle-db-cfg-password"
 oracledev:
   enabled: false
+oracleprod:
+  enabled: false
