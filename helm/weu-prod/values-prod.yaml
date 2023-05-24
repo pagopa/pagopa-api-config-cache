@@ -81,6 +81,7 @@ oracle:
     DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
     JAVA_OPTS: "-Dspring.jpa.show-sql=false"
     DATABASE_ID: "o"
+    IN_PROGRESS_TTL: "30"
     HEALTHCHECK_QUERY: "select 1 from dual"
   secretProvider:
     !!merge <<: *azureSecretProvider

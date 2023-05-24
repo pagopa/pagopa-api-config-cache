@@ -164,7 +164,9 @@ public class ConfigService {
   private static String daCompilare = "DA COMPILARE";
   private static String schemaInstance = "http://www.w3.org/2001/XMLSchema-instance";
   private static double costoConvenzioneFormat = 100d;
-  private static long TTL_IN_PROGRESS = 15;
+
+  @Value("${in_progress.ttl}")
+  private long IN_PROGRESS_TTL;
 
   @Autowired private PlatformTransactionManager transactionManager;
   @Autowired private RedisRepository redisRepository;
@@ -466,7 +468,7 @@ public class ConfigService {
 
   public void setCacheV1InProgress(String stakeholder) {
     String actualKeyV1 = keyV1InProgress.replace("{{stakeholder}}", stakeholder) + keySuffix;
-    redisRepository.save(actualKeyV1, true, TTL_IN_PROGRESS);
+    redisRepository.save(actualKeyV1, true, IN_PROGRESS_TTL);
   }
 
   public Boolean getCacheV1InProgress(String stakeholder) {
