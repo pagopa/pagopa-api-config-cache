@@ -1280,7 +1280,6 @@ public class ConfigService {
     return keyV1Id.replace(stakeholderPlaceholder, stakeholder) + keySuffix;
   }
   private String getKeyV1InProgress(String stakeholder){
-
     return keyV1InProgress.replace(stakeholderPlaceholder, stakeholder) + keySuffix;
   }
 }
