@@ -125,6 +125,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -204,34 +205,18 @@ public class ConfigService {
   @Autowired private InformativePaDetailRepository informativePaDetailRepository;
   @Autowired private InformativePaFasceRepository informativePaFasceRepository;
 
-  private JAXBContext CtListaInformativePSPJaxbContext;
+  private JAXBContext ctListaInformativePSPJaxbContext;
+  private JAXBContext tplInformativaPSPJaxbContext;
+  private JAXBContext ctListaInformativeControparteJaxbContext;
 
-  {
+  @PostConstruct
+  private void setJaxb(){
     try {
-      CtListaInformativePSPJaxbContext = JAXBContext.newInstance(CtListaInformativePSP.class);
+      ctListaInformativePSPJaxbContext = JAXBContext.newInstance(CtListaInformativePSP.class);
+      tplInformativaPSPJaxbContext = JAXBContext.newInstance(TplInformativaPSP.class);
+      ctListaInformativeControparteJaxbContext = JAXBContext.newInstance(CtListaInformativeControparte.class);
     } catch (JAXBException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  private JAXBContext TplInformativaPSPJaxbContext;
-
-  {
-    try {
-      TplInformativaPSPJaxbContext = JAXBContext.newInstance(TplInformativaPSP.class);
-    } catch (JAXBException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  private JAXBContext CtListaInformativeControparteJaxbContext;
-
-  {
-    try {
-      CtListaInformativeControparteJaxbContext =
-          JAXBContext.newInstance(CtListaInformativeControparte.class);
-    } catch (JAXBException e) {
-      throw new RuntimeException(e);
+      throw new AppException(AppError.INTERNAL_SERVER_ERROR,e);
     }
   }
 
@@ -673,7 +658,7 @@ public class ConfigService {
       JAXBElement<TplInformativaPSP> informativaPSP =
           new it.gov.pagopa.apiconfig.cache.imported.template.ObjectFactory()
               .createInformativaPSP(element);
-      Marshaller marshaller = TplInformativaPSPJaxbContext.createMarshaller();
+      Marshaller marshaller = tplInformativaPSPJaxbContext.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
       marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaInstance);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -690,7 +675,7 @@ public class ConfigService {
       JAXBElement<CtListaInformativePSP> informativaPSP =
           new it.gov.pagopa.apiconfig.cache.imported.catalogodati.ObjectFactory()
               .createListaInformativePSP(element);
-      Marshaller marshaller = CtListaInformativePSPJaxbContext.createMarshaller();
+      Marshaller marshaller = ctListaInformativePSPJaxbContext.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
       marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaInstance);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -707,7 +692,7 @@ public class ConfigService {
       JAXBElement<CtListaInformativeControparte> informativaPA =
           new it.gov.pagopa.apiconfig.cache.imported.controparti.ObjectFactory()
               .createListaInformativeControparte(element);
-      Marshaller marshaller = CtListaInformativeControparteJaxbContext.createMarshaller();
+      Marshaller marshaller = ctListaInformativeControparteJaxbContext.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
       marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaInstance);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
