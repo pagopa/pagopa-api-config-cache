@@ -95,7 +95,7 @@ public class FdrCacheController {
       if (cacheV1InProgress) {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
       }
-      cfgDataV1 = configService.newCacheV1(stakeholder);
+      cfgDataV1 = configService.newCacheV1(stakeholder, keys);
     }
     return ResponseEntity.ok(cfgDataV1);
   }

@@ -19,4 +19,9 @@ dependencies:
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
     alias: oracledev
     condition: oracledev.enabled
+  - name: microservice-chart
+    version: 3.0.0
+    repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
+    alias: oracleprod
+    condition: oracleprod.enabled
 
