@@ -187,7 +187,7 @@ stages:
           - checkout: self
             clean: true
             persistCredentials: true
-          - task: KubectlInstaller@0
+
           - template: templates/maven-github-release/template.yaml@pagopaCommons
             parameters:
               release_branch: $(BRANCH_NAME)
@@ -318,7 +318,7 @@ stages:
                   - checkout: self
                     persistCredentials: true
                     clean: true
-
+                  - task: KubectlInstaller@0
                   - script: |
                       echo "deploy version is $(deploy_version)"
                       git checkout $(BRANCH_NAME)
