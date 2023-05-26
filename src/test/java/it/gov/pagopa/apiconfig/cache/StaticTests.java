@@ -6,10 +6,10 @@ import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.redis.ObjectRedisSerializer;
 import org.junit.jupiter.api.Test;
 
-public class StaticTests {
+class StaticTests {
 
   @Test
-  public void checkSerializer(){
+  void checkSerializer(){
     ObjectRedisSerializer<ConfigDataV1> serializer = new ObjectRedisSerializer<>();
     ConfigDataV1 cd = new ConfigDataV1();
     cd.setVersion("version1");
