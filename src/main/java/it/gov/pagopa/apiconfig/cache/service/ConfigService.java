@@ -166,7 +166,7 @@ public class ConfigService {
   private static String schemaInstance = "http://www.w3.org/2001/XMLSchema-instance";
   private static double costoConvenzioneFormat = 100d;
 
-  private static String STAKEHOLDER_PLACEHOLDER = "{{stakeholder}}";
+  private static String stakeholderPlaceholder = "{{stakeholder}}";
 
   @Value("${in_progress.ttl}")
   private long IN_PROGRESS_TTL;
@@ -1274,13 +1274,13 @@ public class ConfigService {
   }
 
   private String getKeyV1(String stakeholder){
-    return keyV1.replace(STAKEHOLDER_PLACEHOLDER, stakeholder) + keySuffix;
+    return keyV1.replace(stakeholderPlaceholder, stakeholder) + keySuffix;
   }
   private String getKeyV1Id(String stakeholder){
-    return keyV1Id.replace(STAKEHOLDER_PLACEHOLDER, stakeholder) + keySuffix;
+    return keyV1Id.replace(stakeholderPlaceholder, stakeholder) + keySuffix;
   }
   private String getKeyV1InProgress(String stakeholder){
 
-    return keyV1InProgress.replace(STAKEHOLDER_PLACEHOLDER, stakeholder) + keySuffix;
+    return keyV1InProgress.replace(stakeholderPlaceholder, stakeholder) + keySuffix;
   }
 }
