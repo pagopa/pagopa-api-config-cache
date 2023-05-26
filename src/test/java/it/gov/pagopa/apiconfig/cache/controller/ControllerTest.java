@@ -60,6 +60,8 @@ class ControllerTest {
   @CsvSource({
     "/stakeholders/node/cache/schemas/v1",
     "/stakeholders/node/cache/schemas/v1/id",
+    "/stakeholders/fdr/cache/schemas/v1",
+    "/stakeholders/fdr/cache/schemas/v1/id",
     "/stakeholders/verifier/cache/schemas/v1"
   })
   void testGets(String url) throws Exception {
