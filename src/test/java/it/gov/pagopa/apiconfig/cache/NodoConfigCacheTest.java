@@ -99,8 +99,11 @@ class NodoConfigCacheTest {
   @Test
   void getCacheV1Id() {
     when(redisRepository.getStringByKeyId(anyString())).thenReturn(TestUtils.cacheId);
+    when(redisRepository.getBooleanByKeyId(anyString())).thenReturn(true);
     CacheVersion cacheV1Id = configService.getCacheV1Id("");
     assertThat(cacheV1Id.getVersion().equals(TestUtils.cacheId));
+    Boolean inProgress = configService.getCacheV1InProgress("");
+    assertThat(inProgress);
   }
 
   @Test
