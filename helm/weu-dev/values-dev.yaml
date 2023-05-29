@@ -54,7 +54,7 @@ postgresql:
     path: /api-config-cache/p(/|$)(.*)
   envConfig:
     !!merge <<: *envConfig
-    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-cache-postgresql"
+    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql"
     DB_CONFIG_URL: "jdbc:postgresql://ndp.d.db-nodo-pagamenti.com:6432/nodo?sslmode=require&prepareThreshold=0&currentSchema=cfg"
     DB_CONFIG_USER: "cfg"
     DB_CONFIG_DRIVER: "org.postgresql.Driver"
@@ -75,7 +75,7 @@ oracle:
     path: /api-config-cache/o(/|$)(.*)
   envConfig:
     !!merge <<: *envConfig
-    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-cache-oracle"
+    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-oracle"
     DB_CONFIG_URL: "jdbc:oracle:thin:@db-nodo-pagamenti.d.db-nodo-pagamenti.com:1522/NDPSPCT_PP_NODO4_CFG"
     DB_CONFIG_USER: "NODO4_CFG"
     DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
@@ -97,7 +97,7 @@ oracledev:
     path: /api-config-cachedev/o(/|$)(.*)
   envConfig:
     !!merge <<: *envConfig
-    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-cache-oracle"
+    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-oracle"
     DB_CONFIG_URL: "jdbc:oracle:thin:@db-nodo-pagamenti.d.db-nodo-pagamenti.com:1522/NDPSPCT_NODO4_CFG"
     DB_CONFIG_USER: "NODO4_CFG_DEV"
     DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
@@ -119,7 +119,7 @@ oracleprod:
     path: /api-config-cachedev/oprod(/|$)(.*)
   envConfig:
     !!merge <<: *envConfig
-    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-cache-oracle"
+    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-oracle"
     DB_CONFIG_URL: "jdbc:oracle:thin:@db-nodo-pagamenti.d.db-nodo-pagamenti.com:1522/NDPSPCT_NODO4_CFG"
     DB_CONFIG_USER: "NODO4_CFG_EXPORT"
     DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
