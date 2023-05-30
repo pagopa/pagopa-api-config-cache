@@ -125,6 +125,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -165,6 +166,8 @@ public class ConfigService {
   private static String schemaInstance = "http://www.w3.org/2001/XMLSchema-instance";
   private static double costoConvenzioneFormat = 100d;
 
+  private static String stakeholderPlaceholder = "{{stakeholder}}";
+
   @Value("${in_progress.ttl}")
   private long IN_PROGRESS_TTL;
 
@@ -204,39 +207,24 @@ public class ConfigService {
   @Autowired private InformativePaDetailRepository informativePaDetailRepository;
   @Autowired private InformativePaFasceRepository informativePaFasceRepository;
 
-  private JAXBContext CtListaInformativePSPJaxbContext;
+  private JAXBContext ctListaInformativePSPJaxbContext;
+  private JAXBContext tplInformativaPSPJaxbContext;
+  private JAXBContext ctListaInformativeControparteJaxbContext;
 
-  {
+  @PostConstruct
+  public void postConstruct() {
     try {
-      CtListaInformativePSPJaxbContext = JAXBContext.newInstance(CtListaInformativePSP.class);
-    } catch (JAXBException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  private JAXBContext TplInformativaPSPJaxbContext;
-
-  {
-    try {
-      TplInformativaPSPJaxbContext = JAXBContext.newInstance(TplInformativaPSP.class);
-    } catch (JAXBException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  private JAXBContext CtListaInformativeControparteJaxbContext;
-
-  {
-    try {
-      CtListaInformativeControparteJaxbContext =
+      ctListaInformativePSPJaxbContext = JAXBContext.newInstance(CtListaInformativePSP.class);
+      tplInformativaPSPJaxbContext = JAXBContext.newInstance(TplInformativaPSP.class);
+      ctListaInformativeControparteJaxbContext =
           JAXBContext.newInstance(CtListaInformativeControparte.class);
     } catch (JAXBException e) {
-      throw new RuntimeException(e);
+      throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
     }
   }
 
   public ConfigDataV1 loadFromRedis(String stakeholder) {
-    String actualKey = keyV1.replace("{{stakeholder}}", stakeholder) + keySuffix;
+    String actualKey = getKeyV1(stakeholder);
     log.info("Initializing cache [" + actualKey + "]");
     ConfigDataV1 o = redisRepository.getConfigDataV1(actualKey);
     return o;
@@ -260,154 +248,154 @@ public class ConfigService {
 
       long startTime = System.nanoTime();
 
-      if (allKeys || list.contains(NodeCacheKey.creditorInstitutionBrokers)) {
+      if (allKeys || list.contains(NodeCacheKey.CREDITOR_INSTITUTION_BROKERS)) {
         List<BrokerCreditorInstitution> intpa = getBrokerDetails();
         HashMap<String, BrokerCreditorInstitution> intpamap = new HashMap<>();
         intpa.forEach(k -> intpamap.put(k.getBrokerCode(), k));
         configData.setCreditorInstitutionBrokers(intpamap);
       }
 
-      if (allKeys || list.contains(NodeCacheKey.pspBrokers)) {
+      if (allKeys || list.contains(NodeCacheKey.PSP_BROKERS)) {
         List<BrokerPsp> intpsp = getBrokerPspDetails();
         HashMap<String, BrokerPsp> intpspmap = new HashMap<>();
         intpsp.forEach(k -> intpspmap.put(k.getBrokerPspCode(), k));
         configData.setPspBrokers(intpspmap);
       }
 
-      if (allKeys || list.contains(NodeCacheKey.cdsCategories)) {
+      if (allKeys || list.contains(NodeCacheKey.CDS_CATEGORIES)) {
         List<CdsCategory> cdscats = getCdsCategories();
         HashMap<String, CdsCategory> cdscatsMap = new HashMap<>();
         cdscats.forEach(k -> cdscatsMap.put(k.getDescription(), k));
         configData.setCdsCategories(cdscatsMap);
       }
 
-      if (allKeys || list.contains(NodeCacheKey.cdsServices)) {
+      if (allKeys || list.contains(NodeCacheKey.CDS_SERVICES)) {
         List<CdsService> cdsServices = getCdsServices();
         HashMap<String, CdsService> cdsServicesMap = new HashMap<>();
         cdsServices.forEach(k -> cdsServicesMap.put(k.getIdentifier(), k));
         configData.setCdsServices(cdsServicesMap);
       }
 
-      if (allKeys || list.contains(NodeCacheKey.cdsSubjects)) {
+      if (allKeys || list.contains(NodeCacheKey.CDS_SUBJECTS)) {
         List<CdsSubject> cdsSubjects = getCdsSubjects();
         HashMap<String, CdsSubject> cdsSubjectsMap = new HashMap<>();
         cdsSubjects.forEach(k -> cdsSubjectsMap.put(k.getCreditorInstitutionCode(), k));
         configData.setCdsSubjects(cdsSubjectsMap);
       }
 
-      if (allKeys || list.contains(NodeCacheKey.cdsSubjectServices)) {
+      if (allKeys || list.contains(NodeCacheKey.CDS_SUBJECT_SERVICES)) {
         List<CdsSubjectService> cdsSubjectServices = getCdsSubjectServices();
         HashMap<String, CdsSubjectService> cdsSubjectServicesMap = new HashMap<>();
         cdsSubjectServices.forEach(k -> cdsSubjectServicesMap.put(k.getSubjectServiceId(), k));
         configData.setCdsSubjectServices(cdsSubjectServicesMap);
       }
 
-      if (allKeys || list.contains(NodeCacheKey.gdeConfigurations)) {
+      if (allKeys || list.contains(NodeCacheKey.GDE_CONFIGURATIONS)) {
         List<GdeConfiguration> gde = getGdeConfiguration();
         HashMap<String, GdeConfiguration> gdeMap = new HashMap<>();
         gde.forEach(k -> gdeMap.put(k.getIdentifier(), k));
         configData.setGdeConfigurations(gdeMap);
       }
 
-      if (allKeys || list.contains(NodeCacheKey.metadataDict)) {
+      if (allKeys || list.contains(NodeCacheKey.METADATA_DICT)) {
         List<MetadataDict> meta = getMetadataDict();
         HashMap<String, MetadataDict> metaMap = new HashMap<>();
         meta.forEach(k -> metaMap.put(k.getKey(), k));
         configData.setMetadataDict(metaMap);
       }
 
-      if (allKeys || list.contains(NodeCacheKey.configurations)) {
+      if (allKeys || list.contains(NodeCacheKey.CONFIGURATIONS)) {
         List<ConfigurationKey> configurationKeyList = getConfigurationKeys();
         HashMap<String, ConfigurationKey> configMap = new HashMap<>();
         configurationKeyList.forEach(k -> configMap.put(k.getIdentifier(), k));
         configData.setConfigurations(configMap);
       }
 
-      if (allKeys || list.contains(NodeCacheKey.ftpServers)) {
+      if (allKeys || list.contains(NodeCacheKey.FTP_SERVERS)) {
         List<FtpServer> ftpservers = getFtpServers();
         HashMap<String, FtpServer> ftpserversMap = new HashMap<>();
         ftpservers.forEach(k -> ftpserversMap.put(k.getId().toString(), k));
         configData.setFtpServers(ftpserversMap);
       }
 
-      if (allKeys || list.contains(NodeCacheKey.languages)) {
+      if (allKeys || list.contains(NodeCacheKey.LANGUAGES)) {
         HashMap<String, String> codiciLingua = new HashMap<>();
         codiciLingua.put("IT", "IT");
         codiciLingua.put("DE", "DE");
         configData.setLanguages(codiciLingua);
       }
 
-      if (allKeys || list.contains(NodeCacheKey.plugins)) {
+      if (allKeys || list.contains(NodeCacheKey.PLUGINS)) {
         List<Plugin> plugins = getWfespPluginConfigurations();
         HashMap<String, Plugin> pluginsMap = new HashMap<>();
         plugins.forEach(k -> pluginsMap.put(k.getIdServPlugin(), k));
         configData.setPlugins(pluginsMap);
       }
 
-      if (allKeys || list.contains(NodeCacheKey.psps)) {
+      if (allKeys || list.contains(NodeCacheKey.PSPS)) {
         List<PaymentServiceProvider> psps = getAllPaymentServiceProviders();
         HashMap<String, PaymentServiceProvider> pspMap = new HashMap<>();
         psps.forEach(k -> pspMap.put(k.getPspCode(), k));
         configData.setPsps(pspMap);
       }
 
-      if (allKeys || list.contains(NodeCacheKey.channels)) {
+      if (allKeys || list.contains(NodeCacheKey.CHANNELS)) {
         List<Channel> canali = getAllCanali();
         HashMap<String, Channel> canalimap = new HashMap<>();
         canali.forEach(k -> canalimap.put(k.getChannelCode(), k));
         configData.setChannels(canalimap);
       }
 
-      if (allKeys || list.contains(NodeCacheKey.paymentTypes)) {
+      if (allKeys || list.contains(NodeCacheKey.PAYMENT_TYPES)) {
         List<PaymentType> tipiv = getPaymentTypes();
         HashMap<String, PaymentType> tipivMap = new HashMap<>();
         tipiv.forEach(k -> tipivMap.put(k.getPaymentTypeCode(), k));
         configData.setPaymentTypes(tipivMap);
       }
 
-      if (allKeys || list.contains(NodeCacheKey.pspChannelPaymentTypes)) {
+      if (allKeys || list.contains(NodeCacheKey.PSP_CHANNEL_PAYMENT_TYPES)) {
         List<PspChannelPaymentType> pspChannels = getPaymentServiceProvidersChannels();
         HashMap<String, PspChannelPaymentType> pspChannelsMap = new HashMap<>();
         pspChannels.forEach(k -> pspChannelsMap.put(k.getIdentifier(), k));
         configData.setPspChannelPaymentTypes(pspChannelsMap);
       }
 
-      if (allKeys || list.contains(NodeCacheKey.creditorInstitutions)) {
+      if (allKeys || list.contains(NodeCacheKey.CREDITOR_INSTITUTIONS)) {
         List<CreditorInstitution> pas = getCreditorInstitutions();
         HashMap<String, CreditorInstitution> pamap = new HashMap<>();
         pas.forEach(k -> pamap.put(k.getCreditorInstitutionCode(), k));
         configData.setCreditorInstitutions(pamap);
       }
 
-      if (allKeys || list.contains(NodeCacheKey.encodings)) {
+      if (allKeys || list.contains(NodeCacheKey.ENCODINGS)) {
         List<Encoding> encodings = getEncodings();
         HashMap<String, Encoding> encodingsMap = new HashMap<>();
         encodings.forEach(k -> encodingsMap.put(k.getCodeType(), k));
         configData.setEncodings(encodingsMap);
       }
 
-      if (allKeys || list.contains(NodeCacheKey.creditorInstitutionEncodings)) {
+      if (allKeys || list.contains(NodeCacheKey.CREDITOR_INSTITUTION_ENCODINGS)) {
         List<CreditorInstitutionEncoding> ciencodings = getCreditorInstitutionEncodings();
         HashMap<String, CreditorInstitutionEncoding> ciencodingsMap = new HashMap<>();
         ciencodings.forEach(k -> ciencodingsMap.put(k.getIdentifier(), k));
         configData.setCreditorInstitutionEncodings(ciencodingsMap);
       }
 
-      if (allKeys || list.contains(NodeCacheKey.creditorInstitutionStations)) {
+      if (allKeys || list.contains(NodeCacheKey.CREDITOR_INSTITUTION_STATIONS)) {
         List<StationCreditorInstitution> paspa = findAllPaStazioniPa();
         HashMap<String, StationCreditorInstitution> paspamap = new HashMap<>();
         paspa.forEach(k -> paspamap.put(k.getIdentifier(), k));
         configData.setCreditorInstitutionStations(paspamap);
       }
 
-      if (allKeys || list.contains(NodeCacheKey.stations)) {
+      if (allKeys || list.contains(NodeCacheKey.STATIONS)) {
         List<Station> stazioni = findAllStazioni();
         HashMap<String, Station> stazionimap = new HashMap<>();
         stazioni.forEach(k -> stazionimap.put(k.getStationCode(), k));
         configData.setStations(stazionimap);
       }
 
-      if (allKeys || list.contains(NodeCacheKey.ibans)) {
+      if (allKeys || list.contains(NodeCacheKey.IBANS)) {
         List<Iban> ibans = getCurrentIbans();
         HashMap<String, Iban> ibansMap = new HashMap<>();
         ibans.forEach(k -> ibansMap.put(k.getIdentifier(), k));
@@ -415,19 +403,19 @@ public class ConfigService {
       }
 
       if (allKeys
-          || list.contains(NodeCacheKey.pspInformations)
-          || list.contains(NodeCacheKey.pspInformationTemplates)) {
+          || list.contains(NodeCacheKey.PSP_INFORMATIONS)
+          || list.contains(NodeCacheKey.PSP_INFORMATION_TEMPLATES)) {
         Pair<List<PspInformation>, List<PspInformation>> informativePspAndTemplates =
             getInformativePspAndTemplates();
 
-        if (allKeys || list.contains(NodeCacheKey.pspInformations)) {
+        if (allKeys || list.contains(NodeCacheKey.PSP_INFORMATIONS)) {
           List<PspInformation> infopsps = informativePspAndTemplates.getLeft();
           HashMap<String, PspInformation> infopspsMap = new HashMap<>();
           infopsps.forEach(k -> infopspsMap.put(k.getPsp(), k));
           configData.setPspInformations(infopspsMap);
         }
 
-        if (allKeys || list.contains(NodeCacheKey.pspInformationTemplates)) {
+        if (allKeys || list.contains(NodeCacheKey.PSP_INFORMATION_TEMPLATES)) {
           List<PspInformation> infopspTemplates = informativePspAndTemplates.getRight();
           HashMap<String, PspInformation> infopspTemplatesMap = new HashMap<>();
           infopspTemplates.forEach(k -> infopspTemplatesMap.put(k.getPsp(), k));
@@ -435,7 +423,7 @@ public class ConfigService {
         }
       }
 
-      if (allKeys || list.contains(NodeCacheKey.creditorInstitutionInformations)) {
+      if (allKeys || list.contains(NodeCacheKey.CREDITOR_INSTITUTION_INFORMATIONS)) {
         List<CreditorInstitutionInformation> infopas = getInformativePa();
         HashMap<String, CreditorInstitutionInformation> infopasMap = new HashMap<>();
         infopas.forEach(k -> infopasMap.put(k.getPa(), k));
@@ -448,8 +436,8 @@ public class ConfigService {
 
       configData.setVersion("" + endTime);
 
-      String actualKey = keyV1.replace("{{stakeholder}}", stakeholder) + keySuffix;
-      String actualKeyV1 = keyV1Id.replace("{{stakeholder}}", stakeholder) + keySuffix;
+      String actualKey = getKeyV1(stakeholder);
+      String actualKeyV1 = getKeyV1Id(stakeholder);
 
       redisRepository.pushToRedisAsync(actualKey, actualKeyV1, configData);
     } catch (Exception e) {
@@ -462,23 +450,23 @@ public class ConfigService {
   }
 
   public void removeCacheV1InProgress(String stakeholder) {
-    String actualKeyV1 = keyV1InProgress.replace("{{stakeholder}}", stakeholder) + keySuffix;
+    String actualKeyV1 = getKeyV1InProgress(stakeholder);
     redisRepository.remove(actualKeyV1);
   }
 
   public void setCacheV1InProgress(String stakeholder) {
-    String actualKeyV1 = keyV1InProgress.replace("{{stakeholder}}", stakeholder) + keySuffix;
+    String actualKeyV1 = getKeyV1InProgress(stakeholder);
     redisRepository.save(actualKeyV1, true, IN_PROGRESS_TTL);
   }
 
   public Boolean getCacheV1InProgress(String stakeholder) {
-    String actualKeyV1 = keyV1InProgress.replace("{{stakeholder}}", stakeholder) + keySuffix;
+    String actualKeyV1 = getKeyV1InProgress(stakeholder);
     return Optional.ofNullable(redisRepository.getBooleanByKeyId(actualKeyV1))
         .orElse(Boolean.FALSE);
   }
 
   public CacheVersion getCacheV1Id(String stakeholder) {
-    String actualKeyV1 = keyV1Id.replace("{{stakeholder}}", stakeholder) + keySuffix;
+    String actualKeyV1 = getKeyV1Id(stakeholder);
     String cacheId =
         Optional.ofNullable(redisRepository.getStringByKeyId(actualKeyV1))
             .orElseThrow(() -> new AppException(AppError.CACHE_ID_NOT_FOUND, actualKeyV1));
@@ -673,7 +661,7 @@ public class ConfigService {
       JAXBElement<TplInformativaPSP> informativaPSP =
           new it.gov.pagopa.apiconfig.cache.imported.template.ObjectFactory()
               .createInformativaPSP(element);
-      Marshaller marshaller = TplInformativaPSPJaxbContext.createMarshaller();
+      Marshaller marshaller = tplInformativaPSPJaxbContext.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
       marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaInstance);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -690,7 +678,7 @@ public class ConfigService {
       JAXBElement<CtListaInformativePSP> informativaPSP =
           new it.gov.pagopa.apiconfig.cache.imported.catalogodati.ObjectFactory()
               .createListaInformativePSP(element);
-      Marshaller marshaller = CtListaInformativePSPJaxbContext.createMarshaller();
+      Marshaller marshaller = ctListaInformativePSPJaxbContext.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
       marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaInstance);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -707,7 +695,7 @@ public class ConfigService {
       JAXBElement<CtListaInformativeControparte> informativaPA =
           new it.gov.pagopa.apiconfig.cache.imported.controparti.ObjectFactory()
               .createListaInformativeControparte(element);
-      Marshaller marshaller = CtListaInformativeControparteJaxbContext.createMarshaller();
+      Marshaller marshaller = ctListaInformativeControparteJaxbContext.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
       marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaInstance);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -1135,7 +1123,7 @@ public class ConfigService {
 
   public List<CreditorInstitutionInformation> getInformativePa() {
     log.info("loading InformativePa");
-    List<IbanValidiPerPa> allIbans = ibanValidiPerPaRepository.findAll();
+    List<IbanValidiPerPa> allIbans = ibanValidiPerPaRepository.findAllFetchingPas();
     List<InformativePaMaster> allMasters = informativePaMasterRepository.findAll();
     List<InformativePaFasce> allFasce = informativePaFasceRepository.findAll();
     List<Pa> pas = paRepository.findAll();
@@ -1284,5 +1272,17 @@ public class ConfigService {
     ZonedDateTime dateTime = ts.toInstant().atZone(ZoneId.systemDefault());
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     return DatatypeFactory.newInstance().newXMLGregorianCalendar(formatter.format(dateTime));
+  }
+
+  private String getKeyV1(String stakeholder) {
+    return keyV1.replace(stakeholderPlaceholder, stakeholder) + keySuffix;
+  }
+
+  private String getKeyV1Id(String stakeholder) {
+    return keyV1Id.replace(stakeholderPlaceholder, stakeholder) + keySuffix;
+  }
+
+  private String getKeyV1InProgress(String stakeholder) {
+    return keyV1InProgress.replace(stakeholderPlaceholder, stakeholder) + keySuffix;
   }
 }

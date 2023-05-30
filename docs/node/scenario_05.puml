@@ -3,17 +3,20 @@ Scenario 05:
   Stakeholder (e.g. API-Config, SelfCare) refreshes cache data
 '/
 @startuml
+participant Stakeholder
+participant APIM
+participant "API Config\nCache" as Cache
 Stakeholder -> APIM: <b>/stakeholders/node/cache/schemas/v1?refresh=true</b>
-APIM -> APIM: Check <b>refresh</b> is required
-APIM -> "API Config\nCache": <b>/stakeholders/node/cache/schemas/v1
-"API Config\nCache" -> Redis: Save cache data with key <b>apicfg_*_node_v1</b>
-"API Config\nCache" -> Redis: Save cache version with key <b>apicfg_*_node_v1_id</b>
+APIM -> Cache: <b>/stakeholders/node/cache/schemas/v1?refresh=true</b>
+Cache -> Cache: Check <b>refresh</b> is required
+Cache -> Redis: Save cache data with key <b>apicfg_*_node_v1_in_progress</b>
+Cache -> Cache: Generate cache data
+Cache -> Redis: Save cache data with key <b>apicfg_*_node_v1</b>
+Cache -> Redis: Save cache version with key <b>apicfg_*_node_v1_id</b>
+Cache -> Redis: Remove cache with key <b>apicfg_*_node_v1_in_progress</b>
 note right
   <b>*</b> regards the database version (o or p)
 end note
-"API Config\nCache" --> APIM: Return cache data
-APIM [#ff0000]--> Redis: Save cache data
-note right
-  this is a necessary workaround to allow APIM to read cache on Redis
-end note
+Cache --> APIM: Return cache data
+APIM --> Stakeholder: Return cache data
 @enduml

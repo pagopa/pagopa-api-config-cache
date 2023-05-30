@@ -54,7 +54,7 @@ public class RedisRepository {
   }
 
   @Async
-  public void pushToRedisAsync(String key, ConfigDataV1 object) {
+  public void pushToRedisAsync(String key, Object object) {
     try {
       log.info("saving {} on redis", key);
       save(key, object, 1440);

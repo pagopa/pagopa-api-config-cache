@@ -54,7 +54,7 @@ postgresql:
     path: /api-config-cache/pr(/|$)(.*)
   envConfig:
     !!merge <<: *envConfig
-    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-cache-postgresql"
+    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql"
     DB_CONFIG_URL: "jdbc:postgresql://pagopa-u-weu-nodo-flexible-postgresql.postgres.database.azure.com:6432/nodo-replica?sslmode=require&prepareThreshold=0&currentSchema=cfg"
     DB_CONFIG_USER: "cfg"
     DB_CONFIG_DRIVER: "org.postgresql.Driver"
@@ -75,7 +75,7 @@ oracle:
     path: /api-config-cache/or(/|$)(.*)
   envConfig:
     !!merge <<: *envConfig
-    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-cache-oracle"
+    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-oracle"
     DB_CONFIG_URL: "jdbc:oracle:thin:@db-nodo-pagamenti-prf.u.db-nodo-pagamenti.com:1524/NDPSPCST_NODO4_CFG"
     DB_CONFIG_USER: "NODO4_CFG"
     DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
