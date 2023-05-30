@@ -461,8 +461,7 @@ public class ConfigService {
 
   public Boolean getCacheV1InProgress(String stakeholder) {
     String actualKeyV1 = getKeyV1InProgress(stakeholder);
-    return Optional.ofNullable(redisRepository.getBooleanByKeyId(actualKeyV1))
-        .orElse(Boolean.FALSE);
+    return redisRepository.getBooleanByKeyId(actualKeyV1);
   }
 
   public CacheVersion getCacheV1Id(String stakeholder) {

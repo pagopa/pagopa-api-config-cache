@@ -88,7 +88,7 @@ public class RedisRepository {
     if (v != null) {
       return (Boolean) v;
     } else {
-      return null;
+      return Boolean.FALSE;
     }
   }
 }
