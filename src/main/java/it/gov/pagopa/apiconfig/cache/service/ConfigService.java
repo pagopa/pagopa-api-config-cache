@@ -226,8 +226,7 @@ public class ConfigService {
   public ConfigDataV1 loadFromRedis(String stakeholder) {
     String actualKey = getKeyV1(stakeholder);
     log.info("Initializing cache [" + actualKey + "]");
-    ConfigDataV1 o = redisRepository.getConfigDataV1(actualKey);
-    return o;
+    return redisRepository.getConfigDataV1(actualKey);
   }
 
   public ConfigDataV1 newCacheV1(String stakeholder) throws IOException {
