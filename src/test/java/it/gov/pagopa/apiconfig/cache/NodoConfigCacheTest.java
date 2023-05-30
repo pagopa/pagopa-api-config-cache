@@ -94,6 +94,8 @@ class NodoConfigCacheTest {
     org.springframework.test.util.ReflectionTestUtils.setField(configService, "keyV1", "value");
     org.springframework.test.util.ReflectionTestUtils.setField(
         configService, "keyV1InProgress", "value");
+
+    configService.postConstruct();
   }
 
   @Test
@@ -136,6 +138,7 @@ class NodoConfigCacheTest {
         .thenReturn(TestUtils.cdsSoggettiServizi);
     when(cdsSoggettoRepository.findAll()).thenReturn(TestUtils.cdsSoggetti);
     when(cdsCategorieRepository.findAll()).thenReturn(TestUtils.cdsCategorie);
+    when(informativePaMasterRepository.findAll()).thenReturn(TestUtils.informativePaMaster);
 
     ConfigDataV1 allData = configService.newCacheV1("node");
     assertThat(allData.getConfigurations())
@@ -267,8 +270,7 @@ class NodoConfigCacheTest {
     when(dizionarioMetadatiRepository.findAll()).thenReturn(TestUtils.mockMetadataDicts);
     when(paRepository.findAll()).thenReturn(TestUtils.pas);
 
-    ConfigDataV1 allData = configService.newCacheV1("node",Optional.of(new NodeCacheKey[]{NodeCacheKey.CONFIGURATIONS,
-        NodeCacheKey.METADATA_DICT,NodeCacheKey.CREDITOR_INSTITUTIONS}));
+    ConfigDataV1 allData = configService.newCacheV1("node",Optional.of(NodeCacheKey.values()));
     assertThat(allData.getConfigurations())
         .containsKey(
             TestUtils.mockConfigurationKeys.get(0).getConfigCategory()

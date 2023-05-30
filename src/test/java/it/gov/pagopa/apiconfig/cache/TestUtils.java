@@ -18,6 +18,8 @@ import it.gov.pagopa.apiconfig.starter.entity.DizionarioMetadati;
 import it.gov.pagopa.apiconfig.starter.entity.FtpServers;
 import it.gov.pagopa.apiconfig.starter.entity.GdeConfig;
 import it.gov.pagopa.apiconfig.starter.entity.IbanValidiPerPa;
+import it.gov.pagopa.apiconfig.starter.entity.InformativePaDetail;
+import it.gov.pagopa.apiconfig.starter.entity.InformativePaMaster;
 import it.gov.pagopa.apiconfig.starter.entity.IntermediariPa;
 import it.gov.pagopa.apiconfig.starter.entity.IntermediariPsp;
 import it.gov.pagopa.apiconfig.starter.entity.Pa;
@@ -27,6 +29,7 @@ import it.gov.pagopa.apiconfig.starter.entity.PspCanaleTipoVersamentoCanale;
 import it.gov.pagopa.apiconfig.starter.entity.Stazioni;
 import it.gov.pagopa.apiconfig.starter.entity.TipiVersamento;
 import it.gov.pagopa.apiconfig.starter.entity.WfespPluginConf;
+import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -140,6 +143,7 @@ public class TestUtils {
               .modelloPagamento(1L)
               .pspCanaleTipoVersamento(pspCanaliTv.get(0))
               .fkCdiMaster(CdiMaster.builder().id(1L).build())
+              .tags("Maestro")
               .build(),
           CdiDetail.builder()
               .id(2L)
@@ -148,6 +152,7 @@ public class TestUtils {
               .modelloPagamento(2L)
               .pspCanaleTipoVersamento(pspCanaliTv.get(1))
               .fkCdiMaster(CdiMaster.builder().id(2L).build())
+              .tags("Maestro")
               .build());
 
   public static List<CdiMasterValid> cdiMasterValid =
@@ -158,6 +163,7 @@ public class TestUtils {
               .cdiDetail(Arrays.asList(cdiDetail.get(0)))
               .stornoPagamento(true)
               .marcaBolloDigitale(true)
+              .dataInizioValidita(new Timestamp(0))
               .build(),
           CdiMasterValid.builder()
               .id(2L)
@@ -165,6 +171,7 @@ public class TestUtils {
               .cdiDetail(Arrays.asList(cdiDetail.get(1)))
               .stornoPagamento(true)
               .marcaBolloDigitale(true)
+              .dataInizioValidita(new Timestamp(0))
               .build());
   public static List<CdiFasciaCostoServizio> cdiFasciaCostoServizio =
       Arrays.asList(
@@ -206,7 +213,13 @@ public class TestUtils {
 
   public static List<IbanValidiPerPa> ibans =
       Arrays.asList(
-          IbanValidiPerPa.builder().ibanAccredito("type1").fkPa(1l).pa(pas.get(0)).build(),
+          IbanValidiPerPa.builder()
+              .ibanAccredito("type1").fkPa(1l).pa(pas.get(0))
+              .idBancaSeller("0")
+              .idMerchant("1")
+              .chiaveAvvio("2")
+              .chiaveEsito("3")
+              .build(),
           IbanValidiPerPa.builder().ibanAccredito("type2").fkPa(2l).pa(pas.get(1)).build());
 
   public static List<Codifiche> encodings =
@@ -273,4 +286,14 @@ public class TestUtils {
               .servizio(cdsServizi.get(1))
               .soggetto(cdsSoggetti.get(1))
               .build());
+
+  public static List<InformativePaDetail> informativePaDetails = Arrays.asList(
+      InformativePaDetail.builder().flagDisponibilita(Boolean.TRUE).build(),
+      InformativePaDetail.builder().flagDisponibilita(Boolean.FALSE).build()
+  );
+
+  public static List<InformativePaMaster> informativePaMaster = Arrays.asList(
+      InformativePaMaster.builder().fkPa(pas.get(0)).details(informativePaDetails).build(),
+      InformativePaMaster.builder().fkPa(pas.get(1)).details(informativePaDetails).build()
+  );
 }

@@ -212,7 +212,7 @@ public class ConfigService {
   private JAXBContext ctListaInformativeControparteJaxbContext;
 
   @PostConstruct
-  private void setJaxb(){
+  public void postConstruct(){
     try {
       ctListaInformativePSPJaxbContext = JAXBContext.newInstance(CtListaInformativePSP.class);
       tplInformativaPSPJaxbContext = JAXBContext.newInstance(TplInformativaPSP.class);
@@ -1122,7 +1122,7 @@ public class ConfigService {
 
   public List<CreditorInstitutionInformation> getInformativePa() {
     log.info("loading InformativePa");
-    List<IbanValidiPerPa> allIbans = ibanValidiPerPaRepository.findAll();
+    List<IbanValidiPerPa> allIbans = ibanValidiPerPaRepository.findAllFetchingPas();
     List<InformativePaMaster> allMasters = informativePaMasterRepository.findAll();
     List<InformativePaFasce> allFasce = informativePaFasceRepository.findAll();
     List<Pa> pas = paRepository.findAll();
