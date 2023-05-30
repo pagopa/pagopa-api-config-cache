@@ -19,9 +19,7 @@ public class TestValueOperation implements ValueOperations {
   }
 
   @Override
-  public void set(Object key, Object value, long timeout, TimeUnit unit) {
-
-  }
+  public void set(Object key, Object value, long timeout, TimeUnit unit) {}
 
   @Override
   public Boolean setIfAbsent(Object key, Object value) {
@@ -44,9 +42,7 @@ public class TestValueOperation implements ValueOperations {
   }
 
   @Override
-  public void multiSet(Map map) {
-
-  }
+  public void multiSet(Map map) {}
 
   @Override
   public Boolean multiSetIfAbsent(Map map) {
@@ -124,9 +120,7 @@ public class TestValueOperation implements ValueOperations {
   }
 
   @Override
-  public void set(Object key, Object value, long offset) {
-
-  }
+  public void set(Object key, Object value, long offset) {}
 
   @Override
   public Long size(Object key) {

@@ -28,20 +28,21 @@ class RedisTest {
 
   @BeforeEach
   void setUp() {
-    org.springframework.test.util.ReflectionTestUtils.setField(redisRepository, "redisTemplate", redisTemplate);
-    org.springframework.test.util.ReflectionTestUtils.setField(redisRepository, "redisTemplate", redisTemplateObj);
+    org.springframework.test.util.ReflectionTestUtils.setField(
+        redisRepository, "redisTemplate", redisTemplate);
+    org.springframework.test.util.ReflectionTestUtils.setField(
+        redisRepository, "redisTemplate", redisTemplateObj);
   }
 
   @Test
   void test() {
     when(redisTemplateObj.opsForValue()).thenReturn(testValueOperation);
     redisRepository.pushToRedisAsync("", "", new ConfigDataV1());
-    verify(testValueOperation,times(2)).set(any(),any(),any());
+    verify(testValueOperation, times(2)).set(any(), any(), any());
 
     assertThat(testValueOperation.get("").equals(redisRepository.get("")));
-    testValueOperation.set("",Boolean.TRUE);
-    redisRepository.pushToRedisAsync("",testValueOperation.get(""));
+    testValueOperation.set("", Boolean.TRUE);
+    redisRepository.pushToRedisAsync("", testValueOperation.get(""));
     assertThat(testValueOperation.get("").equals(redisRepository.getBooleanByKeyId("")));
   }
-
 }
