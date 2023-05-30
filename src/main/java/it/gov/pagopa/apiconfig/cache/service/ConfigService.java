@@ -226,8 +226,7 @@ public class ConfigService {
   public ConfigDataV1 loadFromRedis(String stakeholder) {
     String actualKey = getKeyV1(stakeholder);
     log.info("Initializing cache [" + actualKey + "]");
-    ConfigDataV1 o = redisRepository.getConfigDataV1(actualKey);
-    return o;
+    return redisRepository.getConfigDataV1(actualKey);
   }
 
   public ConfigDataV1 newCacheV1(String stakeholder) throws IOException {
@@ -461,8 +460,7 @@ public class ConfigService {
 
   public Boolean getCacheV1InProgress(String stakeholder) {
     String actualKeyV1 = getKeyV1InProgress(stakeholder);
-    return Optional.ofNullable(redisRepository.getBooleanByKeyId(actualKeyV1))
-        .orElse(Boolean.FALSE);
+    return redisRepository.getBooleanByKeyId(actualKeyV1);
   }
 
   public CacheVersion getCacheV1Id(String stakeholder) {

@@ -90,7 +90,7 @@ public class FdrCacheController {
   public ResponseEntity<ConfigDataV1> cache(
       @RequestParam Optional<Boolean> refresh, @RequestParam Optional<NodeCacheKey[]> keys)
       throws IOException {
-    Boolean cacheV1InProgress = configService.getCacheV1InProgress(stakeholder);
+    boolean cacheV1InProgress = configService.getCacheV1InProgress(stakeholder);
     if (refresh.orElse(false) || cfgDataV1 == null) {
       if (cacheV1InProgress) {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
