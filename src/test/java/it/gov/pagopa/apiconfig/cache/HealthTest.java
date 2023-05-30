@@ -3,12 +3,8 @@ package it.gov.pagopa.apiconfig.cache;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.when;
 
-import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
-import it.gov.pagopa.apiconfig.cache.repository.VerifierRepository;
 import it.gov.pagopa.apiconfig.cache.service.HealthCheckService;
-import it.gov.pagopa.apiconfig.cache.service.VerifierService;
 import it.gov.pagopa.apiconfig.starter.repository.HealthCheckRepository;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

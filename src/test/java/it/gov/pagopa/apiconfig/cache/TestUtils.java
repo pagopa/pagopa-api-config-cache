@@ -214,7 +214,9 @@ public class TestUtils {
   public static List<IbanValidiPerPa> ibans =
       Arrays.asList(
           IbanValidiPerPa.builder()
-              .ibanAccredito("type1").fkPa(1l).pa(pas.get(0))
+              .ibanAccredito("type1")
+              .fkPa(1l)
+              .pa(pas.get(0))
               .idBancaSeller("0")
               .idMerchant("1")
               .chiaveAvvio("2")
@@ -287,13 +289,13 @@ public class TestUtils {
               .soggetto(cdsSoggetti.get(1))
               .build());
 
-  public static List<InformativePaDetail> informativePaDetails = Arrays.asList(
-      InformativePaDetail.builder().flagDisponibilita(Boolean.TRUE).build(),
-      InformativePaDetail.builder().flagDisponibilita(Boolean.FALSE).build()
-  );
+  public static List<InformativePaDetail> informativePaDetails =
+      Arrays.asList(
+          InformativePaDetail.builder().flagDisponibilita(Boolean.TRUE).build(),
+          InformativePaDetail.builder().flagDisponibilita(Boolean.FALSE).build());
 
-  public static List<InformativePaMaster> informativePaMaster = Arrays.asList(
-      InformativePaMaster.builder().fkPa(pas.get(0)).details(informativePaDetails).build(),
-      InformativePaMaster.builder().fkPa(pas.get(1)).details(informativePaDetails).build()
-  );
+  public static List<InformativePaMaster> informativePaMaster =
+      Arrays.asList(
+          InformativePaMaster.builder().fkPa(pas.get(0)).details(informativePaDetails).build(),
+          InformativePaMaster.builder().fkPa(pas.get(1)).details(informativePaDetails).build());
 }

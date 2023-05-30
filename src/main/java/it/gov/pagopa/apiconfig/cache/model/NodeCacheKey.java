@@ -2,33 +2,35 @@ package it.gov.pagopa.apiconfig.cache.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(type="string",allowableValues = {
-    "creditorInstitutions",
-    "creditorInstitutionBrokers",
-    "stations",
-    "creditorInstitutionStations",
-    "encodings",
-    "creditorInstitutionEncodings",
-    "ibans",
-    "creditorInstitutionInformations",
-    "psps",
-    "pspBrokers",
-    "paymentTypes",
-    "pspChannelPaymentTypes",
-    "plugins",
-    "pspInformationTemplates",
-    "pspInformations",
-    "channels",
-    "cdsServices",
-    "cdsSubjects",
-    "cdsSubjectServices",
-    "cdsCategories",
-    "configurations",
-    "ftpServers",
-    "languages",
-    "gdeConfigurations",
-    "metadataDict"
-})
+@Schema(
+    type = "string",
+    allowableValues = {
+      "creditorInstitutions",
+      "creditorInstitutionBrokers",
+      "stations",
+      "creditorInstitutionStations",
+      "encodings",
+      "creditorInstitutionEncodings",
+      "ibans",
+      "creditorInstitutionInformations",
+      "psps",
+      "pspBrokers",
+      "paymentTypes",
+      "pspChannelPaymentTypes",
+      "plugins",
+      "pspInformationTemplates",
+      "pspInformations",
+      "channels",
+      "cdsServices",
+      "cdsSubjects",
+      "cdsSubjectServices",
+      "cdsCategories",
+      "configurations",
+      "ftpServers",
+      "languages",
+      "gdeConfigurations",
+      "metadataDict"
+    })
 public enum NodeCacheKey {
   CREDITOR_INSTITUTIONS,
   CREDITOR_INSTITUTION_BROKERS,

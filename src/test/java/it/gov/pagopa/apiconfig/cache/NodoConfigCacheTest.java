@@ -39,7 +39,6 @@ import it.gov.pagopa.apiconfig.starter.repository.PspRepository;
 import it.gov.pagopa.apiconfig.starter.repository.StazioniRepository;
 import it.gov.pagopa.apiconfig.starter.repository.TipiVersamentoRepository;
 import it.gov.pagopa.apiconfig.starter.repository.WfespPluginConfRepository;
-import java.lang.reflect.Array;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -270,7 +269,7 @@ class NodoConfigCacheTest {
     when(dizionarioMetadatiRepository.findAll()).thenReturn(TestUtils.mockMetadataDicts);
     when(paRepository.findAll()).thenReturn(TestUtils.pas);
 
-    ConfigDataV1 allData = configService.newCacheV1("node",Optional.of(NodeCacheKey.values()));
+    ConfigDataV1 allData = configService.newCacheV1("node", Optional.of(NodeCacheKey.values()));
     assertThat(allData.getConfigurations())
         .containsKey(
             TestUtils.mockConfigurationKeys.get(0).getConfigCategory()

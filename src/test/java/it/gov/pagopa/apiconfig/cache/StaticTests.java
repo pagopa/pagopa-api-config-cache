@@ -11,20 +11,20 @@ import org.junit.jupiter.api.Test;
 class StaticTests {
 
   @Test
-  void checkSerializer(){
+  void checkSerializer() {
     ObjectRedisSerializer<ConfigDataV1> serializer = new ObjectRedisSerializer<>();
     ConfigDataV1 cd = new ConfigDataV1();
     cd.setVersion("version1");
     byte[] serialized = serializer.serialize(cd);
     assertThat(serializer.deserialize(serialized).equals(cd));
 
-    assertThat(serializer.deserialize(null)==null);
+    assertThat(serializer.deserialize(null) == null);
   }
 
   @Test
-  void checkKeyConverter(){
-    StringToNodeCacheKeyConverter stringToNodeCacheKeyConverter = new StringToNodeCacheKeyConverter();
+  void checkKeyConverter() {
+    StringToNodeCacheKeyConverter stringToNodeCacheKeyConverter =
+        new StringToNodeCacheKeyConverter();
     assertThat(stringToNodeCacheKeyConverter.convert("psps").equals(NodeCacheKey.PSPS));
   }
-
 }

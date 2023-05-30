@@ -212,13 +212,14 @@ public class ConfigService {
   private JAXBContext ctListaInformativeControparteJaxbContext;
 
   @PostConstruct
-  public void postConstruct(){
+  public void postConstruct() {
     try {
       ctListaInformativePSPJaxbContext = JAXBContext.newInstance(CtListaInformativePSP.class);
       tplInformativaPSPJaxbContext = JAXBContext.newInstance(TplInformativaPSP.class);
-      ctListaInformativeControparteJaxbContext = JAXBContext.newInstance(CtListaInformativeControparte.class);
+      ctListaInformativeControparteJaxbContext =
+          JAXBContext.newInstance(CtListaInformativeControparte.class);
     } catch (JAXBException e) {
-      throw new AppException(AppError.INTERNAL_SERVER_ERROR,e);
+      throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
     }
   }
 
@@ -1273,13 +1274,15 @@ public class ConfigService {
     return DatatypeFactory.newInstance().newXMLGregorianCalendar(formatter.format(dateTime));
   }
 
-  private String getKeyV1(String stakeholder){
+  private String getKeyV1(String stakeholder) {
     return keyV1.replace(stakeholderPlaceholder, stakeholder) + keySuffix;
   }
-  private String getKeyV1Id(String stakeholder){
+
+  private String getKeyV1Id(String stakeholder) {
     return keyV1Id.replace(stakeholderPlaceholder, stakeholder) + keySuffix;
   }
-  private String getKeyV1InProgress(String stakeholder){
+
+  private String getKeyV1InProgress(String stakeholder) {
     return keyV1InProgress.replace(stakeholderPlaceholder, stakeholder) + keySuffix;
   }
 }
