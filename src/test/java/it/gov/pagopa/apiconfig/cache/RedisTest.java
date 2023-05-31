@@ -56,5 +56,8 @@ class RedisTest {
 
     redisRepository.remove("s");
     verify(redisTemplateObj,times(1)).delete("s");
+
+    assertThat(redisRepository.getStringByKeyId("no") == null);
+    assertThat(!redisRepository.getBooleanByKeyId("no"));
   }
 }
