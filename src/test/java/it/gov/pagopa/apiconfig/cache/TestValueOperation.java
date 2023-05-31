@@ -2,6 +2,7 @@ package it.gov.pagopa.apiconfig.cache;
 
 import java.time.Duration;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -11,15 +12,17 @@ import org.springframework.data.redis.core.ValueOperations;
 
 public class TestValueOperation implements ValueOperations {
 
-  Object value = new Object();
+  Map<Object,Object> map = new HashMap<>();
 
   @Override
   public void set(Object key, Object value) {
-    this.value = value;
+    this.map.put(key,value);
   }
 
   @Override
-  public void set(Object key, Object value, long timeout, TimeUnit unit) {}
+  public void set(Object key, Object value, long timeout, TimeUnit unit) {
+    this.map.put(key,value);
+  }
 
   @Override
   public Boolean setIfAbsent(Object key, Object value) {
@@ -51,7 +54,7 @@ public class TestValueOperation implements ValueOperations {
 
   @Override
   public Object get(Object key) {
-    return value;
+    return this.map.get(key);
   }
 
   @Override

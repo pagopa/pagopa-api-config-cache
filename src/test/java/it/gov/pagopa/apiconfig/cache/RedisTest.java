@@ -36,13 +36,28 @@ class RedisTest {
 
   @Test
   void test() {
+    ConfigDataV1 configDataV1 = new ConfigDataV1();
+    configDataV1.setVersion("test");
     when(redisTemplateObj.opsForValue()).thenReturn(testValueOperation);
-    redisRepository.pushToRedisAsync("", "", new ConfigDataV1());
-    verify(testValueOperation, times(2)).set(any(), any(), any());
 
-    assertThat(testValueOperation.get("").equals(redisRepository.getConfigDataV1("")));
-    testValueOperation.set("", Boolean.TRUE);
-    redisRepository.pushToRedisAsync("", testValueOperation.get(""));
-    assertThat(testValueOperation.get("").equals(redisRepository.getBooleanByKeyId("")));
+
+    redisRepository.pushToRedisAsync("k", "kid", configDataV1);
+    verify(testValueOperation, times(2)).set(any(), any(), any());
+    assertThat(testValueOperation.get("k").equals(redisRepository.getConfigDataV1("k")));
+
+
+    testValueOperation.set("b", Boolean.TRUE);
+    redisRepository.pushToRedisAsync("b", testValueOperation.get("b"));
+    assertThat(testValueOperation.get("b").equals(redisRepository.getBooleanByKeyId("b")));
+
+    testValueOperation.set("s", "test1");
+    redisRepository.pushToRedisAsync("s", testValueOperation.get("s"));
+    assertThat(testValueOperation.get("s").equals(redisRepository.getStringByKeyId("s")));
+
+    redisRepository.remove("s");
+    verify(redisTemplateObj,times(1)).delete("s");
+
+    assertThat(redisRepository.getStringByKeyId("no") == null);
+    assertThat(!redisRepository.getBooleanByKeyId("no"));
   }
 }
