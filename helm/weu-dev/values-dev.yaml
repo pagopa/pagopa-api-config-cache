@@ -48,7 +48,7 @@ postgresql:
   !!merge <<: *basecache
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
-    tag: "0.5.0"
+    tag: "0.6.0"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cache/p(/|$)(.*)
@@ -70,7 +70,7 @@ oracle:
   !!merge <<: *basecache
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
-    tag: "0.5.0"
+    tag: "0.6.0"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cache/o(/|$)(.*)
@@ -93,7 +93,7 @@ oracledev:
   !!merge <<: *basecache
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
-    tag: "0.5.0"
+    tag: "0.6.0"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cachedev/o(/|$)(.*)
