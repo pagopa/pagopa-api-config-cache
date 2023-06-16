@@ -64,6 +64,9 @@ import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.PspChannelPaymentType;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.PspInformation;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
+import it.gov.pagopa.apiconfig.cache.util.Constants;
+import it.gov.pagopa.apiconfig.cache.util.JsonSerializer;
+import it.gov.pagopa.apiconfig.starter.entity.Cache;
 import it.gov.pagopa.apiconfig.starter.entity.CdiDetail;
 import it.gov.pagopa.apiconfig.starter.entity.CdiFasciaCostoServizio;
 import it.gov.pagopa.apiconfig.starter.entity.CdiInformazioniServizio;
@@ -76,6 +79,7 @@ import it.gov.pagopa.apiconfig.starter.entity.InformativePaMaster;
 import it.gov.pagopa.apiconfig.starter.entity.Pa;
 import it.gov.pagopa.apiconfig.starter.entity.Psp;
 import it.gov.pagopa.apiconfig.starter.entity.PspCanaleTipoVersamentoCanale;
+import it.gov.pagopa.apiconfig.starter.repository.CacheRepository;
 import it.gov.pagopa.apiconfig.starter.repository.CanaliViewRepository;
 import it.gov.pagopa.apiconfig.starter.repository.CdiDetailRepository;
 import it.gov.pagopa.apiconfig.starter.repository.CdiFasciaCostoServizioRepository;
@@ -148,6 +152,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Transactional
 public class ConfigService {
 
+  @Value("${info.application.version}")
+  private String appVersion;
+
   @Value("#{'${canary}'=='true' ? '_canary' : ''}")
   private String keySuffix;
 
@@ -160,6 +167,9 @@ public class ConfigService {
   @Value("apicfg_${spring.database.id}_{{stakeholder}}_v1_in_progress")
   private String keyV1InProgress;
 
+  @Value("#{'${saveDB}'=='true'}")
+  private Boolean saveDB;
+
   private static String daCompilareFlusso =
       "DA COMPILARE (formato: [IDPSP]_dd-mm-yyyy - esempio: ESEMPIO_31-12-2001)";
   private static String daCompilare = "DA COMPILARE";
@@ -171,8 +181,10 @@ public class ConfigService {
   @Value("${in_progress.ttl}")
   private long IN_PROGRESS_TTL;
 
+  @Autowired private JsonSerializer jsonSerializer;
   @Autowired private PlatformTransactionManager transactionManager;
   @Autowired private RedisRepository redisRepository;
+  @Autowired private CacheRepository cacheRepository;
   @Autowired private ConfigMapper modelMapper;
   @Autowired private ConfigurationKeysRepository configurationKeysRepository;
   @Autowired private IntermediariPaRepository intermediariPaRepository;
@@ -437,6 +449,19 @@ public class ConfigService {
 
       String actualKey = getKeyV1(stakeholder);
       String actualKeyV1 = getKeyV1Id(stakeholder);
+
+
+      if(saveDB){
+        log.info("saving on CACHE table "+configData.getVersion());
+        cacheRepository.save(
+            Cache.builder()
+                .id(configData.getVersion())
+                .cache(jsonSerializer.serialize(configData))
+                .time(ZonedDateTime.now())
+                .version(Constants.GZIP_JSON_V1+"-"+appVersion)
+                .build());
+      }
+
 
       redisRepository.pushToRedisAsync(actualKey, actualKeyV1, configData);
     } catch (Exception e) {
@@ -715,8 +740,7 @@ public class ConfigService {
     List<CdiDetail> details = cdiDetailRepository.findAll();
     List<CdiInformazioniServizio> allInformazioni = cdiInformazioniServizioRepository.findAll();
 
-    List<PspInformation> informativePsp =
-        getInformativePsp(psps, masters, details, preferences, allFasce, allInformazioni);
+    List<PspInformation> informativePsp = new ArrayList<>();// getInformativePsp(psps, masters, details, preferences, allFasce, allInformazioni);
     List<PspInformation> templateInformativePsp = getTemplateInformativePsp(masters);
 
     return Pair.of(informativePsp, templateInformativePsp);

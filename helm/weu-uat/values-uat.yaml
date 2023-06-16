@@ -82,6 +82,7 @@ oracle:
     JAVA_OPTS: "-Dspring.jpa.show-sql=false"
     DATABASE_ID: "o"
     HEALTHCHECK_QUERY: "select 1 from dual"
+    SAVE_DB: "true"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:
