@@ -1,6 +1,5 @@
 package it.gov.pagopa.apiconfig.cache.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import java.io.ByteArrayOutputStream;
@@ -23,5 +22,4 @@ public class JsonSerializer {
     gzipOut.close();
     return baos.toByteArray();
   }
-
 }

@@ -450,18 +450,20 @@ public class ConfigService {
       String actualKey = getKeyV1(stakeholder);
       String actualKeyV1 = getKeyV1Id(stakeholder);
 
-
-      if(saveDB){
-        log.info("saving on CACHE table "+configData.getVersion());
-        cacheRepository.save(
-            Cache.builder()
-                .id(configData.getVersion())
-                .cache(jsonSerializer.serialize(configData))
-                .time(ZonedDateTime.now())
-                .version(Constants.GZIP_JSON_V1+"-"+appVersion)
-                .build());
+      if (saveDB) {
+        log.info("saving on CACHE table " + configData.getVersion());
+        try {
+          cacheRepository.save(
+              Cache.builder()
+                  .id(configData.getVersion())
+                  .cache(jsonSerializer.serialize(configData))
+                  .time(ZonedDateTime.now())
+                  .version(Constants.GZIP_JSON_V1 + "-" + appVersion)
+                  .build());
+        } catch (Exception e) {
+          log.error("could not save on db", e);
+        }
       }
-
 
       redisRepository.pushToRedisAsync(actualKey, actualKeyV1, configData);
     } catch (Exception e) {
@@ -740,7 +742,9 @@ public class ConfigService {
     List<CdiDetail> details = cdiDetailRepository.findAll();
     List<CdiInformazioniServizio> allInformazioni = cdiInformazioniServizioRepository.findAll();
 
-    List<PspInformation> informativePsp = new ArrayList<>();// getInformativePsp(psps, masters, details, preferences, allFasce, allInformazioni);
+    List<PspInformation> informativePsp =
+        new ArrayList<>(); // getInformativePsp(psps, masters, details, preferences, allFasce,
+                           // allInformazioni);
     List<PspInformation> templateInformativePsp = getTemplateInformativePsp(masters);
 
     return Pair.of(informativePsp, templateInformativePsp);

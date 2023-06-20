@@ -40,11 +40,9 @@ class RedisTest {
     configDataV1.setVersion("test");
     when(redisTemplateObj.opsForValue()).thenReturn(testValueOperation);
 
-
     redisRepository.pushToRedisAsync("k", "kid", configDataV1);
     verify(testValueOperation, times(2)).set(any(), any(), any());
     assertThat(testValueOperation.get("k").equals(redisRepository.getConfigDataV1("k")));
-
 
     testValueOperation.set("b", Boolean.TRUE);
     redisRepository.pushToRedisAsync("b", testValueOperation.get("b"));
@@ -55,7 +53,7 @@ class RedisTest {
     assertThat(testValueOperation.get("s").equals(redisRepository.getStringByKeyId("s")));
 
     redisRepository.remove("s");
-    verify(redisTemplateObj,times(1)).delete("s");
+    verify(redisTemplateObj, times(1)).delete("s");
 
     assertThat(redisRepository.getStringByKeyId("no") == null);
     assertThat(!redisRepository.getBooleanByKeyId("no"));

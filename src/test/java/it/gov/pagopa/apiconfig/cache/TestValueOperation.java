@@ -12,16 +12,16 @@ import org.springframework.data.redis.core.ValueOperations;
 
 public class TestValueOperation implements ValueOperations {
 
-  Map<Object,Object> map = new HashMap<>();
+  Map<Object, Object> map = new HashMap<>();
 
   @Override
   public void set(Object key, Object value) {
-    this.map.put(key,value);
+    this.map.put(key, value);
   }
 
   @Override
   public void set(Object key, Object value, long timeout, TimeUnit unit) {
-    this.map.put(key,value);
+    this.map.put(key, value);
   }
 
   @Override
