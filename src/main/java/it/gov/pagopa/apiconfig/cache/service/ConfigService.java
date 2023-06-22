@@ -744,7 +744,7 @@ public class ConfigService {
 
     List<PspInformation> informativePsp =
         new ArrayList<>(); // getInformativePsp(psps, masters, details, preferences, allFasce,
-                           // allInformazioni);
+    // allInformazioni);
     List<PspInformation> templateInformativePsp = getTemplateInformativePsp(masters);
 
     return Pair.of(informativePsp, templateInformativePsp);
