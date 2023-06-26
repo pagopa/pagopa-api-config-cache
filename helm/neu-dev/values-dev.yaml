@@ -1,8 +1,5 @@
 basecache: &basecache
   namespace: "apiconfig"
-  image:
-    repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
-    tag: "0.1.8"
   livenessProbe:
     httpGet:
       path: /actuator/health/liveness
@@ -21,9 +18,10 @@ basecache: &basecache
       memory: "512Mi"
       cpu: "0.25"
     limits:
-      memory: "2G"
-      cpu: "1"
+      memory: "6G"
+      cpu: "2.5"
   envConfig: &envConfig
+    TZ: "Europe/Rome"
     AZURE_INSIGHTS_ENABLED: "true"
     REDIS_HOST: "pagopa-d-redis.redis.cache.windows.net"
     REDIS_PORT: "6380"
@@ -49,6 +47,9 @@ basecache: &basecache
 # Configuration used to update image tag
 postgresql:
   !!merge <<: *basecache
+  image:
+    repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
+    tag: "0.5.0"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cache/p(/|$)(.*)
@@ -67,6 +68,9 @@ postgresql:
       DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
 oracle:
   !!merge <<: *basecache
+  image:
+    repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
+    tag: "0.5.0"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cache/o(/|$)(.*)
@@ -79,6 +83,7 @@ oracle:
     JAVA_OPTS: "-Dspring.jpa.show-sql=false"
     DATABASE_ID: "o"
     HEALTHCHECK_QUERY: "select 1 from dual"
+    SAVE_DB: "true"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:
@@ -86,6 +91,9 @@ oracle:
       DB_CONFIG_PASSWORD: "oracle-db-cfg-password"
 oracledev:
   !!merge <<: *basecache
+  image:
+    repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
+    tag: "0.5.0"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cachedev/o(/|$)(.*)
@@ -98,8 +106,32 @@ oracledev:
     JAVA_OPTS: "-Dspring.jpa.show-sql=false"
     DATABASE_ID: "odev"
     HEALTHCHECK_QUERY: "select 1 from dual"
+    SAVE_DB: "true"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "oracle-db-cfg-dev-password"
+oracleprod:
+  !!merge <<: *basecache
+  image:
+    repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
+    tag: "0.5.0-nocolumns"
+  ingress:
+    !!merge <<: *ingress
+    path: /api-config-cachedev/oprod(/|$)(.*)
+  envConfig:
+    !!merge <<: *envConfig
+    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-oracle"
+    DB_CONFIG_URL: "jdbc:oracle:thin:@db-nodo-pagamenti.d.db-nodo-pagamenti.com:1522/NDPSPCT_NODO4_CFG"
+    DB_CONFIG_USER: "NODO4_CFG_EXPORT"
+    DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
+    JAVA_OPTS: "-Dspring.jpa.show-sql=false"
+    DATABASE_ID: "oprod"
+    HEALTHCHECK_QUERY: "select 1 from dual"
+    SAVE_DB: "true"
+  secretProvider:
+    !!merge <<: *azureSecretProvider
+    envSecrets:
+      !!merge <<: *envSecret
+      DB_CONFIG_PASSWORD: "oracle-db-cfg-prod-password"

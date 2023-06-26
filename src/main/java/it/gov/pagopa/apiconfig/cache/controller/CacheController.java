@@ -19,11 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 public abstract class CacheController {
@@ -43,7 +40,7 @@ public abstract class CacheController {
       summary = "Get selected key of fdr v1 config",
       security = {@SecurityRequirement(name = "ApiKey")},
       tags = {
-          "Cache",
+        "Cache",
       })
   @ApiResponses(
       value = {

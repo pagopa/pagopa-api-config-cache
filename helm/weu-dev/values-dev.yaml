@@ -21,6 +21,7 @@ basecache: &basecache
       memory: "6G"
       cpu: "2.5"
   envConfig: &envConfig
+    TZ: "Europe/Rome"
     AZURE_INSIGHTS_ENABLED: "true"
     REDIS_HOST: "pagopa-d-redis.redis.cache.windows.net"
     REDIS_PORT: "6380"
@@ -48,7 +49,7 @@ postgresql:
   !!merge <<: *basecache
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
-    tag: "0.5.0"
+    tag: "0.6.0"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cache/p(/|$)(.*)
@@ -60,6 +61,7 @@ postgresql:
     DB_CONFIG_DRIVER: "org.postgresql.Driver"
     DATABASE_ID: "p"
     HEALTHCHECK_QUERY: "select 1"
+    SAVE_DB: "true"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:
@@ -69,7 +71,7 @@ oracle:
   !!merge <<: *basecache
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
-    tag: "0.5.0"
+    tag: "0.6.0"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cache/o(/|$)(.*)
@@ -82,6 +84,7 @@ oracle:
     JAVA_OPTS: "-Dspring.jpa.show-sql=false"
     DATABASE_ID: "o"
     HEALTHCHECK_QUERY: "select 1 from dual"
+    SAVE_DB: "true"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:
@@ -91,7 +94,7 @@ oracledev:
   !!merge <<: *basecache
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
-    tag: "0.5.0"
+    tag: "0.6.0"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cachedev/o(/|$)(.*)
@@ -104,6 +107,7 @@ oracledev:
     JAVA_OPTS: "-Dspring.jpa.show-sql=false"
     DATABASE_ID: "odev"
     HEALTHCHECK_QUERY: "select 1 from dual"
+    SAVE_DB: "true"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:
@@ -126,6 +130,7 @@ oracleprod:
     JAVA_OPTS: "-Dspring.jpa.show-sql=false"
     DATABASE_ID: "oprod"
     HEALTHCHECK_QUERY: "select 1 from dual"
+    SAVE_DB: "true"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:
