@@ -460,6 +460,7 @@ public class ConfigService {
                   .time(ZonedDateTime.now())
                   .version(Constants.GZIP_JSON_V1 + "-" + appVersion)
                   .build());
+          log.info("saved on CACHE table " + configData.getVersion());
         } catch (Exception e) {
           log.error("[ALERT] could not save on db", e);
         }
