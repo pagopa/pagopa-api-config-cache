@@ -450,23 +450,27 @@ public class ConfigService {
       String actualKey = getKeyV1(stakeholder);
       String actualKeyV1 = getKeyV1Id(stakeholder);
 
+      log.info(String.format("saving on Redis %s %s", actualKey, actualKeyV1));
+      redisRepository.pushToRedisAsync(actualKey, actualKeyV1, configData);
+
       if (saveDB) {
         log.info("saving on CACHE table " + configData.getVersion());
         try {
+          // to prevent error caused by version string too long (e.g. appVersion containing branch
+          // name)
+          // it is cut the version string to 32 chars.
           cacheRepository.save(
               Cache.builder()
                   .id(configData.getVersion())
                   .cache(jsonSerializer.serialize(configData))
                   .time(ZonedDateTime.now())
-                  .version(Constants.GZIP_JSON_V1 + "-" + appVersion)
+                  .version((Constants.GZIP_JSON_V1 + "-" + appVersion).substring(0, 32))
                   .build());
           log.info("saved on CACHE table " + configData.getVersion());
         } catch (Exception e) {
           log.error("[ALERT] could not save on db", e);
         }
       }
-
-      redisRepository.pushToRedisAsync(actualKey, actualKeyV1, configData);
     } catch (Exception e) {
       log.error("[ALERT] problem to generate cache", e);
       removeCacheV1InProgress(stakeholder);
@@ -613,7 +617,9 @@ public class ConfigService {
 
   public List<StationCreditorInstitution> findAllPaStazioniPa() {
     log.info("loading PaStations");
-    return paStazioniRepository.findAllFetching().stream()
+    return paStazioniRepository
+        .findAllFetching()
+        .stream()
         .map(
             s ->
                 new StationCreditorInstitution(
@@ -647,7 +653,9 @@ public class ConfigService {
 
   public List<PspChannelPaymentType> getPaymentServiceProvidersChannels() {
     log.info("loading PspChannels");
-    return pspCanaleTipoVersamentoCanaleRepository.findAllFetching().stream()
+    return pspCanaleTipoVersamentoCanaleRepository
+        .findAllFetching()
+        .stream()
         .map(
             p ->
                 new PspChannelPaymentType(
@@ -761,7 +769,8 @@ public class ConfigService {
     log.info("loading InformativePsp");
 
     List<CtListaInformativePSP> informativePspSingle =
-        masters.stream()
+        masters
+            .stream()
             .filter(
                 m -> details.stream().anyMatch(d -> d.getFkCdiMaster().getId().equals(m.getId())))
             .map(
@@ -799,7 +808,8 @@ public class ConfigService {
                   ctInformativaPSP.setIdentificativoFlusso(cdiMaster.getIdInformativaPsp());
 
                   List<CtInformativaDetail> masterdetails =
-                      details.stream()
+                      details
+                          .stream()
                           .filter(d -> d.getFkCdiMaster().getId().equals(cdiMaster.getId()))
                           .filter(
                               d ->
@@ -820,7 +830,8 @@ public class ConfigService {
                                     "".getBytes(StandardCharsets.UTF_8));
 
                                 List<CdiInformazioniServizio> it =
-                                    allInformazioni.stream()
+                                    allInformazioni
+                                        .stream()
                                         .filter(
                                             ii ->
                                                 ii.getFkCdiDetail()
@@ -847,7 +858,8 @@ public class ConfigService {
                                 }
 
                                 List<CtFasciaCostoServizio> fasce =
-                                    allFasce.stream()
+                                    allFasce
+                                        .stream()
                                         .filter(
                                             fas ->
                                                 fas.getFkCdiDetail()
@@ -874,7 +886,8 @@ public class ConfigService {
                                 ctListaFasceCostoServizio.getFasciaCostoServizio().addAll(fasce);
 
                                 List<CdiPreference> cdiPreferenceStream =
-                                    preferences.stream()
+                                    preferences
+                                        .stream()
                                         .filter(
                                             pref ->
                                                 pref.getCdiDetail()
@@ -882,7 +895,8 @@ public class ConfigService {
                                                     .equals(cdiDetail.getId()))
                                         .collect(Collectors.toList());
                                 List<String> buyers =
-                                    cdiPreferenceStream.stream()
+                                    cdiPreferenceStream
+                                        .stream()
                                         .map(p -> p.getBuyer())
                                         .collect(Collectors.toList());
                                 CtListaConvenzioni listaConvenzioni = new CtListaConvenzioni();
@@ -895,7 +909,8 @@ public class ConfigService {
                                     pspCanaleTipoVersamento.getCanale().getIdCanale());
 
                                 List<Double> costiConvenzione =
-                                    cdiPreferenceStream.stream()
+                                    cdiPreferenceStream
+                                        .stream()
                                         .map(p -> p.getCostoConvenzione() / costoConvenzioneFormat)
                                         .collect(Collectors.toList());
 
@@ -958,7 +973,8 @@ public class ConfigService {
     CtListaInformativePSP informativaEmpty = new CtListaInformativePSP();
 
     List<PspInformation> informativePspSingleCache =
-        informativePspSingle.stream()
+        informativePspSingle
+            .stream()
             .map(
                 i ->
                     PspInformation.builder()
@@ -987,7 +1003,8 @@ public class ConfigService {
         psp -> {
           try {
             Optional<CdiMasterValid> masters =
-                allMasters.stream()
+                allMasters
+                    .stream()
                     .filter(m -> m.getFkPsp().getObjId().equals(psp.getObjId()))
                     .findFirst();
             TplInformativaPSP tplInformativaPSP = new TplInformativaPSP();
@@ -1120,7 +1137,8 @@ public class ConfigService {
   }
 
   private List<CtContoAccredito> manageContiAccredito(List<IbanValidiPerPa> ibans) {
-    return ibans.stream()
+    return ibans
+        .stream()
         .map(
             iban -> {
               String idNegozio = null;
@@ -1176,14 +1194,16 @@ public class ConfigService {
               Boolean.TRUE.equals(pa.getPagamentoPressoPsp()) ? 1 : 0);
 
           List<IbanValidiPerPa> ibans =
-              allIbans.stream()
+              allIbans
+                  .stream()
                   .filter(i -> i.getFkPa().equals(pa.getObjId()))
                   .collect(Collectors.toList());
           List<CtContoAccredito> contiaccredito = manageContiAccredito(ibans);
           ctInformativaControparte.getInformativaContoAccredito().addAll(contiaccredito);
 
           List<InformativePaMaster> masters =
-              allMasters.stream()
+              allMasters
+                  .stream()
                   .filter(m -> m.getFkPa().getObjId().equals(pa.getObjId()))
                   .collect(Collectors.toList());
           InformativePaMaster master = null;
@@ -1200,12 +1220,14 @@ public class ConfigService {
             List<InformativePaDetail> infodetails = master.getDetails();
 
             List<CtErogazione> disponibilita =
-                infodetails.stream()
+                infodetails
+                    .stream()
                     .filter(d -> d.getFlagDisponibilita())
                     .map(d -> infoDetailToCtErogazione(allFasce, d))
                     .collect(Collectors.toList());
             List<CtErogazione> indisponibilita =
-                infodetails.stream()
+                infodetails
+                    .stream()
                     .filter(d -> !d.getFlagDisponibilita())
                     .map(d -> infoDetailToCtErogazione(allFasce, d))
                     .collect(Collectors.toList());
@@ -1251,7 +1273,8 @@ public class ConfigService {
     List<CtFasciaOraria> fasce = new ArrayList<>();
     try {
       fasce =
-          allFasce.stream()
+          allFasce
+              .stream()
               .filter(f -> f.getFkInformativaPaDetail().getId().equals(det.getId()))
               .map(
                   f -> {

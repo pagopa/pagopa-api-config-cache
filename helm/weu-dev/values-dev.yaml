@@ -71,7 +71,7 @@ oracle:
   !!merge <<: *basecache
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
-    tag: "0.6.0"
+    tag: "0.6.0-2-NOD-378-out-of-memory"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cache/o(/|$)(.*)
@@ -94,7 +94,7 @@ oracledev:
   !!merge <<: *basecache
   image:
     repository: pagopadcommonacr.azurecr.io/pagopaapiconfigcache
-    tag: "0.6.0"
+    tag: "0.6.0-2-NOD-378-out-of-memory"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cachedev/o(/|$)(.*)
