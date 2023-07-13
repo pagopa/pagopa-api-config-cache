@@ -84,7 +84,7 @@ oracle:
     IN_PROGRESS_TTL: "20"
     HEALTHCHECK_QUERY: "select 1 from dual"
     SAVE_DB: "true"
-    DEFAULT_LOGGING_LEVEL: "debug"
+    DEFAULT_LOGGING_LEVEL: "info" # TODO remove
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:
