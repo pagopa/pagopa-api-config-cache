@@ -456,12 +456,15 @@ public class ConfigService {
       if (saveDB) {
         log.info("saving on CACHE table " + configData.getVersion());
         try {
+          // to prevent error caused by version string too long (e.g. appVersion containing branch
+          // name)
+          // it is cut the version string to 32 chars.
           cacheRepository.save(
               Cache.builder()
                   .id(configData.getVersion())
                   .cache(jsonSerializer.serialize(configData))
                   .time(ZonedDateTime.now())
-                  .version(Constants.GZIP_JSON_V1 + "-" + appVersion)
+                  .version((Constants.GZIP_JSON_V1 + "-" + appVersion).substring(0, 32))
                   .build());
           log.info("saved on CACHE table " + configData.getVersion());
         } catch (Exception e) {
