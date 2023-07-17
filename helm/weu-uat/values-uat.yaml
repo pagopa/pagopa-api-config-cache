@@ -69,7 +69,7 @@ oracle:
   !!merge <<: *basecache
   image:
     repository: pagopaucommonacr.azurecr.io/pagopaapiconfigcache
-    tag: "0.6.0-2-NOD-378-out-of-memory"
+    tag: "0.6.0-3-NOD-383-jdbc-connection-error"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cache/o(/|$)(.*)
