@@ -4,7 +4,7 @@
     "title": "API-Config Cacher",
     "description": "Generate cache for regarding Nodo dei Pagamenti configuration",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.6.0-2-NOD-378-out-of-memory"
+    "version": "0.6.0-3-NOD-383-jdbc-connection-error"
   },
   "servers": [
     {
