@@ -126,10 +126,10 @@ class NodoConfigCacheTest {
     when(cdiPreferenceRepository.findAll()).thenReturn(TestUtils.cdiPreference);
     when(cdiFasceRepository.findAll()).thenReturn(TestUtils.cdiFasciaCostoServizio);
     when(cdiInformazioniServizioRepository.findAll()).thenReturn(TestUtils.cdiInformazioniServizio);
-    when(canaliRepository.findAllFetchingIntermediario()).thenReturn(TestUtils.canali);
+    when(canaliRepository.findAllFetchingIntermediario()).thenReturn(TestUtils.canaliViews);
     when(tipiVersamentoRepository.findAll()).thenReturn(TestUtils.tipiVersamento);
     when(pspCanaleTipoVersamentoCanaleRepository.findAllFetching())
-        .thenReturn(TestUtils.pspCanaliTv);
+        .thenReturn(TestUtils.pspCanaliTvc);
     when(ftpServersRepository.findAll()).thenReturn(TestUtils.ftpServers);
     when(gdeConfigRepository.findAll()).thenReturn(TestUtils.gdeConfigurations);
     when(wfespPluginConfRepository.findAll()).thenReturn(TestUtils.plugins);
@@ -171,8 +171,8 @@ class NodoConfigCacheTest {
         .containsKey(TestUtils.psps.get(0).getIdPsp())
         .containsKey(TestUtils.psps.get(1).getIdPsp());
     assertThat(allData.getChannels())
-        .containsKey(TestUtils.canali.get(0).getIdCanale())
-        .containsKey(TestUtils.canali.get(1).getIdCanale());
+        .containsKey(TestUtils.canaliViews.get(0).getIdCanale())
+        .containsKey(TestUtils.canaliViews.get(1).getIdCanale());
     assertThat(allData.getPaymentTypes())
         .containsKey(TestUtils.tipiVersamento.get(0).getTipoVersamento())
         .containsKey(TestUtils.tipiVersamento.get(0).getTipoVersamento());
@@ -180,15 +180,15 @@ class NodoConfigCacheTest {
         .containsKey(
             TestUtils.pspCanaliTv.get(0).getPsp().getIdPsp()
                 + "_"
-                + TestUtils.pspCanaliTv.get(0).getCanale().getIdCanale()
+                + TestUtils.pspCanaliTv.get(0).getCanaleTipoVersamento().getCanale().getIdCanale()
                 + "_"
-                + TestUtils.pspCanaliTv.get(0).getTipoVersamento().getTipoVersamento())
+                + TestUtils.pspCanaliTv.get(0).getCanaleTipoVersamento().getTipoVersamento().getTipoVersamento())
         .containsKey(
             TestUtils.pspCanaliTv.get(1).getPsp().getIdPsp()
                 + "_"
-                + TestUtils.pspCanaliTv.get(1).getCanale().getIdCanale()
+                + TestUtils.pspCanaliTv.get(1).getCanaleTipoVersamento().getCanale().getIdCanale()
                 + "_"
-                + TestUtils.pspCanaliTv.get(1).getTipoVersamento().getTipoVersamento());
+                + TestUtils.pspCanaliTv.get(1).getCanaleTipoVersamento().getTipoVersamento().getTipoVersamento());
     assertThat(allData.getPspInformations())
         .containsKey(TestUtils.psps.get(0).getIdPsp())
         .containsKey(TestUtils.psps.get(1).getIdPsp())

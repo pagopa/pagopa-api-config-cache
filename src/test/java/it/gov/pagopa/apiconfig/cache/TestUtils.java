@@ -1,5 +1,7 @@
 package it.gov.pagopa.apiconfig.cache;
 
+import it.gov.pagopa.apiconfig.starter.entity.CanaleTipoVersamento;
+import it.gov.pagopa.apiconfig.starter.entity.Canali;
 import it.gov.pagopa.apiconfig.starter.entity.CanaliView;
 import it.gov.pagopa.apiconfig.starter.entity.CdiDetail;
 import it.gov.pagopa.apiconfig.starter.entity.CdiFasciaCostoServizio;
@@ -25,6 +27,7 @@ import it.gov.pagopa.apiconfig.starter.entity.IntermediariPsp;
 import it.gov.pagopa.apiconfig.starter.entity.Pa;
 import it.gov.pagopa.apiconfig.starter.entity.PaStazionePa;
 import it.gov.pagopa.apiconfig.starter.entity.Psp;
+import it.gov.pagopa.apiconfig.starter.entity.PspCanaleTipoVersamento;
 import it.gov.pagopa.apiconfig.starter.entity.PspCanaleTipoVersamentoCanale;
 import it.gov.pagopa.apiconfig.starter.entity.Stazioni;
 import it.gov.pagopa.apiconfig.starter.entity.TipiVersamento;
@@ -101,7 +104,7 @@ public class TestUtils {
       Arrays.asList(
           Psp.builder().idPsp("idPsp1").objId(1l).build(),
           Psp.builder().idPsp("idPsp2").objId(2l).build());
-  public static List<CanaliView> canali =
+  public static List<CanaliView> canaliViews =
       Arrays.asList(
           CanaliView.builder()
               .intermediarioPsp(intpsp.get(0))
@@ -116,22 +119,56 @@ public class TestUtils {
               .idCanale("idCanale2")
               .build());
 
+  public static List<Canali> canali =
+      Arrays.asList(
+          Canali.builder()
+              .fkIntermediarioPsp(intpsp.get(0))
+              .protocollo("HTTP")
+              .idCanale("idCanale1")
+              .build(),
+          Canali.builder()
+              .fkIntermediarioPsp(intpsp.get(0))
+              .protocollo("HTTP")
+              .idCanale("idCanale2")
+              .build());
+
   public static List<TipiVersamento> tipiVersamento =
       Arrays.asList(
           TipiVersamento.builder().tipoVersamento("CP").build(),
           TipiVersamento.builder().tipoVersamento("PO").build());
 
-  public static List<PspCanaleTipoVersamentoCanale> pspCanaliTv =
+  public static List<PspCanaleTipoVersamentoCanale> pspCanaliTvc =
       Arrays.asList(
           PspCanaleTipoVersamentoCanale.builder()
               .psp(psps.get(0))
-              .canale(canali.get(0))
+              .canale(canaliViews.get(0))
               .tipoVersamento(tipiVersamento.get(0))
               .build(),
           PspCanaleTipoVersamentoCanale.builder()
               .psp(psps.get(1))
+              .canale(canaliViews.get(1))
+              .tipoVersamento(tipiVersamento.get(1))
+              .build());
+
+  public static List<CanaleTipoVersamento> canaliTv =
+      Arrays.asList(
+          CanaleTipoVersamento.builder()
+              .canale(canali.get(0))
+              .tipoVersamento(tipiVersamento.get(0))
+              .build(),
+          CanaleTipoVersamento.builder()
               .canale(canali.get(1))
               .tipoVersamento(tipiVersamento.get(1))
+              .build());
+  public static List<PspCanaleTipoVersamento> pspCanaliTv =
+      Arrays.asList(
+          PspCanaleTipoVersamento.builder()
+              .psp(psps.get(0))
+              .canaleTipoVersamento(canaliTv.get(0))
+              .build(),
+          PspCanaleTipoVersamento.builder()
+              .psp(psps.get(1))
+              .canaleTipoVersamento(canaliTv.get(1))
               .build());
 
   public static List<CdiDetail> cdiDetail =
