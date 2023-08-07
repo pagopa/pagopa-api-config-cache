@@ -78,7 +78,7 @@ import it.gov.pagopa.apiconfig.starter.entity.InformativePaFasce;
 import it.gov.pagopa.apiconfig.starter.entity.InformativePaMaster;
 import it.gov.pagopa.apiconfig.starter.entity.Pa;
 import it.gov.pagopa.apiconfig.starter.entity.Psp;
-import it.gov.pagopa.apiconfig.starter.entity.PspCanaleTipoVersamentoCanale;
+import it.gov.pagopa.apiconfig.starter.entity.PspCanaleTipoVersamento;
 import it.gov.pagopa.apiconfig.starter.repository.CacheRepository;
 import it.gov.pagopa.apiconfig.starter.repository.CanaliViewRepository;
 import it.gov.pagopa.apiconfig.starter.repository.CdiDetailRepository;
@@ -814,12 +814,13 @@ public class ConfigService {
                           .filter(
                               d ->
                                   !d.getPspCanaleTipoVersamento()
+                                      .getCanaleTipoVersamento()
                                       .getTipoVersamento()
                                       .getTipoVersamento()
                                       .equals("PPAY"))
                           .map(
                               cdiDetail -> {
-                                PspCanaleTipoVersamentoCanale pspCanaleTipoVersamento =
+                                PspCanaleTipoVersamento pspCanaleTipoVersamento =
                                     cdiDetail.getPspCanaleTipoVersamento();
 
                                 CtIdentificazioneServizio ctIdentificazioneServizio =
@@ -906,7 +907,7 @@ public class ConfigService {
                                 ctInformativaDetail.setCanaleApp(
                                     cdiDetail.getCanaleApp().intValue());
                                 ctInformativaDetail.setIdentificativoCanale(
-                                    pspCanaleTipoVersamento.getCanale().getIdCanale());
+                                    pspCanaleTipoVersamento.getCanaleTipoVersamento().getCanale().getIdCanale());
 
                                 List<Double> costiConvenzione =
                                     cdiPreferenceStream
@@ -928,8 +929,9 @@ public class ConfigService {
                                 ctInformativaDetail.setListaConvenzioni(listaConvenzioni);
                                 ctInformativaDetail.setIdentificativoIntermediario(
                                     pspCanaleTipoVersamento
+                                        .getCanaleTipoVersamento()
                                         .getCanale()
-                                        .getIntermediarioPsp()
+                                        .getFkIntermediarioPsp()
                                         .getIdIntermediarioPsp());
                                 ctInformativaDetail.setIdentificazioneServizio(
                                     ctIdentificazioneServizio);
@@ -951,6 +953,7 @@ public class ConfigService {
                                 ctInformativaDetail.setTipoVersamento(
                                     StTipoVersamento.fromValue(
                                         pspCanaleTipoVersamento
+                                            .getCanaleTipoVersamento()
                                             .getTipoVersamento()
                                             .getTipoVersamento()));
                                 return ctInformativaDetail;
@@ -1049,12 +1052,14 @@ public class ConfigService {
                               .getInformativaDetail()
                               .add(
                                   makeTplInformativaDetail(
-                                      d.getPspCanaleTipoVersamento().getCanale().getIdCanale(),
+                                      d.getPspCanaleTipoVersamento().getCanaleTipoVersamento().getCanale().getIdCanale(),
                                       d.getPspCanaleTipoVersamento()
+                                          .getCanaleTipoVersamento()
                                           .getCanale()
-                                          .getIntermediarioPsp()
+                                          .getFkIntermediarioPsp()
                                           .getIdIntermediarioPsp(),
                                       d.getPspCanaleTipoVersamento()
+                                          .getCanaleTipoVersamento()
                                           .getTipoVersamento()
                                           .getTipoVersamento(),
                                       d.getModelloPagamento())));
