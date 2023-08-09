@@ -13,13 +13,13 @@ permissions:
 jobs:
   update:
     name: Update Openapi and Formatting
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     if: ${{ contains(github.event.comment.body, 'update_code') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.API_TOKEN_GITHUB }}
+          token: ${{ secrets.BOT_TOKEN_GITHUB }}
 
       - name: Checkout Pull Request
         run: hub pr checkout ${{ github.event.issue.number }}
@@ -33,11 +33,54 @@ jobs:
       - name: Update OpenApi/Swagger file
         run: |
           cd ./openapi
-          sh ./generate_openapi.sh
+          chmod +x ./generate_openapi.sh
+          ./generate_openapi.sh
 
       - name: Formatting
-        uses: axel-op/googlejavaformat-action@v3
+        id: format
+        uses: findologic/intellij-format-action@main
         with:
-          args: "--replace"
-          commit-message: "Google Java format [skip ci]"
+          path: .
+          fail-on-changes: false
 
+      - name: Commit files
+        run: |
+          git config --local user.email "pagopa-github-bot@pagopa.it"
+          git config --local user.name "pagopa-github-bot"
+          git commit -a -m "Formatting"
+          git push
+
+
+  notify:
+    needs: [ update ]
+    runs-on: ubuntu-latest
+    name: Notify
+    if: ${{ always() && contains(needs.*.result, 'failure') }}
+    steps:
+      - name: Notify if Failure
+        uses: actions/github-script@v6.3.3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            var comments = await github.rest.issues.listComments({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo
+            });
+            for (const comment of comments.data) {
+              if (comment.body.includes('Update Code is failed. Please retry.')){
+                github.rest.issues.deleteComment({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: comment.id
+                })
+              }
+            }
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Update Code is failed. Please retry.'
+            })
+            core.setFailed('Update Code is failed. Please retry.')
