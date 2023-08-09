@@ -25,7 +25,6 @@ permissions:
 
 env:
   DOCKERFILE: Dockerfile
-  GITHUB_TOKEN_READ_PACKAGES: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   Anchore-Build-Scan:
@@ -39,18 +38,17 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build the Docker image
-        run: docker build . --file ${{ env.DOCKERFILE }} --tag localbuild/testimage:latest --build-arg github_token=${{ env.GITHUB_TOKEN_READ_PACKAGES }}
+        run: docker build . --file ${{ env.DOCKERFILE }} --tag localbuild/testimage:latest
 
       - name: Run the Anchore scan action itself with GitHub Advanced Security code scanning integration enabled
-        id: scan
         uses: anchore/scan-action@v3
         with:
           image: "localbuild/testimage:latest"
-          output-format: sarif
+          acs-report-enable: true
           fail-build: true
           severity-cutoff: "high"
       - name: Upload Anchore Scan Report
         uses: github/codeql-action/upload-sarif@v2
         if: always()
         with:
-          sarif_file: ${{ steps.scan.outputs.sarif }}
+          sarif_file: results.sarif
