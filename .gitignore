@@ -36,3 +36,4 @@ hs_err_pid*
 helm/charts
 helm/Chart.lock
 /.identity/.terraform.lock.hcl
+/docker/secrets
