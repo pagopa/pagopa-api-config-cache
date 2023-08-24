@@ -47,7 +47,7 @@ basecache: &basecache
 postgresql:
   !!merge <<: *basecache
   image:
-    repository: pagopapcommonacr.azurecr.io/pagopaapiconfigcache
+    repository: ghcr.io/pagopa/pagopa-api-config-cache
     tag: "0.6.0"
   ingress:
     !!merge <<: *ingress
@@ -68,7 +68,7 @@ postgresql:
 oracle:
   !!merge <<: *basecache
   image:
-    repository: pagopapcommonacr.azurecr.io/pagopaapiconfigcache
+    repository: ghcr.io/pagopa/pagopa-api-config-cache
     tag: "0.6.0-3-NOD-383-jdbc-connection-error"
   ingress:
     !!merge <<: *ingress
@@ -95,7 +95,7 @@ oracledev:
 oracleprod:
   !!merge <<: *basecache
   image:
-    repository: pagopapcommonacr.azurecr.io/pagopaapiconfigcache
+    repository: ghcr.io/pagopa/pagopa-api-config-cache
     tag: "0.5.0-nocolumns"
   ingress:
     !!merge <<: *ingress
