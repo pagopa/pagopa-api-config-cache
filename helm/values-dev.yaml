@@ -12,7 +12,7 @@ basecache: &basecache
     initialDelaySeconds: 30
   ingress: &ingress
     create: true
-    host: "weuprod.apiconfig.internal.platform.pagopa.it"
+    host: "weudev.apiconfig.internal.dev.platform.pagopa.it"
   resources:
     requests:
       memory: "512Mi"
@@ -21,16 +21,17 @@ basecache: &basecache
       memory: "6G"
       cpu: "2.5"
   envConfig: &envConfig
+    TZ: "Europe/Rome"
     AZURE_INSIGHTS_ENABLED: "true"
-    REDIS_HOST: "pagopa-p-redis.redis.cache.windows.net"
+    REDIS_HOST: "pagopa-d-redis.redis.cache.windows.net"
     REDIS_PORT: "6380"
   secretProvider: &azureSecretProvider
     create: true
     envSecrets: &envSecret
-      APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-p-connection-string"
+      APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-d-connection-string"
       REDIS_PWD: "redis-password"
     keyvault:
-      name: "pagopa-p-apiconfig-kv"
+      name: "pagopa-d-apiconfig-kv"
       tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
   tmpVolumeMount:
     create: true
@@ -55,11 +56,12 @@ postgresql:
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql"
-    DB_CONFIG_URL: "jdbc:postgresql://pagopa-p-weu-nodo-flexible-postgresql.postgres.database.azure.com:6432/nodo?sslmode=require&prepareThreshold=0&currentSchema=cfg"
+    DB_CONFIG_URL: "jdbc:postgresql://ndp.d.db-nodo-pagamenti.com:6432/nodo?sslmode=require&prepareThreshold=0&currentSchema=cfg"
     DB_CONFIG_USER: "cfg"
     DB_CONFIG_DRIVER: "org.postgresql.Driver"
     DATABASE_ID: "p"
     HEALTHCHECK_QUERY: "select 1"
+    SAVE_DB: "true"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:
@@ -69,29 +71,48 @@ oracle:
   !!merge <<: *basecache
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: "0.6.0-3-NOD-383-jdbc-connection-error"
+    tag: "0.6.0-2-NOD-378-out-of-memory"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cache/o(/|$)(.*)
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-oracle"
-    DB_CONFIG_URL: "jdbc:oracle:thin:@db-nodo-pagamenti.p.db-nodo-pagamenti.com:1521/NDPSPCP_NODO4_CFG"
+    DB_CONFIG_URL: "jdbc:oracle:thin:@db-nodo-pagamenti.d.db-nodo-pagamenti.com:1522/NDPSPCT_PP_NODO4_CFG"
     DB_CONFIG_USER: "NODO4_CFG"
     DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
-    JAVA_OPTS: "-Dspring.jpa.show-sql=false -XX:MaxHeapSize=4g"
+    JAVA_OPTS: "-Dspring.jpa.show-sql=false"
     DATABASE_ID: "o"
-    IN_PROGRESS_TTL: "20"
     HEALTHCHECK_QUERY: "select 1 from dual"
     SAVE_DB: "true"
-    DEFAULT_LOGGING_LEVEL: "info" # TODO remove
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "oracle-db-cfg-password"
 oracledev:
-  enabled: false
+  !!merge <<: *basecache
+  image:
+    repository: ghcr.io/pagopa/pagopa-api-config-cache
+    tag: "0.6.0-2-NOD-378-out-of-memory"
+  ingress:
+    !!merge <<: *ingress
+    path: /api-config-cachedev/o(/|$)(.*)
+  envConfig:
+    !!merge <<: *envConfig
+    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-oracle"
+    DB_CONFIG_URL: "jdbc:oracle:thin:@db-nodo-pagamenti.d.db-nodo-pagamenti.com:1522/NDPSPCT_NODO4_CFG"
+    DB_CONFIG_USER: "NODO4_CFG_DEV"
+    DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
+    JAVA_OPTS: "-Dspring.jpa.show-sql=false"
+    DATABASE_ID: "odev"
+    HEALTHCHECK_QUERY: "select 1 from dual"
+    SAVE_DB: "true"
+  secretProvider:
+    !!merge <<: *azureSecretProvider
+    envSecrets:
+      !!merge <<: *envSecret
+      DB_CONFIG_PASSWORD: "oracle-db-cfg-dev-password"
 oracleprod:
   !!merge <<: *basecache
   image:
@@ -103,16 +124,22 @@ oracleprod:
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-oracle"
-    DB_CONFIG_URL: "jdbc:oracle:thin:@db-nodo-pagamenti.p.db-nodo-pagamenti.com:1521/NDPSPCP_NODO4_CFG"
-    DB_CONFIG_USER: "NODO4_CFG"
+    DB_CONFIG_URL: "jdbc:oracle:thin:@db-nodo-pagamenti.d.db-nodo-pagamenti.com:1522/NDPSPCT_NODO4_CFG"
+    DB_CONFIG_USER: "NODO4_CFG_EXPORT"
     DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
     JAVA_OPTS: "-Dspring.jpa.show-sql=false"
     DATABASE_ID: "oprod"
-    IN_PROGRESS_TTL: "20"
     HEALTHCHECK_QUERY: "select 1 from dual"
     SAVE_DB: "true"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:
       !!merge <<: *envSecret
-      DB_CONFIG_PASSWORD: "oracle-db-cfg-password"
+      DB_CONFIG_PASSWORD: "oracle-db-cfg-prod-password"
+microservice-chart:
+  image:
+    tag: 0.6.0-10-PAGOPA-1135-sviluppo-migrazione-api-config-cache
+  canaryDelivery:
+    deployment:
+      image:
+        tag: 0.6.0-10-PAGOPA-1135-sviluppo-migrazione-api-config-cache
