@@ -136,3 +136,10 @@ oracleprod:
     envSecrets:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "oracle-db-cfg-prod-password"
+microservice-chart:
+  image:
+    tag: 0.6.0-10-PAGOPA-1135-sviluppo-migrazione-api-config-cache
+  canaryDelivery:
+    deployment:
+      image:
+        tag: 0.6.0-10-PAGOPA-1135-sviluppo-migrazione-api-config-cache
