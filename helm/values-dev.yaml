@@ -29,6 +29,7 @@ basecache: &basecache
       memory: "6G"
       cpu: "2.5"
   envConfig: &envConfig
+    ENV: "dev"
     TZ: "Europe/Rome"
     AZURE_INSIGHTS_ENABLED: "true"
     REDIS_HOST: "pagopa-d-redis.redis.cache.windows.net"

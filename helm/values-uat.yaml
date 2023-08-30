@@ -29,6 +29,7 @@ basecache: &basecache
       memory: "2G"
       cpu: "1"
   envConfig: &envConfig
+    ENV: "uat"
     AZURE_INSIGHTS_ENABLED: "true"
     REDIS_HOST: "pagopa-u-redis.redis.cache.windows.net"
     REDIS_PORT: "6380"
