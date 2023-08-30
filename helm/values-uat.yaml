@@ -1,5 +1,11 @@
 basecache: &basecache
   namespace: "apiconfig"
+  image:
+    tag: 0.6.1
+  canaryDelivery:
+    deployment:
+      image:
+        tag: 0.6.1
   livenessProbe:
     httpGet:
       path: /actuator/health/liveness
@@ -46,9 +52,6 @@ basecache: &basecache
 # Configuration used to update image tag
 postgresql:
   !!merge <<: *basecache
-  image:
-    repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: "0.6.0"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cache/p(/|$)(.*)
@@ -67,9 +70,6 @@ postgresql:
       DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
 oracle:
   !!merge <<: *basecache
-  image:
-    repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: "0.6.0-3-NOD-383-jdbc-connection-error"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cache/o(/|$)(.*)
@@ -92,10 +92,3 @@ oracledev:
   enabled: false
 oracleprod:
   enabled: false
-microservice-chart:
-  image:
-    tag: 0.6.1
-  canaryDelivery:
-    deployment:
-      image:
-        tag: 0.6.1

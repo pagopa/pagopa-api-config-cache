@@ -1,5 +1,11 @@
 basecache: &basecache
   namespace: "apiconfig"
+  image:
+    tag: 0.6.1
+  canaryDelivery:
+    deployment:
+      image:
+        tag: 0.6.1
   livenessProbe:
     httpGet:
       path: /actuator/health/liveness
@@ -47,9 +53,6 @@ basecache: &basecache
 # Configuration used to update image tag
 postgresql:
   !!merge <<: *basecache
-  image:
-    repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: "0.6.0"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cache/p(/|$)(.*)
@@ -69,9 +72,6 @@ postgresql:
       DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
 oracle:
   !!merge <<: *basecache
-  image:
-    repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: "0.6.0-2-NOD-378-out-of-memory"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cache/o(/|$)(.*)
@@ -92,9 +92,6 @@ oracle:
       DB_CONFIG_PASSWORD: "oracle-db-cfg-password"
 oracledev:
   !!merge <<: *basecache
-  image:
-    repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: "0.6.0-2-NOD-378-out-of-memory"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cachedev/o(/|$)(.*)
@@ -115,9 +112,6 @@ oracledev:
       DB_CONFIG_PASSWORD: "oracle-db-cfg-dev-password"
 oracleprod:
   !!merge <<: *basecache
-  image:
-    repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: "0.5.0-nocolumns"
   ingress:
     !!merge <<: *ingress
     path: /api-config-cachedev/oprod(/|$)(.*)
@@ -136,10 +130,4 @@ oracleprod:
     envSecrets:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "oracle-db-cfg-prod-password"
-microservice-chart:
-  image:
-    tag: 0.6.1
-  canaryDelivery:
-    deployment:
-      image:
-        tag: 0.6.1
+
