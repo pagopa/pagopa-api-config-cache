@@ -1,10 +1,12 @@
 basecache: &basecache
   namespace: "apiconfig"
   image:
+    repository: ghcr.io/pagopa/pagopa-api-config-cache
     tag: 0.6.1
   canaryDelivery:
     deployment:
       image:
+        repository: ghcr.io/pagopa/pagopa-api-config-cache
         tag: 0.6.1
   livenessProbe:
     httpGet:
