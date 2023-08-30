@@ -101,3 +101,10 @@ oracledev:
   enabled: false
 oracleprod:
   enabled: false
+microservice-chart:
+  image:
+    tag: 0.6.2
+  canaryDelivery:
+    deployment:
+      image:
+        tag: 0.6.2
