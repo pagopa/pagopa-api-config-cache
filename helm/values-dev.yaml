@@ -3,12 +3,12 @@ microservice-chart: &microservice-chart
   nameOverride: "cache"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: 0.6.1
+    tag: 0.6.4
   canaryDelivery:
     deployment:
       image:
         repository: ghcr.io/pagopa/pagopa-api-config-cache
-        tag: 0.6.1
+        tag: 0.6.4
   livenessProbe:
     httpGet:
       path: /actuator/health/liveness
