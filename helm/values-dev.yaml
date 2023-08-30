@@ -1,5 +1,6 @@
 microservice-chart: &microservice-chart
   namespace: "apiconfig"
+  nameOverride: "cache"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
     tag: 0.6.1
