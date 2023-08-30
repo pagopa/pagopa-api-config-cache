@@ -1,4 +1,4 @@
-basecache: &basecache
+microservice-chart: &microservice-chart
   namespace: "apiconfig"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
@@ -60,7 +60,7 @@ basecache: &basecache
                   - user
 # Configuration used to update image tag
 postgresql:
-  !!merge <<: *basecache
+  !!merge <<: *microservice-chart
   ingress:
     !!merge <<: *ingress
     path: /api-config-cache/p(/|$)(.*)
@@ -78,7 +78,7 @@ postgresql:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
 oracle:
-  !!merge <<: *basecache
+  !!merge <<: *microservice-chart
   ingress:
     !!merge <<: *ingress
     path: /api-config-cache/o(/|$)(.*)
@@ -101,10 +101,3 @@ oracledev:
   enabled: false
 oracleprod:
   enabled: false
-microservice-chart:
-  image:
-    tag: 0.6.3
-  canaryDelivery:
-    deployment:
-      image:
-        tag: 0.6.3
