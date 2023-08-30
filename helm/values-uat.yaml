@@ -94,8 +94,8 @@ oracleprod:
   enabled: false
 microservice-chart:
   image:
-    tag: 0.6.0-10-PAGOPA-1135-sviluppo-migrazione-api-config-cache
+    tag: 0.6.1
   canaryDelivery:
     deployment:
       image:
-        tag: 0.6.0-10-PAGOPA-1135-sviluppo-migrazione-api-config-cache
+        tag: 0.6.1
