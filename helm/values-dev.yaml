@@ -33,11 +33,17 @@ basecache: &basecache
     AZURE_INSIGHTS_ENABLED: "true"
     REDIS_HOST: "pagopa-d-redis.redis.cache.windows.net"
     REDIS_PORT: "6380"
+    OTEL_SERVICE_NAME: "pagopa-api-config-cache"
+    OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=azure-dev"
+    OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
+    OTEL_LOGS_EXPORTER: none
+    OTEL_TRACES_SAMPLER: "always_on"
   secretProvider: &azureSecretProvider
     create: true
     envSecrets: &envSecret
       APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-d-connection-string"
       REDIS_PWD: "redis-password"
+      OTEL_EXPORTER_OTLP_HEADERS: elastic-apm-secret-token
     keyvault:
       name: "pagopa-d-apiconfig-kv"
       tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
