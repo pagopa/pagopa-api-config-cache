@@ -1,34 +1,7 @@
 package it.gov.pagopa.apiconfig.cache;
 
-import it.gov.pagopa.apiconfig.starter.entity.CanaliView;
-import it.gov.pagopa.apiconfig.starter.entity.CdiDetail;
-import it.gov.pagopa.apiconfig.starter.entity.CdiFasciaCostoServizio;
-import it.gov.pagopa.apiconfig.starter.entity.CdiInformazioniServizio;
-import it.gov.pagopa.apiconfig.starter.entity.CdiMaster;
-import it.gov.pagopa.apiconfig.starter.entity.CdiMasterValid;
-import it.gov.pagopa.apiconfig.starter.entity.CdiPreference;
-import it.gov.pagopa.apiconfig.starter.entity.CdsCategoria;
-import it.gov.pagopa.apiconfig.starter.entity.CdsServizio;
-import it.gov.pagopa.apiconfig.starter.entity.CdsSoggetto;
-import it.gov.pagopa.apiconfig.starter.entity.CdsSoggettoServizio;
-import it.gov.pagopa.apiconfig.starter.entity.Codifiche;
-import it.gov.pagopa.apiconfig.starter.entity.CodifichePa;
-import it.gov.pagopa.apiconfig.starter.entity.ConfigurationKeys;
-import it.gov.pagopa.apiconfig.starter.entity.DizionarioMetadati;
-import it.gov.pagopa.apiconfig.starter.entity.FtpServers;
-import it.gov.pagopa.apiconfig.starter.entity.GdeConfig;
-import it.gov.pagopa.apiconfig.starter.entity.IbanValidiPerPa;
-import it.gov.pagopa.apiconfig.starter.entity.InformativePaDetail;
-import it.gov.pagopa.apiconfig.starter.entity.InformativePaMaster;
-import it.gov.pagopa.apiconfig.starter.entity.IntermediariPa;
-import it.gov.pagopa.apiconfig.starter.entity.IntermediariPsp;
-import it.gov.pagopa.apiconfig.starter.entity.Pa;
-import it.gov.pagopa.apiconfig.starter.entity.PaStazionePa;
-import it.gov.pagopa.apiconfig.starter.entity.Psp;
-import it.gov.pagopa.apiconfig.starter.entity.PspCanaleTipoVersamentoCanale;
-import it.gov.pagopa.apiconfig.starter.entity.Stazioni;
-import it.gov.pagopa.apiconfig.starter.entity.TipiVersamento;
-import it.gov.pagopa.apiconfig.starter.entity.WfespPluginConf;
+import it.gov.pagopa.apiconfig.starter.entity.*;
+
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -134,6 +107,32 @@ public class TestUtils {
               .tipoVersamento(tipiVersamento.get(1))
               .build());
 
+  public static List<PspCanaleTipoVersamento> pspCanaliTipoVersamento =
+      Arrays.asList(
+              PspCanaleTipoVersamento.builder()
+              .psp(psps.get(0))
+                      .canaleTipoVersamento(CanaleTipoVersamento.builder()
+                              .tipoVersamento(tipiVersamento.get(0))
+                              .canale(Canali.builder()
+                                      .idCanale("idCanale1")
+                                      .fkIntermediarioPsp(intpsp.get(0))
+                                      .protocollo("HTTP")
+                                      .build())
+                              .build())
+              .build(),
+              PspCanaleTipoVersamento.builder()
+                      .psp(psps.get(0))
+                      .canaleTipoVersamento(CanaleTipoVersamento.builder()
+                              .tipoVersamento(tipiVersamento.get(0))
+                              .canale(Canali.builder()
+                                      .idCanale("idCanale2")
+                                      .fkIntermediarioPsp(intpsp.get(0))
+                                      .protocollo("HTTP")
+                                      .build())
+                              .build())
+                      .build());
+
+
   public static List<CdiDetail> cdiDetail =
       Arrays.asList(
           CdiDetail.builder()
@@ -141,7 +140,7 @@ public class TestUtils {
               .canaleApp(1L)
               .priorita(1L)
               .modelloPagamento(1L)
-              .pspCanaleTipoVersamento(pspCanaliTv.get(0))
+              .pspCanaleTipoVersamento(pspCanaliTipoVersamento.get(0))
               .fkCdiMaster(CdiMaster.builder().id(1L).build())
               .tags("Maestro")
               .build(),
@@ -150,7 +149,7 @@ public class TestUtils {
               .canaleApp(2L)
               .priorita(2L)
               .modelloPagamento(2L)
-              .pspCanaleTipoVersamento(pspCanaliTv.get(1))
+              .pspCanaleTipoVersamento(pspCanaliTipoVersamento.get(1))
               .fkCdiMaster(CdiMaster.builder().id(2L).build())
               .tags("Maestro")
               .build());
