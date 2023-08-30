@@ -121,3 +121,10 @@ oracleprod:
     envSecrets:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "oracle-db-cfg-password"
+microservice-chart:
+  image:
+    tag: 0.6.2
+  canaryDelivery:
+    deployment:
+      image:
+        tag: 0.6.2
