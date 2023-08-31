@@ -181,7 +181,7 @@ public class ConfigService {
   private long IN_PROGRESS_TTL;
 
   @Autowired private JsonSerializer jsonSerializer;
-  @Autowired private PlatformTransactionManager transactionManager;
+//  @Autowired private PlatformTransactionManager transactionManager;
   @Autowired private RedisRepository redisRepository;
   @Autowired private CacheRepository cacheRepository;
   @Autowired private ConfigMapper modelMapper;

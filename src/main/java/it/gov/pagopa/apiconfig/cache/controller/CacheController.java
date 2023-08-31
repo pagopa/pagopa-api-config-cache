@@ -1,6 +1,7 @@
 package it.gov.pagopa.apiconfig.cache.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,10 +20,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
+@RestController
 public abstract class CacheController {
 
   abstract String stakeholder();
@@ -82,7 +86,7 @@ public abstract class CacheController {
       value = "/v1",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ConfigDataV1> cache(
-      @RequestParam Optional<Boolean> refresh, @RequestParam Optional<NodeCacheKey[]> keys)
+          @RequestParam @Parameter(description = "to force the refresh of the cache") Optional<Boolean> refresh, @RequestParam @Parameter Optional<NodeCacheKey[]> keys)
       throws IOException {
     boolean cacheV1InProgress = configService.getCacheV1InProgress(stakeholder());
     if (refresh.orElse(false) || cfgDataV1 == null) {

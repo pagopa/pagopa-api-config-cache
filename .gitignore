@@ -37,3 +37,4 @@ helm/charts
 helm/Chart.lock
 /.identity/.terraform.lock.hcl
 /docker/secrets
+.cache

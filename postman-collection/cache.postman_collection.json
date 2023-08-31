@@ -1,0 +1,2376 @@
+{
+	"info": {
+		"_postman_id": "a9197627-f686-485a-b883-bdde041b1871",
+		"name": "cache",
+		"description": "Generate cache for regarding Nodo dei Pagamenti configuration",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "205220"
+	},
+	"item": [
+		{
+			"name": "Home",
+			"item": [
+				{
+					"name": "/info",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "key",
+									"value": "Ocp-Apim-Subscription-Key",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "{{apiKey}}",
+									"type": "string"
+								},
+								{
+									"key": "in",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+								"key": "X-Request-Id",
+								"value": "<string>"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/info",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"info"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/info",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"info"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"environment\": \"<string>\",\n  \"name\": \"<string>\",\n  \"version\": \"<string>\",\n  \"dbConnection\": \"<string>\"\n}"
+						},
+						{
+							"name": "Bad Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/info",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"info"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"title\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"detail\": \"<string>\"\n}"
+						},
+						{
+							"name": "Unauthorized",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/info",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"info"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Forbidden",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/info",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"info"
+									]
+								}
+							},
+							"status": "Forbidden",
+							"code": 403,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Too many requests",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/info",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"info"
+									]
+								}
+							},
+							"status": "Too Many Requests",
+							"code": 429,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Service unavailable",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/info",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"info"
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"title\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"detail\": \"<string>\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Cache",
+			"item": [
+				{
+					"name": "/stakeholders/fdr/cache/schemas/v1",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "key",
+									"value": "Ocp-Apim-Subscription-Key",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "{{apiKey}}",
+									"type": "string"
+								},
+								{
+									"key": "in",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+								"key": "X-Request-Id",
+								"value": "<string>"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/stakeholders/fdr/cache/schemas/v1?refresh=<boolean>&keys=gdeConfigurations&keys=gdeConfigurations",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"stakeholders",
+								"fdr",
+								"cache",
+								"schemas",
+								"v1"
+							],
+							"query": [
+								{
+									"key": "refresh",
+									"value": "<boolean>",
+									"description": "to force the refresh of the cache"
+								},
+								{
+									"key": "keys",
+									"value": "gdeConfigurations"
+								},
+								{
+									"key": "keys",
+									"value": "gdeConfigurations"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "https://api.dev.platform.pagopa.it/api-config-cache/o/v1/stakeholders/fdr/cache/schemas/v1",
+									"protocol": "https",
+									"host": [
+										"api",
+										"dev",
+										"platform",
+										"pagopa",
+										"it"
+									],
+									"path": [
+										"api-config-cache",
+										"o",
+										"v1",
+										"stakeholders",
+										"fdr",
+										"cache",
+										"schemas",
+										"v1"
+									],
+									"query": [
+										{
+											"key": "refresh",
+											"value": "<boolean>",
+											"description": "to force the refresh of the cache",
+											"disabled": true
+										},
+										{
+											"key": "keys",
+											"value": "cdsSubjectServices",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"cdsCategories\": {\n    \"velitc9c\": {\n      \"description\": \"<string>\"\n    },\n    \"laboris1ae\": {\n      \"description\": \"<string>\"\n    },\n    \"consequata\": {\n      \"description\": \"<string>\"\n    },\n    \"et39\": {\n      \"description\": \"<string>\"\n    },\n    \"ut_65\": {\n      \"description\": \"<string>\"\n    }\n  },\n  \"cdsServices\": {\n    \"in_cb8\": {\n      \"category\": \"<string>\",\n      \"description\": \"<string>\",\n      \"id\": \"<string>\",\n      \"reference_xsd\": \"<string>\",\n      \"version\": \"<long>\"\n    }\n  },\n  \"cdsSubjectServices\": {\n    \"ea_ba0\": {\n      \"fee\": \"<boolean>\",\n      \"service\": \"<string>\",\n      \"start_date\": \"<dateTime>\",\n      \"subject\": \"<string>\",\n      \"subject_service_id\": \"<string>\",\n      \"end_date\": \"<dateTime>\",\n      \"station_code\": \"<string>\",\n      \"service_description\": \"<string>\"\n    },\n    \"enim23\": {\n      \"fee\": \"<boolean>\",\n      \"service\": \"<string>\",\n      \"start_date\": \"<dateTime>\",\n      \"subject\": \"<string>\",\n      \"subject_service_id\": \"<string>\",\n      \"end_date\": \"<dateTime>\",\n      \"station_code\": \"<string>\",\n      \"service_description\": \"<string>\"\n    }\n  },\n  \"cdsSubjects\": {\n    \"pariatur_35\": {\n      \"creditor_institution_code\": \"<string>\",\n      \"creditor_institution_description\": \"<string>\"\n    }\n  },\n  \"channels\": {\n    \"fugiatcf9\": {\n      \"agid\": \"<boolean>\",\n      \"broker_psp_code\": \"<string>\",\n      \"channel_code\": \"<string>\",\n      \"connection\": {\n        \"ip\": \"<string>\",\n        \"port\": \"<long>\",\n        \"protocol\": \"HTTPS\"\n      },\n      \"digital_stamp\": \"<boolean>\",\n      \"enabled\": \"<boolean>\",\n      \"flag_io\": \"<boolean>\",\n      \"flag_psp_cp\": \"<boolean>\",\n      \"new_fault_code\": \"<boolean>\",\n      \"password\": \"<string>\",\n      \"payment_model\": \"<string>\",\n      \"primitive_version\": \"<integer>\",\n      \"recovery\": \"<boolean>\",\n      \"redirect\": {\n        \"protocol\": \"HTTPS\",\n        \"ip\": \"<string>\",\n        \"path\": \"<string>\",\n        \"port\": \"<long>\",\n        \"query_string\": \"<string>\"\n      },\n      \"rt_push\": \"<boolean>\",\n      \"thread_number\": \"<long>\",\n      \"timeouts\": {\n        \"timeout_a\": \"<long>\",\n        \"timeout_b\": \"<long>\",\n        \"timeout_c\": \"<long>\"\n      },\n      \"description\": \"<string>\",\n      \"proxy\": {\n        \"proxy_host\": \"<string>\",\n        \"proxy_port\": \"<long>\",\n        \"proxy_username\": \"<string>\",\n        \"proxy_password\": \"<string>\"\n      },\n      \"service\": {\n        \"path\": \"<string>\",\n        \"target_host\": \"<string>\",\n        \"target_port\": \"<long>\",\n        \"target_path\": \"<string>\"\n      },\n      \"service_nmp\": {\n        \"path\": \"<string>\",\n        \"target_host\": \"<string>\",\n        \"target_port\": \"<long>\",\n        \"target_path\": \"<string>\"\n      },\n      \"serv_plugin\": \"<string>\"\n    }\n  },\n  \"configurations\": {\n    \"dolore4\": {\n      \"category\": \"<string>\",\n      \"key\": \"<string>\",\n      \"value\": \"<string>\",\n      \"description\": \"<string>\"\n    },\n    \"eiusmod_a0\": {\n      \"category\": \"<string>\",\n      \"key\": \"<string>\",\n      \"value\": \"<string>\",\n      \"description\": \"<string>\"\n    }\n  },\n  \"creditorInstitutionBrokers\": {\n    \"veniam__\": {\n      \"broker_code\": \"<string>\",\n      \"enabled\": \"<boolean>\",\n      \"extended_fault_bean\": \"<boolean>\",\n      \"description\": \"<string>\"\n    },\n    \"enim_63\": {\n      \"broker_code\": \"<string>\",\n      \"enabled\": \"<boolean>\",\n      \"extended_fault_bean\": \"<boolean>\",\n      \"description\": \"<string>\"\n    },\n    \"enim_d\": {\n      \"broker_code\": \"<string>\",\n      \"enabled\": \"<boolean>\",\n      \"extended_fault_bean\": \"<boolean>\",\n      \"description\": \"<string>\"\n    }\n  },\n  \"creditorInstitutionEncodings\": {\n    \"amet6b\": {\n      \"code_type\": \"<string>\",\n      \"creditor_institution_code\": \"<string>\",\n      \"encoding_code\": \"<string>\"\n    },\n    \"amet99d\": {\n      \"code_type\": \"<string>\",\n      \"creditor_institution_code\": \"<string>\",\n      \"encoding_code\": \"<string>\"\n    },\n    \"adipisicing_d20\": {\n      \"code_type\": \"<string>\",\n      \"creditor_institution_code\": \"<string>\",\n      \"encoding_code\": \"<string>\"\n    }\n  },\n  \"creditorInstitutionInformations\": {\n    \"adipisicing_cd\": {\n      \"informativa\": \"<string>\"\n    },\n    \"mollit34\": {\n      \"informativa\": \"<string>\"\n    }\n  },\n  \"creditorInstitutionStations\": {\n    \"culpa906\": {\n      \"broadcast\": \"<boolean>\",\n      \"creditor_institution_code\": \"<string>\",\n      \"mod4\": \"<boolean>\",\n      \"primitive_version\": \"<integer>\",\n      \"spontaneous_payment\": \"<boolean>\",\n      \"station_code\": \"<string>\",\n      \"application_code\": \"<long>\",\n      \"aux_digit\": \"<long>\",\n      \"segregation_code\": \"<long>\"\n    }\n  },\n  \"creditorInstitutions\": {\n    \"quise60\": {\n      \"creditor_institution_code\": \"<string>\",\n      \"enabled\": \"<boolean>\",\n      \"psp_payment\": \"<boolean>\",\n      \"reporting_ftp\": \"<boolean>\",\n      \"reporting_zip\": \"<boolean>\",\n      \"business_name\": \"<string>\",\n      \"description\": \"<string>\",\n      \"address\": {\n        \"location\": \"<string>\",\n        \"city\": \"<string>\",\n        \"zip_code\": \"<string>\",\n        \"country_code\": \"<string>\",\n        \"tax_domicile\": \"<string>\"\n      }\n    }\n  },\n  \"encodings\": {\n    \"fugiatb3a\": {\n      \"code_type\": \"<string>\",\n      \"description\": \"<string>\"\n    },\n    \"minim_54c\": {\n      \"code_type\": \"<string>\",\n      \"description\": \"<string>\"\n    },\n    \"pariatur4\": {\n      \"code_type\": \"<string>\",\n      \"description\": \"<string>\"\n    }\n  },\n  \"ftpServers\": {\n    \"officia_0a\": {\n      \"enabled\": \"<boolean>\",\n      \"history_path\": \"<string>\",\n      \"host\": \"<string>\",\n      \"id\": \"<long>\",\n      \"in_path\": \"<string>\",\n      \"out_path\": \"<string>\",\n      \"password\": \"<string>\",\n      \"port\": \"<integer>\",\n      \"root_path\": \"<string>\",\n      \"service\": \"<string>\",\n      \"type\": \"<string>\",\n      \"username\": \"<string>\"\n    },\n    \"enim_c47\": {\n      \"enabled\": \"<boolean>\",\n      \"history_path\": \"<string>\",\n      \"host\": \"<string>\",\n      \"id\": \"<long>\",\n      \"in_path\": \"<string>\",\n      \"out_path\": \"<string>\",\n      \"password\": \"<string>\",\n      \"port\": \"<integer>\",\n      \"root_path\": \"<string>\",\n      \"service\": \"<string>\",\n      \"type\": \"<string>\",\n      \"username\": \"<string>\"\n    }\n  },\n  \"gdeConfigurations\": {\n    \"dolor_044\": {\n      \"event_hub_enabled\": \"<boolean>\",\n      \"event_hub_payload_enabled\": \"<boolean>\",\n      \"primitive\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  },\n  \"ibans\": {\n    \"enim_cb\": {\n      \"creditor_institution_code\": \"<string>\",\n      \"iban\": \"<string>\",\n      \"publication_date\": \"<dateTime>\",\n      \"validity_date\": \"<dateTime>\",\n      \"shop_id\": \"<string>\",\n      \"seller_bank_id\": \"<string>\",\n      \"avvio_key\": \"<string>\",\n      \"esito_key\": \"<string>\"\n    }\n  },\n  \"languages\": {\n    \"animfb9\": \"<string>\",\n    \"do_12a\": \"<string>\"\n  },\n  \"metadataDict\": {\n    \"labore5\": {\n      \"key\": \"<string>\",\n      \"start_date\": \"<dateTime>\",\n      \"description\": \"<string>\",\n      \"end_date\": \"<dateTime>\"\n    }\n  },\n  \"paymentTypes\": {\n    \"non__3\": {\n      \"payment_type\": \"<string>\",\n      \"description\": \"<string>\"\n    },\n    \"Excepteur_5\": {\n      \"payment_type\": \"<string>\",\n      \"description\": \"<string>\"\n    }\n  },\n  \"plugins\": {\n    \"nulla_00\": {\n      \"id_serv_plugin\": \"<string>\",\n      \"pag_const_string_profile\": \"<string>\",\n      \"pag_soap_rule_profile\": \"<string>\",\n      \"pag_rpt_xpath_profile\": \"<string>\",\n      \"id_bean\": \"<string>\"\n    }\n  },\n  \"pspBrokers\": {\n    \"nisi_b\": {\n      \"broker_psp_code\": \"<string>\",\n      \"enabled\": \"<boolean>\",\n      \"extended_fault_bean\": \"<boolean>\",\n      \"description\": \"<string>\"\n    },\n    \"voluptatefa0\": {\n      \"broker_psp_code\": \"<string>\",\n      \"enabled\": \"<boolean>\",\n      \"extended_fault_bean\": \"<boolean>\",\n      \"description\": \"<string>\"\n    },\n    \"aliqua_09f\": {\n      \"broker_psp_code\": \"<string>\",\n      \"enabled\": \"<boolean>\",\n      \"extended_fault_bean\": \"<boolean>\",\n      \"description\": \"<string>\"\n    }\n  },\n  \"pspChannelPaymentTypes\": {\n    \"occaecatb\": {\n      \"channel_code\": \"<string>\",\n      \"payment_type\": \"<string>\",\n      \"psp_code\": \"<string>\"\n    },\n    \"eu_43\": {\n      \"channel_code\": \"<string>\",\n      \"payment_type\": \"<string>\",\n      \"psp_code\": \"<string>\"\n    }\n  },\n  \"pspInformationTemplates\": {\n    \"aute_7\": {\n      \"informativa\": \"<string>\"\n    }\n  },\n  \"pspInformations\": {\n    \"pariatur3_\": {\n      \"informativa\": \"<string>\"\n    },\n    \"sedc0\": {\n      \"informativa\": \"<string>\"\n    }\n  },\n  \"psps\": {\n    \"Lorem_b8\": {\n      \"agid_psp\": \"<boolean>\",\n      \"digital_stamp\": \"<boolean>\",\n      \"enabled\": \"<boolean>\",\n      \"psp_code\": \"<string>\",\n      \"description\": \"<string>\",\n      \"business_name\": \"<string>\",\n      \"abi\": \"<string>\",\n      \"bic\": \"<string>\",\n      \"my_bank_code\": \"<string>\",\n      \"tax_code\": \"<string>\",\n      \"vat_number\": \"<string>\"\n    }\n  },\n  \"stations\": {\n    \"deserunt_9e\": {\n      \"broker_code\": \"<string>\",\n      \"connection\": {\n        \"ip\": \"<string>\",\n        \"port\": \"<long>\",\n        \"protocol\": \"HTTPS\"\n      },\n      \"enabled\": \"<boolean>\",\n      \"invio_rt_istantaneo\": \"<boolean>\",\n      \"password\": \"<string>\",\n      \"primitive_version\": \"<integer>\",\n      \"redirect\": {\n        \"protocol\": \"HTTPS\",\n        \"ip\": \"<string>\",\n        \"path\": \"<string>\",\n        \"port\": \"<long>\",\n        \"query_string\": \"<string>\"\n      },\n      \"station_code\": \"<string>\",\n      \"thread_number\": \"<long>\",\n      \"timeouts\": {\n        \"timeout_a\": \"<long>\",\n        \"timeout_b\": \"<long>\",\n        \"timeout_c\": \"<long>\"\n      },\n      \"version\": \"<long>\",\n      \"connection_mod4\": {\n        \"ip\": \"<string>\",\n        \"port\": \"<long>\",\n        \"protocol\": \"HTTPS\"\n      },\n      \"service\": {\n        \"path\": \"<string>\",\n        \"target_host\": \"<string>\",\n        \"target_port\": \"<long>\",\n        \"target_path\": \"<string>\"\n      },\n      \"service_pof\": {\n        \"path\": \"<string>\",\n        \"target_host\": \"<string>\",\n        \"target_port\": \"<long>\",\n        \"target_path\": \"<string>\"\n      },\n      \"service_mod4\": {\n        \"path\": \"<string>\",\n        \"target_host\": \"<string>\",\n        \"target_port\": \"<long>\",\n        \"target_path\": \"<string>\"\n      },\n      \"proxy\": {\n        \"proxy_host\": \"<string>\",\n        \"proxy_port\": \"<long>\",\n        \"proxy_username\": \"<string>\",\n        \"proxy_password\": \"<string>\"\n      }\n    }\n  },\n  \"version\": \"<string>\"\n}"
+						},
+						{
+							"name": "Bad Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/fdr/cache/schemas/v1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"fdr",
+										"cache",
+										"schemas",
+										"v1"
+									],
+									"query": [
+										{
+											"key": "refresh",
+											"value": "<boolean>",
+											"description": "to force the refresh of the cache",
+											"disabled": true
+										},
+										{
+											"key": "keys",
+											"value": "cdsSubjectServices",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"title\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"detail\": \"<string>\"\n}"
+						},
+						{
+							"name": "Unauthorized",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/fdr/cache/schemas/v1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"fdr",
+										"cache",
+										"schemas",
+										"v1"
+									],
+									"query": [
+										{
+											"key": "refresh",
+											"value": "<boolean>",
+											"description": "to force the refresh of the cache",
+											"disabled": true
+										},
+										{
+											"key": "keys",
+											"value": "cdsSubjectServices",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Forbidden",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/fdr/cache/schemas/v1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"fdr",
+										"cache",
+										"schemas",
+										"v1"
+									],
+									"query": [
+										{
+											"key": "refresh",
+											"value": "<boolean>",
+											"description": "to force the refresh of the cache",
+											"disabled": true
+										},
+										{
+											"key": "keys",
+											"value": "cdsSubjectServices",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "Forbidden",
+							"code": 403,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Too many requests",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/fdr/cache/schemas/v1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"fdr",
+										"cache",
+										"schemas",
+										"v1"
+									],
+									"query": [
+										{
+											"key": "refresh",
+											"value": "<boolean>",
+											"description": "to force the refresh of the cache",
+											"disabled": true
+										},
+										{
+											"key": "keys",
+											"value": "cdsSubjectServices",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "Too Many Requests",
+							"code": 429,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Service unavailable",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/fdr/cache/schemas/v1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"fdr",
+										"cache",
+										"schemas",
+										"v1"
+									],
+									"query": [
+										{
+											"key": "refresh",
+											"value": "<boolean>",
+											"description": "to force the refresh of the cache",
+											"disabled": true
+										},
+										{
+											"key": "keys",
+											"value": "cdsSubjectServices",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"title\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"detail\": \"<string>\"\n}"
+						}
+					]
+				},
+				{
+					"name": "/stakeholders/node/cache/schemas/v1",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "key",
+									"value": "Ocp-Apim-Subscription-Key",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "{{apiKey}}",
+									"type": "string"
+								},
+								{
+									"key": "in",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+								"key": "X-Request-Id",
+								"value": "<string>"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/stakeholders/node/cache/schemas/v1?refresh=<boolean>&keys=gdeConfigurations&keys=gdeConfigurations",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"stakeholders",
+								"node",
+								"cache",
+								"schemas",
+								"v1"
+							],
+							"query": [
+								{
+									"key": "refresh",
+									"value": "<boolean>",
+									"description": "to force the refresh of the cache"
+								},
+								{
+									"key": "keys",
+									"value": "gdeConfigurations"
+								},
+								{
+									"key": "keys",
+									"value": "gdeConfigurations"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/node/cache/schemas/v1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"node",
+										"cache",
+										"schemas",
+										"v1"
+									],
+									"query": [
+										{
+											"key": "refresh",
+											"value": "<boolean>",
+											"description": "to force the refresh of the cache",
+											"disabled": true
+										},
+										{
+											"key": "keys",
+											"value": "cdsSubjectServices",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"cdsCategories\": {\n    \"velitc9c\": {\n      \"description\": \"<string>\"\n    },\n    \"laboris1ae\": {\n      \"description\": \"<string>\"\n    },\n    \"consequata\": {\n      \"description\": \"<string>\"\n    },\n    \"et39\": {\n      \"description\": \"<string>\"\n    },\n    \"ut_65\": {\n      \"description\": \"<string>\"\n    }\n  },\n  \"cdsServices\": {\n    \"in_cb8\": {\n      \"category\": \"<string>\",\n      \"description\": \"<string>\",\n      \"id\": \"<string>\",\n      \"reference_xsd\": \"<string>\",\n      \"version\": \"<long>\"\n    }\n  },\n  \"cdsSubjectServices\": {\n    \"ea_ba0\": {\n      \"fee\": \"<boolean>\",\n      \"service\": \"<string>\",\n      \"start_date\": \"<dateTime>\",\n      \"subject\": \"<string>\",\n      \"subject_service_id\": \"<string>\",\n      \"end_date\": \"<dateTime>\",\n      \"station_code\": \"<string>\",\n      \"service_description\": \"<string>\"\n    },\n    \"enim23\": {\n      \"fee\": \"<boolean>\",\n      \"service\": \"<string>\",\n      \"start_date\": \"<dateTime>\",\n      \"subject\": \"<string>\",\n      \"subject_service_id\": \"<string>\",\n      \"end_date\": \"<dateTime>\",\n      \"station_code\": \"<string>\",\n      \"service_description\": \"<string>\"\n    }\n  },\n  \"cdsSubjects\": {\n    \"pariatur_35\": {\n      \"creditor_institution_code\": \"<string>\",\n      \"creditor_institution_description\": \"<string>\"\n    }\n  },\n  \"channels\": {\n    \"fugiatcf9\": {\n      \"agid\": \"<boolean>\",\n      \"broker_psp_code\": \"<string>\",\n      \"channel_code\": \"<string>\",\n      \"connection\": {\n        \"ip\": \"<string>\",\n        \"port\": \"<long>\",\n        \"protocol\": \"HTTPS\"\n      },\n      \"digital_stamp\": \"<boolean>\",\n      \"enabled\": \"<boolean>\",\n      \"flag_io\": \"<boolean>\",\n      \"flag_psp_cp\": \"<boolean>\",\n      \"new_fault_code\": \"<boolean>\",\n      \"password\": \"<string>\",\n      \"payment_model\": \"<string>\",\n      \"primitive_version\": \"<integer>\",\n      \"recovery\": \"<boolean>\",\n      \"redirect\": {\n        \"protocol\": \"HTTPS\",\n        \"ip\": \"<string>\",\n        \"path\": \"<string>\",\n        \"port\": \"<long>\",\n        \"query_string\": \"<string>\"\n      },\n      \"rt_push\": \"<boolean>\",\n      \"thread_number\": \"<long>\",\n      \"timeouts\": {\n        \"timeout_a\": \"<long>\",\n        \"timeout_b\": \"<long>\",\n        \"timeout_c\": \"<long>\"\n      },\n      \"description\": \"<string>\",\n      \"proxy\": {\n        \"proxy_host\": \"<string>\",\n        \"proxy_port\": \"<long>\",\n        \"proxy_username\": \"<string>\",\n        \"proxy_password\": \"<string>\"\n      },\n      \"service\": {\n        \"path\": \"<string>\",\n        \"target_host\": \"<string>\",\n        \"target_port\": \"<long>\",\n        \"target_path\": \"<string>\"\n      },\n      \"service_nmp\": {\n        \"path\": \"<string>\",\n        \"target_host\": \"<string>\",\n        \"target_port\": \"<long>\",\n        \"target_path\": \"<string>\"\n      },\n      \"serv_plugin\": \"<string>\"\n    }\n  },\n  \"configurations\": {\n    \"dolore4\": {\n      \"category\": \"<string>\",\n      \"key\": \"<string>\",\n      \"value\": \"<string>\",\n      \"description\": \"<string>\"\n    },\n    \"eiusmod_a0\": {\n      \"category\": \"<string>\",\n      \"key\": \"<string>\",\n      \"value\": \"<string>\",\n      \"description\": \"<string>\"\n    }\n  },\n  \"creditorInstitutionBrokers\": {\n    \"veniam__\": {\n      \"broker_code\": \"<string>\",\n      \"enabled\": \"<boolean>\",\n      \"extended_fault_bean\": \"<boolean>\",\n      \"description\": \"<string>\"\n    },\n    \"enim_63\": {\n      \"broker_code\": \"<string>\",\n      \"enabled\": \"<boolean>\",\n      \"extended_fault_bean\": \"<boolean>\",\n      \"description\": \"<string>\"\n    },\n    \"enim_d\": {\n      \"broker_code\": \"<string>\",\n      \"enabled\": \"<boolean>\",\n      \"extended_fault_bean\": \"<boolean>\",\n      \"description\": \"<string>\"\n    }\n  },\n  \"creditorInstitutionEncodings\": {\n    \"amet6b\": {\n      \"code_type\": \"<string>\",\n      \"creditor_institution_code\": \"<string>\",\n      \"encoding_code\": \"<string>\"\n    },\n    \"amet99d\": {\n      \"code_type\": \"<string>\",\n      \"creditor_institution_code\": \"<string>\",\n      \"encoding_code\": \"<string>\"\n    },\n    \"adipisicing_d20\": {\n      \"code_type\": \"<string>\",\n      \"creditor_institution_code\": \"<string>\",\n      \"encoding_code\": \"<string>\"\n    }\n  },\n  \"creditorInstitutionInformations\": {\n    \"adipisicing_cd\": {\n      \"informativa\": \"<string>\"\n    },\n    \"mollit34\": {\n      \"informativa\": \"<string>\"\n    }\n  },\n  \"creditorInstitutionStations\": {\n    \"culpa906\": {\n      \"broadcast\": \"<boolean>\",\n      \"creditor_institution_code\": \"<string>\",\n      \"mod4\": \"<boolean>\",\n      \"primitive_version\": \"<integer>\",\n      \"spontaneous_payment\": \"<boolean>\",\n      \"station_code\": \"<string>\",\n      \"application_code\": \"<long>\",\n      \"aux_digit\": \"<long>\",\n      \"segregation_code\": \"<long>\"\n    }\n  },\n  \"creditorInstitutions\": {\n    \"quise60\": {\n      \"creditor_institution_code\": \"<string>\",\n      \"enabled\": \"<boolean>\",\n      \"psp_payment\": \"<boolean>\",\n      \"reporting_ftp\": \"<boolean>\",\n      \"reporting_zip\": \"<boolean>\",\n      \"business_name\": \"<string>\",\n      \"description\": \"<string>\",\n      \"address\": {\n        \"location\": \"<string>\",\n        \"city\": \"<string>\",\n        \"zip_code\": \"<string>\",\n        \"country_code\": \"<string>\",\n        \"tax_domicile\": \"<string>\"\n      }\n    }\n  },\n  \"encodings\": {\n    \"fugiatb3a\": {\n      \"code_type\": \"<string>\",\n      \"description\": \"<string>\"\n    },\n    \"minim_54c\": {\n      \"code_type\": \"<string>\",\n      \"description\": \"<string>\"\n    },\n    \"pariatur4\": {\n      \"code_type\": \"<string>\",\n      \"description\": \"<string>\"\n    }\n  },\n  \"ftpServers\": {\n    \"officia_0a\": {\n      \"enabled\": \"<boolean>\",\n      \"history_path\": \"<string>\",\n      \"host\": \"<string>\",\n      \"id\": \"<long>\",\n      \"in_path\": \"<string>\",\n      \"out_path\": \"<string>\",\n      \"password\": \"<string>\",\n      \"port\": \"<integer>\",\n      \"root_path\": \"<string>\",\n      \"service\": \"<string>\",\n      \"type\": \"<string>\",\n      \"username\": \"<string>\"\n    },\n    \"enim_c47\": {\n      \"enabled\": \"<boolean>\",\n      \"history_path\": \"<string>\",\n      \"host\": \"<string>\",\n      \"id\": \"<long>\",\n      \"in_path\": \"<string>\",\n      \"out_path\": \"<string>\",\n      \"password\": \"<string>\",\n      \"port\": \"<integer>\",\n      \"root_path\": \"<string>\",\n      \"service\": \"<string>\",\n      \"type\": \"<string>\",\n      \"username\": \"<string>\"\n    }\n  },\n  \"gdeConfigurations\": {\n    \"dolor_044\": {\n      \"event_hub_enabled\": \"<boolean>\",\n      \"event_hub_payload_enabled\": \"<boolean>\",\n      \"primitive\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  },\n  \"ibans\": {\n    \"enim_cb\": {\n      \"creditor_institution_code\": \"<string>\",\n      \"iban\": \"<string>\",\n      \"publication_date\": \"<dateTime>\",\n      \"validity_date\": \"<dateTime>\",\n      \"shop_id\": \"<string>\",\n      \"seller_bank_id\": \"<string>\",\n      \"avvio_key\": \"<string>\",\n      \"esito_key\": \"<string>\"\n    }\n  },\n  \"languages\": {\n    \"animfb9\": \"<string>\",\n    \"do_12a\": \"<string>\"\n  },\n  \"metadataDict\": {\n    \"labore5\": {\n      \"key\": \"<string>\",\n      \"start_date\": \"<dateTime>\",\n      \"description\": \"<string>\",\n      \"end_date\": \"<dateTime>\"\n    }\n  },\n  \"paymentTypes\": {\n    \"non__3\": {\n      \"payment_type\": \"<string>\",\n      \"description\": \"<string>\"\n    },\n    \"Excepteur_5\": {\n      \"payment_type\": \"<string>\",\n      \"description\": \"<string>\"\n    }\n  },\n  \"plugins\": {\n    \"nulla_00\": {\n      \"id_serv_plugin\": \"<string>\",\n      \"pag_const_string_profile\": \"<string>\",\n      \"pag_soap_rule_profile\": \"<string>\",\n      \"pag_rpt_xpath_profile\": \"<string>\",\n      \"id_bean\": \"<string>\"\n    }\n  },\n  \"pspBrokers\": {\n    \"nisi_b\": {\n      \"broker_psp_code\": \"<string>\",\n      \"enabled\": \"<boolean>\",\n      \"extended_fault_bean\": \"<boolean>\",\n      \"description\": \"<string>\"\n    },\n    \"voluptatefa0\": {\n      \"broker_psp_code\": \"<string>\",\n      \"enabled\": \"<boolean>\",\n      \"extended_fault_bean\": \"<boolean>\",\n      \"description\": \"<string>\"\n    },\n    \"aliqua_09f\": {\n      \"broker_psp_code\": \"<string>\",\n      \"enabled\": \"<boolean>\",\n      \"extended_fault_bean\": \"<boolean>\",\n      \"description\": \"<string>\"\n    }\n  },\n  \"pspChannelPaymentTypes\": {\n    \"occaecatb\": {\n      \"channel_code\": \"<string>\",\n      \"payment_type\": \"<string>\",\n      \"psp_code\": \"<string>\"\n    },\n    \"eu_43\": {\n      \"channel_code\": \"<string>\",\n      \"payment_type\": \"<string>\",\n      \"psp_code\": \"<string>\"\n    }\n  },\n  \"pspInformationTemplates\": {\n    \"aute_7\": {\n      \"informativa\": \"<string>\"\n    }\n  },\n  \"pspInformations\": {\n    \"pariatur3_\": {\n      \"informativa\": \"<string>\"\n    },\n    \"sedc0\": {\n      \"informativa\": \"<string>\"\n    }\n  },\n  \"psps\": {\n    \"Lorem_b8\": {\n      \"agid_psp\": \"<boolean>\",\n      \"digital_stamp\": \"<boolean>\",\n      \"enabled\": \"<boolean>\",\n      \"psp_code\": \"<string>\",\n      \"description\": \"<string>\",\n      \"business_name\": \"<string>\",\n      \"abi\": \"<string>\",\n      \"bic\": \"<string>\",\n      \"my_bank_code\": \"<string>\",\n      \"tax_code\": \"<string>\",\n      \"vat_number\": \"<string>\"\n    }\n  },\n  \"stations\": {\n    \"deserunt_9e\": {\n      \"broker_code\": \"<string>\",\n      \"connection\": {\n        \"ip\": \"<string>\",\n        \"port\": \"<long>\",\n        \"protocol\": \"HTTPS\"\n      },\n      \"enabled\": \"<boolean>\",\n      \"invio_rt_istantaneo\": \"<boolean>\",\n      \"password\": \"<string>\",\n      \"primitive_version\": \"<integer>\",\n      \"redirect\": {\n        \"protocol\": \"HTTPS\",\n        \"ip\": \"<string>\",\n        \"path\": \"<string>\",\n        \"port\": \"<long>\",\n        \"query_string\": \"<string>\"\n      },\n      \"station_code\": \"<string>\",\n      \"thread_number\": \"<long>\",\n      \"timeouts\": {\n        \"timeout_a\": \"<long>\",\n        \"timeout_b\": \"<long>\",\n        \"timeout_c\": \"<long>\"\n      },\n      \"version\": \"<long>\",\n      \"connection_mod4\": {\n        \"ip\": \"<string>\",\n        \"port\": \"<long>\",\n        \"protocol\": \"HTTPS\"\n      },\n      \"service\": {\n        \"path\": \"<string>\",\n        \"target_host\": \"<string>\",\n        \"target_port\": \"<long>\",\n        \"target_path\": \"<string>\"\n      },\n      \"service_pof\": {\n        \"path\": \"<string>\",\n        \"target_host\": \"<string>\",\n        \"target_port\": \"<long>\",\n        \"target_path\": \"<string>\"\n      },\n      \"service_mod4\": {\n        \"path\": \"<string>\",\n        \"target_host\": \"<string>\",\n        \"target_port\": \"<long>\",\n        \"target_path\": \"<string>\"\n      },\n      \"proxy\": {\n        \"proxy_host\": \"<string>\",\n        \"proxy_port\": \"<long>\",\n        \"proxy_username\": \"<string>\",\n        \"proxy_password\": \"<string>\"\n      }\n    }\n  },\n  \"version\": \"<string>\"\n}"
+						},
+						{
+							"name": "Bad Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/node/cache/schemas/v1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"node",
+										"cache",
+										"schemas",
+										"v1"
+									],
+									"query": [
+										{
+											"key": "refresh",
+											"value": "<boolean>",
+											"description": "to force the refresh of the cache",
+											"disabled": true
+										},
+										{
+											"key": "keys",
+											"value": "cdsSubjectServices",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"title\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"detail\": \"<string>\"\n}"
+						},
+						{
+							"name": "Unauthorized",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/node/cache/schemas/v1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"node",
+										"cache",
+										"schemas",
+										"v1"
+									],
+									"query": [
+										{
+											"key": "refresh",
+											"value": "<boolean>",
+											"description": "to force the refresh of the cache",
+											"disabled": true
+										},
+										{
+											"key": "keys",
+											"value": "cdsSubjectServices",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Forbidden",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/node/cache/schemas/v1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"node",
+										"cache",
+										"schemas",
+										"v1"
+									],
+									"query": [
+										{
+											"key": "refresh",
+											"value": "<boolean>",
+											"description": "to force the refresh of the cache",
+											"disabled": true
+										},
+										{
+											"key": "keys",
+											"value": "cdsSubjectServices",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "Forbidden",
+							"code": 403,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Too many requests",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/node/cache/schemas/v1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"node",
+										"cache",
+										"schemas",
+										"v1"
+									],
+									"query": [
+										{
+											"key": "refresh",
+											"value": "<boolean>",
+											"description": "to force the refresh of the cache",
+											"disabled": true
+										},
+										{
+											"key": "keys",
+											"value": "cdsSubjectServices",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "Too Many Requests",
+							"code": 429,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Service unavailable",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/node/cache/schemas/v1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"node",
+										"cache",
+										"schemas",
+										"v1"
+									],
+									"query": [
+										{
+											"key": "refresh",
+											"value": "<boolean>",
+											"description": "to force the refresh of the cache",
+											"disabled": true
+										},
+										{
+											"key": "keys",
+											"value": "cdsSubjectServices",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"title\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"detail\": \"<string>\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "FdrCache",
+			"item": [
+				{
+					"name": "/stakeholders/fdr/cache/schemas/v1/id",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "key",
+									"value": "Ocp-Apim-Subscription-Key",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "{{apiKey}}",
+									"type": "string"
+								},
+								{
+									"key": "in",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+								"key": "X-Request-Id",
+								"value": "<string>"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/stakeholders/fdr/cache/schemas/v1/id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"stakeholders",
+								"fdr",
+								"cache",
+								"schemas",
+								"v1",
+								"id"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/fdr/cache/schemas/v1/id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"fdr",
+										"cache",
+										"schemas",
+										"v1",
+										"id"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"version\": \"<string>\"\n}"
+						},
+						{
+							"name": "Bad Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/fdr/cache/schemas/v1/id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"fdr",
+										"cache",
+										"schemas",
+										"v1",
+										"id"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"title\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"detail\": \"<string>\"\n}"
+						},
+						{
+							"name": "Unauthorized",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/fdr/cache/schemas/v1/id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"fdr",
+										"cache",
+										"schemas",
+										"v1",
+										"id"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Forbidden",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/fdr/cache/schemas/v1/id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"fdr",
+										"cache",
+										"schemas",
+										"v1",
+										"id"
+									]
+								}
+							},
+							"status": "Forbidden",
+							"code": 403,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Not Found",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/fdr/cache/schemas/v1/id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"fdr",
+										"cache",
+										"schemas",
+										"v1",
+										"id"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Too many requests",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/fdr/cache/schemas/v1/id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"fdr",
+										"cache",
+										"schemas",
+										"v1",
+										"id"
+									]
+								}
+							},
+							"status": "Too Many Requests",
+							"code": 429,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Service unavailable",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/fdr/cache/schemas/v1/id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"fdr",
+										"cache",
+										"schemas",
+										"v1",
+										"id"
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"title\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"detail\": \"<string>\"\n}"
+						}
+					]
+				},
+				{
+					"name": "/stakeholders/node/cache/schemas/v1/id",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "key",
+									"value": "Ocp-Apim-Subscription-Key",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "{{apiKey}}",
+									"type": "string"
+								},
+								{
+									"key": "in",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+								"key": "X-Request-Id",
+								"value": "<string>"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/stakeholders/node/cache/schemas/v1/id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"stakeholders",
+								"node",
+								"cache",
+								"schemas",
+								"v1",
+								"id"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/node/cache/schemas/v1/id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"node",
+										"cache",
+										"schemas",
+										"v1",
+										"id"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"version\": \"<string>\"\n}"
+						},
+						{
+							"name": "Bad Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/node/cache/schemas/v1/id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"node",
+										"cache",
+										"schemas",
+										"v1",
+										"id"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"title\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"detail\": \"<string>\"\n}"
+						},
+						{
+							"name": "Unauthorized",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/node/cache/schemas/v1/id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"node",
+										"cache",
+										"schemas",
+										"v1",
+										"id"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Forbidden",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/node/cache/schemas/v1/id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"node",
+										"cache",
+										"schemas",
+										"v1",
+										"id"
+									]
+								}
+							},
+							"status": "Forbidden",
+							"code": 403,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Not Found",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/node/cache/schemas/v1/id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"node",
+										"cache",
+										"schemas",
+										"v1",
+										"id"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Too many requests",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/node/cache/schemas/v1/id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"node",
+										"cache",
+										"schemas",
+										"v1",
+										"id"
+									]
+								}
+							},
+							"status": "Too Many Requests",
+							"code": 429,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Service unavailable",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/node/cache/schemas/v1/id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"node",
+										"cache",
+										"schemas",
+										"v1",
+										"id"
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"title\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"detail\": \"<string>\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "VerifierCache",
+			"item": [
+				{
+					"name": "/stakeholders/verifier/cache/schemas/v1",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "key",
+									"value": "Ocp-Apim-Subscription-Key",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "{{apiKey}}",
+									"type": "string"
+								},
+								{
+									"key": "in",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+								"key": "X-Request-Id",
+								"value": "<string>"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/stakeholders/verifier/cache/schemas/v1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"stakeholders",
+								"verifier",
+								"cache",
+								"schemas",
+								"v1"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/verifier/cache/schemas/v1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"verifier",
+										"cache",
+										"schemas",
+										"v1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": "<string>"
+						},
+						{
+							"name": "Bad Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/verifier/cache/schemas/v1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"verifier",
+										"cache",
+										"schemas",
+										"v1"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"title\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"detail\": \"<string>\"\n}"
+						},
+						{
+							"name": "Unauthorized",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/verifier/cache/schemas/v1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"verifier",
+										"cache",
+										"schemas",
+										"v1"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Forbidden",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/verifier/cache/schemas/v1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"verifier",
+										"cache",
+										"schemas",
+										"v1"
+									]
+								}
+							},
+							"status": "Forbidden",
+							"code": 403,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Too many requests",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/verifier/cache/schemas/v1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"verifier",
+										"cache",
+										"schemas",
+										"v1"
+									]
+								}
+							},
+							"status": "Too Many Requests",
+							"code": 429,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Service unavailable",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+										"key": "X-Request-Id",
+										"value": "<string>",
+										"disabled": true
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"description": "Added as a part of security scheme: apikey",
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "<API Key>"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/stakeholders/verifier/cache/schemas/v1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"stakeholders",
+										"verifier",
+										"cache",
+										"schemas",
+										"v1"
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-Request-Id",
+									"value": "<string>",
+									"description": "This header identifies the call"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"title\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"detail\": \"<string>\"\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "api.dev.platform.pagopa.it",
+			"disabled": true
+		},
+		{
+			"key": "basePath",
+			"value": "api-config-cache/o/v1"
+		},
+		{
+			"key": "baseUrl",
+			"value": "{{host}}/{{basePath}}"
+		}
+	]
+}
