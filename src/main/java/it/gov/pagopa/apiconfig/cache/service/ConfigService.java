@@ -463,7 +463,7 @@ public class ConfigService {
                   .id(configData.getVersion())
                   .cache(jsonSerializer.serialize(configData))
                   .time(ZonedDateTime.now())
-                  .version((Constants.GZIP_JSON_V1 + "-" + appVersion).substring(0, 32))
+                  .version(getVersion())
                   .build());
           log.info("saved on CACHE table " + configData.getVersion());
         } catch (Exception e) {
@@ -477,6 +477,14 @@ public class ConfigService {
     }
     removeCacheV1InProgress(stakeholder);
     return configData;
+  }
+
+  private String getVersion() {
+    String version = Constants.GZIP_JSON_V1 + "-" + appVersion;
+    if (version.length() > 32) {
+      return version.substring(0, 32);
+    }
+    return version;
   }
 
   public void removeCacheV1InProgress(String stakeholder) {
