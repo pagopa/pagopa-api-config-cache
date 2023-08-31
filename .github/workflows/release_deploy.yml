@@ -16,7 +16,6 @@ on:
           - dev
           - uat
           - prod
-          - all
       beta:
         required: false
         type: boolean
@@ -166,7 +165,7 @@ jobs:
     if: always()
     steps:
       - name: Report Status
-        if: ${{ needs.setup.outputs.environment == 'prod' || needs.setup.outputs.environment == 'all'  }}
+        if: ${{ needs.setup.outputs.environment == 'prod' }}
         uses: ravsamhq/notify-slack-action@v2
         with:
           status: ${{ needs.deploy_aks.result }}
