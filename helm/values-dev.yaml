@@ -87,7 +87,7 @@ oracle:
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-oracle"
-    DB_CONFIG_URL: "jdbc:oracle:thin:@db-nodo-pagamenti.d.db-nodo-pagamenti.com:1522/NDPSPCT_PP_NODO4_CFG"
+    DB_CONFIG_URL: "jdbc:oracle:thin:@(DESCRIPTION=(ENABLE=BROKEN)(ADDRESS=(PROTOCOL=tcp)(PORT=1522)(HOST=db-nodo-pagamenti.d.db-nodo-pagamenti.com))(CONNECT_DATA=(SERVICE_NAME=NDPSPCT_PP_NODO4_CFG))(SO_KEEPALIVE=true)(TCP_KEEPIDLE=60)(TCP_KEEPINTVL=30)(TCP_KEEPCNT=15))"
     DB_CONFIG_USER: "NODO4_CFG"
     DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
     JAVA_OPTS: "-Dspring.jpa.show-sql=false"
