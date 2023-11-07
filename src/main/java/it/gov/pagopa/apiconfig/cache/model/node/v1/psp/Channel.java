@@ -87,6 +87,6 @@ public class Channel implements Serializable {
   @JsonProperty(value = "primitive_version", required = true)
   private Integer primitiveVersion;
 
-  @JsonProperty(value = "flag_psp_cp", required = true)
-  private Boolean flagPspCp;
+  @JsonProperty(value = "flag_travaso", required = true)
+  private Boolean flagTravaso;
 }
