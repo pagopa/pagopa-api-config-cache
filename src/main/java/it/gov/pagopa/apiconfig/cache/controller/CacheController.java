@@ -41,7 +41,7 @@ public abstract class CacheController {
   }
 
   @Operation(
-      summary = "Get selected key of fdr v1 config",
+      summary = "Get selected key of cache v1 config",
       security = {@SecurityRequirement(name = "ApiKey")},
       tags = {
         "Cache",
@@ -99,10 +99,10 @@ public abstract class CacheController {
   }
 
   @Operation(
-      summary = "Get last fdr v1 cache version",
+      summary = "Get last v1 cache version",
       security = {@SecurityRequirement(name = "ApiKey")},
       tags = {
-        "FdrCache",
+        "Cache",
       })
   @ApiResponses(
       value = {

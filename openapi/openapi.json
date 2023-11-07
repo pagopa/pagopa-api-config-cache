@@ -132,7 +132,7 @@
     "/stakeholders/fdr/cache/schemas/v1" : {
       "get" : {
         "tags" : [ "Cache" ],
-        "summary" : "Get selected key of fdr v1 config",
+        "summary" : "Get selected key of cache v1 config",
         "operationId" : "cache_2",
         "parameters" : [ {
           "name" : "refresh",
@@ -258,8 +258,8 @@
     },
     "/stakeholders/fdr/cache/schemas/v1/id" : {
       "get" : {
-        "tags" : [ "FdrCache" ],
-        "summary" : "Get last fdr v1 cache version",
+        "tags" : [ "Cache" ],
+        "summary" : "Get last v1 cache version",
         "operationId" : "idV1_1",
         "responses" : {
           "200" : {
@@ -377,7 +377,7 @@
     "/stakeholders/node/cache/schemas/v1" : {
       "get" : {
         "tags" : [ "Cache" ],
-        "summary" : "Get selected key of fdr v1 config",
+        "summary" : "Get selected key of cache v1 config",
         "operationId" : "cache_1",
         "parameters" : [ {
           "name" : "refresh",
@@ -503,8 +503,8 @@
     },
     "/stakeholders/node/cache/schemas/v1/id" : {
       "get" : {
-        "tags" : [ "FdrCache" ],
-        "summary" : "Get last fdr v1 cache version",
+        "tags" : [ "Cache" ],
+        "summary" : "Get last v1 cache version",
         "operationId" : "idV1",
         "responses" : {
           "200" : {
