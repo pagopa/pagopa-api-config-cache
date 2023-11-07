@@ -37,7 +37,11 @@ public abstract class CacheController {
 
   @PostConstruct
   private void loadCacheFromRedis() {
-    cfgDataV1 = configService.loadFromRedis(stakeholder());
+      try {
+          cfgDataV1 = configService.loadFromRedis(stakeholder());
+      } catch (Exception e){
+          log.warn("could not load {} cache from redis",stakeholder());
+      }
   }
 
   @Operation(
