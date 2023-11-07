@@ -1,11 +1,6 @@
 package it.gov.pagopa.apiconfig.cache.util.mapper;
 
-import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Connection;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Protocol;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Proxy;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Redirect;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Service;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Timeouts;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.common.*;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.Channel;
 import it.gov.pagopa.apiconfig.starter.entity.CanaliView;
 import org.modelmapper.Converter;
@@ -77,7 +72,7 @@ public class ConvertCanaliToChannelDetails implements Converter<CanaliView, Chan
         .agid(source.getAgidChannel())
         .primitiveVersion(source.getVersionePrimitive())
         .flagIo(source.getFlagIo())
-        .flagPspCp(source.getFlagPspCp())
+        .flagTravaso(source.getFlagTravaso())
         .servPlugin(source.getIdServPlugin())
         .build();
   }
