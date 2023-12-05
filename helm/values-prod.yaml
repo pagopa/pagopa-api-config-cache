@@ -2,7 +2,7 @@ microservice-chart: &microservice-chart
   namespace: "apiconfig"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: 0.8.4
+    tag: 0.8.4-1-test-prod
   canaryDelivery:
     deployment:
       image:
@@ -86,9 +86,9 @@ oracle:
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-oracle"
-#    DB_CONFIG_URL: "jdbc:oracle:thin:@db-nodo-pagamenti.p.db-nodo-pagamenti.com:1521/NDPSPCP_NODO4_CFG"
+    #    DB_CONFIG_URL: "jdbc:oracle:thin:@db-nodo-pagamenti.p.db-nodo-pagamenti.com:1521/NDPSPCP_NODO4_CFG"
     DB_CONFIG_URL: "jdbc:oracle:thin:@db-nodo-pagamenti.p.db-nodo-pagamenti.com:1521/NDPSPCP_PP_NODO4_CFG"
-#    DB_CONFIG_USER: "NODO4_CFG"
+    #    DB_CONFIG_USER: "NODO4_CFG"
     DB_CONFIG_USER: "PP_NODO4_CFG"
     DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
     JAVA_OPTS: "-Dspring.jpa.show-sql=false -XX:MaxHeapSize=4g"
