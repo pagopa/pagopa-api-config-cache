@@ -27,7 +27,7 @@ microservice-chart: &microservice-chart
       memory: "512Mi"
       cpu: "0.25"
     limits:
-      memory: "6G"
+      memory: "8G"
       cpu: "2.5"
   envConfig: &envConfig
     ENV: "prod"
@@ -65,7 +65,7 @@ microservice-chart: &microservice-chart
           podAffinityTerm:
             labelSelector:
               matchLabels:
-                app.kubernetes.io/instance: "pagopa-api-config-cache-postgresql"
+                app.kubernetes.io/instance: "cache"
             namespaces: ["apiconfig"]
             topologyKey: topology.kubernetes.io/zone
 # Configuration used to update image tag
@@ -98,7 +98,7 @@ oracle:
     DB_CONFIG_URL: "jdbc:oracle:thin:@db-nodo-pagamenti.p.db-nodo-pagamenti.com:1521/NDPSPCP_NODO4_CFG"
     DB_CONFIG_USER: "NODO4_CFG"
     DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
-    JAVA_OPTS: "-Dspring.jpa.show-sql=false -XX:MaxHeapSize=4g"
+    JAVA_OPTS: "-Dspring.jpa.show-sql=false -XX:MaxHeapSize=6g"
     DATABASE_ID: "o"
     IN_PROGRESS_TTL: "20"
     HEALTHCHECK_QUERY: "select 1 from dual"
