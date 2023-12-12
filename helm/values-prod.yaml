@@ -82,6 +82,7 @@ postgresql:
     DB_CONFIG_DRIVER: "org.postgresql.Driver"
     DATABASE_ID: "p"
     HEALTHCHECK_QUERY: "select 1"
+    JAVA_OPTS: "-Dspring.jpa.show-sql=false"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:
