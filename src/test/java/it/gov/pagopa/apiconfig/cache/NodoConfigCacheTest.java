@@ -81,13 +81,13 @@ class NodoConfigCacheTest {
     configDataV11.setVersion("12345");
     when(redisRepository.getStringByKeyId(anyString())).thenReturn(TestUtils.cacheId);
     when(redisRepository.getBooleanByKeyId(anyString())).thenReturn(true);
-    when(redisRepository.getConfigMap(anyString())).thenReturn(configDataV1Map);
+    when(redisRepository.getCache(anyString())).thenReturn(configDataV1Map);
     CacheVersion cacheV1Id = configService.getCacheV1Id("");
     assertThat(cacheV1Id.getVersion().equals(TestUtils.cacheId));
     Boolean inProgress = configService.getCacheV1InProgress("");
     assertThat(inProgress);
 
-    Map<String, Object> configDataV1 = configService.loadFromRedis("");
+    Map<String, Object> configDataV1 = configService.loadFullCache();
     assertThat(configDataV1.get(Constants.version).equals(configDataV11.getVersion()));
   }
 
