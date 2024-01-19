@@ -1,10 +1,10 @@
 {
-  "openapi": "3.0.1",
-  "info": {
-    "title": "API-Config Cacher",
-    "description": "Generate cache for regarding Nodo dei Pagamenti configuration",
-    "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.8.6-1-fix-prod-helm-cfg"
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "API-Config Cacher",
+    "description" : "Generate cache for regarding Nodo dei Pagamenti configuration",
+    "termsOfService" : "https://www.pagopa.gov.it/",
+    "version" : "0.8.6"
   },
   "servers" : [ {
     "url" : "http://localhost:8080"
@@ -27,43 +27,7 @@
         "tags" : [ "Cache" ],
         "summary" : "Get selected key of cache v1 config",
         "operationId" : "cache",
-        "parameters" : [ {
-          "name" : "refresh",
-          "in" : "query",
-          "description" : "to force the refresh of the cache",
-          "required" : false,
-          "schema" : {
-            "type" : "boolean"
-          }
-        }, {
-          "name" : "keys",
-          "in" : "query",
-          "required" : false,
-          "schema" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string",
-              "enum" : [ "creditorInstitutions", "creditorInstitutionBrokers", "stations", "creditorInstitutionStations", "encodings", "creditorInstitutionEncodings", "ibans", "creditorInstitutionInformations", "psps", "pspBrokers", "paymentTypes", "pspChannelPaymentTypes", "plugins", "pspInformationTemplates", "pspInformations", "channels", "cdsServices", "cdsSubjects", "cdsSubjectServices", "cdsCategories", "configurations", "ftpServers", "languages", "gdeConfigurations", "metadataDict" ]
-            }
-          }
-        } ],
         "responses" : {
-          "429" : {
-            "description" : "Too many requests"
-          },
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ConfigDataV1"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "Unauthorized"
-          },
           "400" : {
             "description" : "Bad Request",
             "content" : {
@@ -74,6 +38,9 @@
               }
             }
           },
+          "401" : {
+            "description" : "Unauthorized"
+          },
           "403" : {
             "description" : "Forbidden"
           },
@@ -83,6 +50,19 @@
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ConfigDataV1"
                 }
               }
             }
@@ -99,12 +79,6 @@
         "summary" : "Get last v1 cache version",
         "operationId" : "idV1",
         "responses" : {
-          "429" : {
-            "description" : "Too many requests"
-          },
-          "401" : {
-            "description" : "Unauthorized"
-          },
           "400" : {
             "description" : "Bad Request",
             "content" : {
@@ -115,15 +89,8 @@
               }
             }
           },
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/CacheVersion"
-                }
-              }
-            }
+          "401" : {
+            "description" : "Unauthorized"
           },
           "403" : {
             "description" : "Forbidden"
@@ -140,6 +107,19 @@
                 }
               }
             }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CacheVersion"
+                }
+              }
+            }
           }
         },
         "security" : [ {
@@ -150,6 +130,28 @@
   },
   "components" : {
     "schemas" : {
+      "ProblemJson" : {
+        "type" : "object",
+        "properties" : {
+          "title" : {
+            "type" : "string",
+            "description" : "A short, summary of the problem type. Written in english and readable for engineers (usually not suited for non technical stakeholders and not localized); example: Service Unavailable"
+          },
+          "status" : {
+            "maximum" : 600,
+            "minimum" : 100,
+            "type" : "integer",
+            "description" : "The HTTP status code generated by the origin server for this occurrence of the problem.",
+            "format" : "int32",
+            "example" : 200
+          },
+          "detail" : {
+            "type" : "string",
+            "description" : "A human readable explanation specific to this occurrence of the problem.",
+            "example" : "There was an error processing the request"
+          }
+        }
+      },
       "BrokerCreditorInstitution" : {
         "required" : [ "broker_code", "enabled", "extended_fault_bean" ],
         "type" : "object",
@@ -992,28 +994,6 @@
           "timeout_c" : {
             "type" : "integer",
             "format" : "int64"
-          }
-        }
-      },
-      "ProblemJson" : {
-        "type" : "object",
-        "properties" : {
-          "title" : {
-            "type" : "string",
-            "description" : "A short, summary of the problem type. Written in english and readable for engineers (usually not suited for non technical stakeholders and not localized); example: Service Unavailable"
-          },
-          "status" : {
-            "maximum" : 600,
-            "minimum" : 100,
-            "type" : "integer",
-            "description" : "The HTTP status code generated by the origin server for this occurrence of the problem.",
-            "format" : "int32",
-            "example" : 200
-          },
-          "detail" : {
-            "type" : "string",
-            "description" : "A human readable explanation specific to this occurrence of the problem.",
-            "example" : "There was an error processing the request"
           }
         }
       },

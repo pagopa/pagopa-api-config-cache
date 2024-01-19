@@ -10,6 +10,7 @@ public class Constants {
 
  public static String FULL = "full";
 
+ public static String na = "na";
 
  public static String version = "version";
  public static String creditorInstitutions = "creditorInstitutions";

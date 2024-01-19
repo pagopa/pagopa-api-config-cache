@@ -12,8 +12,11 @@ import it.gov.pagopa.apiconfig.cache.service.HealthCheckService;
 import it.gov.pagopa.apiconfig.cache.service.VerifierService;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Optional;
 import javax.persistence.EntityManager;
+
+import it.gov.pagopa.apiconfig.cache.util.Constants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -38,8 +41,10 @@ class ControllerTest {
 
   @BeforeEach
   void setUp() throws IOException {
+    HashMap<String, Object> objectObjectHashMap = new HashMap<String, Object>();
+    objectObjectHashMap.put(Constants.version,"1111");
     when(configService.getCacheV1Id("")).thenReturn(new CacheVersion("1111"));
-    when(configService.newCacheV1("", Optional.empty())).thenReturn(new ConfigDataV1());
+    when(configService.newCacheV1()).thenReturn(objectObjectHashMap);
     when(verifierService.getPaV2()).thenReturn(Arrays.asList("1", "2"));
     when(healthCheckService.checkDatabaseConnection()).thenReturn(true);
   }
@@ -59,10 +64,8 @@ class ControllerTest {
   @ParameterizedTest
   @CsvSource({
     "/stakeholders/node/cache/schemas/v1",
-    "/stakeholders/node/cache/schemas/v1?refresh=true",
     "/stakeholders/node/cache/schemas/v1/id",
     "/stakeholders/fdr/cache/schemas/v1",
-    "/stakeholders/fdr/cache/schemas/v1?refresh=true",
     "/stakeholders/fdr/cache/schemas/v1/id",
     "/stakeholders/verifier/cache/schemas/v1"
   })
@@ -75,60 +78,4 @@ class ControllerTest {
     String url = "/stakeholders/node/cache/schemas/v1/idasdasdasd";
     mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
   }
-  //
-  //  @Test
-  //  void getBroker() throws Exception {
-  //    String url = "/brokers/1234";
-  //    mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
-  //        .andExpect(status().isOk())
-  //        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-  //  }
-  //
-  //  @Test
-  //  void createBroker() throws Exception {
-  //    mvc.perform(
-  //            post("/brokers")
-  //                .content(TestUtil.toJson(getMockBrokerDetails()))
-  //                .contentType(MediaType.APPLICATION_JSON))
-  //        .andExpect(status().isCreated())
-  //        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-  //  }
-  //
-  //  @Test
-  //  void createBroker_400() throws Exception {
-  //    mvc.perform(
-  //            post("/brokers")
-  //
-  // .content(TestUtil.toJson(getMockBrokerDetails().toBuilder().brokerCode("").build()))
-  //                .contentType(MediaType.APPLICATION_JSON))
-  //        .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
-  //        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-  //  }
-  //
-  //  @Test
-  //  void updateBroker() throws Exception {
-  //    mvc.perform(
-  //            put("/brokers/1234")
-  //                .content(TestUtil.toJson(getMockBrokerDetails()))
-  //                .contentType(MediaType.APPLICATION_JSON))
-  //        .andExpect(status().isOk())
-  //        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-  //  }
-  //
-  //  @Test
-  //  void updateBroker_400() throws Exception {
-  //    mvc.perform(
-  //            put("/brokers/1234")
-  //
-  // .content(TestUtil.toJson(getMockBrokerDetails().toBuilder().brokerCode("").build()))
-  //                .contentType(MediaType.APPLICATION_JSON))
-  //        .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
-  //        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-  //  }
-  //
-  //  @Test
-  //  void deleteBroker() throws Exception {
-  //    mvc.perform(delete("/brokers/1234").contentType(MediaType.APPLICATION_JSON))
-  //        .andExpect(status().isOk());
-  //  }
 }

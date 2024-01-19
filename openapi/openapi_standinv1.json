@@ -22,7 +22,7 @@
     }
   } ],
   "paths" : {
-    "/stakeholders/fdr/cache/schemas/v1" : {
+    "/stakeholders/standin/cache/schemas/v1" : {
       "get" : {
         "tags" : [ "Cache" ],
         "summary" : "Get selected key of cache v1 config",
@@ -73,7 +73,7 @@
         } ]
       }
     },
-    "/stakeholders/fdr/cache/schemas/v1/id" : {
+    "/stakeholders/standin/cache/schemas/v1/id" : {
       "get" : {
         "tags" : [ "Cache" ],
         "summary" : "Get last v1 cache version",
