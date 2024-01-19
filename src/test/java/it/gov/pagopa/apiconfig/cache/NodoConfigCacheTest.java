@@ -1,45 +1,14 @@
 package it.gov.pagopa.apiconfig.cache;
 
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
-import it.gov.pagopa.apiconfig.cache.model.NodeCacheKey;
+import it.gov.pagopa.apiconfig.cache.controller.stakeholders.NodeCacheController;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.service.ConfigService;
+import it.gov.pagopa.apiconfig.cache.util.ConfigDataUtil;
 import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
-import it.gov.pagopa.apiconfig.starter.repository.CanaliViewRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdiDetailRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdiFasciaCostoServizioRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdiInformazioniServizioRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdiMasterValidRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdiPreferenceRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdsCategorieRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdsServizioRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdsSoggettoRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdsSoggettoServizioRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CodifichePaRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CodificheRepository;
-import it.gov.pagopa.apiconfig.starter.repository.ConfigurationKeysRepository;
-import it.gov.pagopa.apiconfig.starter.repository.DizionarioMetadatiRepository;
-import it.gov.pagopa.apiconfig.starter.repository.FtpServersRepository;
-import it.gov.pagopa.apiconfig.starter.repository.GdeConfigRepository;
-import it.gov.pagopa.apiconfig.starter.repository.IbanValidiPerPaRepository;
-import it.gov.pagopa.apiconfig.starter.repository.InformativePaDetailRepository;
-import it.gov.pagopa.apiconfig.starter.repository.InformativePaFasceRepository;
-import it.gov.pagopa.apiconfig.starter.repository.InformativePaMasterRepository;
-import it.gov.pagopa.apiconfig.starter.repository.IntermediariPaRepository;
-import it.gov.pagopa.apiconfig.starter.repository.IntermediariPspRepository;
-import it.gov.pagopa.apiconfig.starter.repository.PaRepository;
-import it.gov.pagopa.apiconfig.starter.repository.PaStazionePaRepository;
-import it.gov.pagopa.apiconfig.starter.repository.PspCanaleTipoVersamentoCanaleRepository;
-import it.gov.pagopa.apiconfig.starter.repository.PspRepository;
-import it.gov.pagopa.apiconfig.starter.repository.StazioniRepository;
-import it.gov.pagopa.apiconfig.starter.repository.TipiVersamentoRepository;
-import it.gov.pagopa.apiconfig.starter.repository.WfespPluginConfRepository;
-import java.util.Optional;
+import it.gov.pagopa.apiconfig.cache.util.Constants;
+import it.gov.pagopa.apiconfig.starter.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,6 +16,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 // @SpringBootTest(classes = Application.class)
 @ExtendWith(MockitoExtension.class)
@@ -91,8 +67,7 @@ class NodoConfigCacheTest {
   void setUp() {
     org.springframework.test.util.ReflectionTestUtils.setField(configService, "keyV1Id", "value");
     org.springframework.test.util.ReflectionTestUtils.setField(configService, "keyV1", "value");
-    org.springframework.test.util.ReflectionTestUtils.setField(
-        configService, "keyV1InProgress", "value");
+    org.springframework.test.util.ReflectionTestUtils.setField(configService, "keyV1InProgress", "value");
     org.springframework.test.util.ReflectionTestUtils.setField(configService, "saveDB", true);
 
     configService.postConstruct();
@@ -100,18 +75,20 @@ class NodoConfigCacheTest {
 
   @Test
   void getCacheV1Id() {
+    Map<String, Object> configDataV1Map = new HashMap<>();
+    configDataV1Map.put(Constants.version,"12345");
     ConfigDataV1 configDataV11 = new ConfigDataV1();
     configDataV11.setVersion("12345");
     when(redisRepository.getStringByKeyId(anyString())).thenReturn(TestUtils.cacheId);
     when(redisRepository.getBooleanByKeyId(anyString())).thenReturn(true);
-    when(redisRepository.getConfigMap(anyString())).thenReturn(configDataV11);
+    when(redisRepository.getConfigMap(anyString())).thenReturn(configDataV1Map);
     CacheVersion cacheV1Id = configService.getCacheV1Id("");
     assertThat(cacheV1Id.getVersion().equals(TestUtils.cacheId));
     Boolean inProgress = configService.getCacheV1InProgress("");
     assertThat(inProgress);
 
-    ConfigDataV1 configDataV1 = configService.loadFromRedis("");
-    assertThat(configDataV1.getVersion().equals(configDataV11.getVersion()));
+    Map<String, Object> configDataV1 = configService.loadFromRedis("");
+    assertThat(configDataV1.get(Constants.version).equals(configDataV11.getVersion()));
   }
 
   @Test
@@ -146,7 +123,7 @@ class NodoConfigCacheTest {
     when(cdsCategorieRepository.findAll()).thenReturn(TestUtils.cdsCategorie);
     when(informativePaMasterRepository.findAll()).thenReturn(TestUtils.informativePaMaster);
 
-    ConfigDataV1 allData = configService.newCacheV1("node");
+    ConfigDataV1 allData = ConfigDataUtil.cacheToConfigDataV1(configService.newCacheV1(), NodeCacheController.KEYS);
     assertThat(allData.getConfigurations())
         .containsKey(
             TestUtils.mockConfigurationKeys.get(0).getConfigCategory()
@@ -276,7 +253,7 @@ class NodoConfigCacheTest {
     when(dizionarioMetadatiRepository.findAll()).thenReturn(TestUtils.mockMetadataDicts);
     when(paRepository.findAll()).thenReturn(TestUtils.pas);
 
-    ConfigDataV1 allData = configService.newCacheV1("node", Optional.of(NodeCacheKey.values()));
+    ConfigDataV1 allData = ConfigDataUtil.cacheToConfigDataV1(configService.newCacheV1(),NodeCacheController.KEYS);
     assertThat(allData.getConfigurations())
         .containsKey(
             TestUtils.mockConfigurationKeys.get(0).getConfigCategory()

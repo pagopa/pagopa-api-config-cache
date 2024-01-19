@@ -1,5 +1,6 @@
-package it.gov.pagopa.apiconfig.cache.controller;
+package it.gov.pagopa.apiconfig.cache.controller.stakeholders;
 
+import it.gov.pagopa.apiconfig.cache.controller.CacheController;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -11,15 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 @Slf4j
 public class NodeCacheController extends CacheController {
-  @Override
-  String stakeholder() {
-    return "node";
-  }
 
-  @Override
-  String[] keys() {
-    return new String[]{
-            Constants.version,
+  public static String[] KEYS = new String[]{
+    Constants.version,
             Constants.creditorInstitutions,
             Constants.creditorInstitutionBrokers,
             Constants.stations,
@@ -45,6 +40,10 @@ public class NodeCacheController extends CacheController {
             Constants.languages,
             Constants.gdeConfigurations,
             Constants.metadataDict
-    };
+  };
+
+  @Override
+  protected String[] keys() {
+    return NodeCacheController.KEYS;
   }
 }

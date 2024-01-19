@@ -8,7 +8,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import it.gov.pagopa.apiconfig.cache.model.ProblemJson;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
-import it.gov.pagopa.apiconfig.cache.util.Constants;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
+import it.gov.pagopa.apiconfig.cache.util.ConfigDataUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -17,16 +18,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
 @RestController
 public abstract class CacheController {
 
-  abstract String stakeholder();
-  abstract String[] keys();
+  protected abstract String[] keys();
 
   @Autowired private RefreshController singleController;
 
@@ -44,7 +42,7 @@ public abstract class CacheController {
             content =
                 @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = Map.class))),
+                    schema = @Schema(implementation = ConfigDataV1.class))),
         @ApiResponse(
             responseCode = "400",
             description = "Bad Request",
@@ -75,14 +73,11 @@ public abstract class CacheController {
   @GetMapping(
       value = "/v1",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, Object>> cache()
+  public ResponseEntity<ConfigDataV1> cache()
       throws IOException {
-      Map<String, Object> inMemoryCache = singleController.getInMemoryCache();
-      Map<String,Object> copy = new HashMap<>();
-      Arrays.stream(keys()).forEach(k->{
-          copy.put(k,inMemoryCache.get(k));
-      });
-      return ResponseEntity.ok(copy);
+      ConfigDataV1 configDataV1 = ConfigDataUtil.cacheToConfigDataV1(singleController.getInMemoryCache(),keys());
+
+      return ResponseEntity.ok(configDataV1);
   }
 
   @Operation(
@@ -135,6 +130,6 @@ public abstract class CacheController {
       value = "/v1/id",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<CacheVersion> idV1() throws IOException {
-    return ResponseEntity.ok(new CacheVersion(singleController.getInMemoryCache().get(Constants.version).toString()));
+    return singleController.id();
   }
 }

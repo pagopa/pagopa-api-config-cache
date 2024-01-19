@@ -1,4 +1,4 @@
-package it.gov.pagopa.apiconfig.cache.controller;
+package it.gov.pagopa.apiconfig.cache.controller.stakeholders;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
