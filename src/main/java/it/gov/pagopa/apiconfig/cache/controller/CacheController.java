@@ -1,48 +1,34 @@
 package it.gov.pagopa.apiconfig.cache.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import it.gov.pagopa.apiconfig.cache.model.NodeCacheKey;
 import it.gov.pagopa.apiconfig.cache.model.ProblemJson;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
-import it.gov.pagopa.apiconfig.cache.service.ConfigService;
-import java.io.IOException;
-import java.util.Optional;
-import javax.annotation.PostConstruct;
+import it.gov.pagopa.apiconfig.cache.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestController
 public abstract class CacheController {
 
   abstract String stakeholder();
+  abstract String[] keys();
 
-  private ConfigDataV1 cfgDataV1 = null;
-
-  @Autowired private ConfigService configService;
-
-  @PostConstruct
-  private void loadCacheFromRedis() {
-      try {
-          cfgDataV1 = configService.loadFromRedis(stakeholder());
-      } catch (Exception e){
-          log.warn("could not load {} cache from redis",stakeholder());
-      }
-  }
+  @Autowired private RefreshController singleController;
 
   @Operation(
       summary = "Get selected key of cache v1 config",
@@ -58,7 +44,7 @@ public abstract class CacheController {
             content =
                 @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = ConfigDataV1.class))),
+                    schema = @Schema(implementation = Map.class))),
         @ApiResponse(
             responseCode = "400",
             description = "Bad Request",
@@ -89,17 +75,14 @@ public abstract class CacheController {
   @GetMapping(
       value = "/v1",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ConfigDataV1> cache(
-          @RequestParam @Parameter(description = "to force the refresh of the cache") Optional<Boolean> refresh, @RequestParam @Parameter Optional<NodeCacheKey[]> keys)
+  public ResponseEntity<Map<String, Object>> cache()
       throws IOException {
-    boolean cacheV1InProgress = configService.getCacheV1InProgress(stakeholder());
-    if (refresh.orElse(false) || cfgDataV1 == null) {
-      if (cacheV1InProgress) {
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
-      }
-      cfgDataV1 = configService.newCacheV1(stakeholder(), keys);
-    }
-    return ResponseEntity.ok(cfgDataV1);
+      Map<String, Object> inMemoryCache = singleController.getInMemoryCache();
+      Map<String,Object> copy = new HashMap<>();
+      Arrays.stream(keys()).forEach(k->{
+          copy.put(k,inMemoryCache.get(k));
+      });
+      return ResponseEntity.ok(copy);
   }
 
   @Operation(
@@ -151,7 +134,7 @@ public abstract class CacheController {
   @GetMapping(
       value = "/v1/id",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<CacheVersion> idV1() {
-    return ResponseEntity.ok(configService.getCacheV1Id(stakeholder()));
+  public ResponseEntity<CacheVersion> idV1() throws IOException {
+    return ResponseEntity.ok(new CacheVersion(singleController.getInMemoryCache().get(Constants.version).toString()));
   }
 }

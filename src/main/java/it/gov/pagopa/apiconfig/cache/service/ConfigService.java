@@ -2,132 +2,34 @@ package it.gov.pagopa.apiconfig.cache.service;
 
 import it.gov.pagopa.apiconfig.cache.exception.AppError;
 import it.gov.pagopa.apiconfig.cache.exception.AppException;
-import it.gov.pagopa.apiconfig.cache.imported.catalogodati.CtCostiServizio;
-import it.gov.pagopa.apiconfig.cache.imported.catalogodati.CtFasciaCostoServizio;
-import it.gov.pagopa.apiconfig.cache.imported.catalogodati.CtIdentificazioneServizio;
-import it.gov.pagopa.apiconfig.cache.imported.catalogodati.CtInformativaDetail;
-import it.gov.pagopa.apiconfig.cache.imported.catalogodati.CtInformativaMaster;
-import it.gov.pagopa.apiconfig.cache.imported.catalogodati.CtInformativaPSP;
-import it.gov.pagopa.apiconfig.cache.imported.catalogodati.CtInformazioniServizio;
-import it.gov.pagopa.apiconfig.cache.imported.catalogodati.CtListaConvenzioni;
-import it.gov.pagopa.apiconfig.cache.imported.catalogodati.CtListaFasceCostoServizio;
-import it.gov.pagopa.apiconfig.cache.imported.catalogodati.CtListaInformativaDetail;
-import it.gov.pagopa.apiconfig.cache.imported.catalogodati.CtListaInformativePSP;
-import it.gov.pagopa.apiconfig.cache.imported.catalogodati.CtListaInformazioniServizio;
-import it.gov.pagopa.apiconfig.cache.imported.catalogodati.CtListaParoleChiave;
+import it.gov.pagopa.apiconfig.cache.imported.catalogodati.*;
 import it.gov.pagopa.apiconfig.cache.imported.catalogodati.StCodiceLingua;
 import it.gov.pagopa.apiconfig.cache.imported.catalogodati.StParoleChiave;
 import it.gov.pagopa.apiconfig.cache.imported.catalogodati.StTipoVersamento;
-import it.gov.pagopa.apiconfig.cache.imported.controparti.CtContoAccredito;
-import it.gov.pagopa.apiconfig.cache.imported.controparti.CtErogazione;
-import it.gov.pagopa.apiconfig.cache.imported.controparti.CtErogazioneServizio;
-import it.gov.pagopa.apiconfig.cache.imported.controparti.CtFasciaOraria;
-import it.gov.pagopa.apiconfig.cache.imported.controparti.CtInformativaControparte;
-import it.gov.pagopa.apiconfig.cache.imported.controparti.CtListaInformativeControparte;
-import it.gov.pagopa.apiconfig.cache.imported.controparti.StTipoPeriodo;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplCostiServizio;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplFasciaCostoServizio;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplIdentificazioneServizio;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplInformativaDetail;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplInformativaMaster;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplInformativaPSP;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplInformazioniServizio;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplListaFasceCostoServizio;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplListaInformativaDetail;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplListaInformazioniServizio;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplListaParoleChiave;
-import it.gov.pagopa.apiconfig.cache.model.NodeCacheKey;
+import it.gov.pagopa.apiconfig.cache.imported.controparti.*;
+import it.gov.pagopa.apiconfig.cache.imported.template.*;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsCategory;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsService;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsSubject;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsSubjectService;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.configuration.ConfigurationKey;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.configuration.FtpServer;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.configuration.GdeConfiguration;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.configuration.MetadataDict;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.configuration.PaymentType;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.configuration.Plugin;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.BrokerCreditorInstitution;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.CreditorInstitution;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.CreditorInstitutionEncoding;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.CreditorInstitutionInformation;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.Encoding;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.configuration.*;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.Iban;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.Station;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.StationCreditorInstitution;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.BrokerPsp;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.Channel;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.PaymentServiceProvider;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.PspChannelPaymentType;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.PspInformation;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.*;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.*;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.cache.util.JsonSerializer;
-import it.gov.pagopa.apiconfig.starter.entity.Cache;
-import it.gov.pagopa.apiconfig.starter.entity.CdiDetail;
-import it.gov.pagopa.apiconfig.starter.entity.CdiFasciaCostoServizio;
-import it.gov.pagopa.apiconfig.starter.entity.CdiInformazioniServizio;
-import it.gov.pagopa.apiconfig.starter.entity.CdiMasterValid;
-import it.gov.pagopa.apiconfig.starter.entity.CdiPreference;
-import it.gov.pagopa.apiconfig.starter.entity.IbanValidiPerPa;
-import it.gov.pagopa.apiconfig.starter.entity.InformativePaDetail;
-import it.gov.pagopa.apiconfig.starter.entity.InformativePaFasce;
-import it.gov.pagopa.apiconfig.starter.entity.InformativePaMaster;
-import it.gov.pagopa.apiconfig.starter.entity.Pa;
-import it.gov.pagopa.apiconfig.starter.entity.Psp;
-import it.gov.pagopa.apiconfig.starter.repository.CacheRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CanaliViewRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdiDetailRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdiFasciaCostoServizioRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdiInformazioniServizioRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdiMasterValidRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdiPreferenceRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdsCategorieRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdsServizioRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdsSoggettoRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdsSoggettoServizioRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CodifichePaRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CodificheRepository;
-import it.gov.pagopa.apiconfig.starter.repository.ConfigurationKeysRepository;
-import it.gov.pagopa.apiconfig.starter.repository.DizionarioMetadatiRepository;
-import it.gov.pagopa.apiconfig.starter.repository.FtpServersRepository;
-import it.gov.pagopa.apiconfig.starter.repository.GdeConfigRepository;
-import it.gov.pagopa.apiconfig.starter.repository.IbanValidiPerPaRepository;
-import it.gov.pagopa.apiconfig.starter.repository.InformativePaDetailRepository;
-import it.gov.pagopa.apiconfig.starter.repository.InformativePaFasceRepository;
-import it.gov.pagopa.apiconfig.starter.repository.InformativePaMasterRepository;
-import it.gov.pagopa.apiconfig.starter.repository.IntermediariPaRepository;
-import it.gov.pagopa.apiconfig.starter.repository.IntermediariPspRepository;
-import it.gov.pagopa.apiconfig.starter.repository.PaRepository;
-import it.gov.pagopa.apiconfig.starter.repository.PaStazionePaRepository;
-import it.gov.pagopa.apiconfig.starter.repository.PspCanaleTipoVersamentoCanaleRepository;
-import it.gov.pagopa.apiconfig.starter.repository.PspRepository;
-import it.gov.pagopa.apiconfig.starter.repository.StazioniRepository;
-import it.gov.pagopa.apiconfig.starter.repository.TipiVersamentoRepository;
-import it.gov.pagopa.apiconfig.starter.repository.WfespPluginConfRepository;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import it.gov.pagopa.apiconfig.starter.entity.*;
+import it.gov.pagopa.apiconfig.starter.repository.*;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
+import org.modelmapper.TypeToken;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import javax.xml.bind.JAXBContext;
@@ -138,13 +40,20 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
-import org.modelmapper.TypeToken;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 @Service
@@ -234,248 +143,193 @@ public class ConfigService {
     }
   }
 
-  public ConfigDataV1 loadFromRedis(String stakeholder) {
+  public Map<String, Object> loadFromRedis(String stakeholder) {
     String actualKey = getKeyV1(stakeholder);
     log.info("Initializing cache [" + actualKey + "]");
-    return redisRepository.getConfigDataV1(actualKey);
+    return redisRepository.getConfigMap(actualKey);
   }
 
-  public ConfigDataV1 newCacheV1(String stakeholder) throws IOException {
-    return newCacheV1(stakeholder, Optional.empty());
+  public Map<String, Object> loadSingleKeysFromRedis(String version) {
+    log.info("Initializing all cache keys");
+    return (Map<String, Object>)redisRepository.get(getKeyV1(Constants.FULL));
   }
 
-  public ConfigDataV1 newCacheV1(String stakeholder, Optional<NodeCacheKey[]> keys)
+  public Map<String, Object> newCacheV1()
       throws IOException {
 
-    setCacheV1InProgress(stakeholder);
+    setCacheV1InProgress(Constants.FULL);
 
-    ConfigDataV1 configData = new ConfigDataV1();
+    Map<String, Object> configData = new HashMap<>();
 
     try {
-      boolean allKeys = keys.isEmpty();
-      List<NodeCacheKey> list =
-          keys.map(k -> Arrays.asList(k)).orElse(new ArrayList<NodeCacheKey>());
 
       long startTime = System.nanoTime();
 
-      if (allKeys || list.contains(NodeCacheKey.CREDITOR_INSTITUTION_BROKERS)) {
         List<BrokerCreditorInstitution> intpa = getBrokerDetails();
         HashMap<String, BrokerCreditorInstitution> intpamap = new HashMap<>();
         intpa.forEach(k -> intpamap.put(k.getBrokerCode(), k));
-        configData.setCreditorInstitutionBrokers(intpamap);
-      }
+        configData.put(Constants.creditorInstitutionBrokers,intpamap);
 
-      if (allKeys || list.contains(NodeCacheKey.PSP_BROKERS)) {
         List<BrokerPsp> intpsp = getBrokerPspDetails();
         HashMap<String, BrokerPsp> intpspmap = new HashMap<>();
         intpsp.forEach(k -> intpspmap.put(k.getBrokerPspCode(), k));
-        configData.setPspBrokers(intpspmap);
-      }
+        configData.put(Constants.pspBrokers,intpspmap);
 
-      if (allKeys || list.contains(NodeCacheKey.CDS_CATEGORIES)) {
         List<CdsCategory> cdscats = getCdsCategories();
         HashMap<String, CdsCategory> cdscatsMap = new HashMap<>();
         cdscats.forEach(k -> cdscatsMap.put(k.getDescription(), k));
-        configData.setCdsCategories(cdscatsMap);
-      }
+        configData.put(Constants.cdsCategories,cdscatsMap);
 
-      if (allKeys || list.contains(NodeCacheKey.CDS_SERVICES)) {
         List<CdsService> cdsServices = getCdsServices();
         HashMap<String, CdsService> cdsServicesMap = new HashMap<>();
         cdsServices.forEach(k -> cdsServicesMap.put(k.getIdentifier(), k));
-        configData.setCdsServices(cdsServicesMap);
-      }
+        configData.put(Constants.cdsServices,cdsServicesMap);
 
-      if (allKeys || list.contains(NodeCacheKey.CDS_SUBJECTS)) {
         List<CdsSubject> cdsSubjects = getCdsSubjects();
         HashMap<String, CdsSubject> cdsSubjectsMap = new HashMap<>();
         cdsSubjects.forEach(k -> cdsSubjectsMap.put(k.getCreditorInstitutionCode(), k));
-        configData.setCdsSubjects(cdsSubjectsMap);
-      }
+        configData.put(Constants.cdsSubjects,cdsSubjectsMap);
 
-      if (allKeys || list.contains(NodeCacheKey.CDS_SUBJECT_SERVICES)) {
         List<CdsSubjectService> cdsSubjectServices = getCdsSubjectServices();
         HashMap<String, CdsSubjectService> cdsSubjectServicesMap = new HashMap<>();
         cdsSubjectServices.forEach(k -> cdsSubjectServicesMap.put(k.getSubjectServiceId(), k));
-        configData.setCdsSubjectServices(cdsSubjectServicesMap);
-      }
+        configData.put(Constants.cdsSubjectServices,cdsSubjectServicesMap);
 
-      if (allKeys || list.contains(NodeCacheKey.GDE_CONFIGURATIONS)) {
         List<GdeConfiguration> gde = getGdeConfiguration();
         HashMap<String, GdeConfiguration> gdeMap = new HashMap<>();
         gde.forEach(k -> gdeMap.put(k.getIdentifier(), k));
-        configData.setGdeConfigurations(gdeMap);
-      }
+        configData.put(Constants.gdeConfigurations,gdeMap);
 
-      if (allKeys || list.contains(NodeCacheKey.METADATA_DICT)) {
         List<MetadataDict> meta = getMetadataDict();
         HashMap<String, MetadataDict> metaMap = new HashMap<>();
         meta.forEach(k -> metaMap.put(k.getKey(), k));
-        configData.setMetadataDict(metaMap);
-      }
+        configData.put(Constants.metadataDict,metaMap);
 
-      if (allKeys || list.contains(NodeCacheKey.CONFIGURATIONS)) {
         List<ConfigurationKey> configurationKeyList = getConfigurationKeys();
         HashMap<String, ConfigurationKey> configMap = new HashMap<>();
         configurationKeyList.forEach(k -> configMap.put(k.getIdentifier(), k));
-        configData.setConfigurations(configMap);
-      }
+        configData.put(Constants.configurations,configMap);
 
-      if (allKeys || list.contains(NodeCacheKey.FTP_SERVERS)) {
         List<FtpServer> ftpservers = getFtpServers();
         HashMap<String, FtpServer> ftpserversMap = new HashMap<>();
         ftpservers.forEach(k -> ftpserversMap.put(k.getId().toString(), k));
-        configData.setFtpServers(ftpserversMap);
-      }
+        configData.put(Constants.ftpServers,ftpserversMap);
 
-      if (allKeys || list.contains(NodeCacheKey.LANGUAGES)) {
         HashMap<String, String> codiciLingua = new HashMap<>();
         codiciLingua.put("IT", "IT");
         codiciLingua.put("DE", "DE");
-        configData.setLanguages(codiciLingua);
-      }
+        configData.put(Constants.languages,codiciLingua);
 
-      if (allKeys || list.contains(NodeCacheKey.PLUGINS)) {
         List<Plugin> plugins = getWfespPluginConfigurations();
         HashMap<String, Plugin> pluginsMap = new HashMap<>();
         plugins.forEach(k -> pluginsMap.put(k.getIdServPlugin(), k));
-        configData.setPlugins(pluginsMap);
-      }
+        configData.put(Constants.plugins,pluginsMap);
 
-      if (allKeys || list.contains(NodeCacheKey.PSPS)) {
         List<PaymentServiceProvider> psps = getAllPaymentServiceProviders();
         HashMap<String, PaymentServiceProvider> pspMap = new HashMap<>();
         psps.forEach(k -> pspMap.put(k.getPspCode(), k));
-        configData.setPsps(pspMap);
-      }
+        configData.put(Constants.psps,pspMap);
 
-      if (allKeys || list.contains(NodeCacheKey.CHANNELS)) {
         List<Channel> canali = getAllCanali();
         HashMap<String, Channel> canalimap = new HashMap<>();
         canali.forEach(k -> canalimap.put(k.getChannelCode(), k));
-        configData.setChannels(canalimap);
-      }
+        configData.put(Constants.channels,canalimap);
 
-      if (allKeys || list.contains(NodeCacheKey.PAYMENT_TYPES)) {
         List<PaymentType> tipiv = getPaymentTypes();
         HashMap<String, PaymentType> tipivMap = new HashMap<>();
         tipiv.forEach(k -> tipivMap.put(k.getPaymentTypeCode(), k));
-        configData.setPaymentTypes(tipivMap);
-      }
+        configData.put(Constants.paymentTypes,tipivMap);
 
-      if (allKeys || list.contains(NodeCacheKey.PSP_CHANNEL_PAYMENT_TYPES)) {
         List<PspChannelPaymentType> pspChannels = getPaymentServiceProvidersChannels();
         HashMap<String, PspChannelPaymentType> pspChannelsMap = new HashMap<>();
         pspChannels.forEach(k -> pspChannelsMap.put(k.getIdentifier(), k));
-        configData.setPspChannelPaymentTypes(pspChannelsMap);
-      }
+        configData.put(Constants.pspChannelPaymentTypes,pspChannelsMap);
 
-      if (allKeys || list.contains(NodeCacheKey.CREDITOR_INSTITUTIONS)) {
         List<CreditorInstitution> pas = getCreditorInstitutions();
         HashMap<String, CreditorInstitution> pamap = new HashMap<>();
         pas.forEach(k -> pamap.put(k.getCreditorInstitutionCode(), k));
-        configData.setCreditorInstitutions(pamap);
-      }
+        configData.put(Constants.creditorInstitutions,pamap);
 
-      if (allKeys || list.contains(NodeCacheKey.ENCODINGS)) {
         List<Encoding> encodings = getEncodings();
         HashMap<String, Encoding> encodingsMap = new HashMap<>();
         encodings.forEach(k -> encodingsMap.put(k.getCodeType(), k));
-        configData.setEncodings(encodingsMap);
-      }
+        configData.put(Constants.encodings,encodingsMap);
 
-      if (allKeys || list.contains(NodeCacheKey.CREDITOR_INSTITUTION_ENCODINGS)) {
         List<CreditorInstitutionEncoding> ciencodings = getCreditorInstitutionEncodings();
         HashMap<String, CreditorInstitutionEncoding> ciencodingsMap = new HashMap<>();
         ciencodings.forEach(k -> ciencodingsMap.put(k.getIdentifier(), k));
-        configData.setCreditorInstitutionEncodings(ciencodingsMap);
-      }
+        configData.put(Constants.creditorInstitutionEncodings,ciencodingsMap);
 
-      if (allKeys || list.contains(NodeCacheKey.CREDITOR_INSTITUTION_STATIONS)) {
         List<StationCreditorInstitution> paspa = findAllPaStazioniPa();
         HashMap<String, StationCreditorInstitution> paspamap = new HashMap<>();
         paspa.forEach(k -> paspamap.put(k.getIdentifier(), k));
-        configData.setCreditorInstitutionStations(paspamap);
-      }
+        configData.put(Constants.creditorInstitutionStations,paspamap);
 
-      if (allKeys || list.contains(NodeCacheKey.STATIONS)) {
         List<Station> stazioni = findAllStazioni();
         HashMap<String, Station> stazionimap = new HashMap<>();
         stazioni.forEach(k -> stazionimap.put(k.getStationCode(), k));
-        configData.setStations(stazionimap);
-      }
+        configData.put(Constants.stations,stazionimap);
 
-      if (allKeys || list.contains(NodeCacheKey.IBANS)) {
         List<Iban> ibans = getCurrentIbans();
         HashMap<String, Iban> ibansMap = new HashMap<>();
         ibans.forEach(k -> ibansMap.put(k.getIdentifier(), k));
-        configData.setIbans(ibansMap);
-      }
+        configData.put(Constants.ibans,ibansMap);
 
-      if (allKeys
-          || list.contains(NodeCacheKey.PSP_INFORMATIONS)
-          || list.contains(NodeCacheKey.PSP_INFORMATION_TEMPLATES)) {
         Pair<List<PspInformation>, List<PspInformation>> informativePspAndTemplates =
             getInformativePspAndTemplates();
 
-        if (allKeys || list.contains(NodeCacheKey.PSP_INFORMATIONS)) {
           List<PspInformation> infopsps = informativePspAndTemplates.getLeft();
           HashMap<String, PspInformation> infopspsMap = new HashMap<>();
           infopsps.forEach(k -> infopspsMap.put(k.getPsp(), k));
-          configData.setPspInformations(infopspsMap);
-        }
+          configData.put(Constants.pspInformations,infopspsMap);
 
-        if (allKeys || list.contains(NodeCacheKey.PSP_INFORMATION_TEMPLATES)) {
           List<PspInformation> infopspTemplates = informativePspAndTemplates.getRight();
           HashMap<String, PspInformation> infopspTemplatesMap = new HashMap<>();
           infopspTemplates.forEach(k -> infopspTemplatesMap.put(k.getPsp(), k));
-          configData.setPspInformationTemplates(infopspTemplatesMap);
-        }
-      }
+          configData.put(Constants.pspInformationTemplates,infopspTemplatesMap);
 
-      if (allKeys || list.contains(NodeCacheKey.CREDITOR_INSTITUTION_INFORMATIONS)) {
         List<CreditorInstitutionInformation> infopas = getInformativePa();
         HashMap<String, CreditorInstitutionInformation> infopasMap = new HashMap<>();
         infopas.forEach(k -> infopasMap.put(k.getPa(), k));
-        configData.setCreditorInstitutionInformations(infopasMap);
-      }
+        configData.put(Constants.creditorInstitutionInformations,infopasMap);
 
       long endTime = System.nanoTime();
       long duration = (endTime - startTime) / 1000000;
       log.info("cache loaded in " + duration + "ms");
 
-      configData.setVersion("" + endTime);
+      String vers = "" + endTime;
+      configData.put("version",vers);
 
-      String actualKey = getKeyV1(stakeholder);
-      String actualKeyV1 = getKeyV1Id(stakeholder);
+      String actualKey = getKeyV1(Constants.FULL);
+      String actualKeyV1 = getKeyV1Id(Constants.FULL);
 
       log.info(String.format("saving on Redis %s %s", actualKey, actualKeyV1));
-      redisRepository.pushToRedisAsync(actualKey, actualKeyV1, configData);
+      redisRepository.pushToRedisAsync(actualKey, actualKeyV1, configData, vers);
 
       if (saveDB) {
-        log.info("saving on CACHE table " + configData.getVersion());
+        log.info("saving on CACHE table " + configData.get("version"));
         try {
           // to prevent error caused by version string too long (e.g. appVersion containing branch
           // name)
           // it is cut the version string to 32 chars.
           cacheRepository.save(
               Cache.builder()
-                  .id(configData.getVersion())
+                  .id(vers)
                   .cache(jsonSerializer.serialize(configData))
                   .time(ZonedDateTime.now())
                   .version(getVersion())
                   .build());
-          log.info("saved on CACHE table " + configData.getVersion());
+          log.info("saved on CACHE table " + vers);
         } catch (Exception e) {
           log.error("[ALERT] could not save on db", e);
         }
       }
     } catch (Exception e) {
       log.error("[ALERT] problem to generate cache", e);
-      removeCacheV1InProgress(stakeholder);
+      removeCacheV1InProgress(Constants.FULL);
       throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
     }
-    removeCacheV1InProgress(stakeholder);
+    removeCacheV1InProgress(Constants.FULL);
     return configData;
   }
 
@@ -854,7 +708,7 @@ public class ConfigService {
                                   ctInformazioniServizio.setDescrizioneServizio(
                                       it.get(0).getDescrizioneServizio());
                                   ctInformazioniServizio.setCodiceLingua(
-                                      StCodiceLingua.fromValue(it.get(0).getCodiceLingua()));
+                                          StCodiceLingua.fromValue(it.get(0).getCodiceLingua()));
                                   ctInformazioniServizio.setDisponibilitaServizio(
                                       it.get(0).getDisponibilitaServizio());
                                   ctInformazioniServizio.setUrlInformazioniCanale(
@@ -996,7 +850,7 @@ public class ConfigService {
             .collect(Collectors.toList());
 
     PspInformation informativaPSPFull =
-        PspInformation.builder().psp("FULL").informativa(toXml(informativaPspFull)).build();
+        PspInformation.builder().psp(Constants.FULL).informativa(toXml(informativaPspFull)).build();
 
     PspInformation informativaPSPEmpty =
         PspInformation.builder().psp("EMPTY").informativa(toXml(informativaEmpty)).build();
@@ -1277,7 +1131,7 @@ public class ConfigService {
 
     CreditorInstitutionInformation informativaPAFull =
         CreditorInstitutionInformation.builder()
-            .pa("FULL")
+            .pa(Constants.FULL)
             .informativa(toXml(informativaPaFull))
             .build();
 
