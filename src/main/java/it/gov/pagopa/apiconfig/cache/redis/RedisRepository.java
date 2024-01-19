@@ -30,7 +30,7 @@ public class RedisRepository {
     redisTemplateObj.opsForValue().set(key, value, Duration.ofMinutes(ttl));
   }
 
-  public Map<String, Object> getConfigMap(String key) {
+  public Map<String, Object> getCache(String key) {
     return redisTemplate.opsForValue().get(key);
   }
 
@@ -40,6 +40,18 @@ public class RedisRepository {
 
   public void remove(String key) {
     redisTemplateObj.delete(key);
+  }
+
+  @Async
+  public void pushToRedisAsync(String key, String keyId, Map<String,Object> map, Object keyobject) {
+    try {
+      log.info("saving {} on redis", key);
+      save(key, map, 1440);
+      save(keyId, keyobject, 1440);
+      log.info("saved {} on redis,id {}", key, keyobject);
+    } catch (Exception e) {
+      log.error("could not save on redis", e);
+    }
   }
 
   @Async

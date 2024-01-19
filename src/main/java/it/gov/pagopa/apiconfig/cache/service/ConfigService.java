@@ -143,15 +143,9 @@ public class ConfigService {
     }
   }
 
-  public Map<String, Object> loadFromRedis(String stakeholder) {
-    String actualKey = getKeyV1(stakeholder);
-    log.info("Initializing cache [" + actualKey + "]");
-    return redisRepository.getConfigMap(actualKey);
-  }
-
-  public Map<String, Object> loadSingleKeysFromRedis(String version) {
-    log.info("Initializing all cache keys");
-    return (Map<String, Object>)redisRepository.get(getKeyV1(Constants.FULL));
+  public Map<String, Object> loadFullCache() {
+    log.info("Initializing cache");
+    return redisRepository.getCache(getKeyV1(Constants.FULL));
   }
 
   public Map<String, Object> newCacheV1()
