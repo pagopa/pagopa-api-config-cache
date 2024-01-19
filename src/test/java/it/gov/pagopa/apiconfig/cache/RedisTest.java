@@ -1,12 +1,5 @@
 package it.gov.pagopa.apiconfig.cache;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,12 +10,19 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 // @SpringBootTest(classes = Application.class)
 @ExtendWith(MockitoExtension.class)
 class RedisTest {
 
   @InjectMocks private RedisRepository redisRepository;
-  @Mock() private RedisTemplate<String, ConfigDataV1> redisTemplate;
+  @Mock() private RedisTemplate<String, Map<String,Object>> redisTemplate;
   @Mock() private RedisTemplate<String, Object> redisTemplateObj;
   @Spy() private TestValueOperation testValueOperation = new TestValueOperation();
 
@@ -36,13 +36,13 @@ class RedisTest {
 
   @Test
   void test() {
-    ConfigDataV1 configDataV1 = new ConfigDataV1();
-    configDataV1.setVersion("test");
+    Map<String, Object> configDataV1 = new HashMap<>();
+    configDataV1.put("version","test");
     when(redisTemplateObj.opsForValue()).thenReturn(testValueOperation);
 
-    redisRepository.pushToRedisAsync("k", "kid", configDataV1);
+    redisRepository.pushToRedisAsync("k", "kid", configDataV1,"test");
     verify(testValueOperation, times(2)).set(any(), any(), any());
-    assertThat(testValueOperation.get("k").equals(redisRepository.getConfigDataV1("k")));
+    assertThat(testValueOperation.get("k").equals(redisRepository.getConfigMap("k")));
 
     testValueOperation.set("b", Boolean.TRUE);
     redisRepository.pushToRedisAsync("b", testValueOperation.get("b"));

@@ -7,29 +7,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/stakeholders/fdr/cache/schemas")
+@RequestMapping("/stakeholders/standin/cache/schemas")
 @Validated
 @Slf4j
-public class FdrCacheController extends CacheController {
+public class StandInCacheController extends CacheController {
   @Override
   String stakeholder() {
-    return "fdr";
+    return "node";
   }
+
   @Override
   String[] keys() {
     return new String[]{
             Constants.version,
-            Constants.creditorInstitutions,
-            Constants.creditorInstitutionBrokers,
             Constants.stations,
-            Constants.creditorInstitutionStations,
-            Constants.psps,
-            Constants.pspBrokers,
-            Constants.paymentTypes,
-            Constants.pspChannelPaymentTypes,
-            Constants.channels,
-            Constants.languages,
-            Constants.gdeConfigurations
     };
   }
 }
