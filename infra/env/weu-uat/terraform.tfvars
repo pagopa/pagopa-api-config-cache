@@ -7,7 +7,7 @@ tags = {
   CreatedBy   = "Terraform"
   Environment = "Uat"
   Owner       = "pagoPA"
-  Source      = "https://github.com/pagopa/pagopa-node-technical-support-worker"
+  Source      = "https://github.com/pagopa/pagopa-api-config-cache"
   CostCenter  = "TS310 - PAGAMENTI & SERVIZI"
 }
 
