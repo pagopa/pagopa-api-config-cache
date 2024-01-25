@@ -1,6 +1,7 @@
 package it.gov.pagopa.apiconfig.cache.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -15,10 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -73,8 +76,12 @@ public abstract class CacheController {
   @GetMapping(
       value = "/v1",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ConfigDataV1> cache()
+  public ResponseEntity<ConfigDataV1> cache(@RequestParam @Parameter(description = "to force the refresh of the cache") Optional<Boolean> refresh)
       throws IOException {
+      if(refresh.orElse(false)){
+          log.info("Refresh from nodo,change this to call /cache/refresh");
+          singleController.refresh();
+      }
       ConfigDataV1 configDataV1 = ConfigDataUtil.cacheToConfigDataV1(singleController.getInMemoryCache(),keys());
 
       return ResponseEntity.ok(configDataV1);
