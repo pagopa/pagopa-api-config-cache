@@ -24,4 +24,4 @@ dependencies:
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
     alias: oracleprod
     condition: oracleprod.enabled
-appVersion: 0.8.6-1-fix-prod-helm-cfg
+appVersion: 0.8.6-1-NOD-616_cache_rework
