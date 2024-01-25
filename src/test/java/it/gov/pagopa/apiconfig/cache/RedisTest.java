@@ -42,7 +42,7 @@ class RedisTest {
 
     redisRepository.pushToRedisAsync("k", "kid", configDataV1,"test");
     verify(testValueOperation, times(2)).set(any(), any(), any());
-    assertThat(testValueOperation.get("k").equals(redisRepository.getConfigMap("k")));
+    assertThat(testValueOperation.get("k").equals(redisRepository.getCache("k")));
 
     testValueOperation.set("b", Boolean.TRUE);
     redisRepository.pushToRedisAsync("b", testValueOperation.get("b"));
