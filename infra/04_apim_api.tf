@@ -28,7 +28,7 @@ module "apim_api_apiconfig_cache_node_api_v1_p" {
   service_url = local.apiconfig_cache_locals.service_url
 
   content_format = "openapi"
-  content_value = templatefile("../openapi/openapi_nodev1.json", {
+  content_value = templatefile("../openapi/openapi.json", {
     host    = local.apim.hostname
     service = "node-${local.postgres}"
   })
@@ -70,7 +70,7 @@ module "apim_api_apiconfig_cache_node_api_v1_o" {
   service_url = local.apiconfig_cache_locals.service_url
 
   content_format = "openapi"
-  content_value = templatefile("../openapi/openapi_nodev1.json", {
+  content_value = templatefile("../openapi/openapi.json", {
     host    = local.apim.hostname
     service = "node-${local.oracle}"
   })
@@ -111,7 +111,7 @@ module "apim_api_apiconfig_cache_node_nexi_api_dev_v1" {
   service_url = local.apiconfig_cache_locals.service_url
 
   content_format = "openapi"
-  content_value = templatefile("../openapi/openapi_nodev1.json", {
+  content_value = templatefile("../openapi/openapi.json", {
     host    = local.apim.hostname
     service = "node-nexi"
   })
@@ -161,7 +161,7 @@ module "apim_api_apiconfig_cache_replica_node_api_v1_p" {
   service_url = local.apiconfig_cache_replica_locals.service_url
 
   content_format = "openapi"
-  content_value = templatefile("../openapi/openapi_nodev1.json", {
+  content_value = templatefile("../openapi/openapi.json", {
     host    = local.apim.hostname
     service = "node-p-replica"
   })
@@ -192,7 +192,7 @@ module "apim_api_apiconfig_cache_replica_node_api_v1_o" {
   service_url = local.apiconfig_cache_replica_locals.service_url
 
   content_format = "openapi"
-  content_value = templatefile("../openapi/openapi_nodev1.json", {
+  content_value = templatefile("../openapi/openapi.json", {
     host    = local.apim.hostname
     service = "node-o-replica"
   })

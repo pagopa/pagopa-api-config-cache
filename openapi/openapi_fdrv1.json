@@ -1,7 +1,7 @@
 {
   "openapi" : "3.0.1",
   "info" : {
-    "title" : "API-Config Cache",
+    "title" : "API-Config Cache ${service}",
     "description" : "Generate cache for various microservices",
     "termsOfService" : "https://www.pagopa.gov.it/",
     "version" : "0.8.6-2-NOD-616_cache_rework"
