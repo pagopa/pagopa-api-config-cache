@@ -39,3 +39,5 @@ helm/Chart.lock
 /docker/secrets
 .cache
 /docker/.env
+
+.terraform
