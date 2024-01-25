@@ -5,6 +5,6 @@ if [[ "$(pwd)" =~ .*"openapi".* ]]; then
     cd ..
 fi
 
-mvn test -Dtest=OpenApiGenerationTest
+mvn test -o -Dtest=OpenApiGenerationTest
 
 # UI mode http://localhost:8080/swagger-ui/index.html

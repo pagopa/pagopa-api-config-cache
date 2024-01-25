@@ -1,7 +1,7 @@
 {
   "openapi" : "3.0.1",
   "info" : {
-    "title" : "API-Config Cache ${service}",
+    "title" : "API-Config Cacher ${service}",
     "description" : "Generate cache for various microservices",
     "termsOfService" : "https://www.pagopa.gov.it/",
     "version" : "0.8.6-2-NOD-616_cache_rework"
@@ -10,12 +10,12 @@
     "url" : "https://{host}/{basePath}",
     "variables" : {
       "host" : {
-        "default" : "api.dev.platform.pagopa.it",
-        "enum" : [ "api.dev.platform.pagopa.it", "api.uat.platform.pagopa.it", "api.platform.pagopa.it" ]
+        "enum" : [ "api.dev.platform.pagopa.it", "api.uat.platform.pagopa.it", "api.platform.pagopa.it" ],
+        "default" : "api.dev.platform.pagopa.it"
       },
       "basePath" : {
-        "default" : "api-config-cache/o/v1",
-        "enum" : [ "api-config-cache/o/v1", "api-config-cache/p/v1", "api-config-cache/odev/v1" ]
+        "enum" : [ "api-config-cache/o/v1", "api-config-cache/p/v1", "api-config-cache/odev/v1" ],
+        "default" : "api-config-cache/o/v1"
       }
     }
   } ],
@@ -37,9 +37,6 @@
         "responses" : {
           "401" : {
             "description" : "Unauthorized"
-          },
-          "403" : {
-            "description" : "Forbidden"
           },
           "500" : {
             "description" : "Service unavailable",
@@ -73,6 +70,9 @@
           },
           "429" : {
             "description" : "Too many requests"
+          },
+          "403" : {
+            "description" : "Forbidden"
           }
         },
         "security" : [ {
@@ -89,11 +89,15 @@
           "401" : {
             "description" : "Unauthorized"
           },
-          "403" : {
-            "description" : "Forbidden"
-          },
-          "404" : {
-            "description" : "Not Found"
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CacheVersion"
+                }
+              }
+            }
           },
           "500" : {
             "description" : "Service unavailable",
@@ -101,16 +105,6 @@
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/ProblemJson"
-                }
-              }
-            }
-          },
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/CacheVersion"
                 }
               }
             }
@@ -127,6 +121,12 @@
           },
           "429" : {
             "description" : "Too many requests"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "description" : "Not Found"
           }
         },
         "security" : [ {
