@@ -1,6 +1,7 @@
 prefix    = "pagopa"
 env       = "dev"
 env_short = "d"
+location  = "westeurope"
 
 tags = {
   CreatedBy   = "Terraform"
