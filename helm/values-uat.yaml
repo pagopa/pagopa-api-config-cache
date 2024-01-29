@@ -102,3 +102,67 @@ oracledev:
   enabled: false
 oracleprod:
   enabled: false
+refresh-p:
+  namespace: "nodo-cron"
+  schedule: "0 */10 * * *"
+  image:
+    repository: "curlimages/curl"
+    tag: "latest"
+    pullPolicy: "Always"
+  command:
+    - "/bin/sh"
+    - "-c"
+    - "echo \"Starting...\"; export URL=https://api.uat.platform.pagopa.it/api-config-cache/p/v1/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 $URL; echo \"\"; echo \"Done\";"
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "150m"
+  tolerations:
+    - key: dedicated
+      operator: Equal
+      value: "nodo-cron"
+      effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: nodo-cron
+                operator: In
+                values:
+                  - "true"
+refresh-o:
+  namespace: "nodo-cron"
+  schedule: "0 */10 * * *"
+  image:
+    repository: "curlimages/curl"
+    tag: "latest"
+    pullPolicy: "Always"
+  command:
+    - "/bin/sh"
+    - "-c"
+    - "echo \"Starting...\"; export URL=https://api.uat.platform.pagopa.it/api-config-cache/o/v1/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 $URL; echo \"\"; echo \"Done\";"
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "150m"
+  tolerations:
+    - key: dedicated
+      operator: Equal
+      value: "nodo-cron"
+      effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: nodo-cron
+                operator: In
+                values:
+                  - "true"
