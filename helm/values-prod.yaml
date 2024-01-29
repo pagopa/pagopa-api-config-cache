@@ -161,10 +161,19 @@ refresh-p:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
           - matchExpressions:
-              - key: apiconfig
+              - key: node_type
                 operator: In
                 values:
-                  - "true"
+                  - user
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/instance: "cache"
+            namespaces: ["apiconfig"]
+            topologyKey: topology.kubernetes.io/zone
 refresh-o:
   namespace: "apiconfig"
   schedule: "*/10 * * * *"
@@ -193,10 +202,19 @@ refresh-o:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
           - matchExpressions:
-              - key: apiconfig
+              - key: node_type
                 operator: In
                 values:
-                  - "true"
+                  - user
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/instance: "cache"
+            namespaces: ["apiconfig"]
+            topologyKey: topology.kubernetes.io/zone
 refresh-odev:
   namespace: "apiconfig"
   schedule: "*/10 * * * *"
@@ -225,7 +243,16 @@ refresh-odev:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
           - matchExpressions:
-              - key: apiconfig
+              - key: node_type
                 operator: In
                 values:
-                  - "true"
+                  - user
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/instance: "cache"
+            namespaces: ["apiconfig"]
+            topologyKey: topology.kubernetes.io/zone

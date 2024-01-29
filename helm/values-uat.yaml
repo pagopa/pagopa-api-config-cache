@@ -130,10 +130,10 @@ refresh-p:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
           - matchExpressions:
-              - key: apiconfig
+              - key: node_type
                 operator: In
                 values:
-                  - "true"
+                  - user
 refresh-o:
   namespace: "apiconfig"
   schedule: "*/10 * * * *"
@@ -162,7 +162,7 @@ refresh-o:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
           - matchExpressions:
-              - key: apiconfig
+              - key: node_type
                 operator: In
                 values:
-                  - "true"
+                  - user
