@@ -141,7 +141,7 @@ oracleprod:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "oracle-db-cfg-prod-password"
 refresh-p:
-  namespace: "nodo-cron"
+  namespace: "apiconfig"
   schedule: "0 */10 * * *"
   image:
     repository: "curlimages/curl"
@@ -161,19 +161,19 @@ refresh-p:
   tolerations:
     - key: dedicated
       operator: Equal
-      value: "nodo-cron"
+      value: "apiconfig"
       effect: NoSchedule
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
           - matchExpressions:
-              - key: nodo-cron
+              - key: apiconfig
                 operator: In
                 values:
                   - "true"
 refresh-o:
-  namespace: "nodo-cron"
+  namespace: "apiconfig"
   schedule: "0 */10 * * *"
   image:
     repository: "curlimages/curl"
@@ -193,19 +193,19 @@ refresh-o:
   tolerations:
     - key: dedicated
       operator: Equal
-      value: "nodo-cron"
+      value: "apiconfig"
       effect: NoSchedule
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
           - matchExpressions:
-              - key: nodo-cron
+              - key: apiconfig
                 operator: In
                 values:
                   - "true"
 refresh-odev:
-  namespace: "nodo-cron"
+  namespace: "apiconfig"
   schedule: "0 */10 * * *"
   image:
     repository: "curlimages/curl"
@@ -225,19 +225,19 @@ refresh-odev:
   tolerations:
     - key: dedicated
       operator: Equal
-      value: "nodo-cron"
+      value: "apiconfig"
       effect: NoSchedule
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
           - matchExpressions:
-              - key: nodo-cron
+              - key: apiconfig
                 operator: In
                 values:
                   - "true"
 refresh-oprod:
-  namespace: "nodo-cron"
+  namespace: "apiconfig"
   schedule: "0 */10 * * *"
   image:
     repository: "curlimages/curl"
@@ -257,14 +257,14 @@ refresh-oprod:
   tolerations:
     - key: dedicated
       operator: Equal
-      value: "nodo-cron"
+      value: "apiconfig"
       effect: NoSchedule
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
           - matchExpressions:
-              - key: nodo-cron
+              - key: apiconfig
                 operator: In
                 values:
                   - "true"

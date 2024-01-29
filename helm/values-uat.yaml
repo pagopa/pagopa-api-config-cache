@@ -103,7 +103,7 @@ oracledev:
 oracleprod:
   enabled: false
 refresh-p:
-  namespace: "nodo-cron"
+  namespace: "apiconfig"
   schedule: "0 */10 * * *"
   image:
     repository: "curlimages/curl"
@@ -123,19 +123,19 @@ refresh-p:
   tolerations:
     - key: dedicated
       operator: Equal
-      value: "nodo-cron"
+      value: "apiconfig"
       effect: NoSchedule
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
           - matchExpressions:
-              - key: nodo-cron
+              - key: apiconfig
                 operator: In
                 values:
                   - "true"
 refresh-o:
-  namespace: "nodo-cron"
+  namespace: "apiconfig"
   schedule: "0 */10 * * *"
   image:
     repository: "curlimages/curl"
@@ -155,14 +155,14 @@ refresh-o:
   tolerations:
     - key: dedicated
       operator: Equal
-      value: "nodo-cron"
+      value: "apiconfig"
       effect: NoSchedule
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
           - matchExpressions:
-              - key: nodo-cron
+              - key: apiconfig
                 operator: In
                 values:
                   - "true"
