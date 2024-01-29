@@ -4,7 +4,7 @@
     "title": "API-Config Cacher ${service}",
     "description": "Generate cache for various microservices",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.8.6-9-NOD-616_cache_rework"
+    "version": "0.8.6-10-NOD-616_cache_rework"
   },
   "servers": [
     {
