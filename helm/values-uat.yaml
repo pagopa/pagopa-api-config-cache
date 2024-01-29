@@ -98,9 +98,9 @@ oracle:
     envSecrets:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "oracle-db-cfg-password-tmp"
-oracledev:
+refresh-odev:
   enabled: false
-oracleprod:
+refresh-oprod:
   enabled: false
 refresh-p:
   namespace: "apiconfig"

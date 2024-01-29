@@ -110,9 +110,9 @@ oracle:
     envSecrets:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "oracle-db-cfg-password"
-oracledev:
+refresh-odev:
   enabled: false
-oracleprod:
+refresh-oprod:
   !!merge <<: *microservice-chart
   ingress:
     !!merge <<: *ingress

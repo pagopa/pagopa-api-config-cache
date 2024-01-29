@@ -39,5 +39,5 @@ dependencies:
   - name: cron-chart
     version: 2.3.0
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
-    alias: refresh-prod
+    alias: refresh-oprod
 appVersion: 0.8.6-10-NOD-616_cache_rework
