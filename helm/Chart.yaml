@@ -24,4 +24,20 @@ dependencies:
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
     alias: oracleprod
     condition: oracleprod.enabled
+  - name: cron-chart
+    version: 2.3.0
+    repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
+    alias: refresh-p
+  - name: cron-chart
+    version: 2.3.0
+    repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
+    alias: refresh-o
+  - name: cron-chart
+    version: 2.3.0
+    repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
+    alias: refresh-odev
+  - name: cron-chart
+    version: 2.3.0
+    repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
+    alias: refresh-prod
 appVersion: 0.8.6-6-NOD-616_cache_rework
