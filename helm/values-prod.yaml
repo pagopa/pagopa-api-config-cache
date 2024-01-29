@@ -143,7 +143,7 @@ refresh-p:
   command:
     - "/bin/sh"
     - "-c"
-    - "echo \"Starting...\"; export URL=https://api.platform.pagopa.it/api-config-cache/p/v1/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 $URL; echo \"\"; echo \"Done\";"
+    - "echo \"Starting...\"; export URL=https://cache-psotgresql.apiconfig.svc.cluster.local:8080/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 $URL; echo \"\"; echo \"Done\";"
   resources:
     requests:
       memory: "256Mi"
@@ -184,48 +184,7 @@ refresh-o:
   command:
     - "/bin/sh"
     - "-c"
-    - "echo \"Starting...\"; export URL=https://api.platform.pagopa.it/api-config-cache/o/v1/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 $URL; echo \"\"; echo \"Done\";"
-  resources:
-    requests:
-      memory: "256Mi"
-      cpu: "100m"
-    limits:
-      memory: "512Mi"
-      cpu: "150m"
-  tolerations:
-    - key: dedicated
-      operator: Equal
-      value: "apiconfig"
-      effect: NoSchedule
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: node_type
-                operator: In
-                values:
-                  - user
-    podAntiAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          podAffinityTerm:
-            labelSelector:
-              matchLabels:
-                app.kubernetes.io/instance: "cache"
-            namespaces: ["apiconfig"]
-            topologyKey: topology.kubernetes.io/zone
-refresh-odev:
-  namespace: "apiconfig"
-  schedule: "*/10 * * * *"
-  image:
-    repository: "curlimages/curl"
-    tag: "latest"
-    pullPolicy: "Always"
-  command:
-    - "/bin/sh"
-    - "-c"
-    - "echo \"Starting...\"; export URL=https://api.platform.pagopa.it/api-config-cache/odev/v1/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 $URL; echo \"\"; echo \"Done\";"
+    - "echo \"Starting...\"; export URL=https://cache-oracle.apiconfig.svc.cluster.local:8080/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 $URL; echo \"\"; echo \"Done\";"
   resources:
     requests:
       memory: "256Mi"
