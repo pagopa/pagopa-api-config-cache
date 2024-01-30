@@ -7,42 +7,29 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import it.gov.pagopa.apiconfig.cache.model.NodeCacheKey;
 import it.gov.pagopa.apiconfig.cache.model.ProblemJson;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
-import it.gov.pagopa.apiconfig.cache.service.ConfigService;
-import java.io.IOException;
-import java.util.Optional;
-import javax.annotation.PostConstruct;
+import it.gov.pagopa.apiconfig.cache.util.ConfigDataUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
+import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @RestController
 public abstract class CacheController {
 
-  abstract String stakeholder();
+  protected abstract String[] keys();
 
-  private ConfigDataV1 cfgDataV1 = null;
-
-  @Autowired private ConfigService configService;
-
-  @PostConstruct
-  private void loadCacheFromRedis() {
-      try {
-          cfgDataV1 = configService.loadFromRedis(stakeholder());
-      } catch (Exception e){
-          log.warn("could not load {} cache from redis",stakeholder());
-      }
-  }
+  @Autowired private RefreshController singleController;
 
   @Operation(
       summary = "Get selected key of cache v1 config",
@@ -89,17 +76,15 @@ public abstract class CacheController {
   @GetMapping(
       value = "/v1",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ConfigDataV1> cache(
-          @RequestParam @Parameter(description = "to force the refresh of the cache") Optional<Boolean> refresh, @RequestParam @Parameter Optional<NodeCacheKey[]> keys)
+  public ResponseEntity<ConfigDataV1> cache(@RequestParam @Parameter(description = "to force the refresh of the cache") Optional<Boolean> refresh)
       throws IOException {
-    boolean cacheV1InProgress = configService.getCacheV1InProgress(stakeholder());
-    if (refresh.orElse(false) || cfgDataV1 == null) {
-      if (cacheV1InProgress) {
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+      if(refresh.orElse(false)){
+          log.info("Refresh from nodo,change this to call /cache/refresh");
+          singleController.refresh();
       }
-      cfgDataV1 = configService.newCacheV1(stakeholder(), keys);
-    }
-    return ResponseEntity.ok(cfgDataV1);
+      ConfigDataV1 configDataV1 = ConfigDataUtil.cacheToConfigDataV1(singleController.getInMemoryCache(),keys());
+
+      return ResponseEntity.ok(configDataV1);
   }
 
   @Operation(
@@ -151,7 +136,7 @@ public abstract class CacheController {
   @GetMapping(
       value = "/v1/id",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<CacheVersion> idV1() {
-    return ResponseEntity.ok(configService.getCacheV1Id(stakeholder()));
+  public ResponseEntity<CacheVersion> idV1() throws IOException {
+    return singleController.id();
   }
 }

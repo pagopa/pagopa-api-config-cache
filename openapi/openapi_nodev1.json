@@ -1,33 +1,30 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "API-Config Cacher",
-    "description": "Generate cache for regarding Nodo dei Pagamenti configuration",
+    "title": "API-Config Cacher ${service}",
+    "description": "Generate cache for various microservices",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.8.6-1-fix-prod-helm-cfg"
+    "version": "0.8.6-12-NOD-616_cache_rework"
   },
   "servers": [
-    {
-      "url": "http://localhost:8080"
-    },
     {
       "url": "https://{host}/{basePath}",
       "variables": {
         "host": {
-          "default": "api.dev.platform.pagopa.it",
           "enum": [
             "api.dev.platform.pagopa.it",
             "api.uat.platform.pagopa.it",
             "api.platform.pagopa.it"
-          ]
+          ],
+          "default": "api.dev.platform.pagopa.it"
         },
         "basePath": {
-          "default": "api-config-cache/o/v1",
           "enum": [
             "api-config-cache/o/v1",
             "api-config-cache/p/v1",
             "api-config-cache/odev/v1"
-          ]
+          ],
+          "default": "api-config-cache/o/v1"
         }
       }
     }
@@ -49,49 +46,21 @@
             "schema": {
               "type": "boolean"
             }
-          },
-          {
-            "name": "keys",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "enum": [
-                  "creditorInstitutions",
-                  "creditorInstitutionBrokers",
-                  "stations",
-                  "creditorInstitutionStations",
-                  "encodings",
-                  "creditorInstitutionEncodings",
-                  "ibans",
-                  "creditorInstitutionInformations",
-                  "psps",
-                  "pspBrokers",
-                  "paymentTypes",
-                  "pspChannelPaymentTypes",
-                  "plugins",
-                  "pspInformationTemplates",
-                  "pspInformations",
-                  "channels",
-                  "cdsServices",
-                  "cdsSubjects",
-                  "cdsSubjectServices",
-                  "cdsCategories",
-                  "configurations",
-                  "ftpServers",
-                  "languages",
-                  "gdeConfigurations",
-                  "metadataDict"
-                ]
-              }
-            }
           }
         ],
         "responses": {
-          "403": {
-            "description": "Forbidden"
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Service unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
           },
           "200": {
             "description": "OK",
@@ -116,18 +85,8 @@
           "429": {
             "description": "Too many requests"
           },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Service unavailable",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            }
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
@@ -145,11 +104,28 @@
         "summary": "Get last v1 cache version",
         "operationId": "idV1",
         "responses": {
-          "404": {
-            "description": "Not Found"
+          "401": {
+            "description": "Unauthorized"
           },
-          "403": {
-            "description": "Forbidden"
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CacheVersion"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Service unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request",
@@ -164,28 +140,11 @@
           "429": {
             "description": "Too many requests"
           },
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CacheVersion"
-                }
-              }
-            }
+          "403": {
+            "description": "Forbidden"
           },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Service unavailable",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            }
+          "404": {
+            "description": "Not Found"
           }
         },
         "security": [
@@ -198,6 +157,28 @@
   },
   "components": {
     "schemas": {
+      "ProblemJson": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "A short, summary of the problem type. Written in english and readable for engineers (usually not suited for non technical stakeholders and not localized); example: Service Unavailable"
+          },
+          "status": {
+            "maximum": 600,
+            "minimum": 100,
+            "type": "integer",
+            "description": "The HTTP status code generated by the origin server for this occurrence of the problem.",
+            "format": "int32",
+            "example": 200
+          },
+          "detail": {
+            "type": "string",
+            "description": "A human readable explanation specific to this occurrence of the problem.",
+            "example": "There was an error processing the request"
+          }
+        }
+      },
       "BrokerCreditorInstitution": {
         "required": [
           "broker_code",
@@ -1203,28 +1184,6 @@
           "timeout_c": {
             "type": "integer",
             "format": "int64"
-          }
-        }
-      },
-      "ProblemJson": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "description": "A short, summary of the problem type. Written in english and readable for engineers (usually not suited for non technical stakeholders and not localized); example: Service Unavailable"
-          },
-          "status": {
-            "maximum": 600,
-            "minimum": 100,
-            "type": "integer",
-            "description": "The HTTP status code generated by the origin server for this occurrence of the problem.",
-            "format": "int32",
-            "example": 200
-          },
-          "detail": {
-            "type": "string",
-            "description": "A human readable explanation specific to this occurrence of the problem.",
-            "example": "There was an error processing the request"
           }
         }
       },

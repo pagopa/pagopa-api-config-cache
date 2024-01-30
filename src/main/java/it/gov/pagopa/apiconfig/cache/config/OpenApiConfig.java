@@ -31,8 +31,7 @@ public class OpenApiConfig {
       @Value("${info.application.description}") String appDescription,
       @Value("${info.application.version}") String appVersion) {
     return new OpenAPI()
-            .servers(List.of(new Server().url("http://localhost:8080"),
-                    new Server().url("https://{host}/{basePath}")
+            .servers(List.of(new Server().url("https://{host}/{basePath}")
                             .variables(new ServerVariables().addServerVariable("host",
                                     new ServerVariable()._enum(List.of("api.dev.platform.pagopa.it","api.uat.platform.pagopa.it","api.platform.pagopa.it"))
                                             ._default("api.dev.platform.pagopa.it"))
@@ -50,7 +49,7 @@ public class OpenApiConfig {
                         .in(SecurityScheme.In.HEADER)))
         .info(
             new Info()
-                .title(appName)
+                .title(appName+" ${service}")
                 .version(appVersion)
                 .description(appDescription)
                 .termsOfService("https://www.pagopa.gov.it/"));

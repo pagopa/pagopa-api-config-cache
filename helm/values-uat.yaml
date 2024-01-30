@@ -2,7 +2,7 @@ microservice-chart: &microservice-chart
   namespace: "apiconfig"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: 0.8.6-1-fix-prod-helm-cfg
+    tag: 0.8.6-12-NOD-616_cache_rework
   canaryDelivery:
     deployment:
       image:
@@ -98,7 +98,71 @@ oracle:
     envSecrets:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "oracle-db-cfg-password-tmp"
-oracledev:
+refresh-odev:
   enabled: false
-oracleprod:
+refresh-oprod:
   enabled: false
+refresh-p:
+  namespace: "apiconfig"
+  schedule: "*/10 * * * *"
+  image:
+    repository: "curlimages/curl"
+    tag: "latest"
+    pullPolicy: "Always"
+  command:
+    - "/bin/sh"
+    - "-c"
+    - "echo \"Starting...\"; export URL=https://cache-postgresql.apiconfig.svc.cluster.local:8080/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 $URL; echo \"\"; echo \"Done\";"
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "150m"
+  tolerations:
+    - key: dedicated
+      operator: Equal
+      value: "apiconfig"
+      effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node_type
+                operator: In
+                values:
+                  - user
+refresh-o:
+  namespace: "apiconfig"
+  schedule: "*/10 * * * *"
+  image:
+    repository: "curlimages/curl"
+    tag: "latest"
+    pullPolicy: "Always"
+  command:
+    - "/bin/sh"
+    - "-c"
+    - "echo \"Starting...\"; export URL=https://cache-oracle.apiconfig.svc.cluster.local:8080/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 $URL; echo \"\"; echo \"Done\";"
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "150m"
+  tolerations:
+    - key: dedicated
+      operator: Equal
+      value: "apiconfig"
+      effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node_type
+                operator: In
+                values:
+                  - user

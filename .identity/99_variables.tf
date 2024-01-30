@@ -54,3 +54,14 @@ variable "github_repository_environment" {
     reviewers_teams        = ["pagopa-team-core"]
   }
 }
+
+variable "tags" {
+  type = map(any)
+  default = {
+    CreatedBy   = "Terraform"
+    Environment = "PROD"
+    Owner       = "pagoPA"
+    Source      = "https://github.com/pagopa/pagopa-gpd-upload"
+    CostCenter  = "TS310 - PAGAMENTI & SERVIZI"
+  }
+}

@@ -30,7 +30,7 @@
     }
   ],
   "paths": {
-    "/stakeholders/fdr/cache/schemas/v1": {
+    "/stakeholders/standin/cache/schemas/v1": {
       "get": {
         "tags": [
           "Cache"
@@ -96,7 +96,7 @@
         ]
       }
     },
-    "/stakeholders/fdr/cache/schemas/v1/id": {
+    "/stakeholders/standin/cache/schemas/v1/id": {
       "get": {
         "tags": [
           "Cache"

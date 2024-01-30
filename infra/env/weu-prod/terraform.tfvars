@@ -1,7 +1,7 @@
 prefix    = "pagopa"
 env       = "prod"
 env_short = "p"
-location  = "westeurope"
+location_short  = "weu"
 
 tags = {
   CreatedBy   = "Terraform"
@@ -10,3 +10,7 @@ tags = {
   Source      = "https://github.com/pagopa/pagopa-api-config-cache"
   CostCenter  = "TS310 - PAGAMENTI & SERVIZI"
 }
+
+apim_dns_zone_prefix               = "platform"
+external_domain                    = "pagopa.it"
+hostname = "weuprod.nodo.internal.platform.pagopa.it"

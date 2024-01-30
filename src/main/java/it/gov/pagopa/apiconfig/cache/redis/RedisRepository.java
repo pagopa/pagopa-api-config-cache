@@ -1,7 +1,8 @@
 package it.gov.pagopa.apiconfig.cache.redis;
 
-import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import java.time.Duration;
+import java.util.Map;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,13 +16,13 @@ public class RedisRepository {
 
   @Autowired
   @Qualifier("configData")
-  private RedisTemplate<String, ConfigDataV1> redisTemplate;
+  private RedisTemplate<String, Map<String, Object>> redisTemplate;
 
   @Autowired
   @Qualifier("object")
   private RedisTemplate<String, Object> redisTemplateObj;
 
-  public void save(String key, ConfigDataV1 value, long ttl) {
+  public void save(String key, Map<String, Object> value, long ttl) {
     redisTemplate.opsForValue().set(key, value, Duration.ofMinutes(ttl));
   }
 
@@ -29,7 +30,7 @@ public class RedisRepository {
     redisTemplateObj.opsForValue().set(key, value, Duration.ofMinutes(ttl));
   }
 
-  public ConfigDataV1 getConfigDataV1(String key) {
+  public Map<String, Object> getCache(String key) {
     return redisTemplate.opsForValue().get(key);
   }
 
@@ -42,12 +43,24 @@ public class RedisRepository {
   }
 
   @Async
-  public void pushToRedisAsync(String key, String keyId, ConfigDataV1 configData) {
+  public void pushToRedisAsync(String key, String keyId, Map<String,Object> map, Object keyobject) {
     try {
       log.info("saving {} on redis", key);
-      save(key, configData, 1440);
-      save(keyId, configData.getVersion(), 1440);
-      log.info("saved {} on redis,id {}", key, configData.getVersion());
+      save(key, map, 1440);
+      save(keyId, keyobject, 1440);
+      log.info("saved {} on redis,id {}", key, keyobject);
+    } catch (Exception e) {
+      log.error("could not save on redis", e);
+    }
+  }
+
+  @Async
+  public void pushToRedisAsync(String key, String keyId, Object object, Object keyobject) {
+    try {
+      log.info("saving {} on redis", key);
+      save(key, object, 1440);
+      save(keyId, keyobject, 1440);
+      log.info("saved {} on redis,id {}", key, keyobject);
     } catch (Exception e) {
       log.error("could not save on redis", e);
     }

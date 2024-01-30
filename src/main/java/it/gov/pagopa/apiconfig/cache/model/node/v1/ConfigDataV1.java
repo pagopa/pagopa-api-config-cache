@@ -1,36 +1,23 @@
 package it.gov.pagopa.apiconfig.cache.model.node.v1;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsCategory;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsService;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsSubject;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsSubjectService;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.configuration.ConfigurationKey;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.configuration.FtpServer;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.configuration.GdeConfiguration;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.configuration.MetadataDict;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.configuration.PaymentType;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.configuration.Plugin;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.BrokerCreditorInstitution;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.CreditorInstitution;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.CreditorInstitutionEncoding;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.CreditorInstitutionInformation;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.Encoding;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.Iban;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.Station;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.StationCreditorInstitution;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.BrokerPsp;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.Channel;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.PaymentServiceProvider;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.PspChannelPaymentType;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.PspInformation;
-import java.io.Serializable;
-import java.util.Map;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.configuration.*;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.*;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+import java.util.Map;
+
 @Getter
 @Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConfigDataV1 implements Serializable {
 
   @JsonProperty(required = true)

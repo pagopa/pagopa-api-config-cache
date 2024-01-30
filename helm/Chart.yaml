@@ -2,7 +2,7 @@ apiVersion: v2
 name: pagopa-api-cache-chart
 description: Microservice that handles calculation for pagoPA Advanced Fees Management
 type: application
-version: 0.14.0
+version: 0.25.0
 dependencies:
   - name: microservice-chart
     version: 3.0.0
@@ -24,4 +24,20 @@ dependencies:
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
     alias: oracleprod
     condition: oracleprod.enabled
-appVersion: 0.8.6-1-fix-prod-helm-cfg
+  - name: cron-chart
+    version: 2.3.0
+    repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
+    alias: refresh-p
+  - name: cron-chart
+    version: 2.3.0
+    repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
+    alias: refresh-o
+  - name: cron-chart
+    version: 2.3.0
+    repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
+    alias: refresh-odev
+  - name: cron-chart
+    version: 2.3.0
+    repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
+    alias: refresh-oprod
+appVersion: 0.8.6-12-NOD-616_cache_rework

@@ -1,38 +1,370 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "API-Config Cacher",
-    "description": "Generate cache for regarding Nodo dei Pagamenti configuration",
+    "title": "API-Config Cacher ${service}",
+    "description": "Generate cache for various microservices",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.8.6-1-fix-prod-helm-cfg"
+    "version": "0.8.6-12-NOD-616_cache_rework"
   },
   "servers": [
-    {
-      "url": "http://localhost:8080"
-    },
     {
       "url": "https://{host}/{basePath}",
       "variables": {
         "host": {
-          "default": "api.dev.platform.pagopa.it",
           "enum": [
             "api.dev.platform.pagopa.it",
             "api.uat.platform.pagopa.it",
             "api.platform.pagopa.it"
-          ]
+          ],
+          "default": "api.dev.platform.pagopa.it"
         },
         "basePath": {
-          "default": "api-config-cache/o/v1",
           "enum": [
             "api-config-cache/o/v1",
             "api-config-cache/p/v1",
             "api-config-cache/odev/v1"
-          ]
+          ],
+          "default": "api-config-cache/o/v1"
         }
       }
     }
   ],
   "paths": {
+    "/cache": {
+      "get": {
+        "tags": [
+          "Cache"
+        ],
+        "summary": "Get in memory full cache",
+        "operationId": "get",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ]
+      },
+      "parameters": [
+        {
+          "name": "X-Request-Id",
+          "in": "header",
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/cache/id": {
+      "get": {
+        "tags": [
+          "Cache"
+        ],
+        "summary": "Get in memory full cache id",
+        "operationId": "id",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CacheVersion"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ]
+      },
+      "parameters": [
+        {
+          "name": "X-Request-Id",
+          "in": "header",
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/cache/refresh": {
+      "get": {
+        "tags": [
+          "Cache"
+        ],
+        "summary": "Refresh in memory full chache",
+        "operationId": "refresh",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {}
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ]
+      },
+      "parameters": [
+        {
+          "name": "X-Request-Id",
+          "in": "header",
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
     "/info": {
       "get": {
         "tags": [
@@ -152,7 +484,7 @@
           "Cache"
         ],
         "summary": "Get selected key of cache v1 config",
-        "operationId": "cache_2",
+        "operationId": "cache_3",
         "parameters": [
           {
             "name": "refresh",
@@ -161,44 +493,6 @@
             "required": false,
             "schema": {
               "type": "boolean"
-            }
-          },
-          {
-            "name": "keys",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "enum": [
-                  "creditorInstitutions",
-                  "creditorInstitutionBrokers",
-                  "stations",
-                  "creditorInstitutionStations",
-                  "encodings",
-                  "creditorInstitutionEncodings",
-                  "ibans",
-                  "creditorInstitutionInformations",
-                  "psps",
-                  "pspBrokers",
-                  "paymentTypes",
-                  "pspChannelPaymentTypes",
-                  "plugins",
-                  "pspInformationTemplates",
-                  "pspInformations",
-                  "channels",
-                  "cdsServices",
-                  "cdsSubjects",
-                  "cdsSubjectServices",
-                  "cdsCategories",
-                  "configurations",
-                  "ftpServers",
-                  "languages",
-                  "gdeConfigurations",
-                  "metadataDict"
-                ]
-              }
             }
           }
         ],
@@ -314,7 +608,7 @@
           "Cache"
         ],
         "summary": "Get last v1 cache version",
-        "operationId": "idV1_1",
+        "operationId": "idV1_2",
         "responses": {
           "200": {
             "description": "OK",
@@ -438,7 +732,7 @@
           "Cache"
         ],
         "summary": "Get selected key of cache v1 config",
-        "operationId": "cache_1",
+        "operationId": "cache_2",
         "parameters": [
           {
             "name": "refresh",
@@ -447,44 +741,6 @@
             "required": false,
             "schema": {
               "type": "boolean"
-            }
-          },
-          {
-            "name": "keys",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "enum": [
-                  "creditorInstitutions",
-                  "creditorInstitutionBrokers",
-                  "stations",
-                  "creditorInstitutionStations",
-                  "encodings",
-                  "creditorInstitutionEncodings",
-                  "ibans",
-                  "creditorInstitutionInformations",
-                  "psps",
-                  "pspBrokers",
-                  "paymentTypes",
-                  "pspChannelPaymentTypes",
-                  "plugins",
-                  "pspInformationTemplates",
-                  "pspInformations",
-                  "channels",
-                  "cdsServices",
-                  "cdsSubjects",
-                  "cdsSubjectServices",
-                  "cdsCategories",
-                  "configurations",
-                  "ftpServers",
-                  "languages",
-                  "gdeConfigurations",
-                  "metadataDict"
-                ]
-              }
             }
           }
         ],
@@ -595,6 +851,254 @@
       ]
     },
     "/stakeholders/node/cache/schemas/v1/id": {
+      "get": {
+        "tags": [
+          "Cache"
+        ],
+        "summary": "Get last v1 cache version",
+        "operationId": "idV1_1",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CacheVersion"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ]
+      },
+      "parameters": [
+        {
+          "name": "X-Request-Id",
+          "in": "header",
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/stakeholders/standin/cache/schemas/v1": {
+      "get": {
+        "tags": [
+          "Cache"
+        ],
+        "summary": "Get selected key of cache v1 config",
+        "operationId": "cache_1",
+        "parameters": [
+          {
+            "name": "refresh",
+            "in": "query",
+            "description": "to force the refresh of the cache",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigDataV1"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ]
+      },
+      "parameters": [
+        {
+          "name": "X-Request-Id",
+          "in": "header",
+          "description": "This header identifies the call, if not passed it is self-generated. This ID is returned in the response.",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/stakeholders/standin/cache/schemas/v1/id": {
       "get": {
         "tags": [
           "Cache"
