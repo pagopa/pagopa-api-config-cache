@@ -53,7 +53,6 @@ resource "github_actions_environment_secret" "github_environment_runner_secrets"
 # ENV Variables #
 #################
 
-
 resource "github_actions_environment_variable" "github_environment_runner_variables" {
   for_each      = local.env_variables
   repository    = local.github.repository
@@ -61,6 +60,7 @@ resource "github_actions_environment_variable" "github_environment_runner_variab
   variable_name = each.key
   value         = each.value
 }
+
 
 #tfsec:ignore:github-actions-no-plain-text-action-secrets # not real secret
 resource "github_actions_secret" "secret_sonar_token" {
