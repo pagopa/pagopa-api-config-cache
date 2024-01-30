@@ -15,6 +15,7 @@ public class FdrCacheController extends CacheController {
 
   public static String[] KEYS = new String[]{
           Constants.version,
+          Constants.configurations,
           Constants.creditorInstitutions,
           Constants.creditorInstitutionBrokers,
           Constants.stations,
