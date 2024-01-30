@@ -92,6 +92,8 @@ jobs:
     name: Update OpenAPI
     if: ${{ inputs.target == inputs.environment }}
     environment: ${{ inputs.environment }}
+    env:
+      ARM_CLIENT_ID: ${{ secrets.CD_CLIENT_ID }}
     steps:
       - name: Checkout
         id: checkout
