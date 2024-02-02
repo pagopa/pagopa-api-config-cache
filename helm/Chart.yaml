@@ -28,16 +28,20 @@ dependencies:
     version: 2.3.0
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
     alias: refresh-p
+    condition: postgresql.enabled
   - name: cron-chart
     version: 2.3.0
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
     alias: refresh-o
+    condition: oracle.enabled
   - name: cron-chart
     version: 2.3.0
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
     alias: refresh-odev
+    condition: oracledev.enabled
   - name: cron-chart
     version: 2.3.0
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
     alias: refresh-oprod
-appVersion: 0.8.7-2-fix_hemls
+    condition: oracleprod.enabled
+appVersion: 0.8.7-1-fix_hemls

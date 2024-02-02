@@ -102,6 +102,7 @@ oracle:
       DB_CONFIG_PASSWORD: "oracle-db-cfg-password"
 oracledev:
   !!merge <<: *microservice-chart
+  enabled: false
   ingress:
     !!merge <<: *ingress
     path: /api-config-cachedev/o(/|$)(.*)
