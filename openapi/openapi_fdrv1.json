@@ -4,7 +4,7 @@
     "title": "API-Config Cacher ${service}",
     "description": "Generate cache for various microservices",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.8.7-2-fix_hemls"
+    "version": "0.8.7-3-fix_hemls"
   },
   "servers": [
     {
