@@ -121,25 +121,7 @@ oracledev:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "oracle-db-cfg-dev-password"
 oracleprod:
-  !!merge <<: *microservice-chart
-  ingress:
-    !!merge <<: *ingress
-    path: /api-config-cachedev/oprod(/|$)(.*)
-  envConfig:
-    !!merge <<: *envConfig
-    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-oracle"
-    DB_CONFIG_URL: "jdbc:oracle:thin:@db-nodo-pagamenti.d.db-nodo-pagamenti.com:1522/NDPSPCT_NODO4_CFG"
-    DB_CONFIG_USER: "NODO4_CFG_EXPORT"
-    DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
-    JAVA_OPTS: "-Dspring.jpa.show-sql=false"
-    DATABASE_ID: "oprod"
-    HEALTHCHECK_QUERY: "select 1 from dual"
-    SAVE_DB: "true"
-  secretProvider:
-    !!merge <<: *azureSecretProvider
-    envSecrets:
-      !!merge <<: *envSecret
-      DB_CONFIG_PASSWORD: "oracle-db-cfg-prod-password"
+  enabled: false
 refresh-p:
   namespace: "apiconfig"
   schedule: "*/10 * * * *"
@@ -237,34 +219,4 @@ refresh-odev:
                 values:
                   - user
 refresh-oprod:
-  namespace: "apiconfig"
-  schedule: "*/10 * * * *"
-  image:
-    repository: "curlimages/curl"
-    tag: "latest"
-    pullPolicy: "Always"
-  command:
-    - "/bin/sh"
-    - "-c"
-    - "echo \"Starting...\"; export URL=http://cache-oracleprod.apiconfig.svc.cluster.local:8080/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 $URL; echo \"\"; echo \"Done\";"
-  resources:
-    requests:
-      memory: "256Mi"
-      cpu: "100m"
-    limits:
-      memory: "512Mi"
-      cpu: "150m"
-  tolerations:
-    - key: dedicated
-      operator: Equal
-      value: "apiconfig"
-      effect: NoSchedule
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: node_type
-                operator: In
-                values:
-                  - user
+  enabled: false

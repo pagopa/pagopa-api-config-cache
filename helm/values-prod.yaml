@@ -31,6 +31,7 @@ microservice-chart: &microservice-chart
       cpu: "2.5"
   envConfig: &envConfig
     ENV: "prod"
+    TZ: "Europe/Rome"
     AZURE_INSIGHTS_ENABLED: "true"
     REDIS_HOST: "pagopa-p-redis.redis.cache.windows.net"
     REDIS_PORT: "6380"
@@ -110,6 +111,10 @@ oracle:
     envSecrets:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "oracle-db-cfg-password"
+oracledev:
+  enabled: false
+oracleprod:
+  enabled: false
 refresh-odev:
   enabled: false
 refresh-oprod:
@@ -143,7 +148,7 @@ refresh-p:
   command:
     - "/bin/sh"
     - "-c"
-    - "echo \"Starting...\"; export URL=https://cache-psotgresql.apiconfig.svc.cluster.local:8080/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 $URL; echo \"\"; echo \"Done\";"
+    - "echo \"Starting...\"; export URL=http://cache-postgresql.apiconfig.svc.cluster.local:8080/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 $URL; echo \"\"; echo \"Done\";"
   resources:
     requests:
       memory: "256Mi"
@@ -184,7 +189,7 @@ refresh-o:
   command:
     - "/bin/sh"
     - "-c"
-    - "echo \"Starting...\"; export URL=https://cache-oracle.apiconfig.svc.cluster.local:8080/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 $URL; echo \"\"; echo \"Done\";"
+    - "echo \"Starting...\"; export URL=http://cache-oracle.apiconfig.svc.cluster.local:8080/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 $URL; echo \"\"; echo \"Done\";"
   resources:
     requests:
       memory: "256Mi"
