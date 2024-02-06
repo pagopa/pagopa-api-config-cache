@@ -2,7 +2,7 @@ microservice-chart: &microservice-chart
   namespace: "apiconfig"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: 0.8.7-1-NOD-692_riversamento
+    tag: 0.8.7-2-NOD-692_riversamento
   canaryDelivery:
     deployment:
       image:
