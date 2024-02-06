@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.apiconfig.cache.controller.stakeholders.FdrCacheController;
 import it.gov.pagopa.apiconfig.cache.controller.HomeController;
 import it.gov.pagopa.apiconfig.cache.controller.stakeholders.VerifierCacheController;
+import it.gov.pagopa.apiconfig.cache.service.CacheEventHubService;
 import it.gov.pagopa.apiconfig.cache.service.ConfigService;
 import it.gov.pagopa.apiconfig.cache.service.HealthCheckService;
 import it.gov.pagopa.apiconfig.cache.service.VerifierService;
+import it.gov.pagopa.apiconfig.cache.util.JsonSerializer;
 import it.gov.pagopa.apiconfig.starter.repository.HealthCheckRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +57,12 @@ class OpenApiGenerationTest {
 
     @MockBean
     HealthCheckRepository healthCheckRepository;
+
+    @MockBean
+    JsonSerializer jsonSerializer;
+
+    @MockBean
+    CacheEventHubService cacheEventHubService;
 
     @Test
     void swaggerSpringPlugin() throws Exception {

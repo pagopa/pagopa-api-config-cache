@@ -11,8 +11,10 @@ import it.gov.pagopa.apiconfig.cache.model.ProblemJson;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.util.ConfigDataUtil;
+import it.gov.pagopa.apiconfig.cache.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Optional;
 
@@ -79,12 +83,20 @@ public abstract class CacheController {
   public ResponseEntity<ConfigDataV1> cache(@RequestParam @Parameter(description = "to force the refresh of the cache") Optional<Boolean> refresh)
       throws IOException {
       if(refresh.orElse(false)){
-          log.info("Refresh from nodo,change this to call /cache/refresh");
+          log.warn("Deprecated refresh from nodo,change this to call /cache/refresh");
           singleController.refresh();
       }
-      ConfigDataV1 configDataV1 = ConfigDataUtil.cacheToConfigDataV1(singleController.getInMemoryCache(),keys());
+      Map<String, Object> inMemoryCache = singleController.getInMemoryCache();
+      ConfigDataV1 configDataV1 = ConfigDataUtil.cacheToConfigDataV1(inMemoryCache,keys());
 
-      return ResponseEntity.ok(configDataV1);
+      HttpHeaders responseHeaders = new HttpHeaders();
+      responseHeaders.set("X-CACHE-ID",(String)inMemoryCache.getOrDefault(Constants.version,"n/a"));
+      responseHeaders.set("X-CACHE-TIMESTAMP", DateTimeFormatter.ISO_DATE_TIME.format((ZonedDateTime)inMemoryCache.get(Constants.timestamp)));
+      responseHeaders.set("X-CACHE-VERSION",(String)inMemoryCache.getOrDefault(Constants.cacheVersion,"n/a"));
+
+      return ResponseEntity.ok()
+              .headers(responseHeaders)
+              .body(configDataV1);
   }
 
   @Operation(

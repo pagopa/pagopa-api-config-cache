@@ -7,11 +7,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import it.gov.pagopa.apiconfig.cache.model.ProblemJson;
+import it.gov.pagopa.apiconfig.cache.model.RefreshResponse;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.service.ConfigService;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 @RestController
@@ -35,12 +40,18 @@ public class RefreshController {
     @Autowired
     private ConfigService configService;
 
+    @Value("${preload:true}")
+    private Boolean preload;
+
+
     @PostConstruct
     private void preloadKeysFromRedis() {
-        try {
-            inMemoryCache = configService.loadFullCache();
-        } catch (Exception e){
-            log.warn("could not load single keys cache from redis");
+        if(preload){
+            try {
+                inMemoryCache = configService.loadFullCache();
+            } catch (Exception e){
+                log.warn("could not load single keys cache from redis");
+            }
         }
     }
 
@@ -97,7 +108,15 @@ public class RefreshController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Map<String,Object>> get()
             throws IOException {
-        return ResponseEntity.ok(inMemoryCache);
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("X-CACHE-ID",(String)inMemoryCache.get(Constants.version));
+        responseHeaders.set("X-CACHE-TIMESTAMP", DateTimeFormatter.ISO_DATE_TIME.format((ZonedDateTime)inMemoryCache.get(Constants.timestamp)));
+        responseHeaders.set("X-CACHE-VERSION",(String)inMemoryCache.get(Constants.cacheVersion));
+
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(inMemoryCache);
     }
 
     @Operation(
@@ -147,7 +166,15 @@ public class RefreshController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity id()
             throws IOException {
-        return ResponseEntity.ok(configService.getCacheV1Id(Constants.FULL));
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("X-CACHE-ID",(String)inMemoryCache.get(Constants.version));
+        responseHeaders.set("X-CACHE-TIMESTAMP", DateTimeFormatter.ISO_DATE_TIME.format((ZonedDateTime)inMemoryCache.get(Constants.timestamp)));
+        responseHeaders.set("X-CACHE-VERSION",(String)inMemoryCache.get(Constants.cacheVersion));
+
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body((String)inMemoryCache.get(Constants.version));
     }
 
     @Operation(
@@ -201,7 +228,19 @@ public class RefreshController {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }else{
             docache();
-            return ResponseEntity.ok().build();
+
+            String cacheVersion = (String)inMemoryCache.get(Constants.cacheVersion);
+            String cacheId = (String)inMemoryCache.get(Constants.version);
+            ZonedDateTime timestamp = (ZonedDateTime)inMemoryCache.get(Constants.timestamp);
+
+            HttpHeaders responseHeaders = new HttpHeaders();
+            responseHeaders.set("X-CACHE-ID",cacheId);
+            responseHeaders.set("X-CACHE-TIMESTAMP",DateTimeFormatter.ISO_DATE_TIME.format(timestamp));
+            responseHeaders.set("X-CACHE-VERSION",cacheVersion);
+
+            return ResponseEntity.ok()
+                    .headers(responseHeaders)
+                    .body(RefreshResponse.builder().version(cacheVersion).timestamp(timestamp).id(cacheId));
         }
     }
 

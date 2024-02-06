@@ -4,10 +4,12 @@ import it.gov.pagopa.apiconfig.cache.controller.stakeholders.NodeCacheController
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
+import it.gov.pagopa.apiconfig.cache.service.CacheEventHubService;
 import it.gov.pagopa.apiconfig.cache.service.ConfigService;
 import it.gov.pagopa.apiconfig.cache.util.ConfigDataUtil;
 import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
+import it.gov.pagopa.apiconfig.cache.util.JsonSerializer;
 import it.gov.pagopa.apiconfig.starter.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,11 +18,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -58,6 +63,8 @@ class NodoConfigCacheTest {
   @Mock private InformativePaMasterRepository informativePaMasterRepository;
   @Mock private InformativePaDetailRepository informativePaDetailRepository;
   @Mock private InformativePaFasceRepository informativePaFasceRepository;
+  @Mock private JsonSerializer jsonSerializer;
+  @Mock private CacheEventHubService cacheEventHubService;
 
   @Spy private ConfigMapper configMapper = new ConfigMapper();
 
@@ -69,6 +76,7 @@ class NodoConfigCacheTest {
     org.springframework.test.util.ReflectionTestUtils.setField(configService, "keyV1", "value");
     org.springframework.test.util.ReflectionTestUtils.setField(configService, "keyV1InProgress", "value");
     org.springframework.test.util.ReflectionTestUtils.setField(configService, "saveDB", true);
+    org.springframework.test.util.ReflectionTestUtils.setField(configService, "sendEvent", true);
 
     configService.postConstruct();
   }
@@ -122,6 +130,7 @@ class NodoConfigCacheTest {
     when(cdsSoggettoRepository.findAll()).thenReturn(TestUtils.cdsSoggetti);
     when(cdsCategorieRepository.findAll()).thenReturn(TestUtils.cdsCategorie);
     when(informativePaMasterRepository.findAll()).thenReturn(TestUtils.informativePaMaster);
+    when(jsonSerializer.serialize(any())).thenReturn("{}".getBytes(StandardCharsets.UTF_8));
 
     ConfigDataV1 allData = ConfigDataUtil.cacheToConfigDataV1(configService.newCacheV1(), NodeCacheController.KEYS);
     assertThat(allData.getConfigurations())

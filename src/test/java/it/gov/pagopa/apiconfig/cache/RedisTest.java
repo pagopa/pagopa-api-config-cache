@@ -1,6 +1,7 @@
 package it.gov.pagopa.apiconfig.cache;
 
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
+import it.gov.pagopa.apiconfig.cache.util.Constants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,7 +38,7 @@ class RedisTest {
   @Test
   void test() {
     Map<String, Object> configDataV1 = new HashMap<>();
-    configDataV1.put("version","test");
+    configDataV1.put(Constants.version,"test");
     when(redisTemplateObj.opsForValue()).thenReturn(testValueOperation);
 
     redisRepository.pushToRedisAsync("k", "kid", configDataV1,"test");
