@@ -13,7 +13,7 @@
   <groupId>it.gov.pagopa.api-config</groupId>
   <artifactId>cache</artifactId>
   <version>0.8.7-2-NOD-692_riversamento</version>
-  <name>API-Config Cacher</name>
+  <name>API-Config Cache</name>
   <description>Generate cache for various microservices</description>
 
   <properties>
