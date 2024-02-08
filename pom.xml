@@ -17,7 +17,7 @@
   <description>Generate cache for various microservices</description>
 
   <properties>
-    <java.version>11</java.version>
+    <java.version>17</java.version>
     <spring-version>2.7.7</spring-version>
     <starter.version>1.15.0</starter.version>
     <springdoc.version>1.6.11</springdoc.version>
