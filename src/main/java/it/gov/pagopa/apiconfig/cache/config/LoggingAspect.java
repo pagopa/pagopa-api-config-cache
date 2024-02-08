@@ -2,7 +2,7 @@ package it.gov.pagopa.apiconfig.cache.config;
 
 import java.util.Arrays;
 import java.util.stream.StreamSupport;
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;

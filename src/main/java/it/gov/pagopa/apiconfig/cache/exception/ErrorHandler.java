@@ -135,9 +135,9 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
     return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
   }
 
-  @ExceptionHandler({javax.validation.ConstraintViolationException.class})
+  @ExceptionHandler({jakarta.validation.ConstraintViolationException.class})
   public ResponseEntity<ProblemJson> handleConstraintViolationException(
-      final javax.validation.ConstraintViolationException ex, final WebRequest request) {
+      final jakarta.validation.ConstraintViolationException ex, final WebRequest request) {
     log.warn("Validation Error raised:", ex);
     var errorResponse =
         ProblemJson.builder()
