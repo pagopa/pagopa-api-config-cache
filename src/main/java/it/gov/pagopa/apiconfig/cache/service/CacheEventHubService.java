@@ -40,6 +40,7 @@ public class CacheEventHubService {
         return producer;
     }
 
+    // https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-java-get-started-send?tabs=connection-string%2Croles-azure-portal#add-code-to-publish-events-to-the-event-hub
     public void publishEvent(String id, ZonedDateTime now, String version) throws JsonProcessingException {
         Map e = new HashMap();
         e.put(Constants.version,id);
