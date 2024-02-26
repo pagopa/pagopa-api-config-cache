@@ -146,7 +146,7 @@ refresh-p:
   command:
     - "/bin/sh"
     - "-c"
-    - "echo \"Starting...\"; export URL=https://cache-psotgresql.apiconfig.svc.cluster.local:8080/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 $URL; echo \"\"; echo \"Done\";"
+    - "echo \"Starting...\"; export URL=https://api.platform.pagopa.it/api-config-cache/p/v1/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 --header \"Ocp-Apim-Subscription-Key: $API_CONFIG_CACHE_SUBSCRIPTION_KEY\" $URL; echo \"\"; echo \"Done\";"
   resources:
     requests:
       memory: "256Mi"
@@ -154,6 +154,10 @@ refresh-p:
     limits:
       memory: "512Mi"
       cpu: "150m"
+  secretProvider:
+    create: true
+    envSecrets:
+      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "api-config-cache-subscription-key-string"
   tolerations:
     - key: dedicated
       operator: Equal
@@ -187,7 +191,7 @@ refresh-o:
   command:
     - "/bin/sh"
     - "-c"
-    - "echo \"Starting...\"; export URL=https://cache-oracle.apiconfig.svc.cluster.local:8080/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 $URL; echo \"\"; echo \"Done\";"
+    - "echo \"Starting...\"; export URL=https://api.platform.pagopa.it/api-config-cache/o/v1/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 --header \"Ocp-Apim-Subscription-Key: $API_CONFIG_CACHE_SUBSCRIPTION_KEY\" $URL; echo \"\"; echo \"Done\";"
   resources:
     requests:
       memory: "256Mi"
@@ -195,6 +199,10 @@ refresh-o:
     limits:
       memory: "512Mi"
       cpu: "150m"
+  secretProvider:
+    create: true
+    envSecrets:
+      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "api-config-cache-subscription-key-string"
   tolerations:
     - key: dedicated
       operator: Equal
