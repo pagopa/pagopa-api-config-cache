@@ -151,7 +151,7 @@ refresh-p:
   command:
     - "/bin/sh"
     - "-c"
-    - "echo $API_CONFIG_CACHE_SUBSCRIPTION_KEY"
+    - "echo \"Starting...\"; export URL=https://api.dev.platform.pagopa.it/api-config-cache/p/v1/cache/refresh; echo \"Call '$URL'\"; curl -k -H \"Ocp-Apim-Subscription-Key: $API_CONFIG_CACHE_SUBSCRIPTION_KEY\" -m 300 $URL; echo \"\"; echo \"Done\";"
   resources:
     requests:
       memory: "256Mi"
@@ -163,7 +163,7 @@ refresh-p:
     !!merge <<: *azureSecretProvider
     envSecrets:
       !!merge <<: *envSecret
-      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "api-config-cache-subscription-key-string"
+      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "api-config-cache-subscription-key"
   tolerations:
     - key: dedicated
       operator: Equal
