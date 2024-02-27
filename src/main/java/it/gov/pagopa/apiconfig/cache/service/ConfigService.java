@@ -78,6 +78,9 @@ public class ConfigService {
   @Value("#{'${saveDB}'=='true'}")
   private Boolean saveDB;
 
+  @Value("#{'${sendEvent}'=='true'}")
+  private Boolean sendEvent;
+
   private static String daCompilareFlusso =
       "DA COMPILARE (formato: [IDPSP]_dd-mm-yyyy - esempio: ESEMPIO_31-12-2001)";
   private static String daCompilare = "DA COMPILARE";
@@ -126,6 +129,7 @@ public class ConfigService {
   @Autowired private InformativePaMasterRepository informativePaMasterRepository;
   @Autowired private InformativePaDetailRepository informativePaDetailRepository;
   @Autowired private InformativePaFasceRepository informativePaFasceRepository;
+  @Autowired private CacheEventHubService eventHubService;
 
   private JAXBContext ctListaInformativePSPJaxbContext;
   private JAXBContext tplInformativaPSPJaxbContext;
@@ -291,32 +295,39 @@ public class ConfigService {
       long duration = (endTime - startTime) / 1000000;
       log.info("cache loaded in " + duration + "ms");
 
-      String vers = "" + endTime;
-      configData.put("version",vers);
+      ZonedDateTime now = ZonedDateTime.now();
+      String id = "" + endTime;
+      String cacheVersion=Constants.GZIP_JSON_V1 + "-" + appVersion;
+      configData.put(Constants.version,id);
+      configData.put(Constants.timestamp,now);
+      configData.put(Constants.cacheVersion,cacheVersion);
 
       String actualKey = getKeyV1(Constants.FULL);
       String actualKeyV1 = getKeyV1Id(Constants.FULL);
 
       log.info(String.format("saving on Redis %s %s", actualKey, actualKeyV1));
-      redisRepository.pushToRedisAsync(actualKey, actualKeyV1, configData, vers);
+      redisRepository.pushToRedisAsync(actualKey, actualKeyV1, configData, id);
 
       if (saveDB) {
-        log.info("saving on CACHE table " + configData.get("version"));
+        log.info("saving on CACHE table " + configData.get(Constants.version));
         try {
           // to prevent error caused by version string too long (e.g. appVersion containing branch
           // name)
           // it is cut the version string to 32 chars.
           cacheRepository.save(
               Cache.builder()
-                  .id(vers)
+                  .id(id)
                   .cache(jsonSerializer.serialize(configData))
-                  .time(ZonedDateTime.now())
+                  .time(now)
                   .version(getVersion())
                   .build());
-          log.info("saved on CACHE table " + vers);
+          log.info("saved on CACHE table " + id);
         } catch (Exception e) {
           log.error("[ALERT] could not save on db", e);
         }
+      }
+      if(sendEvent){
+        eventHubService.publishEvent(id,now,Constants.GZIP_JSON_V1 + "-" + appVersion);
       }
     } catch (Exception e) {
       log.error("[ALERT] problem to generate cache", e);

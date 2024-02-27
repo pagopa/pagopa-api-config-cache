@@ -2,7 +2,7 @@ microservice-chart: &microservice-chart
   namespace: "apiconfig"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: 0.8.7
+    tag: 0.8.7-2-NOD-692_riversamento
   canaryDelivery:
     deployment:
       image:
@@ -31,6 +31,7 @@ microservice-chart: &microservice-chart
       cpu: "2.5"
   envConfig: &envConfig
     ENV: "prod"
+    TZ: "Europe/Rome"
     AZURE_INSIGHTS_ENABLED: "true"
     REDIS_HOST: "pagopa-p-redis.redis.cache.windows.net"
     REDIS_PORT: "6380"
@@ -39,12 +40,14 @@ microservice-chart: &microservice-chart
     OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
+    CACHET_TX_NAME: "nodo-dei-pagamenti-cache"
   secretProvider: &azureSecretProvider
     create: true
     envSecrets: &envSecret
       APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-p-connection-string"
       REDIS_PWD: "redis-password"
       OTEL_EXPORTER_OTLP_HEADERS: elastic-apm-secret-token
+      CACHE_TX_CONNECTION_STRING: "nodo-dei-pagamenti-cache-tx-connection-string-key"
     keyvault:
       name: "pagopa-p-apiconfig-kv"
       tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
@@ -82,7 +85,8 @@ postgresql:
     DB_CONFIG_DRIVER: "org.postgresql.Driver"
     DATABASE_ID: "p"
     HEALTHCHECK_QUERY: "select 1"
-    JAVA_OPTS: "-Dspring.jpa.show-sql=false"
+    SAVE_DB: "false"
+    SEND_EVENT: "true"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:
@@ -99,12 +103,12 @@ oracle:
     DB_CONFIG_URL: "jdbc:oracle:thin:@db-nodo-pagamenti.p.db-nodo-pagamenti.com:1521/NDPSPCP_NODO4_CFG"
     DB_CONFIG_USER: "NODO4_CFG"
     DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
-    JAVA_OPTS: "-Dspring.jpa.show-sql=false -XX:MaxHeapSize=6g"
+    JAVA_OPTS: "-XX:MaxHeapSize=6g"
     DATABASE_ID: "o"
     IN_PROGRESS_TTL: "20"
     HEALTHCHECK_QUERY: "select 1 from dual"
     SAVE_DB: "true"
-    DEFAULT_LOGGING_LEVEL: "info" # TODO remove
+    SEND_EVENT: "true"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:
@@ -123,7 +127,6 @@ refresh-oprod:
     DB_CONFIG_URL: "jdbc:oracle:thin:@(DESCRIPTION=(ENABLE=BROKEN)(ADDRESS=(PROTOCOL=tcp)(PORT=1521)(HOST=db-nodo-pagamenti.p.db-nodo-pagamenti.com))(CONNECT_DATA=(SERVICE_NAME=NDPSPCP_NODO4_CFG))(SO_KEEPALIVE=true)(TCP_KEEPIDLE=60)(TCP_KEEPINTVL=30)(TCP_KEEPCNT=15))"
     DB_CONFIG_USER: "NODO4_CFG"
     DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
-    JAVA_OPTS: "-Dspring.jpa.show-sql=false"
     DATABASE_ID: "oprod"
     IN_PROGRESS_TTL: "20"
     HEALTHCHECK_QUERY: "select 1 from dual"

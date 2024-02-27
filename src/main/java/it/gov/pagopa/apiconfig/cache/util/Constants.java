@@ -13,6 +13,8 @@ public class Constants {
  public static String na = "na";
 
  public static String version = "version";
+ public static String timestamp = "timestamp";
+ public static String cacheVersion = "cacheVersion";
  public static String creditorInstitutions = "creditorInstitutions";
  public static String creditorInstitutionBrokers = "creditorInstitutionBrokers";
  public static String stations = "stations";

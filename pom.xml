@@ -12,12 +12,12 @@
 
   <groupId>it.gov.pagopa.api-config</groupId>
   <artifactId>cache</artifactId>
-  <version>0.8.7</version>
-  <name>API-Config Cacher</name>
+  <version>0.8.7-2-NOD-692_riversamento</version>
+  <name>API-Config Cache</name>
   <description>Generate cache for various microservices</description>
 
   <properties>
-    <java.version>11</java.version>
+    <java.version>17</java.version>
     <spring-version>2.7.7</spring-version>
     <starter.version>1.15.0</starter.version>
     <springdoc.version>1.6.11</springdoc.version>
@@ -57,6 +57,11 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-redis</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.azure</groupId>
+      <artifactId>azure-messaging-eventhubs</artifactId>
+      <version>5.15.0</version>
     </dependency>
 
     <!-- Spring utils-->
