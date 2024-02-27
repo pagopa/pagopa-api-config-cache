@@ -133,7 +133,7 @@ refresh-p:
     !!merge <<: *azureSecretProvider
     envSecrets:
       !!merge <<: *envSecret
-      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "api-config-cache-subscription-key"
+      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
   tolerations:
     - key: dedicated
       operator: Equal
@@ -174,7 +174,7 @@ refresh-o:
     !!merge <<: *azureSecretProvider
     envSecrets:
       !!merge <<: *envSecret
-      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "api-config-cache-subscription-key"
+      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
   tolerations:
     - key: dedicated
       operator: Equal
