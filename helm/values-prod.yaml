@@ -147,9 +147,7 @@ refresh-p:
     - "/bin/sh"
     - "-c"
     - >-
-      echo "Starting...";
-      curl --location 'https://api.platform.pagopa.it/api-config-cache/p/v1/cache/refresh' --header "Ocp-Apim-Subscription-Key: $API_CONFIG_CACHE_SUBSCRIPTION_KEY" ;
-      echo "Done";
+      echo "Starting..."; curl --location 'https://api.platform.pagopa.it/api-config-cache/p/v1/cache/refresh' --header "Ocp-Apim-Subscription-Key: $API_CONFIG_CACHE_SUBSCRIPTION_KEY" ; echo "Done";
   resources:
     requests:
       memory: "256Mi"
@@ -195,9 +193,7 @@ refresh-o:
     - "/bin/sh"
     - "-c"
     - >-
-      echo "Starting...";
-      curl --location 'https://api.platform.pagopa.it/api-config-cache/o/v1/cache/refresh' --header "Ocp-Apim-Subscription-Key: $API_CONFIG_CACHE_SUBSCRIPTION_KEY" ;
-      echo "Done";
+      echo "Starting..."; curl --location 'https://api.platform.pagopa.it/api-config-cache/o/v1/cache/refresh' --header "Ocp-Apim-Subscription-Key: $API_CONFIG_CACHE_SUBSCRIPTION_KEY" ; echo "Done";
   resources:
     requests:
       memory: "256Mi"
