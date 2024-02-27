@@ -149,9 +149,13 @@ refresh-p:
     tag: "latest"
     pullPolicy: "Always"
   command:
-    - "/bin/sh"
-    - "-c"
-    - "echo \"Starting...\"; export URL=http://cache-postgresql.apiconfig.svc.cluster.local:8080/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 $URL; echo \"\"; echo \"Done\";"
+    - "curl"
+    - "-k"
+    - "-m"
+    - "\"300\""
+    - "--header"
+    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
+    - "https://api.dev.platform.pagopa.it/api-config-cache/p/v1/cache/refresh"
   resources:
     requests:
       memory: "256Mi"
@@ -159,6 +163,11 @@ refresh-p:
     limits:
       memory: "512Mi"
       cpu: "150m"
+  secretProvider:
+    !!merge <<: *azureSecretProvider
+    envSecrets:
+      !!merge <<: *envSecret
+      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
   tolerations:
     - key: dedicated
       operator: Equal
@@ -181,9 +190,13 @@ refresh-o:
     tag: "latest"
     pullPolicy: "Always"
   command:
-    - "/bin/sh"
-    - "-c"
-    - "echo \"Starting...\"; export URL=http://cache-oracle.apiconfig.svc.cluster.local:8080/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 $URL; echo \"\"; echo \"Done\";"
+    - "curl"
+    - "-k"
+    - "-m"
+    - "\"300\""
+    - "--header"
+    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
+    - "https://api.dev.platform.pagopa.it/api-config-cache/o/v1/cache/refresh"
   resources:
     requests:
       memory: "256Mi"
@@ -191,6 +204,11 @@ refresh-o:
     limits:
       memory: "512Mi"
       cpu: "150m"
+  secretProvider:
+    !!merge <<: *azureSecretProvider
+    envSecrets:
+      !!merge <<: *envSecret
+      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
   tolerations:
     - key: dedicated
       operator: Equal
@@ -213,9 +231,13 @@ refresh-odev:
     tag: "latest"
     pullPolicy: "Always"
   command:
-    - "/bin/sh"
-    - "-c"
-    - "echo \"Starting...\"; export URL=http://cache-oracledev.apiconfig.svc.cluster.local:8080/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 $URL; echo \"\"; echo \"Done\";"
+    - "curl"
+    - "-k"
+    - "-m"
+    - "\"300\""
+    - "--header"
+    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
+    - "https://api.dev.platform.pagopa.it/api-config-cache/odev/v1/cache/refresh"
   resources:
     requests:
       memory: "256Mi"
@@ -223,6 +245,11 @@ refresh-odev:
     limits:
       memory: "512Mi"
       cpu: "150m"
+  secretProvider:
+    !!merge <<: *azureSecretProvider
+    envSecrets:
+      !!merge <<: *envSecret
+      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
   tolerations:
     - key: dedicated
       operator: Equal
@@ -245,9 +272,13 @@ refresh-oprod:
     tag: "latest"
     pullPolicy: "Always"
   command:
-    - "/bin/sh"
-    - "-c"
-    - "echo \"Starting...\"; export URL=http://cache-oracleprod.apiconfig.svc.cluster.local:8080/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 $URL; echo \"\"; echo \"Done\";"
+    - "curl"
+    - "-k"
+    - "-m"
+    - "\"300\""
+    - "--header"
+    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
+    - "https://api.dev.platform.pagopa.it/api-config-cache/oprod/v1/cache/refresh"
   resources:
     requests:
       memory: "256Mi"
@@ -255,6 +286,11 @@ refresh-oprod:
     limits:
       memory: "512Mi"
       cpu: "150m"
+  secretProvider:
+    !!merge <<: *azureSecretProvider
+    envSecrets:
+      !!merge <<: *envSecret
+      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
   tolerations:
     - key: dedicated
       operator: Equal

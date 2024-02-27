@@ -135,7 +135,7 @@ refresh-oprod:
     !!merge <<: *azureSecretProvider
     envSecrets:
       !!merge <<: *envSecret
-      DB_CONFIG_PASSWORD: "oracle-db-cfg-password"
+      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
 refresh-p:
   namespace: "apiconfig"
   schedule: "*/10 * * * *"
@@ -144,9 +144,13 @@ refresh-p:
     tag: "latest"
     pullPolicy: "Always"
   command:
-    - "/bin/sh"
-    - "-c"
-    - "echo \"Starting...\"; export URL=https://cache-psotgresql.apiconfig.svc.cluster.local:8080/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 $URL; echo \"\"; echo \"Done\";"
+    - "curl"
+    - "-k"
+    - "-m"
+    - "\"300\""
+    - "--header"
+    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
+    - "https://api.platform.pagopa.it/api-config-cache/p/v1/cache/refresh"
   resources:
     requests:
       memory: "256Mi"
@@ -154,6 +158,11 @@ refresh-p:
     limits:
       memory: "512Mi"
       cpu: "150m"
+  secretProvider:
+    !!merge <<: *azureSecretProvider
+    envSecrets:
+      !!merge <<: *envSecret
+      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
   tolerations:
     - key: dedicated
       operator: Equal
@@ -185,9 +194,13 @@ refresh-o:
     tag: "latest"
     pullPolicy: "Always"
   command:
-    - "/bin/sh"
-    - "-c"
-    - "echo \"Starting...\"; export URL=https://cache-oracle.apiconfig.svc.cluster.local:8080/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 $URL; echo \"\"; echo \"Done\";"
+    - "curl"
+    - "-k"
+    - "-m"
+    - "\"300\""
+    - "--header"
+    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
+    - "https://api.platform.pagopa.it/api-config-cache/o/v1/cache/refresh"
   resources:
     requests:
       memory: "256Mi"
@@ -195,6 +208,11 @@ refresh-o:
     limits:
       memory: "512Mi"
       cpu: "150m"
+  secretProvider:
+    !!merge <<: *azureSecretProvider
+    envSecrets:
+      !!merge <<: *envSecret
+      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
   tolerations:
     - key: dedicated
       operator: Equal
