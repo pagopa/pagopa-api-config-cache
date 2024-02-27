@@ -160,8 +160,9 @@ refresh-p:
       memory: "512Mi"
       cpu: "150m"
   secretProvider:
-    create: true
+    !!merge <<: *azureSecretProvider
     envSecrets:
+      !!merge <<: *envSecret
       API_CONFIG_CACHE_SUBSCRIPTION_KEY: "api-config-cache-subscription-key-string"
   tolerations:
     - key: dedicated
