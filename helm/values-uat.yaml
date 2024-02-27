@@ -115,10 +115,13 @@ refresh-p:
     tag: "latest"
     pullPolicy: "Always"
   command:
-    - "/bin/sh"
-    - "-c"
-    - >-
-      echo "Starting..."; curl --location 'https://api.uat.platform.pagopa.it/api-config-cache/p/v1/cache/refresh' --header "Ocp-Apim-Subscription-Key: $API_CONFIG_CACHE_SUBSCRIPTION_KEY" ; echo "Done";
+    - "curl"
+    - "-k"
+    - "-m"
+    - "\"300\""
+    - "--header"
+    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
+    - "https://api.uat.platform.pagopa.it/api-config-cache/p/v1/cache/refresh"
   resources:
     requests:
       memory: "256Mi"
@@ -152,10 +155,13 @@ refresh-o:
     tag: "latest"
     pullPolicy: "Always"
   command:
-    - "/bin/sh"
-    - "-c"
-    - >-
-      echo "Starting..."; curl --location 'https://api.uat.platform.pagopa.it/api-config-cache/o/v1/cache/refresh' --header "Ocp-Apim-Subscription-Key: $API_CONFIG_CACHE_SUBSCRIPTION_KEY" ; echo "Done";
+    - "curl"
+    - "-k"
+    - "-m"
+    - "\"300\""
+    - "--header"
+    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
+    - "https://api.uat.platform.pagopa.it/api-config-cache/o/v1/cache/refresh"
   resources:
     requests:
       memory: "256Mi"
