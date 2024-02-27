@@ -151,10 +151,7 @@ refresh-p:
   command:
     - "/bin/sh"
     - "-c"
-    - >-
-      echo "Starting...";
-      curl --location 'https://api.dev.platform.pagopa.it/api-config-cache/p/v1/cache/refresh' --header "Ocp-Apim-Subscription-Key: $API_CONFIG_CACHE_SUBSCRIPTION_KEY" ;
-      echo "Done";
+    - "curl -k -m 300 --header \"Ocp-Apim-Subscription-Key: $API_CONFIG_CACHE_SUBSCRIPTION_KEY\" https://api.dev.platform.pagopa.it/api-config-cache/p/v1/cache/refresh ; echo \"Done\";"
   resources:
     requests:
       memory: "256Mi"
@@ -190,10 +187,7 @@ refresh-o:
   command:
     - "/bin/sh"
     - "-c"
-    - >-
-      echo "Starting...";
-      curl --location 'https://api.dev.platform.pagopa.it/api-config-cache/o/v1/cache/refresh' --header "Ocp-Apim-Subscription-Key: $API_CONFIG_CACHE_SUBSCRIPTION_KEY" ;
-      echo "Done";
+    - "curl -k -m 300 --header \"Ocp-Apim-Subscription-Key: $API_CONFIG_CACHE_SUBSCRIPTION_KEY\" https://api.dev.platform.pagopa.it/api-config-cache/o/v1/cache/refresh ; echo \"Done\";"
   resources:
     requests:
       memory: "256Mi"
@@ -229,10 +223,7 @@ refresh-odev:
   command:
     - "/bin/sh"
     - "-c"
-    - >-
-      echo "Starting...";
-      curl --location 'https://api.dev.platform.pagopa.it/api-config-cache/odev/v1/cache/refresh' --header "Ocp-Apim-Subscription-Key: $API_CONFIG_CACHE_SUBSCRIPTION_KEY" ;
-      echo "Done";
+    - "curl -k -m 300 --header \"Ocp-Apim-Subscription-Key: $API_CONFIG_CACHE_SUBSCRIPTION_KEY\" https://api.dev.platform.pagopa.it/api-config-cache/odev/v1/cache/refresh ; echo \"Done\";"
   resources:
     requests:
       memory: "256Mi"
@@ -268,10 +259,7 @@ refresh-oprod:
   command:
     - "/bin/sh"
     - "-c"
-    - >-
-      echo "Starting...";
-      curl --location 'https://api.dev.platform.pagopa.it/api-config-cache/oprod/v1/cache/refresh' --header "Ocp-Apim-Subscription-Key: $API_CONFIG_CACHE_SUBSCRIPTION_KEY" ;
-      echo "Done";
+    - "curl -k -m 300 --header \"Ocp-Apim-Subscription-Key: $API_CONFIG_CACHE_SUBSCRIPTION_KEY\" https://api.dev.platform.pagopa.it/api-config-cache/oprod/v1/cache/refresh ; echo \"Done\";"
   resources:
     requests:
       memory: "256Mi"
