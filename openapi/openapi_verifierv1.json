@@ -4,7 +4,7 @@
     "title": "API-Config Cacher ${service}",
     "description": "Generate cache for various microservices",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.8.7-2-NOD-692_riversamento"
+    "version": "0.8.7-3-NOD-574_cronjobs"
   },
   "servers": [
     {

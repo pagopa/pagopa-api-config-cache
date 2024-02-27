@@ -2,7 +2,7 @@ microservice-chart: &microservice-chart
   namespace: "apiconfig"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: 0.8.7-2-NOD-692_riversamento
+    tag: 0.8.7-3-NOD-574_cronjobs
   canaryDelivery:
     deployment:
       image:
@@ -118,9 +118,7 @@ refresh-p:
     - "/bin/sh"
     - "-c"
     - >-
-      echo "Starting...";
-      curl --location 'https://api.uat.platform.pagopa.it/api-config-cache/p/v1/cache/refresh' --header "Ocp-Apim-Subscription-Key: $API_CONFIG_CACHE_SUBSCRIPTION_KEY" ;
-      echo "Done";
+      echo "Starting..."; curl --location 'https://api.uat.platform.pagopa.it/api-config-cache/p/v1/cache/refresh' --header "Ocp-Apim-Subscription-Key: $API_CONFIG_CACHE_SUBSCRIPTION_KEY" ; echo "Done";
   resources:
     requests:
       memory: "256Mi"
@@ -157,9 +155,7 @@ refresh-o:
     - "/bin/sh"
     - "-c"
     - >-
-      echo "Starting...";
-      curl --location 'https://api.uat.platform.pagopa.it/api-config-cache/o/v1/cache/refresh' --header "Ocp-Apim-Subscription-Key: $API_CONFIG_CACHE_SUBSCRIPTION_KEY" ;
-      echo "Done";
+      echo "Starting..."; curl --location 'https://api.uat.platform.pagopa.it/api-config-cache/o/v1/cache/refresh' --header "Ocp-Apim-Subscription-Key: $API_CONFIG_CACHE_SUBSCRIPTION_KEY" ; echo "Done";
   resources:
     requests:
       memory: "256Mi"
