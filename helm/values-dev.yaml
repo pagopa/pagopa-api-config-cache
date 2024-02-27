@@ -150,11 +150,11 @@ refresh-p:
     pullPolicy: "Always"
   command:
     - "curl"
-    - "-k"
+    - -k
     - "-m"
     - "300"
     - "--header"
-    - "Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)"
+    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
     - "https://api.dev.platform.pagopa.it/api-config-cache/p/v1/cache/refresh"
   resources:
     requests:
