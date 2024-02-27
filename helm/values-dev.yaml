@@ -151,7 +151,7 @@ refresh-p:
   command:
     - "/bin/sh"
     - "-c"
-    - "curl -k -m 300 -H \"Ocp-Apim-Subscription-Key: $API_CONFIG_CACHE_SUBSCRIPTION_KEY\" https://api.dev.platform.pagopa.it/api-config-cache/p/v1/cache/refresh ; echo \"Done\";"
+    - "echo $API_CONFIG_CACHE_SUBSCRIPTION_KEY"
   resources:
     requests:
       memory: "256Mi"
@@ -187,7 +187,7 @@ refresh-o:
   command:
     - "/bin/sh"
     - "-c"
-    - "curl -k -m 300 -H \"Ocp-Apim-Subscription-Key: $API_CONFIG_CACHE_SUBSCRIPTION_KEY\" https://api.dev.platform.pagopa.it/api-config-cache/o/v1/cache/refresh ; echo \"Done\";"
+    - "echo \"Starting...\"; export URL=http://cache-oracle.apiconfig.svc.cluster.local:8080/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 $URL; echo \"\"; echo \"Done\";"
   resources:
     requests:
       memory: "256Mi"
@@ -195,10 +195,6 @@ refresh-o:
     limits:
       memory: "512Mi"
       cpu: "150m"
-  secretProvider:
-    create: true
-    envSecrets:
-      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "api-config-cache-subscription-key-string"
   tolerations:
     - key: dedicated
       operator: Equal
@@ -223,7 +219,7 @@ refresh-odev:
   command:
     - "/bin/sh"
     - "-c"
-    - "curl -k -m 300 -H \"Ocp-Apim-Subscription-Key: $API_CONFIG_CACHE_SUBSCRIPTION_KEY\" https://api.dev.platform.pagopa.it/api-config-cache/odev/v1/cache/refresh ; echo \"Done\";"
+    - "echo \"Starting...\"; export URL=http://cache-oracledev.apiconfig.svc.cluster.local:8080/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 $URL; echo \"\"; echo \"Done\";"
   resources:
     requests:
       memory: "256Mi"
@@ -231,10 +227,6 @@ refresh-odev:
     limits:
       memory: "512Mi"
       cpu: "150m"
-  secretProvider:
-    create: true
-    envSecrets:
-      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "api-config-cache-subscription-key-string"
   tolerations:
     - key: dedicated
       operator: Equal
@@ -259,7 +251,7 @@ refresh-oprod:
   command:
     - "/bin/sh"
     - "-c"
-    - "curl -k -m 300 -H \"Ocp-Apim-Subscription-Key: $API_CONFIG_CACHE_SUBSCRIPTION_KEY\" https://api.dev.platform.pagopa.it/api-config-cache/oprod/v1/cache/refresh ; echo \"Done\";"
+    - "echo \"Starting...\"; export URL=http://cache-oracleprod.apiconfig.svc.cluster.local:8080/cache/refresh; echo \"Call '$URL'\"; curl -k -m 300 $URL; echo \"\"; echo \"Done\";"
   resources:
     requests:
       memory: "256Mi"
@@ -267,10 +259,6 @@ refresh-oprod:
     limits:
       memory: "512Mi"
       cpu: "150m"
-  secretProvider:
-    create: true
-    envSecrets:
-      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "api-config-cache-subscription-key-string"
   tolerations:
     - key: dedicated
       operator: Equal
