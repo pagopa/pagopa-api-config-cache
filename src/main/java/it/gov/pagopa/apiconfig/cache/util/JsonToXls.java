@@ -77,7 +77,13 @@ public class JsonToXls {
                         cell.setCellValue(field.getName());
                     }
                 }
+            }else{
+                createBaseHeader(sheet,rowNum);
             }
+        } else {
+            Row headerRow = sheet.createRow(rowNum.getAndIncrement());
+            Cell cell = headerRow.createCell(0);
+            cell.setCellValue("no values");
         }
 
     }
@@ -140,43 +146,45 @@ public class JsonToXls {
         return colNum;
 
     }
+
+    private static void createBaseHeader(Sheet sheet,AtomicInteger rownNum){
+        Row row = sheet.createRow(rownNum.getAndIncrement());
+        Cell cellid = row.createCell(0);
+        cellid.setCellValue("identifier");
+        cellid.setCellStyle(getHeaderStyle(sheet.getWorkbook()));
+        Cell cellvalue = row.createCell(1);
+        cellvalue.setCellValue("value");
+        cellvalue.setCellStyle(getHeaderStyle(sheet.getWorkbook()));
+    }
     public static byte[] convert(Map<String,Object> cache,boolean maskPasswords) {
         try {
             Workbook workbook = new XSSFWorkbook();
             Sheet infoSheet = workbook.createSheet("Info");
             AtomicInteger infoRowNum = new AtomicInteger();
-
-            Row row = infoSheet.createRow(infoRowNum.getAndIncrement());
-            Cell cellid = row.createCell(0);
-            cellid.setCellValue("identifier");
-            cellid.setCellStyle(getHeaderStyle(workbook));
-            Cell cellvalue = row.createCell(1);
-            cellvalue.setCellValue("value");
-            cellvalue.setCellStyle(getHeaderStyle(workbook));
-
-//            Map<String,Object> cache2 = new HashMap<>();
-//            Map<String,Object> channels = (Map<String,Object>)cache.get("channels");
-//
-//            Map<String,Object> channels2 = new HashMap<String,Object>();
-//            channels2.put("60000000001_03_ONUS",channels.get("60000000001_03_ONUS"));
-//            cache2.put("channels",channels2);
+            createBaseHeader(infoSheet,infoRowNum);
 
             List<String> sortedKeys = cache.keySet().stream().sorted().toList();
             sortedKeys.forEach((key)->{
                 Object keyMap = cache.get(key);
                 if(keyMap instanceof Map){
-                    Sheet sheet = workbook.createSheet(key);
-                    AtomicInteger rowNum = new AtomicInteger();
-                    AtomicInteger colNum = new AtomicInteger();
-                    createHeader(sheet,rowNum,(Map<String, Object>)keyMap);
-                    Set<String> cacheItemKeys = ((Map<String, Object>) keyMap).keySet();
-                    cacheItemKeys.forEach(k->{
-                        Row dataRow = sheet.createRow(rowNum.getAndIncrement());
-                        Cell cellx = dataRow.createCell(0);
-                        cellx.setCellValue(k);
-                        Object oo = ((Map<?, ?>) keyMap).get(k);
-                        objectToCells(maskPasswords,dataRow,1,oo,null);
-                    });
+                    Optional<String> first = ((Map<String,Object>)keyMap).keySet().stream().findFirst();
+                    if(first.isPresent()){
+                        Sheet sheet = workbook.createSheet(key);
+                        AtomicInteger rowNum = new AtomicInteger();
+                        AtomicInteger colNum = new AtomicInteger();
+                        createHeader(sheet,rowNum,(Map<String, Object>)keyMap);
+                        Set<String> cacheItemKeys = ((Map<String, Object>) keyMap).keySet();
+                        cacheItemKeys.forEach(k->{
+                            Row dataRow = sheet.createRow(rowNum.getAndIncrement());
+                            Cell cellx = dataRow.createCell(0);
+                            cellx.setCellValue(k);
+                            Object oo = ((Map<?, ?>) keyMap).get(k);
+                            objectToCells(maskPasswords,dataRow,1,oo,null);
+                        });
+                    } else {
+                        log.warn(key+" ignored,no values");
+                    }
+
                 }else{
                     Row rowX = infoSheet.createRow(infoRowNum.getAndIncrement());
                     Cell cellidX = rowX.createCell(0);

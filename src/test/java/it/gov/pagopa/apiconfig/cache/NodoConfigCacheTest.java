@@ -8,6 +8,7 @@ import it.gov.pagopa.apiconfig.cache.service.CacheEventHubService;
 import it.gov.pagopa.apiconfig.cache.service.ConfigService;
 import it.gov.pagopa.apiconfig.cache.util.*;
 import it.gov.pagopa.apiconfig.starter.repository.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +18,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,6 +34,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class NodoConfigCacheTest {
 
+  @Mock private CacheRepository cacheRepository;
   @Mock private RedisRepository redisRepository;
   @Mock private ConfigurationKeysRepository configurationKeysRepository;
   @Mock private IntermediariPaRepository intermediariPaRepository;
@@ -131,8 +134,12 @@ class NodoConfigCacheTest {
     when(informativePaMasterRepository.findAll()).thenReturn(TestUtils.informativePaMaster);
     when(jsonSerializer.serialize(any())).thenReturn("{}".getBytes(StandardCharsets.UTF_8));
 
-    byte[] convert = JsonToXls.convert(configService.newCacheV1(), false);
-    Files.write(Path.of("./target/output.xlsx"), convert);
+    byte[] export = JsonToXls.convert(configService.newCacheV1(), false);
+    Files.write(Path.of("./target/output.xlsx"), export);
+
+    XSSFWorkbook workbook = new XSSFWorkbook(new ByteArrayInputStream(export));
+    assertThat(workbook.getNumberOfSheets()).isEqualTo(25);
+    workbook.close();
   }
 
   @Test
