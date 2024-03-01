@@ -281,11 +281,13 @@ public class TestUtils {
               .id(1l)
               .servizio(cdsServizi.get(0))
               .soggetto(cdsSoggetti.get(0))
+                  .idSoggettoServizio("0_0")
               .build(),
           CdsSoggettoServizio.builder()
               .id(2l)
               .servizio(cdsServizi.get(1))
               .soggetto(cdsSoggetti.get(1))
+                  .idSoggettoServizio("1_1")
               .build());
 
   public static List<InformativePaDetail> informativePaDetails =

@@ -11,6 +11,7 @@ import it.gov.pagopa.apiconfig.cache.model.RefreshResponse;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.service.ConfigService;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
+import it.gov.pagopa.apiconfig.cache.util.JsonToXls;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +43,9 @@ public class RefreshController {
 
     @Value("${preload:true}")
     private Boolean preload;
+
+    @Value("${xls.mask-passwords}")
+    private boolean xlsMaskPasswords;
 
 
     @PostConstruct
@@ -246,6 +250,21 @@ public class RefreshController {
 
     private void docache() throws IOException {
             inMemoryCache = configService.newCacheV1();
+    }
+
+    @GetMapping(value = "/xlsx",
+            produces = {"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"})
+    public ResponseEntity<byte[]> xls()
+            throws IOException {
+        byte[] convert = null;
+        try {
+            convert = JsonToXls.convert(inMemoryCache, xlsMaskPasswords);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return ResponseEntity.ok()
+                .body(convert);
     }
 
 }

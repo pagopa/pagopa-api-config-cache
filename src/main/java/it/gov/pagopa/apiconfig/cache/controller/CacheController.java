@@ -12,6 +12,7 @@ import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.util.ConfigDataUtil;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
+import it.gov.pagopa.apiconfig.cache.util.JsonToXls;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -33,7 +34,7 @@ public abstract class CacheController {
 
   protected abstract String[] keys();
 
-  @Autowired private RefreshController singleController;
+  @Autowired private RefreshController refreshController;
 
   @Operation(
       summary = "Get selected key of cache v1 config",
@@ -84,9 +85,9 @@ public abstract class CacheController {
       throws IOException {
       if(refresh.orElse(false)){
           log.warn("Deprecated refresh from nodo,change this to call /cache/refresh");
-          singleController.refresh();
+          refreshController.refresh();
       }
-      Map<String, Object> inMemoryCache = singleController.getInMemoryCache();
+      Map<String, Object> inMemoryCache = refreshController.getInMemoryCache();
       ConfigDataV1 configDataV1 = ConfigDataUtil.cacheToConfigDataV1(inMemoryCache,keys());
 
       HttpHeaders responseHeaders = new HttpHeaders();
@@ -149,6 +150,6 @@ public abstract class CacheController {
       value = "/v1/id",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<CacheVersion> idV1() throws IOException {
-    return singleController.id();
+    return refreshController.id();
   }
 }

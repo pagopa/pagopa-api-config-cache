@@ -6,10 +6,7 @@ import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.service.CacheEventHubService;
 import it.gov.pagopa.apiconfig.cache.service.ConfigService;
-import it.gov.pagopa.apiconfig.cache.util.ConfigDataUtil;
-import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
-import it.gov.pagopa.apiconfig.cache.util.Constants;
-import it.gov.pagopa.apiconfig.cache.util.JsonSerializer;
+import it.gov.pagopa.apiconfig.cache.util.*;
 import it.gov.pagopa.apiconfig.starter.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -97,6 +96,43 @@ class NodoConfigCacheTest {
 
     Map<String, Object> configDataV1 = configService.loadFullCache();
     assertThat(configDataV1.get(Constants.version).equals(configDataV11.getVersion()));
+  }
+
+  @Test
+  void testXls() throws Exception {
+    when(configurationKeysRepository.findAll()).thenReturn(TestUtils.mockConfigurationKeys);
+    when(dizionarioMetadatiRepository.findAll()).thenReturn(TestUtils.mockMetadataDicts);
+    when(paRepository.findAll()).thenReturn(TestUtils.pas);
+    when(pspRepository.findAll()).thenReturn(TestUtils.psps);
+    when(intermediariPaRepository.findAll()).thenReturn(TestUtils.intpas);
+    when(intermediariPspRepository.findAll()).thenReturn(TestUtils.intpsp);
+    when(cdiMasterValidRepository.findAll()).thenReturn(TestUtils.cdiMasterValid);
+    when(cdiDetailRepository.findAll()).thenReturn(TestUtils.cdiDetail);
+    when(cdiPreferenceRepository.findAll()).thenReturn(TestUtils.cdiPreference);
+    when(cdiFasceRepository.findAll()).thenReturn(TestUtils.cdiFasciaCostoServizio);
+    when(cdiInformazioniServizioRepository.findAll()).thenReturn(TestUtils.cdiInformazioniServizio);
+    when(canaliRepository.findAllFetchingIntermediario()).thenReturn(TestUtils.canali);
+    when(tipiVersamentoRepository.findAll()).thenReturn(TestUtils.tipiVersamento);
+    when(pspCanaleTipoVersamentoCanaleRepository.findAllFetching())
+            .thenReturn(TestUtils.pspCanaliTv);
+    when(ftpServersRepository.findAll()).thenReturn(TestUtils.ftpServers);
+    when(gdeConfigRepository.findAll()).thenReturn(TestUtils.gdeConfigurations);
+    when(wfespPluginConfRepository.findAll()).thenReturn(TestUtils.plugins);
+    when(ibanValidiPerPaRepository.findAllFetchingPas()).thenReturn(TestUtils.ibans);
+    when(codifichePaRepository.findAllFetchingCodifiche()).thenReturn(TestUtils.encodingsPA);
+    when(codificheRepository.findAll()).thenReturn(TestUtils.encodings);
+    when(stazioniRepository.findAllFetchingIntermediario()).thenReturn(TestUtils.stazioni);
+    when(paStazioniRepository.findAllFetching()).thenReturn(TestUtils.paStazioniPa);
+    when(cdsServizioRepository.findAllFetching()).thenReturn(TestUtils.cdsServizi);
+    when(cdsSoggettoServizioRepository.findAllFetchingStations())
+            .thenReturn(TestUtils.cdsSoggettiServizi);
+    when(cdsSoggettoRepository.findAll()).thenReturn(TestUtils.cdsSoggetti);
+    when(cdsCategorieRepository.findAll()).thenReturn(TestUtils.cdsCategorie);
+    when(informativePaMasterRepository.findAll()).thenReturn(TestUtils.informativePaMaster);
+    when(jsonSerializer.serialize(any())).thenReturn("{}".getBytes(StandardCharsets.UTF_8));
+
+    byte[] convert = JsonToXls.convert(configService.newCacheV1(), false);
+    Files.write(Path.of("./target/output.xlsx"), convert);
   }
 
   @Test
@@ -254,6 +290,9 @@ class NodoConfigCacheTest {
     assertThat(allData.getCdsSubjectServices())
         .containsKey(TestUtils.cdsSoggettiServizi.get(0).getIdSoggettoServizio())
         .containsKey(TestUtils.cdsSoggettiServizi.get(1).getIdSoggettoServizio());
+
+
+
   }
 
   @Test
