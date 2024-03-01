@@ -135,7 +135,7 @@ class NodoConfigCacheTest {
     when(jsonSerializer.serialize(any())).thenReturn("{}".getBytes(StandardCharsets.UTF_8));
 
     byte[] export = JsonToXls.convert(configService.newCacheV1(), false);
-    Files.write(Path.of("./target/output.xlsx"), export);
+//    Files.write(Path.of("./target/output.xlsx"), export);
 
     XSSFWorkbook workbook = new XSSFWorkbook(new ByteArrayInputStream(export));
     assertThat(workbook.getNumberOfSheets()).isEqualTo(25);
