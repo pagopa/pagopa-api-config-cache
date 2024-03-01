@@ -137,9 +137,11 @@ class NodoConfigCacheTest {
     byte[] export = JsonToXls.convert(configService.newCacheV1(), false);
 //    Files.write(Path.of("./target/output.xlsx"), export);
 
-    XSSFWorkbook workbook = new XSSFWorkbook(new ByteArrayInputStream(export));
+    ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(export);
+    XSSFWorkbook workbook = new XSSFWorkbook(byteArrayInputStream);
     assertThat(workbook.getNumberOfSheets()).isEqualTo(25);
     workbook.close();
+    byteArrayInputStream.close();
   }
 
   @Test
