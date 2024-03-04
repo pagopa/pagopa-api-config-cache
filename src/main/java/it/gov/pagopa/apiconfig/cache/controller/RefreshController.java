@@ -258,7 +258,7 @@ public class RefreshController {
             throws IOException {
         byte[] convert = null;
         try {
-            convert = JsonToXls.convert(inMemoryCache, xlsMaskPasswords);
+            convert = new JsonToXls(xlsMaskPasswords).convert(inMemoryCache);
         } catch (Exception e){
             e.printStackTrace();
         }

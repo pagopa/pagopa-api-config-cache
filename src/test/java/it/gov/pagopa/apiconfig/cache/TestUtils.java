@@ -87,6 +87,13 @@ public class TestUtils {
               .protocollo("HTTP")
               .modelloPagamento("IMMEDIATO")
               .idCanale("idCanale2")
+                  .flagTravaso(true)
+                  .ip("ip")
+                  .redirectIp("redirectIp")
+                  .redirectPort(0000l)
+                  .redirectPath("redirectPath")
+                  .redirectProtocollo("HTTPS")
+                  .redirectQueryString("redirectQueryString")
               .build());
 
   public static List<TipiVersamento> tipiVersamento =

@@ -134,8 +134,8 @@ class NodoConfigCacheTest {
     when(informativePaMasterRepository.findAll()).thenReturn(TestUtils.informativePaMaster);
     when(jsonSerializer.serialize(any())).thenReturn("{}".getBytes(StandardCharsets.UTF_8));
 
-    byte[] export = JsonToXls.convert(configService.newCacheV1(), false);
-//    Files.write(Path.of("./target/output.xlsx"), export);
+    byte[] export = new JsonToXls(false).convert(configService.newCacheV1(), false);
+    Files.write(Path.of("./target/output.xlsx"), export);
 
     ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(export);
     XSSFWorkbook workbook = new XSSFWorkbook(byteArrayInputStream);
