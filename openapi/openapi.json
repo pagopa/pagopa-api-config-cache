@@ -339,7 +339,8 @@
     },
     "/cache/xlsx" : {
       "get" : {
-        "tags" : [ "refresh-controller" ],
+        "tags" : [ "Cache" ],
+        "summary" : "Get xlsx of full chache",
         "operationId" : "xls",
         "responses" : {
           "200" : {
@@ -353,18 +354,82 @@
               }
             },
             "content" : {
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "headers" : {
+              "X-Request-Id" : {
+                "description" : "This header identifies the call",
                 "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "string",
-                    "format" : "byte"
-                  }
+                  "type" : "string"
+                }
+              }
+            },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "headers" : {
+              "X-Request-Id" : {
+                "description" : "This header identifies the call",
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Forbidden",
+            "headers" : {
+              "X-Request-Id" : {
+                "description" : "This header identifies the call",
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests",
+            "headers" : {
+              "X-Request-Id" : {
+                "description" : "This header identifies the call",
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Service unavailable",
+            "headers" : {
+              "X-Request-Id" : {
+                "description" : "This header identifies the call",
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemJson"
                 }
               }
             }
           }
-        }
+        },
+        "security" : [ {
+          "ApiKey" : [ ]
+        } ]
       },
       "parameters" : [ {
         "name" : "X-Request-Id",
@@ -485,13 +550,14 @@
     "/stakeholders/fdr/cache/schemas/v1" : {
       "get" : {
         "tags" : [ "Cache" ],
-        "summary" : "Get selected key of cache v1 config",
+        "summary" : "Get selected key of FDR cache v1 config",
         "operationId" : "cache_3",
         "parameters" : [ {
           "name" : "refresh",
           "in" : "query",
           "description" : "to force the refresh of the cache",
           "required" : false,
+          "deprecated" : true,
           "schema" : {
             "type" : "boolean"
           }
@@ -601,7 +667,7 @@
     "/stakeholders/fdr/cache/schemas/v1/id" : {
       "get" : {
         "tags" : [ "Cache" ],
-        "summary" : "Get last v1 cache version",
+        "summary" : "Get last v1 FDR cache version",
         "operationId" : "idV1_2",
         "responses" : {
           "200" : {
@@ -719,13 +785,14 @@
     "/stakeholders/node/cache/schemas/v1" : {
       "get" : {
         "tags" : [ "Cache" ],
-        "summary" : "Get selected key of cache v1 config",
+        "summary" : "Get selected key of NODE cache v1 config",
         "operationId" : "cache_2",
         "parameters" : [ {
           "name" : "refresh",
           "in" : "query",
           "description" : "to force the refresh of the cache",
           "required" : false,
+          "deprecated" : true,
           "schema" : {
             "type" : "boolean"
           }
@@ -835,7 +902,7 @@
     "/stakeholders/node/cache/schemas/v1/id" : {
       "get" : {
         "tags" : [ "Cache" ],
-        "summary" : "Get last v1 cache version",
+        "summary" : "Get last v1 NODE cache version",
         "operationId" : "idV1_1",
         "responses" : {
           "200" : {
@@ -953,13 +1020,14 @@
     "/stakeholders/standin/cache/schemas/v1" : {
       "get" : {
         "tags" : [ "Cache" ],
-        "summary" : "Get selected key of cache v1 config",
+        "summary" : "Get selected key of STANDIN cache v1 config",
         "operationId" : "cache_1",
         "parameters" : [ {
           "name" : "refresh",
           "in" : "query",
           "description" : "to force the refresh of the cache",
           "required" : false,
+          "deprecated" : true,
           "schema" : {
             "type" : "boolean"
           }
@@ -1069,7 +1137,7 @@
     "/stakeholders/standin/cache/schemas/v1/id" : {
       "get" : {
         "tags" : [ "Cache" ],
-        "summary" : "Get last v1 cache version",
+        "summary" : "Get last v1 STANDIN cache version",
         "operationId" : "idV1",
         "responses" : {
           "200" : {

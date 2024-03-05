@@ -143,7 +143,7 @@ oracleprod:
       DB_CONFIG_PASSWORD: "oracle-db-cfg-prod-password"
 refresh-p:
   namespace: "apiconfig"
-  schedule: "*/10 * * * *"
+  schedule: "0 0 * * *"
   image:
     repository: "curlimages/curl"
     tag: "latest"
@@ -184,7 +184,7 @@ refresh-p:
                   - user
 refresh-o:
   namespace: "apiconfig"
-  schedule: "*/10 * * * *"
+  schedule: "0 0 * * *"
   image:
     repository: "curlimages/curl"
     tag: "latest"
@@ -225,7 +225,7 @@ refresh-o:
                   - user
 refresh-odev:
   namespace: "apiconfig"
-  schedule: "*/10 * * * *"
+  schedule: "0 0 * * *"
   image:
     repository: "curlimages/curl"
     tag: "latest"
@@ -266,7 +266,7 @@ refresh-odev:
                   - user
 refresh-oprod:
   namespace: "apiconfig"
-  schedule: "*/10 * * * *"
+  schedule: "0 0 * * *"
   image:
     repository: "curlimages/curl"
     tag: "latest"

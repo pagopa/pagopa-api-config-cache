@@ -109,7 +109,7 @@ refresh-oprod:
   enabled: false
 refresh-p:
   namespace: "apiconfig"
-  schedule: "*/10 * * * *"
+  schedule: "0 0 * * *"
   image:
     repository: "curlimages/curl"
     tag: "latest"
@@ -150,7 +150,7 @@ refresh-p:
                   - user
 refresh-o:
   namespace: "apiconfig"
-  schedule: "*/10 * * * *"
+  schedule: "0 0 * * *"
   image:
     repository: "curlimages/curl"
     tag: "latest"

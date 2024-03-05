@@ -252,6 +252,48 @@ public class RefreshController {
             inMemoryCache = configService.newCacheV1();
     }
 
+
+    @Operation(
+            summary = "Get xlsx of full chache",
+            security = {@SecurityRequirement(name = "ApiKey")},
+            tags = {
+                    "Cache",
+            })
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "OK",
+                            content =
+                            @Content(
+                                    mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad Request",
+                            content =
+                            @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ProblemJson.class))),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(schema = @Schema())),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden",
+                            content = @Content(schema = @Schema())),
+                    @ApiResponse(
+                            responseCode = "429",
+                            description = "Too many requests",
+                            content = @Content(schema = @Schema())),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Service unavailable",
+                            content =
+                            @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ProblemJson.class)))
+            })
     @GetMapping(value = "/xlsx",
             produces = {"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"})
     public ResponseEntity<byte[]> xls()
