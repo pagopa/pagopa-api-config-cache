@@ -135,13 +135,13 @@ public class JsonToXls {
         if(first.isPresent()){
             Sheet sheet = workbook.createSheet(key);
             AtomicInteger rowNum = new AtomicInteger();
-            createHeader(sheet,rowNum,(Map<String, Object>)keyMap);
-            Set<String> cacheItemKeys = ((Map<String, Object>) keyMap).keySet();
+            createHeader(sheet,rowNum,keyMap);
+            Set<String> cacheItemKeys = keyMap.keySet();
             cacheItemKeys.forEach(k->{
                 Row dataRow = sheet.createRow(rowNum.getAndIncrement());
                 Cell cellx = dataRow.createCell(0);
                 cellx.setCellValue(k);
-                Object oo = ((Map<?, ?>) keyMap).get(k);
+                Object oo = keyMap.get(k);
                 try {
                     values(dataRow,oo,1);
                 } catch (InvocationTargetException | IllegalAccessException e) {
