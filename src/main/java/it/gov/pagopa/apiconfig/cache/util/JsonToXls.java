@@ -44,12 +44,7 @@ public class JsonToXls {
     private int addObjectHeaders(Row headerRow,String prefix,Field field,int colNum){
         List<Field> fields = Arrays.stream(field.getType().getDeclaredFields()).toList();
         for (Field childField : fields) {
-            if(childField.getType().isEnum()){
-                Cell cell = headerRow.createCell(colNum++);
-                cell.setCellStyle(getHeaderStyle());
-                cell.setCellValue(prefix+"."+childField.getName());
-                headers.add(prefix+"."+childField.getName());
-            }else if(childField.getType().getName().startsWith(packet)){
+            if(childField.getType().getName().startsWith(packet)){
                 colNum = addObjectHeaders(headerRow,prefix+"."+childField.getName(),childField,colNum);
             }else{
                 Cell cell = headerRow.createCell(colNum++);
@@ -166,7 +161,6 @@ public class JsonToXls {
         if(first.isPresent()){
             Sheet sheet = workbook.createSheet(key);
             AtomicInteger rowNum = new AtomicInteger();
-            AtomicInteger colNum = new AtomicInteger();
             createHeader(sheet,rowNum,(Map<String, Object>)keyMap);
             Set<String> cacheItemKeys = ((Map<String, Object>) keyMap).keySet();
             cacheItemKeys.forEach(k->{
@@ -176,9 +170,7 @@ public class JsonToXls {
                 Object oo = ((Map<?, ?>) keyMap).get(k);
                 try {
                     values(dataRow,oo,1);
-                } catch (InvocationTargetException e) {
-                    throw new RuntimeException(e);
-                } catch (IllegalAccessException e) {
+                } catch (InvocationTargetException | IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
             });
