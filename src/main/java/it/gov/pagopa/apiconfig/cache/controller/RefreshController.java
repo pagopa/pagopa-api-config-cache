@@ -302,7 +302,7 @@ public class RefreshController {
         try {
             convert = new JsonToXls(xlsMaskPasswords).convert(inMemoryCache);
         } catch (Exception e){
-            e.printStackTrace();
+            log.error("Error creating xlsx",e);
         }
 
         return ResponseEntity.ok()
