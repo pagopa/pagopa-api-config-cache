@@ -87,6 +87,13 @@ public class TestUtils {
               .protocollo("HTTP")
               .modelloPagamento("IMMEDIATO")
               .idCanale("idCanale2")
+                  .flagTravaso(true)
+                  .ip("ip")
+                  .redirectIp("redirectIp")
+                  .redirectPort(0000l)
+                  .redirectPath("redirectPath")
+                  .redirectProtocollo("HTTPS")
+                  .redirectQueryString("redirectQueryString")
               .build());
 
   public static List<TipiVersamento> tipiVersamento =
@@ -281,11 +288,13 @@ public class TestUtils {
               .id(1l)
               .servizio(cdsServizi.get(0))
               .soggetto(cdsSoggetti.get(0))
+                  .idSoggettoServizio("0_0")
               .build(),
           CdsSoggettoServizio.builder()
               .id(2l)
               .servizio(cdsServizi.get(1))
               .soggetto(cdsSoggetti.get(1))
+                  .idSoggettoServizio("1_1")
               .build());
 
   public static List<InformativePaDetail> informativePaDetails =

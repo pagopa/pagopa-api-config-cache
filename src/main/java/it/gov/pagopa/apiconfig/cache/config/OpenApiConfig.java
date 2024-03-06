@@ -116,7 +116,10 @@ public class OpenApiConfig {
                   value
                       .readOperations()
                       .forEach(
-                          operation ->
+                          operation -> {
+                              if(key.contains("/stakeholders")){
+                                  operation.setSummary(operation.getSummary().replace("{stakeholder}",key.split("/")[2].toUpperCase()));
+                              }
                               operation
                                   .getResponses()
                                   .values()
@@ -127,7 +130,8 @@ public class OpenApiConfig {
                                               new Header()
                                                   .schema(new StringSchema())
                                                   .description(
-                                                      "This header identifies the call"))));
+                                                      "This header identifies the call")));
+                          });
                 });
   }
 }

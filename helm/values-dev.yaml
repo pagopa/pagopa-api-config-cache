@@ -2,7 +2,7 @@ microservice-chart: &microservice-chart
   namespace: "apiconfig"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: 0.8.9
+    tag: 0.8.9-2-NOD-736_export
   canaryDelivery:
     deployment:
       image:
@@ -143,7 +143,7 @@ oracleprod:
       DB_CONFIG_PASSWORD: "oracle-db-cfg-prod-password"
 refresh-p:
   namespace: "apiconfig"
-  schedule: "*/10 * * * *"
+  schedule: "0 0 * * *"
   image:
     repository: "curlimages/curl"
     tag: "latest"
@@ -184,7 +184,7 @@ refresh-p:
                   - user
 refresh-o:
   namespace: "apiconfig"
-  schedule: "*/10 * * * *"
+  schedule: "0 0 * * *"
   image:
     repository: "curlimages/curl"
     tag: "latest"
@@ -225,7 +225,7 @@ refresh-o:
                   - user
 refresh-odev:
   namespace: "apiconfig"
-  schedule: "*/10 * * * *"
+  schedule: "0 0 * * *"
   image:
     repository: "curlimages/curl"
     tag: "latest"
@@ -266,7 +266,7 @@ refresh-odev:
                   - user
 refresh-oprod:
   namespace: "apiconfig"
-  schedule: "*/10 * * * *"
+  schedule: "0 0 * * *"
   image:
     repository: "curlimages/curl"
     tag: "latest"

@@ -33,10 +33,10 @@ public abstract class CacheController {
 
   protected abstract String[] keys();
 
-  @Autowired private RefreshController singleController;
+  @Autowired private RefreshController refreshController;
 
   @Operation(
-      summary = "Get selected key of cache v1 config",
+      summary = "Get selected key of {stakeholder} cache v1 config",
       security = {@SecurityRequirement(name = "ApiKey")},
       tags = {
         "Cache",
@@ -80,13 +80,13 @@ public abstract class CacheController {
   @GetMapping(
       value = "/v1",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ConfigDataV1> cache(@RequestParam @Parameter(description = "to force the refresh of the cache") Optional<Boolean> refresh)
+  public ResponseEntity<ConfigDataV1> cache(@Deprecated @RequestParam @Parameter(description = "to force the refresh of the cache") Optional<Boolean> refresh)
       throws IOException {
       if(refresh.orElse(false)){
           log.warn("Deprecated refresh from nodo,change this to call /cache/refresh");
-          singleController.refresh();
+          refreshController.refresh();
       }
-      Map<String, Object> inMemoryCache = singleController.getInMemoryCache();
+      Map<String, Object> inMemoryCache = refreshController.getInMemoryCache();
       ConfigDataV1 configDataV1 = ConfigDataUtil.cacheToConfigDataV1(inMemoryCache,keys());
 
       HttpHeaders responseHeaders = new HttpHeaders();
@@ -100,7 +100,7 @@ public abstract class CacheController {
   }
 
   @Operation(
-      summary = "Get last v1 cache version",
+      summary = "Get last v1 {stakeholder} cache version",
       security = {@SecurityRequirement(name = "ApiKey")},
       tags = {
         "Cache",
@@ -149,6 +149,6 @@ public abstract class CacheController {
       value = "/v1/id",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<CacheVersion> idV1() throws IOException {
-    return singleController.id();
+    return refreshController.id();
   }
 }
