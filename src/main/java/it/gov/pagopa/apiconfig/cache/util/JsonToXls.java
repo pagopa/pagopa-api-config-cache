@@ -26,7 +26,7 @@ public class JsonToXls {
 
     public JsonToXls(boolean maskPasswords){
         workbook = new XSSFWorkbook();
-        font = workbook.createFont();
+        Font font = workbook.createFont();
         font.setBold(true);
 
         cellStyle = workbook.createCellStyle();
@@ -35,14 +35,7 @@ public class JsonToXls {
         this.maskPasswords = maskPasswords;
     }
 
-
-    private Font font = null;
     private CellStyle cellStyle = null;
-
-    private Font getFont(){
-        return font;
-    }
-
     private CellStyle getHeaderStyle(){
         return cellStyle;
     }

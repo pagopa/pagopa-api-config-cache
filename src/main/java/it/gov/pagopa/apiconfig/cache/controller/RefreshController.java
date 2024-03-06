@@ -49,7 +49,7 @@ public class RefreshController {
 
 
     @PostConstruct
-    private void preloadKeysFromRedis() {
+    public void preloadKeysFromRedis() {
         if(preload){
             try {
                 inMemoryCache = configService.loadFullCache();

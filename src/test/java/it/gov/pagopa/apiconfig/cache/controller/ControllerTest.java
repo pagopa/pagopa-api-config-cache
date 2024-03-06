@@ -1,34 +1,38 @@
 package it.gov.pagopa.apiconfig.cache.controller;
 
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import it.gov.pagopa.apiconfig.Application;
+import it.gov.pagopa.apiconfig.cache.TestUtils;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.Station;
 import it.gov.pagopa.apiconfig.cache.service.CacheEventHubService;
 import it.gov.pagopa.apiconfig.cache.service.ConfigService;
 import it.gov.pagopa.apiconfig.cache.service.HealthCheckService;
 import it.gov.pagopa.apiconfig.cache.service.VerifierService;
-import java.io.IOException;
-import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Optional;
-import javax.persistence.EntityManager;
-
+import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import javax.persistence.EntityManager;
+import java.io.IOException;
+import java.time.ZonedDateTime;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
@@ -41,6 +45,7 @@ class ControllerTest {
   @MockBean private HealthCheckService healthCheckService;
   @MockBean private VerifierService verifierService;
   @MockBean private EntityManager entityManager;
+  @Autowired private ConfigMapper modelMapper;
 
   @BeforeEach
   void setUp() throws IOException {
@@ -48,8 +53,19 @@ class ControllerTest {
     objectObjectHashMap.put(Constants.version,"1111");
     objectObjectHashMap.put(Constants.cacheVersion,"1111");
     objectObjectHashMap.put(Constants.timestamp, ZonedDateTime.now());
+
+    List<Station> stations = modelMapper.modelMapper().map(
+            TestUtils.stazioni,
+            new TypeToken<List<Station>>(){}.getType());
+
+    objectObjectHashMap.put(Constants.stations, stations.stream().collect(Collectors.toMap(
+            ss->((Station)ss).getStationCode(),
+            ss->ss
+            )));
+
     when(configService.getCacheV1Id("")).thenReturn(new CacheVersion("1111"));
     when(configService.newCacheV1()).thenReturn(objectObjectHashMap);
+    when(configService.loadFullCache()).thenReturn(objectObjectHashMap);
     when(verifierService.getPaV2()).thenReturn(Arrays.asList("1", "2"));
     when(healthCheckService.checkDatabaseConnection()).thenReturn(true);
   }
@@ -68,15 +84,15 @@ class ControllerTest {
 
   @ParameterizedTest
   @CsvSource({
+    "/cache/refresh",
+    "/cache/id",
+    "/cache",
     "/stakeholders/node/cache/schemas/v1",
     "/stakeholders/node/cache/schemas/v1?refresh=true",
     "/stakeholders/node/cache/schemas/v1/id",
     "/stakeholders/fdr/cache/schemas/v1",
     "/stakeholders/fdr/cache/schemas/v1/id",
-    "/stakeholders/verifier/cache/schemas/v1",
-    "/cache",
-    "/cache/id",
-    "/cache/refresh",
+    "/stakeholders/verifier/cache/schemas/v1"
   })
   void testGets(String url) throws Exception {
     mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
