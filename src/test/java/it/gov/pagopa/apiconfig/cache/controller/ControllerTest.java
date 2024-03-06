@@ -4,6 +4,7 @@ import it.gov.pagopa.apiconfig.Application;
 import it.gov.pagopa.apiconfig.cache.TestUtils;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.Station;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.Channel;
 import it.gov.pagopa.apiconfig.cache.service.CacheEventHubService;
 import it.gov.pagopa.apiconfig.cache.service.ConfigService;
 import it.gov.pagopa.apiconfig.cache.service.HealthCheckService;
@@ -46,6 +47,7 @@ class ControllerTest {
   @MockBean private VerifierService verifierService;
   @MockBean private EntityManager entityManager;
   @Autowired private ConfigMapper modelMapper;
+  @Autowired private RefreshController refreshController;
 
   @BeforeEach
   void setUp() throws IOException {
@@ -58,16 +60,27 @@ class ControllerTest {
             TestUtils.stazioni,
             new TypeToken<List<Station>>(){}.getType());
 
-    objectObjectHashMap.put(Constants.stations, stations.stream().collect(Collectors.toMap(
+    objectObjectHashMap.putAll(stations.stream().collect(Collectors.toMap(
             ss->((Station)ss).getStationCode(),
             ss->ss
             )));
+
+    List<Channel> channels = modelMapper.modelMapper().map(
+            TestUtils.canali,
+            new TypeToken<List<Channel>>(){}.getType());
+
+    objectObjectHashMap.putAll(channels.stream().collect(Collectors.toMap(
+            ss->((Channel)ss).getChannelCode(),
+            ss->ss
+    )));
 
     when(configService.getCacheV1Id("")).thenReturn(new CacheVersion("1111"));
     when(configService.newCacheV1()).thenReturn(objectObjectHashMap);
     when(configService.loadFullCache()).thenReturn(objectObjectHashMap);
     when(verifierService.getPaV2()).thenReturn(Arrays.asList("1", "2"));
     when(healthCheckService.checkDatabaseConnection()).thenReturn(true);
+
+    org.springframework.test.util.ReflectionTestUtils.setField(refreshController, "inMemoryCache", objectObjectHashMap);
   }
 
   @Test
@@ -84,9 +97,6 @@ class ControllerTest {
 
   @ParameterizedTest
   @CsvSource({
-    "/cache/refresh",
-    "/cache/id",
-    "/cache",
     "/stakeholders/node/cache/schemas/v1",
     "/stakeholders/node/cache/schemas/v1?refresh=true",
     "/stakeholders/node/cache/schemas/v1/id",

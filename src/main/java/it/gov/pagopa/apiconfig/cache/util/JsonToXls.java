@@ -44,13 +44,13 @@ public class JsonToXls {
     private int addObjectHeaders(Row headerRow,String prefix,Field field,int colNum){
         List<Field> fields = Arrays.stream(field.getType().getDeclaredFields()).toList();
         for (Field childField : fields) {
-            if(childField.getType().getName().startsWith(packet)){
-                colNum = addObjectHeaders(headerRow,prefix+"."+childField.getName(),childField,colNum);
-            }else{
+            if(childField.getType().isEnum() || !childField.getType().getName().startsWith(packet)){
                 Cell cell = headerRow.createCell(colNum++);
                 cell.setCellStyle(getHeaderStyle());
                 cell.setCellValue(prefix+"."+childField.getName());
                 headers.add(prefix+"."+childField.getName());
+            }else{
+                colNum = addObjectHeaders(headerRow,prefix+"."+childField.getName(),childField,colNum);
             }
         }
         return colNum;
