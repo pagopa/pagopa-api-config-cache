@@ -9,6 +9,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.util.ReflectionUtils;
 
+import javax.el.MethodNotFoundException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -135,6 +136,9 @@ public class JsonToXls {
         if(h.contains(".")){
             String[] split = h.split("\\.");
             Method method = ReflectionUtils.findMethod(oo.getClass(), "get" + StringUtils.capitalize(split[0]));
+            if(method==null){
+                throw new MethodNotFoundException("no method found "+"get" + StringUtils.capitalize(split[0]));
+            }
             Object invoke = method.invoke(oo);
             return innerValues(split[1],dataRow,invoke,colcount);
         }else{
@@ -147,6 +151,9 @@ public class JsonToXls {
                 cellx.setCellValue("NULL");
             }else{
                 Method method = ReflectionUtils.findMethod(oo.getClass(), "get" + StringUtils.capitalize(h));
+                if(method==null){
+                    throw new MethodNotFoundException("no method found "+"get" + StringUtils.capitalize(h));
+                }
                 Object invoke = method.invoke(oo);
                 cellx.setCellValue(ObjectUtils.firstNonNull(invoke,"NULL").toString());
             }
