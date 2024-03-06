@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 public class JsonToXls {
+    private static String packet = "it.gov.pagopa.apiconfig.cache.model";
     private Workbook workbook;
     List<String> headers = new ArrayList<>();
     private boolean maskPasswords = true;
@@ -48,7 +49,7 @@ public class JsonToXls {
                 cell.setCellStyle(getHeaderStyle());
                 cell.setCellValue(prefix+"."+childField.getName());
                 headers.add(prefix+"."+childField.getName());
-            }else if(childField.getType().getName().startsWith("it.gov.pagopa.apiconfig.cache.model")){
+            }else if(childField.getType().getName().startsWith(packet)){
                 colNum = addObjectHeaders(headerRow,prefix+"."+childField.getName(),childField,colNum);
             }else{
                 Cell cell = headerRow.createCell(colNum++);
@@ -73,7 +74,7 @@ public class JsonToXls {
                 cellid.setCellStyle(getHeaderStyle());
                 cellid.setCellValue("identifier");
                 for (Field field : fields) {
-                    if(field.getType().getName().startsWith("it.gov.pagopa.apiconfig.cache.model")){
+                    if(field.getType().getName().startsWith(packet)){
                         colNum = addObjectHeaders(headerRow,field.getName(),field,colNum);
                     }else{
                         headers.add(field.getName());
@@ -95,7 +96,7 @@ public class JsonToXls {
 
     private int addNullObjectToRow(Row row,Field field,int colNum){
 
-        if(!field.getType().getName().startsWith("it.gov.pagopa.apiconfig.cache.model")){
+        if(!field.getType().getName().startsWith(packet)){
             Cell cell = row.createCell(colNum++);
             cell.setCellValue("NULL");
             return colNum;
@@ -106,7 +107,7 @@ public class JsonToXls {
             if(childField.getType().isEnum()){
                 Cell cell = row.createCell(colNum++);
                 cell.setCellValue("NULL");
-            }else if(childField.getType().getName().startsWith("it.gov.pagopa.apiconfig.cache.model")){
+            }else if(childField.getType().getName().startsWith(packet)){
                 colNum = addNullObjectToRow(row,childField,colNum);
             }else{
                 Cell cell = row.createCell(colNum++);
@@ -160,6 +161,31 @@ public class JsonToXls {
         }
     }
 
+    private void convertMapElement(String key,Map<String,Object> keyMap){
+        Optional<String> first = (keyMap).keySet().stream().findFirst();
+        if(first.isPresent()){
+            Sheet sheet = workbook.createSheet(key);
+            AtomicInteger rowNum = new AtomicInteger();
+            AtomicInteger colNum = new AtomicInteger();
+            createHeader(sheet,rowNum,(Map<String, Object>)keyMap);
+            Set<String> cacheItemKeys = ((Map<String, Object>) keyMap).keySet();
+            cacheItemKeys.forEach(k->{
+                Row dataRow = sheet.createRow(rowNum.getAndIncrement());
+                Cell cellx = dataRow.createCell(0);
+                cellx.setCellValue(k);
+                Object oo = ((Map<?, ?>) keyMap).get(k);
+                try {
+                    values(dataRow,oo,1);
+                } catch (InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        } else {
+            log.warn(key+" ignored,no values");
+        }
+    }
     public byte[] convert(Map<String,Object> cache) {
         log.debug("Creating xlsx");
         try {
@@ -169,35 +195,12 @@ public class JsonToXls {
             createBaseHeader(infoSheet,infoRowNum);
 
             List<String> sortedKeys = cache.keySet().stream().sorted().toList();
-            sortedKeys.forEach((key)->{
+            sortedKeys.forEach(key->{
                 log.debug("Adding {} page",key);
                 headers = new ArrayList<>();
                 Object keyMap = cache.get(key);
                 if(keyMap instanceof Map){
-                    Optional<String> first = ((Map<String,Object>)keyMap).keySet().stream().findFirst();
-                    if(first.isPresent()){
-                        Sheet sheet = workbook.createSheet(key);
-                        AtomicInteger rowNum = new AtomicInteger();
-                        AtomicInteger colNum = new AtomicInteger();
-                        createHeader(sheet,rowNum,(Map<String, Object>)keyMap);
-                        Set<String> cacheItemKeys = ((Map<String, Object>) keyMap).keySet();
-                        cacheItemKeys.forEach(k->{
-                            Row dataRow = sheet.createRow(rowNum.getAndIncrement());
-                            Cell cellx = dataRow.createCell(0);
-                            cellx.setCellValue(k);
-                            Object oo = ((Map<?, ?>) keyMap).get(k);
-                            try {
-                                values(dataRow,oo,1);
-                            } catch (InvocationTargetException e) {
-                                throw new RuntimeException(e);
-                            } catch (IllegalAccessException e) {
-                                throw new RuntimeException(e);
-                            }
-                        });
-                    } else {
-                        log.warn(key+" ignored,no values");
-                    }
-
+                    convertMapElement(key,(Map<String,Object>)keyMap);
                 }else{
                     Row rowX = infoSheet.createRow(infoRowNum.getAndIncrement());
                     Cell cellidX = rowX.createCell(0);
