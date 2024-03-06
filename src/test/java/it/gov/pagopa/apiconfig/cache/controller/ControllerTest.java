@@ -72,15 +72,26 @@ class ControllerTest {
     "/stakeholders/node/cache/schemas/v1/id",
     "/stakeholders/fdr/cache/schemas/v1",
     "/stakeholders/fdr/cache/schemas/v1/id",
-    "/stakeholders/verifier/cache/schemas/v1"
+    "/stakeholders/verifier/cache/schemas/v1",
+    "/cache",
+    "/cache/id",
+    "/cache/refresh",
   })
   void testGets(String url) throws Exception {
+    mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+          "/cache/xlsx"
+  })
+  void testGetsXls(String url) throws Exception {
     mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
   }
 
   @Test
   void is404() throws Exception {
     String url = "/stakeholders/node/cache/schemas/v1/idasdasdasd";
-    mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
+    mvc.perform(get(url).contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")).andExpect(status().isNotFound());
   }
 }
