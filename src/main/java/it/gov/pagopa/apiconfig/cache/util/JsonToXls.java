@@ -81,36 +81,10 @@ public class JsonToXls {
             }else{
                 createBaseHeader(sheet,rowNum);
             }
-        } else {
-            Row headerRow = sheet.createRow(rowNum.getAndIncrement());
-            Cell cell = headerRow.createCell(0);
-            cell.setCellValue("no values");
         }
 
     }
 
-    private int addNullObjectToRow(Row row,Field field,int colNum){
-
-        if(!field.getType().getName().startsWith(packet)){
-            Cell cell = row.createCell(colNum++);
-            cell.setCellValue("NULL");
-            return colNum;
-        }
-
-        List<Field> fields = Arrays.stream(field.getType().getDeclaredFields()).toList();
-        for (Field childField : fields) {
-            if(childField.getType().isEnum()){
-                Cell cell = row.createCell(colNum++);
-                cell.setCellValue("NULL");
-            }else if(childField.getType().getName().startsWith(packet)){
-                colNum = addNullObjectToRow(row,childField,colNum);
-            }else{
-                Cell cell = row.createCell(colNum++);
-                cell.setCellValue("NULL");
-            }
-        }
-        return colNum;
-    }
     private void createBaseHeader(Sheet sheet,AtomicInteger rownNum){
         Row row = sheet.createRow(rownNum.getAndIncrement());
         Cell cellid = row.createCell(0);
