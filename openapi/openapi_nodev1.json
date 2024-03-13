@@ -36,8 +36,15 @@
           }
         } ],
         "responses" : {
-          "401" : {
-            "description" : "Unauthorized"
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemJson"
+                }
+              }
+            }
           },
           "500" : {
             "description" : "Service unavailable",
@@ -49,22 +56,15 @@
               }
             }
           },
+          "401" : {
+            "description" : "Unauthorized"
+          },
           "200" : {
             "description" : "OK",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/ConfigDataV1"
-                }
-              }
-            }
-          },
-          "400" : {
-            "description" : "Bad Request",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ProblemJson"
                 }
               }
             }
@@ -87,8 +87,15 @@
         "summary" : "Get last v1 {stakeholder} cache version",
         "operationId" : "idV1",
         "responses" : {
-          "401" : {
-            "description" : "Unauthorized"
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemJson"
+                }
+              }
+            }
           },
           "500" : {
             "description" : "Service unavailable",
@@ -100,21 +107,17 @@
               }
             }
           },
-          "400" : {
-            "description" : "Bad Request",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ProblemJson"
-                }
-              }
-            }
+          "401" : {
+            "description" : "Unauthorized"
           },
           "403" : {
             "description" : "Forbidden"
           },
           "404" : {
             "description" : "Not Found"
+          },
+          "429" : {
+            "description" : "Too many requests"
           },
           "200" : {
             "description" : "OK",
@@ -125,9 +128,6 @@
                 }
               }
             }
-          },
-          "429" : {
-            "description" : "Too many requests"
           }
         },
         "security" : [ {

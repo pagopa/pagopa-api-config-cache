@@ -45,7 +45,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -61,7 +60,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 @Slf4j
@@ -160,14 +158,13 @@ public class ConfigService {
   public Map<String, Object> loadFullCache() throws IOException {
     log.info("Initializing cache");
 
-    byte[] bytes = (byte[])redisRepository.get(getKeyV1(Constants.FULL));
+    byte[] bytes = redisRepository.get(getKeyV1(Constants.FULL));
     byte[] unzipped = ZipUtils.unzip(bytes);
     JsonFactory jsonFactory = new JsonFactory();
     JsonParser jsonParser = jsonFactory.createParser(unzipped);
     Map<String, Object> largeObject = objectMapper.readValue(jsonParser, Map.class);
     jsonParser.close();
-
-    return  objectMapper.readValue(unzipped,Map.class);
+    return  largeObject;
   }
 
   public Map<String, Object> newCacheV1()
@@ -176,10 +173,6 @@ public class ConfigService {
     setCacheV1InProgress(Constants.FULL);
 
     Map<String, Object> configData = new HashMap<>();
-    log.info(
-            "free mem {}",Runtime.getRuntime().freeMemory()
-    );
-
     try {
 
       long startTime = System.nanoTime();
@@ -366,10 +359,6 @@ public class ConfigService {
 
       log.info(String.format("saving on Redis %s %s", actualKey, actualKeyV1));
       redisRepository.pushToRedisAsync(actualKey, actualKeyV1, cachebyteArray, id.getBytes(StandardCharsets.UTF_8));
-
-      log.info(
-              "free mem {}",Runtime.getRuntime().freeMemory()
-      );
 
       if (saveDB) {
         log.info("saving on CACHE table " + configData.get(Constants.version));
@@ -1282,9 +1271,8 @@ public class ConfigService {
   public void appendMapToJson(JsonGenerator jsonGenerator,String fieldName, Map<String,Object> objectMap) throws IOException {
     jsonGenerator.writeFieldName(fieldName);
     jsonGenerator.writeStartObject();
-    for (String key:objectMap.keySet()) {
-      Object obj = objectMap.get(key);
-      appendObjectToJson(jsonGenerator,key,obj);
+    for (Map.Entry<String, Object> entry:objectMap.entrySet()) {
+      appendObjectToJson(jsonGenerator,entry.getKey(),entry.getValue());
     }
     jsonGenerator.writeEndObject();
   }

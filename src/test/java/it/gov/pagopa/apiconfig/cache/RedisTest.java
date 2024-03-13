@@ -2,6 +2,7 @@ package it.gov.pagopa.apiconfig.cache;
 
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
+import it.gov.pagopa.apiconfig.cache.util.ZipUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +12,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,5 +59,10 @@ class RedisTest {
 
     assertThat(redisRepository.getStringByKeyId("no") == null);
     assertThat(!redisRepository.getBooleanByKeyId("no"));
+  }
+
+  @Test
+  void testzip() throws IOException {
+    assertThat(ZipUtils.unzip(ZipUtils.zip("AAA".getBytes(StandardCharsets.UTF_8)))).isEqualTo("AAA".getBytes(StandardCharsets.UTF_8));
   }
 }
