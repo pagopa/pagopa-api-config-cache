@@ -25,6 +25,7 @@ import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.cache.util.JsonSerializer;
+import it.gov.pagopa.apiconfig.cache.util.ZipUtils;
 import it.gov.pagopa.apiconfig.starter.entity.*;
 import it.gov.pagopa.apiconfig.starter.repository.*;
 import lombok.extern.slf4j.Slf4j;
@@ -159,20 +160,11 @@ public class ConfigService {
   public Map<String, Object> loadFullCache() throws IOException {
     log.info("Initializing cache");
 
-
     byte[] bytes = (byte[])redisRepository.get(getKeyV1(Constants.FULL));
-    ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-    GZIPInputStream gzipIn = new GZIPInputStream(bais);
-    byte[] unzipped = gzipIn.readAllBytes();
-
+    byte[] unzipped = ZipUtils.unzip(bytes);
     JsonFactory jsonFactory = new JsonFactory();
-
     JsonParser jsonParser = jsonFactory.createParser(unzipped);
-
-    // Read JSON and create object
     Map<String, Object> largeObject = objectMapper.readValue(jsonParser, Map.class);
-
-    // Close the JsonParser
     jsonParser.close();
 
     return  objectMapper.readValue(unzipped,Map.class);
