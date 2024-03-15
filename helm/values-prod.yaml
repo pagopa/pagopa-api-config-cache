@@ -114,6 +114,10 @@ oracle:
     envSecrets:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "oracle-db-cfg-password"
+oracledev:
+  enabled: false
+oracleprod:
+  enabled: false
 refresh-odev:
   enabled: false
 refresh-oprod:
@@ -236,3 +240,7 @@ refresh-o:
                 app.kubernetes.io/instance: "cache"
             namespaces: ["apiconfig"]
             topologyKey: topology.kubernetes.io/zone
+refresh-odev:
+  enabled: false
+refresh-oprod:
+  enabled: false

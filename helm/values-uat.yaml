@@ -103,9 +103,9 @@ oracle:
     envSecrets:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "oracle-db-cfg-password-tmp"
-refresh-odev:
+oracledev:
   enabled: false
-refresh-oprod:
+oracleprod:
   enabled: false
 refresh-p:
   namespace: "apiconfig"
@@ -189,3 +189,7 @@ refresh-o:
                 operator: In
                 values:
                   - user
+refresh-odev:
+  enabled: false
+refresh-oprod:
+  enabled: false
