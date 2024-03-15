@@ -1,5 +1,6 @@
 package it.gov.pagopa.apiconfig.cache.redis;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Map;
 
@@ -14,27 +15,27 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class RedisRepository {
 
-  @Autowired
-  @Qualifier("configData")
-  private RedisTemplate<String, Map<String, Object>> redisTemplate;
+//  @Autowired
+//  @Qualifier("configData")
+//  private RedisTemplate<String, Map<String, Object>> redisTemplate;
 
   @Autowired
   @Qualifier("object")
-  private RedisTemplate<String, Object> redisTemplateObj;
+  private RedisTemplate<String, byte[]> redisTemplateObj;
 
-  public void save(String key, Map<String, Object> value, long ttl) {
-    redisTemplate.opsForValue().set(key, value, Duration.ofMinutes(ttl));
-  }
+//  public void save(String key, Map<String, Object> value, long ttl) {
+//    redisTemplate.opsForValue().set(key, value, Duration.ofMinutes(ttl));
+//  }
 
-  public void save(String key, Object value, long ttl) {
+  public void save(String key, byte[] value, long ttl) {
     redisTemplateObj.opsForValue().set(key, value, Duration.ofMinutes(ttl));
   }
 
-  public Map<String, Object> getCache(String key) {
-    return redisTemplate.opsForValue().get(key);
-  }
+//  public Map<String, Object> getCache(String key) {
+//    return redisTemplate.opsForValue().get(key);
+//  }
 
-  public Object get(String key) {
+  public byte[] get(String key) {
     return redisTemplateObj.opsForValue().get(key);
   }
 
@@ -42,32 +43,32 @@ public class RedisRepository {
     redisTemplateObj.delete(key);
   }
 
-  @Async
-  public void pushToRedisAsync(String key, String keyId, Map<String,Object> map, Object keyobject) {
-    try {
-      log.info("saving {} on redis", key);
-      save(key, map, 1440);
-      save(keyId, keyobject, 1440);
-      log.info("saved {} on redis,id {}", key, keyobject);
-    } catch (Exception e) {
-      log.error("could not save on redis", e);
-    }
-  }
+//  @Async
+//  public void pushToRedisAsync(String key, String keyId, Map<String,byte[]> map, byte[] keyobject) {
+//    try {
+//      log.info("saving {} on redis", key);
+//      save(key, map, 1440);
+//      save(keyId, keyobject, 1440);
+//      log.info("saved {} on redis,id {}", key, keyobject);
+//    } catch (Exception e) {
+//      log.error("could not save on redis", e);
+//    }
+//  }
 
   @Async
-  public void pushToRedisAsync(String key, String keyId, Object object, Object keyobject) {
+  public void pushToRedisAsync(String key, String keyId, byte[] object, byte[] keyobject) {
     try {
       log.info("saving {} on redis", key);
       save(key, object, 1440);
       save(keyId, keyobject, 1440);
-      log.info("saved {} on redis,id {}", key, keyobject);
+      log.info("saved {} on redis,id {}", key, new String(keyobject, StandardCharsets.UTF_8));
     } catch (Exception e) {
       log.error("could not save on redis", e);
     }
   }
 
   @Async
-  public void pushToRedisAsync(String key, Object object) {
+  public void pushToRedisAsync(String key, byte[] object) {
     try {
       log.info("saving {} on redis", key);
       save(key, object, 1440);
@@ -78,28 +79,28 @@ public class RedisRepository {
   }
 
   public String getStringByKeyId(String keyId) {
-    Object v = null;
+    byte[] v = null;
     try {
       v = get(keyId);
     } catch (Exception e) {
       log.error("could not get key " + keyId + " from redis", e);
     }
     if (v != null) {
-      return (String) v;
+      return new String(v,StandardCharsets.UTF_8);
     } else {
       return null;
     }
   }
 
   public Boolean getBooleanByKeyId(String keyId) {
-    Object v = null;
+    byte[] v = null;
     try {
       v = get(keyId);
     } catch (Exception e) {
       log.error("could not get key " + keyId + " from redis", e);
     }
     if (v != null) {
-      return (Boolean) v;
+      return "1".equals(new String(v,StandardCharsets.UTF_8));
     } else {
       return Boolean.FALSE;
     }
