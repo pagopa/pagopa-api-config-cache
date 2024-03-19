@@ -77,7 +77,7 @@ postgresql:
     DATABASE_ID: "p"
     HEALTHCHECK_QUERY: "select 1"
     SAVE_DB: "true"
-    SEND_EVENT: "true"
+    SEND_EVENT: "false"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:

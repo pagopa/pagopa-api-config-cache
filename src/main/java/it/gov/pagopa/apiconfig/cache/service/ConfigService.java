@@ -351,8 +351,8 @@ public class ConfigService {
       String id = "" + endTime;
       String cacheVersion=Constants.GZIP_JSON_V1 + "-" + appVersion;
       configData.put(Constants.version,id);
-      configData.put(Constants.timestamp,now);
-      configData.put(Constants.cacheVersion,cacheVersion);
+//      configData.put(Constants.timestamp,now);
+//      configData.put(Constants.cacheVersion,cacheVersion);
 
       String actualKey = getKeyV1(Constants.FULL);
       String actualKeyV1 = getKeyV1Id(Constants.FULL);
