@@ -96,7 +96,7 @@ oracle:
     DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
     DATABASE_ID: "o"
     HEALTHCHECK_QUERY: "select 1 from dual"
-    SAVE_DB: "true"
+    SAVE_DB: "false"
     SEND_EVENT: "true"
   secretProvider:
     !!merge <<: *azureSecretProvider

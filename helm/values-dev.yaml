@@ -76,7 +76,7 @@ postgresql:
     DB_CONFIG_DRIVER: "org.postgresql.Driver"
     DATABASE_ID: "p"
     HEALTHCHECK_QUERY: "select 1"
-    SAVE_DB: "true"
+    SAVE_DB: "false"
     SEND_EVENT: "false"
   secretProvider:
     !!merge <<: *azureSecretProvider
@@ -96,7 +96,7 @@ oracle:
     DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
     DATABASE_ID: "o"
     HEALTHCHECK_QUERY: "select 1 from dual"
-    SAVE_DB: "true"
+    SAVE_DB: "false"
     SEND_EVENT: "true"
   secretProvider:
     !!merge <<: *azureSecretProvider
@@ -116,7 +116,7 @@ oracledev:
     DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
     DATABASE_ID: "odev"
     HEALTHCHECK_QUERY: "select 1 from dual"
-    SAVE_DB: "true"
+    SAVE_DB: "false"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:
@@ -135,7 +135,7 @@ oracleprod:
     DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
     DATABASE_ID: "oprod"
     HEALTHCHECK_QUERY: "select 1 from dual"
-    SAVE_DB: "true"
+    SAVE_DB: "false"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:

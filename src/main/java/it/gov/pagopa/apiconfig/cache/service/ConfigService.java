@@ -172,7 +172,7 @@ public class ConfigService {
 
     setCacheV1InProgress(Constants.FULL);
 
-    Map<String, Object> configData = new HashMap<>();
+    HashMap<String, Object> configData = new HashMap<>();
     try {
 
       long startTime = System.nanoTime();
@@ -351,8 +351,8 @@ public class ConfigService {
       String id = "" + endTime;
       String cacheVersion=Constants.GZIP_JSON_V1 + "-" + appVersion;
       configData.put(Constants.version,id);
-//      configData.put(Constants.timestamp,now);
-//      configData.put(Constants.cacheVersion,cacheVersion);
+      configData.put(Constants.timestamp,now);
+      configData.put(Constants.cacheVersion,cacheVersion);
 
       String actualKey = getKeyV1(Constants.FULL);
       String actualKeyV1 = getKeyV1Id(Constants.FULL);
@@ -363,13 +363,14 @@ public class ConfigService {
       if (saveDB) {
         log.info("saving on CACHE table " + configData.get(Constants.version));
         try {
-          // to prevent error caused by version string too long (e.g. appVersion containing branch
-          // name)
-          // it is cut the version string to 32 chars.
+          HashMap<String, Object> cloned = (HashMap<String, Object>)configData.clone();
+          cloned.remove(Constants.timestamp);
+          cloned.remove(Constants.cacheVersion);
+          //cloned to remove data not in ConfigDataV1
           cacheRepository.save(
               Cache.builder()
                   .id(id)
-                  .cache(jsonSerializer.serialize(configData))
+                  .cache(jsonSerializer.serialize(cloned))
                   .time(now)
                   .version(getVersion())
                   .build());
