@@ -107,7 +107,7 @@ oracle:
     DATABASE_ID: "o"
     IN_PROGRESS_TTL: "20"
     HEALTHCHECK_QUERY: "select 1 from dual"
-    SAVE_DB: "true"
+    SAVE_DB: "false"
     SEND_EVENT: "true"
   secretProvider:
     !!merge <<: *azureSecretProvider
@@ -134,7 +134,7 @@ refresh-oprod:
     DATABASE_ID: "oprod"
     IN_PROGRESS_TTL: "20"
     HEALTHCHECK_QUERY: "select 1 from dual"
-    SAVE_DB: "true"
+    SAVE_DB: "false"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:
