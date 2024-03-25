@@ -102,7 +102,9 @@ class ControllerTest {
     "/stakeholders/node/cache/schemas/v1/id",
     "/stakeholders/fdr/cache/schemas/v1",
     "/stakeholders/fdr/cache/schemas/v1/id",
-    "/stakeholders/verifier/cache/schemas/v1"
+    "/stakeholders/verifier/cache/schemas/v1",
+    "/cache/keys",
+    "/cache?keys=stations",
   })
   void testGets(String url) throws Exception {
     mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
