@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import it.gov.pagopa.apiconfig.cache.exception.AppError;
+import it.gov.pagopa.apiconfig.cache.exception.AppException;
 import it.gov.pagopa.apiconfig.cache.model.ProblemJson;
 import it.gov.pagopa.apiconfig.cache.model.RefreshResponse;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
@@ -22,12 +24,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -67,7 +73,7 @@ public class RefreshController {
     }
 
     @Operation(
-            summary = "Get in memory full cache",
+            summary = "Get in memory cache,full or only the supplied keys",
             security = {@SecurityRequirement(name = "ApiKey")},
             tags = {
                     "Cache",
@@ -110,17 +116,101 @@ public class RefreshController {
             })
     @GetMapping(
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Map<String,Object>> get()
+    public ResponseEntity<Map<String,Object>> get(@RequestParam(required = false) List<String> keys)
             throws IOException {
+
+        if(inMemoryCache == null){
+            throw new AppException(AppError.CACHE_NOT_INITIALIZED);
+        }
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("X-CACHE-ID",(String)inMemoryCache.get(Constants.version));
         responseHeaders.set("X-CACHE-TIMESTAMP", DateTimeFormatter.ISO_DATE_TIME.format((ZonedDateTime)inMemoryCache.get(Constants.timestamp)));
         responseHeaders.set("X-CACHE-VERSION",(String)inMemoryCache.get(Constants.cacheVersion));
+        if(keys!=null && !keys.isEmpty()){
+            Map<String,Object> returnMap = new HashMap<>();
+            keys.forEach(k->{
+                if(inMemoryCache.containsKey(k)){
+                    returnMap.put(k,inMemoryCache.get(k));
+                }
+            });
+            return ResponseEntity.ok()
+                    .headers(responseHeaders)
+                    .body(returnMap);
+        }else{
+            return ResponseEntity.ok()
+                    .headers(responseHeaders)
+                    .body(inMemoryCache);
+        }
+    }
 
-        return ResponseEntity.ok()
-                .headers(responseHeaders)
-                .body(inMemoryCache);
+    @Operation(
+            summary = "Get the list of available cache keys",
+            security = {@SecurityRequirement(name = "ApiKey")},
+            tags = {
+                    "Cache",
+            })
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "OK",
+                            content =
+                            @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = Map.class))),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(schema = @Schema())),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden",
+                            content = @Content(schema = @Schema())),
+                    @ApiResponse(
+                            responseCode = "429",
+                            description = "Too many requests",
+                            content = @Content(schema = @Schema())),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Service unavailable",
+                            content =
+                            @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ProblemJson.class)))
+            })
+    @GetMapping(value="/keys",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public List<String> getKeys()
+            throws IOException {
+        return Arrays.asList(
+                        Constants.version,
+                        Constants.creditorInstitutions,
+                        Constants.creditorInstitutionBrokers,
+                        Constants.stations,
+                        Constants.creditorInstitutionStations,
+                        Constants.encodings,
+                        Constants.creditorInstitutionEncodings,
+                        Constants.ibans,
+                        Constants.creditorInstitutionInformations,
+                        Constants.psps,
+                        Constants.pspBrokers,
+                        Constants.paymentTypes,
+                        Constants.pspChannelPaymentTypes,
+                        Constants.plugins,
+                        Constants.pspInformationTemplates,
+                        Constants.pspInformations,
+                        Constants.channels,
+                        Constants.cdsServices,
+                        Constants.cdsSubjects,
+                        Constants.cdsSubjectServices,
+                        Constants.cdsCategories,
+                        Constants.configurations,
+                        Constants.ftpServers,
+                        Constants.languages,
+                        Constants.gdeConfigurations,
+                        Constants.metadataDict
+        );
     }
 
     @Operation(
