@@ -105,6 +105,7 @@ class ControllerTest {
     "/stakeholders/verifier/cache/schemas/v1",
     "/cache/keys",
     "/cache?keys=stations",
+    "/cache",
   })
   void testGets(String url) throws Exception {
     mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
