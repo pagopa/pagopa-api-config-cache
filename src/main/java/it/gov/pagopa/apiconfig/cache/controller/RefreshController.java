@@ -181,8 +181,7 @@ public class RefreshController {
             })
     @GetMapping(value="/keys",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public List<String> getKeys()
-            throws IOException {
+    public List<String> getKeys() {
         return Arrays.asList(
                         Constants.version,
                         Constants.creditorInstitutions,
