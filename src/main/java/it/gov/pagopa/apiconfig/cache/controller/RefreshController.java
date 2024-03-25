@@ -257,7 +257,7 @@ public class RefreshController {
     @GetMapping(
             value = "/id",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity id()
+    public ResponseEntity<CacheVersion> id()
             throws IOException {
 
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -267,7 +267,7 @@ public class RefreshController {
 
         return ResponseEntity.ok()
                 .headers(responseHeaders)
-                .body((String)inMemoryCache.get(Constants.version));
+                .body(new CacheVersion((String)inMemoryCache.get(Constants.version)));
     }
 
     @Operation(
