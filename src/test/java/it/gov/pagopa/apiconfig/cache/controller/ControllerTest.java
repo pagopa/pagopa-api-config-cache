@@ -104,7 +104,8 @@ class ControllerTest {
     "/stakeholders/fdr/cache/schemas/v1/id",
     "/stakeholders/verifier/cache/schemas/v1",
     "/cache/keys",
-    "/cache?keys=stations",
+    "/cache?keys=stations,version",
+    "/cache?keys=wrongkey",
     "/cache",
   })
   void testGets(String url) throws Exception {
