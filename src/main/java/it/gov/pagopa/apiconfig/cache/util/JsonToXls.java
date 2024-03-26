@@ -172,7 +172,11 @@ public class JsonToXls {
                     Cell cellidX = rowX.createCell(0);
                     cellidX.setCellValue(key);
                     Cell cellvalueX = rowX.createCell(1);
-                    cellvalueX.setCellValue(keyMap.toString());
+                    if(keyMap==null){
+                        cellvalueX.setCellValue("NULL");
+                    }else {
+                        cellvalueX.setCellValue(keyMap.toString());
+                    }
                 }
             });
 
