@@ -71,6 +71,7 @@ class OpenApiGenerationTest {
         getSwagger("/v3/api-docs/verifierv1", "openapi_verifierv1.json");
         getSwagger("/v3/api-docs/fdrv1", "openapi_fdrv1.json");
         getSwagger("/v3/api-docs/standinV1", "openapi_standinv1.json");
+        getSwagger("/v3/api-docs/export", "openapi_export.json");
     }
 
     private void getSwagger(String urlTemplate, String fileName) throws Exception {
