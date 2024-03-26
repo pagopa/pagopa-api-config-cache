@@ -115,7 +115,7 @@ public class JsonToXls {
             }else{
                 Method method = ReflectionUtils.findMethod(oo.getClass(), "get" + StringUtils.capitalize(h));
                 if(method==null){
-                    throw new MethodNotFoundException("no method found "+"get" + StringUtils.capitalize(h));
+                    throw new MethodNotFoundException("no method found "+"get" + StringUtils.capitalize(h)+" on object "+oo.getClass());
                 }
                 Object invoke = method.invoke(oo);
                 cellx.setCellValue(ObjectUtils.firstNonNull(invoke,"NULL").toString());
