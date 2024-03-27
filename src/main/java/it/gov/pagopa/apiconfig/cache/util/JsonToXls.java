@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.util.ReflectionUtils;
 
@@ -21,12 +22,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class JsonToXls {
     private static String packet = "it.gov.pagopa.apiconfig.cache.model";
-    private Workbook workbook;
+    private SXSSFWorkbook workbook;
     List<String> headers = new ArrayList<>();
     private boolean maskPasswords = true;
 
     public JsonToXls(boolean maskPasswords){
-        workbook = new XSSFWorkbook();
+        workbook = new SXSSFWorkbook();
         Font font = workbook.createFont();
         font.setBold(true);
 
