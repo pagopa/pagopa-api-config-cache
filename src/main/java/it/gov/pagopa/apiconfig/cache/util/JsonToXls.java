@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.util.ReflectionUtils;
 
@@ -21,12 +22,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class JsonToXls {
     private static String packet = "it.gov.pagopa.apiconfig.cache.model";
-    private Workbook workbook;
+    private SXSSFWorkbook workbook;
     List<String> headers = new ArrayList<>();
     private boolean maskPasswords = true;
 
     public JsonToXls(boolean maskPasswords){
-        workbook = new XSSFWorkbook();
+        workbook = new SXSSFWorkbook();
         Font font = workbook.createFont();
         font.setBold(true);
 
@@ -55,7 +56,7 @@ public class JsonToXls {
         }
         return colNum;
     }
-    private void createHeader(Sheet sheet,AtomicInteger rowNum,Map<String, Object> keyMap){
+    private void createHeader(String cacheKey,Sheet sheet,AtomicInteger rowNum,Map<String, Object> keyMap){
 
         Optional<String> first = keyMap.keySet().stream().findFirst();
         if(first.isPresent()){
@@ -95,15 +96,15 @@ public class JsonToXls {
         cellvalue.setCellStyle(getHeaderStyle());
     }
 
-    private int innerValues(String h,Row dataRow,Object oo,int colcount) throws InvocationTargetException, IllegalAccessException {
+    private int innerValues(String cacheKey,String h,Row dataRow,Object oo,int colcount) throws InvocationTargetException, IllegalAccessException {
         if(h.contains(".")){
             String[] split = h.split("\\.");
             Method method = ReflectionUtils.findMethod(oo.getClass(), "get" + StringUtils.capitalize(split[0]));
             if(method==null){
-                throw new MethodNotFoundException("no method found "+"get" + StringUtils.capitalize(split[0]));
+                throw new MethodNotFoundException(cacheKey+" no method found get" + StringUtils.capitalize(split[0]));
             }
             Object invoke = method.invoke(oo);
-            return innerValues(split[1],dataRow,invoke,colcount);
+            return innerValues(cacheKey,split[1],dataRow,invoke,colcount);
         }else{
             Cell cellx = dataRow.createCell(colcount++);
             if(h.equals("password") && maskPasswords){
@@ -115,7 +116,7 @@ public class JsonToXls {
             }else{
                 Method method = ReflectionUtils.findMethod(oo.getClass(), "get" + StringUtils.capitalize(h));
                 if(method==null){
-                    throw new MethodNotFoundException("no method found "+"get" + StringUtils.capitalize(h));
+                    throw new MethodNotFoundException(cacheKey+" no method found get" + StringUtils.capitalize(h)+" on object "+oo.getClass());
                 }
                 Object invoke = method.invoke(oo);
                 cellx.setCellValue(ObjectUtils.firstNonNull(invoke,"NULL").toString());
@@ -124,9 +125,9 @@ public class JsonToXls {
 
         }
     }
-    private void values(Row dataRow,Object oo,int colcount) throws InvocationTargetException, IllegalAccessException {
+    private void values(String cacheKey,Row dataRow,Object oo,int colcount) throws InvocationTargetException, IllegalAccessException {
         for(String h : headers){
-            colcount = innerValues(h,dataRow,oo,colcount);
+            colcount = innerValues(cacheKey,h,dataRow,oo,colcount);
         }
     }
 
@@ -135,7 +136,7 @@ public class JsonToXls {
         if(first.isPresent()){
             Sheet sheet = workbook.createSheet(key);
             AtomicInteger rowNum = new AtomicInteger();
-            createHeader(sheet,rowNum,keyMap);
+            createHeader(key,sheet,rowNum,keyMap);
             Set<String> cacheItemKeys = keyMap.keySet();
             cacheItemKeys.forEach(k->{
                 Row dataRow = sheet.createRow(rowNum.getAndIncrement());
@@ -143,7 +144,7 @@ public class JsonToXls {
                 cellx.setCellValue(k);
                 Object oo = keyMap.get(k);
                 try {
-                    values(dataRow,oo,1);
+                    values(key,dataRow,oo,1);
                 } catch (InvocationTargetException | IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
@@ -172,7 +173,11 @@ public class JsonToXls {
                     Cell cellidX = rowX.createCell(0);
                     cellidX.setCellValue(key);
                     Cell cellvalueX = rowX.createCell(1);
-                    cellvalueX.setCellValue(keyMap.toString());
+                    if(keyMap==null){
+                        cellvalueX.setCellValue("NULL");
+                    }else {
+                        cellvalueX.setCellValue(keyMap.toString());
+                    }
                 }
             });
 

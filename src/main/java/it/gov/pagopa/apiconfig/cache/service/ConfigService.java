@@ -12,7 +12,9 @@ import it.gov.pagopa.apiconfig.cache.imported.catalogodati.StParoleChiave;
 import it.gov.pagopa.apiconfig.cache.imported.catalogodati.StTipoVersamento;
 import it.gov.pagopa.apiconfig.cache.imported.controparti.*;
 import it.gov.pagopa.apiconfig.cache.imported.template.*;
+import it.gov.pagopa.apiconfig.cache.model.FullData;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsCategory;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsService;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsSubject;
@@ -29,6 +31,7 @@ import it.gov.pagopa.apiconfig.cache.util.ZipUtils;
 import it.gov.pagopa.apiconfig.starter.entity.*;
 import it.gov.pagopa.apiconfig.starter.repository.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -162,9 +165,39 @@ public class ConfigService {
     byte[] unzipped = ZipUtils.unzip(bytes);
     JsonFactory jsonFactory = new JsonFactory();
     JsonParser jsonParser = jsonFactory.createParser(unzipped);
-    Map<String, Object> largeObject = objectMapper.readValue(jsonParser, Map.class);
+    FullData fulldata = objectMapper.readValue(jsonParser, FullData.class);
     jsonParser.close();
-    return  largeObject;
+
+    HashMap<String, Object> configData = new HashMap<>();
+    configData.put(Constants.version,fulldata.getVersion());
+    configData.put(Constants.timestamp,fulldata.getTimestamp());
+    configData.put(Constants.cacheVersion,fulldata.getCacheVersion());
+    configData.put(Constants.creditorInstitutions,fulldata.getCreditorInstitutions());
+    configData.put(Constants.creditorInstitutionBrokers,fulldata.getCreditorInstitutionBrokers());
+    configData.put(Constants.stations,fulldata.getStations());
+    configData.put(Constants.creditorInstitutionStations,fulldata.getCreditorInstitutionStations());
+    configData.put(Constants.encodings,fulldata.getEncodings());
+    configData.put(Constants.creditorInstitutionEncodings,fulldata.getCreditorInstitutionEncodings());
+    configData.put(Constants.ibans,fulldata.getIbans());
+    configData.put(Constants.creditorInstitutionInformations,fulldata.getCreditorInstitutionInformations());
+    configData.put(Constants.psps,fulldata.getPsps());
+    configData.put(Constants.pspBrokers,fulldata.getPspBrokers());
+    configData.put(Constants.paymentTypes,fulldata.getPaymentTypes());
+    configData.put(Constants.pspChannelPaymentTypes,fulldata.getPspChannelPaymentTypes());
+    configData.put(Constants.plugins,fulldata.getPlugins());
+    configData.put(Constants.pspInformationTemplates,fulldata.getPspInformationTemplates());
+    configData.put(Constants.pspInformations,fulldata.getPspInformations());
+    configData.put(Constants.channels,fulldata.getChannels());
+    configData.put(Constants.cdsServices,fulldata.getCdsServices());
+    configData.put(Constants.cdsSubjects,fulldata.getCdsSubjects());
+    configData.put(Constants.cdsSubjectServices,fulldata.getCdsSubjectServices());
+    configData.put(Constants.cdsCategories,fulldata.getCdsCategories());
+    configData.put(Constants.configurations,fulldata.getConfigurations());
+    configData.put(Constants.ftpServers,fulldata.getFtpServers());
+    configData.put(Constants.languages,fulldata.getLanguages());
+    configData.put(Constants.gdeConfigurations,fulldata.getGdeConfigurations());
+    configData.put(Constants.metadataDict,fulldata.getMetadataDict());
+    return configData;
   }
 
   public Map<String, Object> newCacheV1()
@@ -338,21 +371,27 @@ public class ConfigService {
 
       appendMapToJson(jsonGenerator,Constants.creditorInstitutionInformations,infopasMap);
 
-      jsonGenerator.writeEndObject();
-      jsonGenerator.close();
-
-      byte[] cachebyteArray = baos.toByteArray();
-
-      long endTime = System.nanoTime();
-      long duration = (endTime - startTime) / 1000000;
-      log.info("cache loaded in " + duration + "ms");
-
       ZonedDateTime now = ZonedDateTime.now();
+      long endTime = System.nanoTime();
       String id = "" + endTime;
       String cacheVersion=Constants.GZIP_JSON_V1 + "-" + appVersion;
       configData.put(Constants.version,id);
       configData.put(Constants.timestamp,now);
       configData.put(Constants.cacheVersion,cacheVersion);
+
+      appendObjectToJson(jsonGenerator,Constants.version,id);
+      appendObjectToJson(jsonGenerator,Constants.timestamp,now);
+      appendObjectToJson(jsonGenerator,Constants.cacheVersion,cacheVersion);
+
+      jsonGenerator.writeEndObject();
+      jsonGenerator.close();
+
+      byte[] cachebyteArray = baos.toByteArray();
+
+      long duration = (endTime - startTime) / 1000000;
+      log.info("cache loaded in " + duration + "ms");
+
+
 
       String actualKey = getKeyV1(Constants.FULL);
       String actualKeyV1 = getKeyV1Id(Constants.FULL);

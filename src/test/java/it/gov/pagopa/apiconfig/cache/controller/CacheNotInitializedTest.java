@@ -12,7 +12,6 @@ import it.gov.pagopa.apiconfig.cache.service.VerifierService;
 import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.modelmapper.TypeToken;
@@ -21,6 +20,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.persistence.EntityManager;
@@ -37,7 +37,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
-class ControllerTest {
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
+class CacheNotInitializedTest {
 
   @Autowired private MockMvc mvc;
 
@@ -79,50 +80,24 @@ class ControllerTest {
     when(configService.loadFullCache()).thenReturn(objectObjectHashMap);
     when(verifierService.getPaV2()).thenReturn(Arrays.asList("1", "2"));
     when(healthCheckService.checkDatabaseConnection()).thenReturn(true);
-
-    org.springframework.test.util.ReflectionTestUtils.setField(refreshController, "inMemoryCache", objectObjectHashMap);
-  }
-
-  @Test
-  void home() throws Exception {
-    String url = "/";
-    mvc.perform(get(url)).andExpect(status().is3xxRedirection());
-  }
-
-  @Test
-  void info() throws Exception {
-    String url = "/info";
-    mvc.perform(get(url)).andExpect(status().isOk());
   }
 
   @ParameterizedTest
   @CsvSource({
-    "/stakeholders/node/cache/schemas/v1",
-    "/stakeholders/node/cache/schemas/v1?refresh=true",
-    "/stakeholders/node/cache/schemas/v1/id",
-    "/stakeholders/fdr/cache/schemas/v1",
-    "/stakeholders/fdr/cache/schemas/v1/id",
-    "/stakeholders/verifier/cache/schemas/v1",
-    "/cache/keys",
-    "/cache?keys=stations,version",
-    "/cache?keys=wrongkey",
-    "/cache",
+    "/cache/keys"
   })
-  void testGets(String url) throws Exception {
+  void testGetsOK(String url) throws Exception {
     mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
   }
 
   @ParameterizedTest
   @CsvSource({
-          "/cache/xlsx"
+          "/cache?keys=stations,version",
+          "/cache?keys=wrongkey",
+          "/cache",
   })
-  void testGetsXls(String url) throws Exception {
-    mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+  void testGetsKO(String url) throws Exception {
+    mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
   }
 
-  @Test
-  void is404() throws Exception {
-    String url = "/stakeholders/node/cache/schemas/v1/idasdasdasd";
-    mvc.perform(get(url).contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")).andExpect(status().isNotFound());
-  }
 }
