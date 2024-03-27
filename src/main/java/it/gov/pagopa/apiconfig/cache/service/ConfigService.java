@@ -161,7 +161,7 @@ public class ConfigService {
   public Map<String, Object> loadFullCache() throws IOException {
     log.info("Initializing cache");
 
-    byte[] bytes = redisRepository.get("apicfg_oprod_full_v1");
+    byte[] bytes = redisRepository.get(getKeyV1(Constants.FULL));
     byte[] unzipped = ZipUtils.unzip(bytes);
     JsonFactory jsonFactory = new JsonFactory();
     JsonParser jsonParser = jsonFactory.createParser(unzipped);
