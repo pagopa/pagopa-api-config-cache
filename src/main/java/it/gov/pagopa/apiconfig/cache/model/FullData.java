@@ -13,7 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.Map;
 
 @Getter
@@ -25,7 +25,7 @@ public class FullData implements Serializable {
     private String version;
 
     @JsonProperty(required = true)
-    private Instant timestamp;
+    private ZonedDateTime timestamp;
 
     @JsonProperty(required = true)
     private String cacheVersion;
