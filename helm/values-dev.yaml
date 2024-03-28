@@ -83,6 +83,26 @@ postgresql:
     envSecrets:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
+postgresql-replica:
+  !!merge <<: *microservice-chart
+  ingress:
+    !!merge <<: *ingress
+    path: /api-config-cache/pr(/|$)(.*)
+  envConfig:
+    !!merge <<: *envConfig
+    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql-replica"
+    DB_CONFIG_URL: "jdbc:postgresql://ndp.d.db-nodo-pagamenti.com:6432/nodo-replica?sslmode=require&prepareThreshold=0&currentSchema=cfg"
+    DB_CONFIG_USER: "cfg"
+    DB_CONFIG_DRIVER: "org.postgresql.Driver"
+    DATABASE_ID: "pr"
+    HEALTHCHECK_QUERY: "select 1"
+    SAVE_DB: "false"
+    SEND_EVENT: "false"
+  secretProvider:
+    !!merge <<: *azureSecretProvider
+    envSecrets:
+      !!merge <<: *envSecret
+      DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
 oracle:
   !!merge <<: *microservice-chart
   ingress:
@@ -157,6 +177,48 @@ refresh-p:
     - "--header"
     - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
     - "https://api.dev.platform.pagopa.it/api-config-cache/p/v1/cache/refresh"
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "150m"
+  secretProvider:
+    !!merge <<: *azureSecretProvider
+    envSecrets:
+      !!merge <<: *envSecret
+      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
+  tolerations:
+    - key: dedicated
+      operator: Equal
+      value: "apiconfig"
+      effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node_type
+                operator: In
+                values:
+                  - user
+refresh-p-replica:
+  namespace: "apiconfig"
+  schedule: "0 0 * * *"
+  timeZone: "Europe/Rome"
+  image:
+    repository: "curlimages/curl"
+    tag: "latest"
+    pullPolicy: "Always"
+  command:
+    - "curl"
+    - "-k"
+    - "-m"
+    - "\"300\""
+    - "--header"
+    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
+    - "https://api.dev.platform.pagopa.it/api-config-cache/pr/v1/cache/refresh"
   resources:
     requests:
       memory: "256Mi"
