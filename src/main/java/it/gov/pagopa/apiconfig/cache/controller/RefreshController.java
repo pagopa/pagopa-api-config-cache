@@ -339,6 +339,10 @@ public class RefreshController {
 
     private void docache() throws IOException {
             inMemoryCache = configService.newCacheV1();
+            configService.sendEvent(
+                    (String)inMemoryCache.get(Constants.version),
+                    (ZonedDateTime)inMemoryCache.get(Constants.timestamp)
+            );
     }
 
 

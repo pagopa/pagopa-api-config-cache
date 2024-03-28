@@ -3,6 +3,7 @@ package it.gov.pagopa.apiconfig.cache.service;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.apiconfig.cache.exception.AppError;
 import it.gov.pagopa.apiconfig.cache.exception.AppException;
@@ -14,7 +15,6 @@ import it.gov.pagopa.apiconfig.cache.imported.controparti.*;
 import it.gov.pagopa.apiconfig.cache.imported.template.*;
 import it.gov.pagopa.apiconfig.cache.model.FullData;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsCategory;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsService;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsSubject;
@@ -31,7 +31,6 @@ import it.gov.pagopa.apiconfig.cache.util.ZipUtils;
 import it.gov.pagopa.apiconfig.starter.entity.*;
 import it.gov.pagopa.apiconfig.starter.repository.*;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -418,9 +417,6 @@ public class ConfigService {
           log.error("[ALERT] could not save on db", e);
         }
       }
-      if(sendEvent){
-        eventHubService.publishEvent(id,now,Constants.GZIP_JSON_V1 + "-" + appVersion);
-      }
     } catch (Exception e) {
       log.error("[ALERT] problem to generate cache", e);
       removeCacheV1InProgress(Constants.FULL);
@@ -428,6 +424,16 @@ public class ConfigService {
     }
     removeCacheV1InProgress(Constants.FULL);
     return configData;
+  }
+
+  public void sendEvent(String id,ZonedDateTime now){
+    if(sendEvent){
+        try {
+            eventHubService.publishEvent(id,now,Constants.GZIP_JSON_V1 + "-" + appVersion);
+        } catch (JsonProcessingException e) {
+            throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
+        }
+    }
   }
 
   private String getVersion() {
