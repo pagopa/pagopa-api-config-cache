@@ -144,6 +144,7 @@ oracleprod:
 refresh-p:
   namespace: "apiconfig"
   schedule: "0 0 * * *"
+  timeZone: "Europe/Rome"
   image:
     repository: "curlimages/curl"
     tag: "latest"
@@ -185,6 +186,7 @@ refresh-p:
 refresh-o:
   namespace: "apiconfig"
   schedule: "0 0 * * *"
+  timeZone: "Europe/Rome"
   image:
     repository: "curlimages/curl"
     tag: "latest"
@@ -226,6 +228,7 @@ refresh-o:
 refresh-odev:
   namespace: "apiconfig"
   schedule: "0 0 * * *"
+  timeZone: "Europe/Rome"
   image:
     repository: "curlimages/curl"
     tag: "latest"
@@ -267,6 +270,7 @@ refresh-odev:
 refresh-oprod:
   namespace: "apiconfig"
   schedule: "0 0 * * *"
+  timeZone: "Europe/Rome"
   image:
     repository: "curlimages/curl"
     tag: "latest"

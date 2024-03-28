@@ -143,6 +143,7 @@ refresh-oprod:
 refresh-p:
   namespace: "apiconfig"
   schedule: "0 0 * * *"
+  timeZone: "Europe/Rome"
   image:
     repository: "curlimages/curl"
     tag: "latest"
@@ -193,6 +194,7 @@ refresh-p:
 refresh-o:
   namespace: "apiconfig"
   schedule: "0 0 * * *"
+  timeZone: "Europe/Rome"
   image:
     repository: "curlimages/curl"
     tag: "latest"
