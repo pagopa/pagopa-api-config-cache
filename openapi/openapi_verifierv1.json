@@ -4,7 +4,7 @@
     "title": "API-Config Cache ${service}",
     "description": "Generate cache for various microservices",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.8.19-1-replicas"
+    "version": "0.8.19-2-replicas"
   },
   "servers": [
     {
