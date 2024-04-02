@@ -9,6 +9,7 @@ locals {
     hostname = "api.${var.apim_dns_zone_prefix}.${var.external_domain}"
   }
   apim_x_node_product_id = "apim_for_node"
+  technical_support_product_id = "technical_support_api"
 
   oracle   = "o"
   postgres = "p"
@@ -27,6 +28,7 @@ locals {
 
     pagopa_tenant_id = data.azurerm_client_config.current.tenant_id
   }
+
   apiconfig_cache_replica_locals = {
     hostname = var.env == "prod" ? "weuprod.apiconfig.internal.platform.pagopa.it" : "weu${var.env}.apiconfig.internal.${var.env}.platform.pagopa.it"
 
@@ -37,6 +39,36 @@ locals {
     subscription_limit    = 1000
 
     path_apim   = "api-config-cache"
+    service_url = null
+
+    pagopa_tenant_id = data.azurerm_client_config.current.tenant_id
+  }
+
+  apiconfig_cache_export_locals = {
+    hostname = var.env == "prod" ? "weuprod.apiconfig.internal.platform.pagopa.it" : "weu${var.env}.apiconfig.internal.${var.env}.platform.pagopa.it"
+
+    display_name          = "API Config Cache - Export"
+    description           = "Export API of configuration about pagoPA cache"
+    subscription_required = true
+    subscription_limit    = 1000
+
+    path_apim   = "api-config-cache/export"
+    path        = "api-config-cache"
+    service_url = null
+
+    pagopa_tenant_id = data.azurerm_client_config.current.tenant_id
+  }
+
+  apiconfig_cache_replica_export_locals = {
+    hostname = var.env == "prod" ? "weuprod.apiconfig.internal.platform.pagopa.it" : "weu${var.env}.apiconfig.internal.${var.env}.platform.pagopa.it"
+
+    display_name          = "API Config Cache Replica - Export"
+    description           = "Export API of configuration about pagoPA cache replica"
+    subscription_required = true
+    subscription_limit    = 1000
+
+    path_apim   = "api-config-cache/export"
+    path        = "api-config-cache"
     service_url = null
 
     pagopa_tenant_id = data.azurerm_client_config.current.tenant_id
