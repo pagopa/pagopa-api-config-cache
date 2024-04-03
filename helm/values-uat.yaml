@@ -87,7 +87,7 @@ postgresql-replica:
   !!merge <<: *microservice-chart
   ingress:
     !!merge <<: *ingress
-    path: /api-config-cache/p(/|$)(.*)
+    path: /api-config-cache/pr(/|$)(.*)
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql-replica"
@@ -131,6 +131,7 @@ refresh-p:
   namespace: "apiconfig"
   schedule: "0 0 * * *"
   timeZone: "Europe/Rome"
+  successfulJobsHistoryLimit: "1"
   image:
     repository: "curlimages/curl"
     tag: "latest"
@@ -173,6 +174,7 @@ refresh-p-replica:
   namespace: "apiconfig"
   schedule: "0 0 * * *"
   timeZone: "Europe/Rome"
+  successfulJobsHistoryLimit: "1"
   image:
     repository: "curlimages/curl"
     tag: "latest"
@@ -215,6 +217,7 @@ refresh-o:
   namespace: "apiconfig"
   schedule: "0 0 * * *"
   timeZone: "Europe/Rome"
+  successfulJobsHistoryLimit: "1"
   image:
     repository: "curlimages/curl"
     tag: "latest"
