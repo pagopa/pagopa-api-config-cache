@@ -61,7 +61,7 @@ jobs:
           cluster_name: ${{ vars.CLUSTER_NAME }}
           resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
           app_name: ${{ env.APP_NAME }}
-          helm_upgrade_options: ${{ inputs.environment == 'dev' && ' --debug --set postgresql.enabled=true --set oracle.enabled=true --set oracledev.enabled=true --set oracleprod.enabled=true' || ' --debug --set postgresql.enabled=true --set oracle.enabled=true' }}
+          helm_upgrade_options: ${{ inputs.environment == 'dev' && ' --debug --set postgresql.enabled=true --set oracle.enabled=true --set oracledev.enabled=true --set oracleprod.enabled=true' || ${{ inputs.environment == 'uat' && ' --debug --set postgresql.enabled=true --set oracle.enabled=true --set oracledev.enabled=true || ' --debug --set postgresql.enabled=true --set oracle.enabled=true' }}
 
   cleanup_runner:
     name: Cleanup Runner

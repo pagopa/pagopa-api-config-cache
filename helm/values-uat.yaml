@@ -124,7 +124,24 @@ oracle:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "oracle-db-cfg-password-tmp"
 oracledev:
-  enabled: false
+  !!merge <<: *microservice-chart
+  ingress:
+    !!merge <<: *ingress
+    path: /api-config-cachedev/o(/|$)(.*)
+  envConfig:
+    !!merge <<: *envConfig
+    DB_CONFIG_URL: "jdbc:oracle:thin:@(DESCRIPTION=(ENABLE=BROKEN)(ADDRESS=(PROTOCOL=tcp)(PORT=1524)(HOST=db-nodo-pagamenti-prf.u.db-nodo-pagamenti.com))(CONNECT_DATA=(SERVICE_NAME=NDPSPCST_NODO4_CFG))(SO_KEEPALIVE=true)(TCP_KEEPIDLE=60)(TCP_KEEPINTVL=30)(TCP_KEEPCNT=15))"
+    DB_CONFIG_USER: "NODO4_CFG"
+    DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
+    DATABASE_ID: "odev"
+    HEALTHCHECK_QUERY: "select 1 from dual"
+    SAVE_DB: "true"
+    SEND_EVENT: "false"
+  secretProvider:
+    !!merge <<: *azureSecretProvider
+    envSecrets:
+      !!merge <<: *envSecret
+      DB_CONFIG_PASSWORD: "oracle-db-cfg-prf-password"
 oracleprod:
   enabled: false
 refresh-p:
@@ -257,6 +274,47 @@ refresh-o:
                 values:
                   - user
 refresh-odev:
-  enabled: false
+  namespace: "apiconfig"
+  schedule: "0 0 * * *"
+  timeZone: "Europe/Rome"
+  successfulJobsHistoryLimit: "1"
+  image:
+    repository: "curlimages/curl"
+    tag: "latest"
+    pullPolicy: "Always"
+  command:
+    - "curl"
+    - "-k"
+    - "-m"
+    - "\"300\""
+    - "--header"
+    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
+    - "https://api.uat.platform.pagopa.it/api-config-cache/or/v1/cache/refresh"
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "150m"
+  secretProvider:
+    !!merge <<: *azureSecretProvider
+    envSecrets:
+      !!merge <<: *envSecret
+      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
+  tolerations:
+    - key: dedicated
+      operator: Equal
+      value: "apiconfig"
+      effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node_type
+                operator: In
+                values:
+                  - user
 refresh-oprod:
   enabled: false
