@@ -13,7 +13,7 @@ dependencies:
     version: 3.0.0
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
     alias: postgresql-replica
-    condition: postgresql.enabled
+    condition: postgresql-replica.enabled
   - name: microservice-chart
     version: 3.0.0
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
@@ -38,7 +38,7 @@ dependencies:
     version: 2.6.0
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
     alias: refresh-p-replica
-    condition: postgresql.enabled
+    condition: postgresql-replica.enabled
   - name: cron-chart
     version: 2.6.0
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
