@@ -93,25 +93,7 @@ postgresql:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
 postgresql-replica:
-  !!merge <<: *microservice-chart
-  ingress:
-    !!merge <<: *ingress
-    path: /api-config-cache/pr(/|$)(.*)
-  envConfig:
-    !!merge <<: *envConfig
-    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql-replica"
-    DB_CONFIG_URL: "jdbc:postgresql://nodo-db.p.internal.postgresql.pagopa.it:6432/nodo-replica?sslmode=require&prepareThreshold=0&currentSchema=cfg"
-    DB_CONFIG_USER: "cfg"
-    DB_CONFIG_DRIVER: "org.postgresql.Driver"
-    DATABASE_ID: "pr"
-    HEALTHCHECK_QUERY: "select 1"
-    SAVE_DB: "false"
-    SEND_EVENT: "false"
-  secretProvider:
-    !!merge <<: *azureSecretProvider
-    envSecrets:
-      !!merge <<: *envSecret
-      DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
+  enabled: false
 oracle:
   !!merge <<: *microservice-chart
   ingress:
@@ -138,28 +120,6 @@ oracledev:
   enabled: false
 oracleprod:
   enabled: false
-refresh-odev:
-  enabled: false
-refresh-oprod:
-  !!merge <<: *microservice-chart
-  ingress:
-    !!merge <<: *ingress
-    path: /api-config-cachedev/oprod(/|$)(.*)
-  envConfig:
-    !!merge <<: *envConfig
-    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-oracle"
-    DB_CONFIG_URL: "jdbc:oracle:thin:@(DESCRIPTION=(ENABLE=BROKEN)(ADDRESS=(PROTOCOL=tcp)(PORT=1521)(HOST=db-nodo-pagamenti.p.db-nodo-pagamenti.com))(CONNECT_DATA=(SERVICE_NAME=NDPSPCP_NODO4_CFG))(SO_KEEPALIVE=true)(TCP_KEEPIDLE=60)(TCP_KEEPINTVL=30)(TCP_KEEPCNT=15))"
-    DB_CONFIG_USER: "NODO4_CFG"
-    DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
-    DATABASE_ID: "oprod"
-    IN_PROGRESS_TTL: "20"
-    HEALTHCHECK_QUERY: "select 1 from dual"
-    SAVE_DB: "false"
-  secretProvider:
-    !!merge <<: *azureSecretProvider
-    envSecrets:
-      !!merge <<: *envSecret
-      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
 refresh-p:
   namespace: "apiconfig"
   schedule: "0 0 * * *"
@@ -212,56 +172,7 @@ refresh-p:
             namespaces: ["apiconfig"]
             topologyKey: topology.kubernetes.io/zone
 refresh-p-replica:
-  namespace: "apiconfig"
-  schedule: "0 0 * * *"
-  timeZone: "Europe/Rome"
-  image:
-    repository: "curlimages/curl"
-    tag: "latest"
-    pullPolicy: "Always"
-  command:
-    - "curl"
-    - "-k"
-    - "-m"
-    - "\"300\""
-    - "--header"
-    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
-    - "https://api.platform.pagopa.it/api-config-cache/pr/v1/cache/refresh"
-  resources:
-    requests:
-      memory: "256Mi"
-      cpu: "100m"
-    limits:
-      memory: "512Mi"
-      cpu: "150m"
-  secretProvider:
-    !!merge <<: *azureSecretProvider
-    envSecrets:
-      !!merge <<: *envSecret
-      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
-  tolerations:
-    - key: dedicated
-      operator: Equal
-      value: "apiconfig"
-      effect: NoSchedule
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: node_type
-                operator: In
-                values:
-                  - user
-    podAntiAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          podAffinityTerm:
-            labelSelector:
-              matchLabels:
-                app.kubernetes.io/instance: "cache"
-            namespaces: ["apiconfig"]
-            topologyKey: topology.kubernetes.io/zone
+  enabled: false
 refresh-o:
   namespace: "apiconfig"
   schedule: "0 0 * * *"
