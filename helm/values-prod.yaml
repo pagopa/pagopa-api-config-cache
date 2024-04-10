@@ -124,6 +124,7 @@ refresh-p:
   namespace: "apiconfig"
   schedule: "0 0 * * *"
   timeZone: "Europe/Rome"
+  successfulJobsHistoryLimit: "2"
   image:
     repository: "curlimages/curl"
     tag: "latest"
@@ -177,6 +178,7 @@ refresh-o:
   namespace: "apiconfig"
   schedule: "0 0 * * *"
   timeZone: "Europe/Rome"
+  successfulJobsHistoryLimit: "2"
   image:
     repository: "curlimages/curl"
     tag: "latest"
