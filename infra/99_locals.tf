@@ -10,6 +10,7 @@ locals {
   }
   apim_x_node_product_id = "apim_for_node"
   technical_support_product_id = "technical_support_api"
+  cfg_for_node_product_id = "cfg-for-node"
 
   oracle   = "o"
   postgres = "p"

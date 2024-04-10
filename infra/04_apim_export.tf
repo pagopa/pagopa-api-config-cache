@@ -5,7 +5,7 @@ resource "azurerm_api_management_api_version_set" "api_apiconfig_cache_export_no
   name                = format("%s-apicfg-cache-export-%s-api", var.env_short, local.postgres)
   resource_group_name = local.apim.rg
   api_management_name = local.apim.name
-  display_name        = "${local.apiconfig_cache_export_locals.display_name} - Export Node ${local.postgres}"
+  display_name        = "${local.apiconfig_cache_export_locals.display_name} - Node ${local.postgres}"
   versioning_scheme   = "Segment"
 }
 
@@ -14,7 +14,7 @@ module "apim_api_apiconfig_cache_export_node_api_v1_p" {
   name                  = format("%s-apicfg-cache-export-%s-api", local.project, local.postgres)
   api_management_name   = local.apim.name
   resource_group_name   = local.apim.rg
-  product_ids           = [local.apim.product_id, local.technical_support_product_id]
+  product_ids           = [local.apim.product_id, local.technical_support_product_id, local.cfg_for_node_product_id]
   subscription_required = local.apiconfig_cache_export_locals.subscription_required
 
   version_set_id = azurerm_api_management_api_version_set.api_apiconfig_cache_export_node_api_p.id
@@ -55,7 +55,7 @@ module "apim_api_apiconfig_cache_export_node_api_v1_o" {
   name                  = format("%s-apicfg-cache-export-%s-api", local.project, local.oracle)
   api_management_name   = local.apim.name
   resource_group_name   = local.apim.rg
-  product_ids           = [local.apim.product_id, local.technical_support_product_id]
+  product_ids           = [local.apim.product_id, local.technical_support_product_id, local.cfg_for_node_product_id]
   subscription_required = local.apiconfig_cache_export_locals.subscription_required
 
   version_set_id = azurerm_api_management_api_version_set.api_apiconfig_cache_export_node_api_o.id
@@ -105,7 +105,7 @@ module "apim_api_apiconfig_cache_replica_export_node_api_v1_p" {
   name                  = format("%s-apicfg-cache-replica-export-%s-api", local.project, "p")
   api_management_name   = local.apim.name
   resource_group_name   = local.apim.rg
-  product_ids           = [local.apim.product_id, local.technical_support_product_id]
+  product_ids           = [local.apim.product_id, local.technical_support_product_id, local.cfg_for_node_product_id]
   subscription_required = local.apiconfig_cache_replica_export_locals.subscription_required
 
   version_set_id = azurerm_api_management_api_version_set.api_apiconfig_cache_replica_export_node_api_p[0].id
@@ -136,7 +136,7 @@ module "apim_api_apiconfig_cache_replica_export_node_api_v1_o" {
   name                  = format("%s-apicfg-cache-replica-export-%s-api", local.project, "o")
   api_management_name   = local.apim.name
   resource_group_name   = local.apim.rg
-  product_ids           = [local.apim.product_id, local.technical_support_product_id]
+  product_ids           = [local.apim.product_id, local.technical_support_product_id, local.cfg_for_node_product_id]
   subscription_required = local.apiconfig_cache_replica_export_locals.subscription_required
 
   version_set_id = azurerm_api_management_api_version_set.api_apiconfig_cache_replica_export_node_api_o[0].id
