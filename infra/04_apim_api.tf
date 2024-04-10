@@ -198,7 +198,7 @@ module "apim_api_apiconfig_cache_replica_node_api_v1_o" {
   })
 
   xml_content = templatefile("./policy/_base_policy.xml", {
-    hostname = format("%s/%s/%s", local.apiconfig_cache_replica_locals.hostname, local.apiconfig_cache_replica_locals.path_apim, "or")
+    hostname = format("%s/%s%s/%s", local.apiconfig_cache_replica_locals.hostname, local.apiconfig_cache_replica_locals.path_apim, "dev", "o")
   })
 }
 
