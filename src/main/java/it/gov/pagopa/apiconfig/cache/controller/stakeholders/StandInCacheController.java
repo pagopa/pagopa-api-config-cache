@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class StandInCacheController extends CacheController {
 
   public static String[] KEYS = new String[]{
-          Constants.version,
-          Constants.stations,
+          Constants.VERSION,
+          Constants.STATIONS,
   };
 
   @Override

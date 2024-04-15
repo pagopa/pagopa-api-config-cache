@@ -1,6 +1,6 @@
 package it.gov.pagopa.apiconfig.cache.config;
 
-import static it.gov.pagopa.apiconfig.cache.util.Constants.headerRequestId;
+import static it.gov.pagopa.apiconfig.cache.util.Constants.HEADER_REQUEST_ID;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -100,12 +100,12 @@ public class OpenApiConfig {
                           .orElse(Collections.emptyList())
                           .parallelStream()
                           .filter(Objects::nonNull)
-                          .anyMatch(elem -> headerRequestId.equals(elem.getName()));
+                          .anyMatch(elem -> HEADER_REQUEST_ID.equals(elem.getName()));
                   if (!header) {
                     value.addParametersItem(
                         new Parameter()
                             .in("header")
-                            .name(headerRequestId)
+                            .name(HEADER_REQUEST_ID)
                             .schema(new StringSchema())
                             .description(
                                 "This header identifies the call, if not passed it is"
@@ -126,7 +126,7 @@ public class OpenApiConfig {
                                   .forEach(
                                       response ->
                                           response.addHeaderObject(
-                                                  headerRequestId,
+                                              HEADER_REQUEST_ID,
                                               new Header()
                                                   .schema(new StringSchema())
                                                   .description(

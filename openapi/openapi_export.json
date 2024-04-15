@@ -26,8 +26,11 @@
         "summary" : "Get xlsx of full chache",
         "operationId" : "xls",
         "responses" : {
-          "400" : {
-            "description" : "Bad Request",
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "500" : {
+            "description" : "Service unavailable",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -39,8 +42,11 @@
           "429" : {
             "description" : "Too many requests"
           },
-          "500" : {
-            "description" : "Service unavailable",
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "400" : {
+            "description" : "Bad Request",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -54,12 +60,6 @@
             "content" : {
               "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
             }
-          },
-          "401" : {
-            "description" : "Unauthorized"
-          },
-          "403" : {
-            "description" : "Forbidden"
           }
         },
         "security" : [ {

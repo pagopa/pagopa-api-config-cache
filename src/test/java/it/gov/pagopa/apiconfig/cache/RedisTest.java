@@ -39,7 +39,7 @@ class RedisTest {
   @Test
   void test() {
     Map<String, Object> configDataV1 = new HashMap<>();
-    configDataV1.put(Constants.version,"test");
+    configDataV1.put(Constants.VERSION,"test");
     when(redisTemplateObj.opsForValue()).thenReturn(testValueOperation);
 
     redisRepository.pushToRedisAsync("k", "kid", "configDataV1".getBytes(StandardCharsets.UTF_8),"test".getBytes(StandardCharsets.UTF_8));

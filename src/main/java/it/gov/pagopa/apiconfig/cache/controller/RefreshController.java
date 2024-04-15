@@ -124,9 +124,9 @@ public class RefreshController {
         }
 
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("X-CACHE-ID",(String)inMemoryCache.get(Constants.version));
-        responseHeaders.set("X-CACHE-TIMESTAMP", DateTimeFormatter.ISO_DATE_TIME.format((ZonedDateTime)inMemoryCache.get(Constants.timestamp)));
-        responseHeaders.set("X-CACHE-VERSION",(String)inMemoryCache.get(Constants.cacheVersion));
+        responseHeaders.set("X-CACHE-ID",(String)inMemoryCache.get(Constants.VERSION));
+        responseHeaders.set("X-CACHE-TIMESTAMP", DateTimeFormatter.ISO_DATE_TIME.format((ZonedDateTime)inMemoryCache.get(Constants.TIMESTAMP)));
+        responseHeaders.set("X-CACHE-VERSION",(String)inMemoryCache.get(Constants.CACHE_VERSION));
         if(keys!=null && !keys.isEmpty()){
             Map<String,Object> returnMap = new HashMap<>();
             keys.forEach(k->{
@@ -183,32 +183,32 @@ public class RefreshController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public List<String> getKeys() {
         return Arrays.asList(
-                        Constants.version,
-                        Constants.creditorInstitutions,
-                        Constants.creditorInstitutionBrokers,
-                        Constants.stations,
-                        Constants.creditorInstitutionStations,
-                        Constants.encodings,
-                        Constants.creditorInstitutionEncodings,
-                        Constants.ibans,
-                        Constants.creditorInstitutionInformations,
-                        Constants.psps,
-                        Constants.pspBrokers,
-                        Constants.paymentTypes,
-                        Constants.pspChannelPaymentTypes,
-                        Constants.plugins,
-                        Constants.pspInformationTemplates,
-                        Constants.pspInformations,
-                        Constants.channels,
-                        Constants.cdsServices,
-                        Constants.cdsSubjects,
-                        Constants.cdsSubjectServices,
-                        Constants.cdsCategories,
-                        Constants.configurations,
-                        Constants.ftpServers,
-                        Constants.languages,
-                        Constants.gdeConfigurations,
-                        Constants.metadataDict
+                        Constants.VERSION,
+                        Constants.CREDITOR_INSTITUTIONS,
+                        Constants.CREDITOR_INSTITUTION_BROKERS,
+                        Constants.STATIONS,
+                        Constants.CREDITOR_INSTITUTION_STATIONS,
+                        Constants.ENCODINGS,
+                        Constants.CREDITOR_INSTITUTION_ENCODINGS,
+                        Constants.IBANS,
+                        Constants.CREDITOR_INSTITUTION_INFORMATIONS,
+                        Constants.PSPS,
+                        Constants.PSP_BROKERS,
+                        Constants.PAYMENT_TYPES,
+                        Constants.PSP_CHANNEL_PAYMENT_TYPES,
+                        Constants.PLUGINS,
+                        Constants.PSP_INFORMATION_TEMPLATES,
+                        Constants.PSP_INFORMATIONS,
+                        Constants.CHANNELS,
+                        Constants.CDS_SERVICES,
+                        Constants.CDS_SUBJECTS,
+                        Constants.CDS_SUBJECT_SERVICES,
+                        Constants.CDS_CATEGORIES,
+                        Constants.CONFIGURATIONS,
+                        Constants.FTP_SERVERS,
+                        Constants.LANGUAGES,
+                        Constants.GDE_CONFIGURATIONS,
+                        Constants.METADATA_DICT
         );
     }
 
@@ -261,13 +261,13 @@ public class RefreshController {
             throws IOException {
 
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("X-CACHE-ID",(String)inMemoryCache.get(Constants.version));
-        responseHeaders.set("X-CACHE-TIMESTAMP", DateTimeFormatter.ISO_DATE_TIME.format((ZonedDateTime)inMemoryCache.get(Constants.timestamp)));
-        responseHeaders.set("X-CACHE-VERSION",(String)inMemoryCache.get(Constants.cacheVersion));
+        responseHeaders.set("X-CACHE-ID",(String)inMemoryCache.get(Constants.VERSION));
+        responseHeaders.set("X-CACHE-TIMESTAMP", DateTimeFormatter.ISO_DATE_TIME.format((ZonedDateTime)inMemoryCache.get(Constants.TIMESTAMP)));
+        responseHeaders.set("X-CACHE-VERSION",(String)inMemoryCache.get(Constants.CACHE_VERSION));
 
         return ResponseEntity.ok()
                 .headers(responseHeaders)
-                .body(new CacheVersion((String)inMemoryCache.get(Constants.version)));
+                .body(new CacheVersion((String)inMemoryCache.get(Constants.VERSION)));
     }
 
     @Operation(
@@ -316,15 +316,15 @@ public class RefreshController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity refresh()
             throws IOException {
-        boolean cacheV1InProgress = configService.getCacheV1InProgress(Constants.full);
+        boolean cacheV1InProgress = configService.getCacheV1InProgress(Constants.FULL);
         if (cacheV1InProgress) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }else{
             docache();
 
-            String cacheVersion = (String)inMemoryCache.get(Constants.cacheVersion);
-            String cacheId = (String)inMemoryCache.get(Constants.version);
-            ZonedDateTime timestamp = (ZonedDateTime)inMemoryCache.get(Constants.timestamp);
+            String cacheVersion = (String)inMemoryCache.get(Constants.CACHE_VERSION);
+            String cacheId = (String)inMemoryCache.get(Constants.VERSION);
+            ZonedDateTime timestamp = (ZonedDateTime)inMemoryCache.get(Constants.TIMESTAMP);
 
             HttpHeaders responseHeaders = new HttpHeaders();
             responseHeaders.set("X-CACHE-ID",cacheId);
@@ -340,8 +340,8 @@ public class RefreshController {
     private void docache() throws IOException {
             inMemoryCache = configService.newCacheV1();
             configService.sendEvent(
-                    (String)inMemoryCache.get(Constants.version),
-                    (ZonedDateTime)inMemoryCache.get(Constants.timestamp)
+                    (String)inMemoryCache.get(Constants.VERSION),
+                    (ZonedDateTime)inMemoryCache.get(Constants.TIMESTAMP)
             );
     }
 

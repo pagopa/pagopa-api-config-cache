@@ -53,9 +53,9 @@ class CacheNotInitializedTest {
   @BeforeEach
   void setUp() throws IOException {
     HashMap<String, Object> objectObjectHashMap = new HashMap<String, Object>();
-    objectObjectHashMap.put(Constants.version,"1111");
-    objectObjectHashMap.put(Constants.cacheVersion,"1111");
-    objectObjectHashMap.put(Constants.timestamp, ZonedDateTime.now());
+    objectObjectHashMap.put(Constants.VERSION,"1111");
+    objectObjectHashMap.put(Constants.CACHE_VERSION,"1111");
+    objectObjectHashMap.put(Constants.TIMESTAMP, ZonedDateTime.now());
 
     List<Station> stations = modelMapper.modelMapper().map(
             TestUtils.stazioni,
