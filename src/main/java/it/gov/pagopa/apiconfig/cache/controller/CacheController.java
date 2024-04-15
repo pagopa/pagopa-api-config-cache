@@ -90,9 +90,9 @@ public abstract class CacheController {
       ConfigDataV1 configDataV1 = ConfigDataUtil.cacheToConfigDataV1(inMemoryCache,keys());
 
       HttpHeaders responseHeaders = new HttpHeaders();
-      responseHeaders.set("X-CACHE-ID",(String)inMemoryCache.getOrDefault(Constants.version,"n/a"));
-      responseHeaders.set("X-CACHE-TIMESTAMP", DateTimeFormatter.ISO_DATE_TIME.format((ZonedDateTime)inMemoryCache.get(Constants.timestamp)));
-      responseHeaders.set("X-CACHE-VERSION",(String)inMemoryCache.getOrDefault(Constants.cacheVersion,"n/a"));
+      responseHeaders.set("X-CACHE-ID",(String)inMemoryCache.getOrDefault(Constants.VERSION,"n/a"));
+      responseHeaders.set("X-CACHE-TIMESTAMP", DateTimeFormatter.ISO_DATE_TIME.format((ZonedDateTime)inMemoryCache.get(Constants.TIMESTAMP)));
+      responseHeaders.set("X-CACHE-VERSION",(String)inMemoryCache.getOrDefault(Constants.CACHE_VERSION,"n/a"));
 
       return ResponseEntity.ok()
               .headers(responseHeaders)

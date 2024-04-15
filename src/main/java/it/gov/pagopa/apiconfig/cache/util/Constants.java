@@ -7,65 +7,63 @@ public class Constants {
 
   public static final String HEADER_REQUEST_ID = "X-Request-Id";
   public static final String GZIP_JSON_V1 = "GZIP_JSON-v1";
-
- public static String FULL = "full";
-
- public static String na = "na";
-
- public static String version = "version";
- public static String timestamp = "timestamp";
- public static String cacheVersion = "cacheVersion";
- public static String creditorInstitutions = "creditorInstitutions";
- public static String creditorInstitutionBrokers = "creditorInstitutionBrokers";
- public static String stations = "stations";
- public static String creditorInstitutionStations = "creditorInstitutionStations";
- public static String encodings = "encodings";
- public static String creditorInstitutionEncodings = "creditorInstitutionEncodings";
- public static String ibans = "ibans";
- public static String creditorInstitutionInformations = "creditorInstitutionInformations";
- public static String psps = "psps";
- public static String pspBrokers = "pspBrokers";
- public static String paymentTypes = "paymentTypes";
- public static String pspChannelPaymentTypes = "pspChannelPaymentTypes";
- public static String plugins = "plugins";
- public static String pspInformationTemplates = "pspInformationTemplates";
- public static String pspInformations = "pspInformations";
- public static String channels = "channels";
- public static String cdsServices = "cdsServices";
- public static String cdsSubjects = "cdsSubjects";
- public static String cdsSubjectServices = "cdsSubjectServices";
- public static String cdsCategories = "cdsCategories";
- public static String configurations = "configurations";
- public static String ftpServers = "ftpServers";
- public static String languages = "languages";
- public static String gdeConfigurations = "gdeConfigurations";
- public static String metadataDict = "metadataDict";
+  public static final String FULL = "full";
+  public static final String FULL_INFORMATION = "FULL";
+  public static final String NA = "na";
+  public static final String VERSION = "version";
+  public static final String TIMESTAMP = "timestamp";
+  public static final String CACHE_VERSION = "cacheVersion";
+  public static final String CREDITOR_INSTITUTIONS = "creditorInstitutions";
+  public static final String CREDITOR_INSTITUTION_BROKERS = "creditorInstitutionBrokers";
+  public static final String STATIONS = "stations";
+  public static final String CREDITOR_INSTITUTION_STATIONS = "creditorInstitutionStations";
+  public static final String ENCODINGS = "encodings";
+  public static final String CREDITOR_INSTITUTION_ENCODINGS = "creditorInstitutionEncodings";
+  public static final String IBANS = "ibans";
+  public static final String CREDITOR_INSTITUTION_INFORMATIONS = "creditorInstitutionInformations";
+  public static final String PSPS = "psps";
+  public static final String PSP_BROKERS = "pspBrokers";
+  public static final String PAYMENT_TYPES = "paymentTypes";
+  public static final String PSP_CHANNEL_PAYMENT_TYPES = "pspChannelPaymentTypes";
+  public static final String PLUGINS = "plugins";
+  public static final String PSP_INFORMATION_TEMPLATES = "pspInformationTemplates";
+  public static final String PSP_INFORMATIONS = "pspInformations";
+  public static final String CHANNELS = "channels";
+  public static final String CDS_SERVICES = "cdsServices";
+  public static final String CDS_SUBJECTS = "cdsSubjects";
+  public static final String CDS_SUBJECT_SERVICES = "cdsSubjectServices";
+  public static final String CDS_CATEGORIES = "cdsCategories";
+  public static final String CONFIGURATIONS = "configurations";
+  public static final String FTP_SERVERS = "ftpServers";
+  public static final String LANGUAGES = "languages";
+  public static final String GDE_CONFIGURATIONS = "gdeConfigurations";
+  public static final String METADATA_DICT = "metadataDict";
 
   public static String[] keys={
-          creditorInstitutions,
-          creditorInstitutionBrokers,
-          stations,
-          creditorInstitutionStations,
-          encodings,
-          creditorInstitutionEncodings,
-          ibans,
-          creditorInstitutionInformations,
-          psps,
-          pspBrokers,
-          paymentTypes,
-          pspChannelPaymentTypes,
-          plugins,
-          pspInformationTemplates,
-          pspInformations,
-          channels,
-          cdsServices,
-          cdsSubjects,
-          cdsSubjectServices,
-          cdsCategories,
-          configurations,
-          ftpServers,
-          languages,
-          gdeConfigurations,
-          metadataDict
+          CREDITOR_INSTITUTIONS,
+          CREDITOR_INSTITUTION_BROKERS,
+          STATIONS,
+          CREDITOR_INSTITUTION_STATIONS,
+          ENCODINGS,
+          CREDITOR_INSTITUTION_ENCODINGS,
+          IBANS,
+          CREDITOR_INSTITUTION_INFORMATIONS,
+          PSPS,
+          PSP_BROKERS,
+          PAYMENT_TYPES,
+          PSP_CHANNEL_PAYMENT_TYPES,
+          PLUGINS,
+          PSP_INFORMATION_TEMPLATES,
+          PSP_INFORMATIONS,
+          CHANNELS,
+          CDS_SERVICES,
+          CDS_SUBJECTS,
+          CDS_SUBJECT_SERVICES,
+          CDS_CATEGORIES,
+          CONFIGURATIONS,
+          FTP_SERVERS,
+          LANGUAGES,
+          GDE_CONFIGURATIONS,
+          METADATA_DICT
   };
 }

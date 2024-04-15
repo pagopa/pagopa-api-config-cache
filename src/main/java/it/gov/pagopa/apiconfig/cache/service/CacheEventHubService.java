@@ -43,9 +43,9 @@ public class CacheEventHubService {
     // https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-java-get-started-send?tabs=connection-string%2Croles-azure-portal#add-code-to-publish-events-to-the-event-hub
     public void publishEvent(String id, ZonedDateTime now, String version) throws JsonProcessingException {
         Map e = new HashMap();
-        e.put(Constants.version,id);
-        e.put(Constants.timestamp,now);
-        e.put(Constants.cacheVersion,version);
+        e.put(Constants.VERSION,id);
+        e.put(Constants.TIMESTAMP,now);
+        e.put(Constants.CACHE_VERSION,version);
         List<EventData> allEvents = Arrays.asList(new EventData(om.writeValueAsString(e)));
         EventDataBatch eventDataBatch = getProducer().createBatch();
         for (EventData eventData : allEvents) {
