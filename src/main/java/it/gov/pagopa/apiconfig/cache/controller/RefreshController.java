@@ -316,7 +316,7 @@ public class RefreshController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity refresh()
             throws IOException {
-        boolean cacheV1InProgress = configService.getCacheV1InProgress(Constants.FULL);
+        boolean cacheV1InProgress = configService.getCacheV1InProgress(Constants.full);
         if (cacheV1InProgress) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }else{

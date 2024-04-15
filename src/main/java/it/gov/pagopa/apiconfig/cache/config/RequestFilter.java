@@ -1,6 +1,6 @@
 package it.gov.pagopa.apiconfig.cache.config;
 
-import static it.gov.pagopa.apiconfig.cache.util.Constants.HEADER_REQUEST_ID;
+import static it.gov.pagopa.apiconfig.cache.util.Constants.headerRequestId;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -39,7 +39,7 @@ public class RequestFilter implements Filter {
       HttpServletRequest httRequest = (HttpServletRequest) request;
 
       // get requestId from header or generate one
-      String requestId = httRequest.getHeader(HEADER_REQUEST_ID);
+      String requestId = httRequest.getHeader(headerRequestId);
       if (requestId == null || requestId.isEmpty()) {
         requestId = UUID.randomUUID().toString();
       }
@@ -49,7 +49,7 @@ public class RequestFilter implements Filter {
       log.debug("{} {}", httRequest.getMethod(), httRequest.getRequestURI());
 
       // set requestId in the response header
-      ((HttpServletResponse) response).setHeader(HEADER_REQUEST_ID, requestId);
+      ((HttpServletResponse) response).setHeader(headerRequestId, requestId);
       chain.doFilter(request, response);
     } finally {
       MDC.clear();

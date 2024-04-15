@@ -160,7 +160,7 @@ public class ConfigService {
   public Map<String, Object> loadFullCache() throws IOException {
     log.info("Initializing cache");
 
-    byte[] bytes = redisRepository.get(getKeyV1(Constants.FULL));
+    byte[] bytes = redisRepository.get(getKeyV1(Constants.full));
     byte[] unzipped = ZipUtils.unzip(bytes);
     JsonFactory jsonFactory = new JsonFactory();
     JsonParser jsonParser = jsonFactory.createParser(unzipped);
@@ -202,7 +202,7 @@ public class ConfigService {
   public Map<String, Object> newCacheV1()
       throws IOException {
 
-    setCacheV1InProgress(Constants.FULL);
+    setCacheV1InProgress(Constants.full);
 
     HashMap<String, Object> configData = new HashMap<>();
     try {
@@ -372,7 +372,7 @@ public class ConfigService {
       ZonedDateTime now = ZonedDateTime.now();
       long endTime = System.nanoTime();
       String id = "" + endTime;
-      String cacheVersion=Constants.GZIP_JSON_V1 + "-" + appVersion;
+      String cacheVersion=Constants.gzipJsonV1 + "-" + appVersion;
       configData.put(Constants.version,id);
       configData.put(Constants.timestamp,now);
       configData.put(Constants.cacheVersion,cacheVersion);
@@ -391,8 +391,8 @@ public class ConfigService {
 
 
 
-      String actualKey = getKeyV1(Constants.FULL);
-      String actualKeyV1 = getKeyV1Id(Constants.FULL);
+      String actualKey = getKeyV1(Constants.full);
+      String actualKeyV1 = getKeyV1Id(Constants.full);
 
       log.info(String.format("saving on Redis %s %s", actualKey, actualKeyV1));
       redisRepository.pushToRedisAsync(actualKey, actualKeyV1, cachebyteArray, id.getBytes(StandardCharsets.UTF_8));
@@ -418,17 +418,17 @@ public class ConfigService {
       }
     } catch (Exception e) {
       log.error("[ALERT] problem to generate cache", e);
-      removeCacheV1InProgress(Constants.FULL);
+      removeCacheV1InProgress(Constants.full);
       throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
     }
-    removeCacheV1InProgress(Constants.FULL);
+    removeCacheV1InProgress(Constants.full);
     return configData;
   }
 
   public void sendEvent(String id,ZonedDateTime now){
     if(sendEvent){
         try {
-            eventHubService.publishEvent(id,now,Constants.GZIP_JSON_V1 + "-" + appVersion);
+            eventHubService.publishEvent(id,now,Constants.gzipJsonV1 + "-" + appVersion);
         } catch (JsonProcessingException e) {
             throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
         }
@@ -436,7 +436,7 @@ public class ConfigService {
   }
 
   private String getVersion() {
-    String version = Constants.GZIP_JSON_V1 + "-" + appVersion;
+    String version = Constants.gzipJsonV1 + "-" + appVersion;
     if (version.length() > 32) {
       return version.substring(0, 32);
     }
@@ -952,7 +952,7 @@ public class ConfigService {
             .collect(Collectors.toList());
 
     PspInformation informativaPSPFull =
-        PspInformation.builder().psp(Constants.FULL_INFORMATION).informativa(toXml(informativaPspFull)).build();
+        PspInformation.builder().psp(Constants.fullInformation).informativa(toXml(informativaPspFull)).build();
 
     PspInformation informativaPSPEmpty =
         PspInformation.builder().psp("EMPTY").informativa(toXml(informativaEmpty)).build();
@@ -1233,7 +1233,7 @@ public class ConfigService {
 
     CreditorInstitutionInformation informativaPAFull =
         CreditorInstitutionInformation.builder()
-            .pa(Constants.FULL_INFORMATION)
+            .pa(Constants.fullInformation)
             .informativa(toXml(informativaPaFull))
             .build();
 
