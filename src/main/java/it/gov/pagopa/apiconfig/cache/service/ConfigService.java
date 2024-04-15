@@ -367,7 +367,6 @@ public class ConfigService {
         HashMap<String, Object> infopasMap = new HashMap<>();
         infopas.forEach(k -> infopasMap.put(k.getPa(), k));
         configData.put(Constants.creditorInstitutionInformations,infopasMap);
-
       appendMapToJson(jsonGenerator,Constants.creditorInstitutionInformations,infopasMap);
 
       ZonedDateTime now = ZonedDateTime.now();
@@ -953,7 +952,7 @@ public class ConfigService {
             .collect(Collectors.toList());
 
     PspInformation informativaPSPFull =
-        PspInformation.builder().psp(Constants.FULL).informativa(toXml(informativaPspFull)).build();
+        PspInformation.builder().psp(Constants.FULL_INFORMATION).informativa(toXml(informativaPspFull)).build();
 
     PspInformation informativaPSPEmpty =
         PspInformation.builder().psp("EMPTY").informativa(toXml(informativaEmpty)).build();
@@ -1234,7 +1233,7 @@ public class ConfigService {
 
     CreditorInstitutionInformation informativaPAFull =
         CreditorInstitutionInformation.builder()
-            .pa(Constants.FULL)
+            .pa(Constants.FULL_INFORMATION)
             .informativa(toXml(informativaPaFull))
             .build();
 

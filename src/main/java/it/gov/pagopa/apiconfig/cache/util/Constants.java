@@ -9,6 +9,7 @@ public class Constants {
   public static final String GZIP_JSON_V1 = "GZIP_JSON-v1";
 
  public static String FULL = "full";
+ public static String FULL_INFORMATION = "FULL";
 
  public static String na = "na";
 
