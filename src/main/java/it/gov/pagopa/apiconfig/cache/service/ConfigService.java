@@ -651,7 +651,7 @@ public class ConfigService {
         .map(codificheRepository.findAll(), new TypeToken<List<Encoding>>() {}.getType());
   }
 
-  private Base64.Encoder encoder = Base64.getEncoder().withoutPadding();
+
 
   private String toXml(TplInformativaPSP element) {
     try {
@@ -663,7 +663,7 @@ public class ConfigService {
       marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaInstance);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       marshaller.marshal(informativaPSP, baos);
-      return encoder.encodeToString(baos.toByteArray());
+      return Constants.ENCODER.encodeToString(baos.toByteArray());
     } catch (Exception e) {
       log.error("error creating TplInformativaPSP", e);
       return e.toString();
@@ -680,7 +680,7 @@ public class ConfigService {
       marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaInstance);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       marshaller.marshal(informativaPSP, baos);
-      return encoder.encodeToString(baos.toByteArray());
+      return Constants.ENCODER.encodeToString(baos.toByteArray());
     } catch (Exception e) {
       log.error("error creating CtListaInformativePSP", e);
       return e.toString();
@@ -697,7 +697,7 @@ public class ConfigService {
       marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaInstance);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       marshaller.marshal(informativaPA, baos);
-      return encoder.encodeToString(baos.toByteArray());
+      return Constants.ENCODER.encodeToString(baos.toByteArray());
     } catch (Exception e) {
       log.error("error creating CtListaInformativeControparte", e);
       return e.toString();
