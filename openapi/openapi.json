@@ -4,7 +4,7 @@
     "title": "@project.name@ ${service}",
     "description": "@project.description@",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.9.5-1-NOD-828_informativa"
+    "version": "0.9.5-2-NOD-828_informativa"
   },
   "servers": [
     {
