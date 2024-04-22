@@ -26,13 +26,9 @@ class VerifierTest {
 
   @InjectMocks private VerifierService verifierService;
 
-  @BeforeEach
-  void setUp() {
-    when(verifieriRepository.findAllPaForVerifier()).thenReturn(TestUtils.pastazioniV2);
-  }
-
   @Test
   void getCacheV1() throws Exception {
+    when(verifieriRepository.findAllPaForVerifier()).thenReturn(TestUtils.pastazioniV2);
     List<String> allData = verifierService.getPaV2();
     assertThat(allData.containsAll(TestUtils.pastazioniV2));
   }

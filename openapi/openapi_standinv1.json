@@ -4,7 +4,7 @@
     "title": "@project.name@ ${service}",
     "description": "@project.description@",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.9.5"
+    "version": "0.9.5-2-NOD-828_informativa"
   },
   "servers": [
     {
@@ -50,11 +50,11 @@
           }
         ],
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "403": {
+            "description": "Forbidden"
           },
-          "500": {
-            "description": "Service unavailable",
+          "400": {
+            "description": "Bad Request",
             "content": {
               "application/json": {
                 "schema": {
@@ -66,11 +66,8 @@
           "429": {
             "description": "Too many requests"
           },
-          "403": {
-            "description": "Forbidden"
-          },
-          "400": {
-            "description": "Bad Request",
+          "500": {
+            "description": "Service unavailable",
             "content": {
               "application/json": {
                 "schema": {
@@ -88,6 +85,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         },
         "security": [
@@ -105,34 +105,8 @@
         "summary": "Get last v1 {stakeholder} cache version",
         "operationId": "idV1",
         "responses": {
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Service unavailable",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too many requests"
-          },
           "403": {
             "description": "Forbidden"
-          },
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CacheVersion"
-                }
-              }
-            }
           },
           "404": {
             "description": "Not Found"
@@ -146,6 +120,32 @@
                 }
               }
             }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CacheVersion"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests"
+          },
+          "500": {
+            "description": "Service unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         },
         "security": [
