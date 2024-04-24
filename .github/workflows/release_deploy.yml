@@ -89,11 +89,12 @@ jobs:
         shell: bash
         run: |
           cd ./infra
+          echo "🤔: ${ACTIONS_RUNTIME_TOKEN}"
           export ARM_OIDC_TOKEN=${{ env.ACTIONS_RUNTIME_TOKEN }}
           export ARM_USE_OIDC=true
-          export ARM_CLIENT_ID="${{ secrets.CD_CLIENT_ID }}"
-          export ARM_SUBSCRIPTION_ID=$(az account show --query id --output tsv)
-          export ARM_TENANT_ID=$(az account show --query tenantId --output tsv)
+          export ARM_CLIENT_ID="7812f4d1-a382-45e9-a116-4fd56fcd3622"
+          export ARM_SUBSCRIPTION_ID="bbe47ad4-08b3-4925-94c5-1278e5819b86"
+          export ARM_TENANT_ID="7788edaf-0346-4068-9d79-c868aed15b3d"
           bash ./terraform.sh init weu-${{ inputs.environment }}
           bash ./terraform.sh apply weu-${{ inputs.environment }} -auto-approve
 
