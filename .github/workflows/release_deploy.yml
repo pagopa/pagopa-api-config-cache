@@ -80,7 +80,7 @@ jobs:
         # from https://github.com/Azure/login/commits/master
         uses: azure/login@v2.1.0
         with:
-          auth-type: IDENTITY
+#          auth-type: IDENTITY
           client-id: "7812f4d1-a382-45e9-a116-4fd56fcd3622"
           tenant-id: "7788edaf-0346-4068-9d79-c868aed15b3d"
           subscription-id: "bbe47ad4-08b3-4925-94c5-1278e5819b86"
