@@ -101,7 +101,7 @@ jobs:
 
   cleanup_runner:
     name: Cleanup Runner
-    needs: [ create_runner, deploy ]
+    needs: [ create_runner, update_openapi ]
     if: ${{ success() || failure() && inputs.target == inputs.environment }}
     runs-on: [ self-hosted, "${{ needs.create_runner.outputs.runner_name }}" ]
     environment: ${{ inputs.environment }}
