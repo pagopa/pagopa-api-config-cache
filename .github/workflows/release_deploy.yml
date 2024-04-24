@@ -78,7 +78,7 @@ jobs:
       - name: Login
         id: login
         # from https://github.com/Azure/login/commits/master
-        uses: azure/login@4c88f01b0e3a5600e08a37889921afd060f75cf0
+        uses: azure/login@v2
         with:
           client-id: "7812f4d1-a382-45e9-a116-4fd56fcd3622"
           tenant-id: "7788edaf-0346-4068-9d79-c868aed15b3d"
@@ -88,7 +88,7 @@ jobs:
         shell: bash
         run: |
           cd ./infra
-          echo "🤔: ${ACTIONS_RUNTIME_TOKEN}"
+          echo "🤔: ${env.ACTIONS_RUNTIME_TOKEN}"
           export ARM_OIDC_TOKEN=${{ env.ACTIONS_RUNTIME_TOKEN }}
           export ARM_USE_OIDC=true
           export ARM_CLIENT_ID="51641492-9772-4871-bb4b-9dbbc20d4221"
