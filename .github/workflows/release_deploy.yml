@@ -37,7 +37,6 @@ permissions:
 
 jobs:
   update_openapi:
-    needs: [ create_runner ]
     runs-on: ubuntu-latest
     name: Update OpenAPI
     environment: ${{ inputs.environment }}
