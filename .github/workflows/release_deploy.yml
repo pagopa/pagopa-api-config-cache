@@ -88,7 +88,7 @@ jobs:
         shell: bash
         run: |
           cd ./infra
-          echo "🤔: ${env.ACTIONS_RUNTIME_TOKEN}"
+          echo "🤔: ${{ env.ACTIONS_RUNTIME_TOKEN}}"
           export ARM_OIDC_TOKEN=${{ env.ACTIONS_RUNTIME_TOKEN }}
           export ARM_USE_OIDC=true
           export ARM_CLIENT_ID="51641492-9772-4871-bb4b-9dbbc20d4221"
