@@ -92,7 +92,7 @@ jobs:
           echo "Il token è: $token"
           export ARM_OIDC_TOKEN=${ACTIONS_ID_TOKEN_REQUEST_TOKEN}
           export ARM_USE_OIDC=true
-          export ARM_CLIENT_ID="51641492-9772-4871-bb4b-9dbbc20d4221"
+          export ARM_CLIENT_ID="7812f4d1-a382-45e9-a116-4fd56fcd3622"
           export ARM_SUBSCRIPTION_ID=$(az account show --query id --output tsv)
           export ARM_TENANT_ID=$(az account show --query tenantId --output tsv)
           
