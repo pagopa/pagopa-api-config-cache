@@ -58,7 +58,7 @@ jobs:
       - name: Login
         id: login
         # from https://github.com/Azure/login/commits/master
-        uses: azure/login@master
+        uses: azure/login@v2.1.0
         with:
           auth-type: IDENTITY
           client-id: ${{ secrets.CD_CLIENT_ID }}
