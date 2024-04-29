@@ -13,7 +13,7 @@ microservice-chart: &microservice-chart
     httpGet:
       path: /actuator/health/liveness
       port: 8080
-    initialDelaySeconds: 30
+    initialDelaySeconds: 60
   readinessProbe:
     httpGet:
       path: /actuator/health/readiness

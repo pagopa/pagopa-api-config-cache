@@ -62,7 +62,7 @@ jobs:
           cluster_name: ${{ vars.CLUSTER_NAME }}
           resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
           app_name: ${{ env.APP_NAME }}
-          helm_upgrade_options: ' --debug --set postgresql.enabled=true --set oracle.enabled=true --set oracledev.enabled=true --set oracleprod.enabled=true'
+          helm_upgrade_options: ' --debug --set postgresql.enabled=true --set postgresql-replica.enabled=true --set oracle.enabled=true --set oracledev.enabled=true --set oracleprod.enabled=true'
 
       - name: Deploy UAT for PagoPA (Oracle or Postgres)
         uses: pagopa/github-actions-template/aks-deploy@5db4c9108164a07d96527978da1c3febec934f22 #v1.11.1
@@ -81,7 +81,7 @@ jobs:
 
       - name: Deploy PRF for PagoPA (Oracle or Postgres)
         uses: pagopa/github-actions-template/aks-deploy@5db4c9108164a07d96527978da1c3febec934f22 #v1.11.1
-        if: ${{ inputs.environment == 'pfr' }}
+        if: ${{ inputs.environment == 'prf' }}
         with:
           branch: ${{ github.ref_name }}
           client_id: ${{ secrets.CD_CLIENT_ID }}
