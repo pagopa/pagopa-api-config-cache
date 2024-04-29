@@ -2,7 +2,7 @@ microservice-chart: &microservice-chart
   namespace: "apiconfig"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: 0.9.7
+    tag: 0.9.7-1-NOD-855-deploy-dev
   canaryDelivery:
     deployment:
       image:
@@ -193,7 +193,6 @@ oracleprod:
     envSecrets:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "oracle-db-cfg-prod-password"
-
 #############
 ## REFRESH ##
 #############
