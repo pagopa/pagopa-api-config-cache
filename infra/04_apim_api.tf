@@ -10,7 +10,7 @@ resource "azurerm_api_management_api_version_set" "api_apiconfig_cache_node_api_
 }
 
 module "apim_api_apiconfig_cache_node_api_v1_p" {
-  source                = "git::https://github.com/pagopa/terraform-azurerm-v3.git//api_management_api?ref=v5.1.0"
+  source                = "git::https://github.com/pagopa/terraform-azurerm-v3.git//api_management_api?ref=v8.5.0"
   name                  = format("%s-apiconfig-cache-node-%s-api", local.project, local.postgres)
   api_management_name   = local.apim.name
   resource_group_name   = local.apim.rg
@@ -51,7 +51,7 @@ resource "azurerm_api_management_api_version_set" "api_apiconfig_cache_node_api_
 
 
 module "apim_api_apiconfig_cache_node_api_v1_o" {
-  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//api_management_api?ref=v5.1.0"
+  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//api_management_api?ref=v8.5.0"
 
   name                  = format("%s-apiconfig-cache-node-%s-api", local.project, local.oracle)
   api_management_name   = local.apim.name
@@ -92,7 +92,7 @@ resource "azurerm_api_management_api_version_set" "api_apiconfig_cache_node_nexi
 
 module "apim_api_apiconfig_cache_node_nexi_api_dev_v1" {
   count  = var.env_short == "d" ? 1 : 0
-  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//api_management_api?ref=v6.4.1"
+  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//api_management_api?ref=v8.5.0"
 
   name                  = format("%s-apiconfig-cache-node-%s-api", local.project, "nexi")
   api_management_name   = local.apim.name
@@ -141,7 +141,7 @@ resource "azurerm_api_management_api_version_set" "api_apiconfig_cache_replica_n
 
 
 module "apim_api_apiconfig_cache_replica_node_api_v1_p" {
-  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//api_management_api?ref=v6.4.1"
+  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//api_management_api?ref=v8.5.0"
   count  = var.env_short == "p" ? 0 : 1
 
   name                  = format("%s-apiconfig-cache-replica-node-%s-api", local.project, "p")
@@ -172,7 +172,7 @@ module "apim_api_apiconfig_cache_replica_node_api_v1_p" {
 }
 
 module "apim_api_apiconfig_cache_replica_node_api_v1_o" {
-  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//api_management_api?ref=v6.4.1"
+  source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//api_management_api?ref=v8.5.0"
   count  = var.env_short == "p" ? 0 : 1
 
   name                  = format("%s-apiconfig-cache-replica-node-%s-api", local.project, "o")

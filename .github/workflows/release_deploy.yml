@@ -113,12 +113,12 @@ jobs:
       #          branch: ${{ github.ref_name}}
       #          github_token: ${{ secrets.GITHUB_TOKEN }}
       #          tag: ${{ needs.release.outputs.version }}
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b #v4.1.4
         with:
           ref: ${{ github.ref_name }}
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@e92390c5fb421da1463c202d546fed0ec5c39f20 #v3.1.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -126,7 +126,7 @@ jobs:
 
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v4.3.0
+        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81 #v5.5.1
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
@@ -136,7 +136,7 @@ jobs:
             type=sha
 
       - name: Build and push
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@2cdde995de11925a030ce8070c3d77a52ffcf1c0 #v5.3.0
         with:
           context: .
           push: true
@@ -166,7 +166,7 @@ jobs:
     steps:
       - name: Report Status
         if: ${{ needs.setup.outputs.environment == 'prod' }}
-        uses: ravsamhq/notify-slack-action@v2
+        uses: ravsamhq/notify-slack-action@be814b201e233b2dc673608aa46e5447c8ab13f2 #v2.5.0
         with:
           status: ${{ needs.deploy_aks.result }}
           token: ${{ secrets.GITHUB_TOKEN }}
