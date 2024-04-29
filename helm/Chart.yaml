@@ -2,7 +2,7 @@ apiVersion: v2
 name: pagopa-api-cache-chart
 description: Microservice that handles calculation for pagoPA Advanced Fees Management
 type: application
-version: 0.65.0
+version: 0.66.0
 dependencies:
   ##############
   ## POSTGRES ##
@@ -29,7 +29,6 @@ dependencies:
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
     alias: refresh-p-replica # postgres pagopa
     condition: postgresql-replica.enabled
-
   ##############
   ## ORACLE   ##
   ## NEXI     ##
@@ -65,7 +64,6 @@ dependencies:
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
     alias: refresh-oprod # oracle nexi (prod in dev per test)
     condition: oracleprod.enabled
-
   ##############
   ## POSTGRES ##
   ## NEXI     ##
@@ -80,7 +78,6 @@ dependencies:
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
     alias: refresh-p-nexi # postgres nexi
     condition: postgresql-nexi.enabled
-
   - name: microservice-chart
     version: 3.0.0
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
@@ -91,4 +88,4 @@ dependencies:
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
     alias: refresh-p-replica-nexi # postgres prf nexi
     condition: postgresql-replica-nexi.enabled
-appVersion: 0.9.7
+appVersion: 0.9.7-1-NOD-855-deploy-dev
