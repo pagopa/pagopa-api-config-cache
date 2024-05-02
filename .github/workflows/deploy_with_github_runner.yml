@@ -34,6 +34,7 @@ jobs:
               echo "env=dev" >> $GITHUB_OUTPUT
             else
               echo "env=uat" >> $GITHUB_OUTPUT
+            fi
           elif [[ ${{ inputs.environment}} == *"prf"* ]]; then
             echo "env=uat" >> $GITHUB_OUTPUT
           else
