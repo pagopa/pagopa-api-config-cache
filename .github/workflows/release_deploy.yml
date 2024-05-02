@@ -99,17 +99,13 @@ jobs:
           if [[ ${{ inputs.environment }} == *"nexi"* ]]; then
             if [[ ${{ inputs.environment }} == *"sit"* ]]; then
               current_env="dev"
-              // echo "environment=dev" >> $GITHUB_OUTPUT
             else
               current_env="uat"
-              //echo "environment=uat" >> $GITHUB_OUTPUT
             fi
           elif [[ ${{ inputs.environment}} == *"prf"* ]]; then
             current_env="uat"
-            //echo "environment=uat" >> $GITHUB_OUTPUT
           else
             current_env=${{ inputs.environment }}
-            //echo "environment=${{ inputs.environment }}" >> $GITHUB_OUTPUT
           fi
           echo "environment=$current_env" >> $GITHUB_OUTPUT
 
