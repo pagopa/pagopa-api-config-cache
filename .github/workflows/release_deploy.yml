@@ -105,7 +105,7 @@ jobs:
           elif [[ ${{ inputs.environment}} == *"prf"* ]]; then
             current_env="uat"
           else
-            current_env=${{ inputs.environment }}
+            current_env="${{ inputs.environment }}"
           fi
           echo "environment=$current_env" >> $GITHUB_OUTPUT
 
