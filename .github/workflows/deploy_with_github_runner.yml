@@ -23,6 +23,7 @@ permissions:
 jobs:
   setting_env:
     name: Setting Environment
+    runs-on: ubuntu-22.04
     outputs:
       env: ${{ steps.get_env.outputs.env }}
     steps:
