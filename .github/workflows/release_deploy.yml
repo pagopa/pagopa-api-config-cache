@@ -108,6 +108,7 @@ jobs:
             current_env="${{ inputs.environment }}"
           fi
           echo "environment=$current_env" >> $GITHUB_OUTPUT
+        shell: bash
 
   testing_env:
     name: Testing Environment
