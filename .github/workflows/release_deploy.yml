@@ -102,13 +102,12 @@ jobs:
             else
               current_env="uat"
             fi
-          elif [[ "${{ inputs.environment}}" == *"prf"* ]]; then
+          elif [[ "${{ inputs.environment }}" == "prf" ]]; then
             current_env="uat"
           else
             current_env="${{ inputs.environment }}"
           fi
           echo "environment=$current_env" >> $GITHUB_OUTPUT
-        shell: bash
 
   testing_env:
     name: Testing Environment
