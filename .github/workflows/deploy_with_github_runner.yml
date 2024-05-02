@@ -40,6 +40,10 @@ jobs:
           else
             echo "env=${{ inputs.environment}}" >> $GITHUB_OUTPUT
           fi
+      - id: test_env
+        run: echo ${{ needs.setting_env.outputs.env }}
+      - id: test_gh_output
+        run: echo $GITHUB_OUTPUT
 
   create_runner:
     name: Create Runner
