@@ -152,7 +152,7 @@ jobs:
   cleanup_runner:
     name: Cleanup Runner
 #    needs: [ create_runner, deploy ]
-    needs: [ create_runner ]
+    needs: [ setting_env, create_runner ]
     if: ${{ success() || failure() && inputs.target == inputs.environment }}
     runs-on: ubuntu-22.04
     environment: ${{ needs.setting_env.outputs.environment }}
