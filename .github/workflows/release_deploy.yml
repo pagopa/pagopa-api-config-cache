@@ -91,24 +91,31 @@ jobs:
     name: Setting Environment
     runs-on: ubuntu-latest
     outputs:
-      env: ${{ steps.get_env.outputs.env }}
+      env: ${{ steps.get_env.outputs.environment }}
     steps:
       - id: get_env
         run: |
+          current_env="dev"
           if [[ ${{ inputs.environment }} == *"nexi"* ]]; then
             if [[ ${{ inputs.environment }} == *"sit"* ]]; then
-              echo "env=dev" >> $GITHUB_OUTPUT
+              current_env="dev"
+              // echo "environment=dev" >> $GITHUB_OUTPUT
             else
-              echo "env=uat" >> $GITHUB_OUTPUT
+              current_env="uat"
+              //echo "environment=uat" >> $GITHUB_OUTPUT
             fi
           elif [[ ${{ inputs.environment}} == *"prf"* ]]; then
-            echo "env=uat" >> $GITHUB_OUTPUT
+            current_env="uat"
+            //echo "environment=uat" >> $GITHUB_OUTPUT
           else
-            echo "env=${{ inputs.environment }}" >> $GITHUB_OUTPUT
+            current_env=${{ inputs.environment }}
+            //echo "environment=${{ inputs.environment }}" >> $GITHUB_OUTPUT
           fi
+          echo "environment=$current_env" >> $GITHUB_OUTPUT
 
   testing_env:
     name: Testing Environment
+    needs: [setting_env]
     runs-on: ubuntu-latest
     steps:
       - id: test_env
