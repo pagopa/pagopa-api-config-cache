@@ -66,93 +66,92 @@ jobs:
           resource_group_name: ${{ vars.CONTAINER_APP_ENVIRONMENT_RESOURCE_GROUP_NAME }} # RG of the runner
           pat_token: ${{ secrets.BOT_TOKEN_GITHUB }}
 
-#  deploy:
-#    needs: [ create_runner ]
-#    runs-on: [ self-hosted, "${{ needs.create_runner.outputs.runner_name }}" ]
-#    if: ${{ inputs.target == inputs.environment }}
-#    name: Deploy on AKS
-#    environment: ${{ needs.setting_env.outputs.environment }}
-#    steps:
-#
-#      - name: Deploy DEV for PagoPA (Oracle or Postgres)
-#        uses: pagopa/github-actions-template/aks-deploy@5db4c9108164a07d96527978da1c3febec934f22 #v1.11.1
-#        if: ${{ inputs.environment == 'dev' }}
-#        with:
-#          branch: ${{ github.ref_name }}
-#          client_id: ${{ secrets.CD_CLIENT_ID }}
-#          subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
-#          tenant_id: ${{ secrets.TENANT_ID }}
-#          env: ${{ needs.setting_env.outputs.environment }}
-#          namespace: ${{ vars.NAMESPACE }}
-#          cluster_name: ${{ vars.CLUSTER_NAME }}
-#          resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
-#          app_name: ${{ env.APP_NAME }}
-#          helm_upgrade_options: ' --debug --set postgresql.enabled=true --set postgresql.forceRedeploy=false --set postgresql-replica.forceRedeploy=false --set postgresql-nexi.forceRedeploy=false --set oracle.enabled=true --set oracle.forceRedeploy=false --set oracledev.enabled=true --set oracledev.forceRedeploy=false --set oracleprod.enabled=true --set oracleprod.forceRedeploy=false'
-#
-#      - name: Deploy UAT for PagoPA (Oracle or Postgres)
-#        uses: pagopa/github-actions-template/aks-deploy@5db4c9108164a07d96527978da1c3febec934f22 #v1.11.1
-#        if: ${{ inputs.environment == 'uat' }}
-#        with:
-#          branch: ${{ github.ref_name }}
-#          client_id: ${{ secrets.CD_CLIENT_ID }}
-#          subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
-#          tenant_id: ${{ secrets.TENANT_ID }}
-#          env: ${{ needs.setting_env.outputs.environment }}
-#          namespace: ${{ vars.NAMESPACE }}
-#          cluster_name: ${{ vars.CLUSTER_NAME }}
-#          resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
-#          app_name: ${{ env.APP_NAME }}
-#          helm_upgrade_options: ' --debug --set postgresql.enabled=true --set oracle.enabled=true'
-#
-#      - name: Deploy PRF for PagoPA (Oracle or Postgres)
-#        uses: pagopa/github-actions-template/aks-deploy@5db4c9108164a07d96527978da1c3febec934f22 #v1.11.1
-#        if: ${{ inputs.environment == 'prf' }}
-#        with:
-#          branch: ${{ github.ref_name }}
-#          client_id: ${{ secrets.CD_CLIENT_ID }}
-#          subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
-#          tenant_id: ${{ secrets.TENANT_ID }}
-#          env: ${{ needs.setting_env.outputs.environment }}
-#          namespace: ${{ vars.NAMESPACE }}
-#          cluster_name: ${{ vars.CLUSTER_NAME }}
-#          resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
-#          app_name: ${{ env.APP_NAME }}
-#          helm_upgrade_options: ' --debug --set postgresql-replica.enabled=true --set oracledev.enabled=true '
-#
-#      - name: Deploy PROD for PagoPA (Oracle or Postgres)
-#        uses: pagopa/github-actions-template/aks-deploy@5db4c9108164a07d96527978da1c3febec934f22 #v1.11.1
-#        if: ${{ inputs.environment == 'prod' }}
-#        with:
-#          branch: ${{ github.ref_name }}
-#          client_id: ${{ secrets.CD_CLIENT_ID }}
-#          subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
-#          tenant_id: ${{ secrets.TENANT_ID }}
-#          env: ${{ needs.setting_env.outputs.environment }}
-#          namespace: ${{ vars.NAMESPACE }}
-#          cluster_name: ${{ vars.CLUSTER_NAME }}
-#          resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
-#          app_name: ${{ env.APP_NAME }}
-#          helm_upgrade_options: ' --debug --set postgresql.enabled=true --set oracle.enabled=true'
-#
-#      - name: Deploy for Postgres Nexi
-#        uses: pagopa/github-actions-template/aks-deploy@main
-#        if: ${{ inputs.environment == 'sit_nexi_p' || inputs.environment == 'uat_nexi_p' || inputs.environment == 'prf_nexi_p' }}
-#        with:
-#          branch: ${{ github.ref_name }}
-#          client_id: ${{ secrets.CD_CLIENT_ID }}
-#          subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
-#          tenant_id: ${{ secrets.TENANT_ID }}
-#          env: ${{ needs.setting_env.outputs.environment }}
-#          namespace: ${{ vars.NAMESPACE }}
-#          cluster_name: ${{ vars.CLUSTER_NAME }}
-#          resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
-#          app_name: ${{ env.APP_NAME }}
-#          helm_upgrade_options: ${{ (inputs.environment == 'sit_nexi_p' || inputs.environment == 'uat_nexi_p') && ' --debug --set postgresql-nexi.enabled=true --set postgresql-nexi.forceRedeploy=false' || inputs.environment == 'prf_nexi_p' && ' --debug --set postgresql-replica-nexi.enabled=true --set postgresql-replica-nexi.forceRedeploy=false' }}
+  deploy:
+    needs: [ create_runner ]
+    runs-on: [ self-hosted, "${{ needs.create_runner.outputs.runner_name }}" ]
+    if: ${{ inputs.target == inputs.environment }}
+    name: Deploy on AKS
+    environment: ${{ needs.setting_env.outputs.environment }}
+    steps:
+
+      - name: Deploy DEV for PagoPA (Oracle or Postgres)
+        uses: pagopa/github-actions-template/aks-deploy@5db4c9108164a07d96527978da1c3febec934f22 #v1.11.1
+        if: ${{ inputs.environment == 'dev' }}
+        with:
+          branch: ${{ github.ref_name }}
+          client_id: ${{ secrets.CD_CLIENT_ID }}
+          subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
+          tenant_id: ${{ secrets.TENANT_ID }}
+          env: ${{ needs.setting_env.outputs.environment }}
+          namespace: ${{ vars.NAMESPACE }}
+          cluster_name: ${{ vars.CLUSTER_NAME }}
+          resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
+          app_name: ${{ env.APP_NAME }}
+          helm_upgrade_options: ' --debug --set postgresql.enabled=true --set postgresql.forceRedeploy=false --set postgresql-replica.forceRedeploy=false --set postgresql-nexi.forceRedeploy=false --set oracle.enabled=true --set oracle.forceRedeploy=false --set oracledev.enabled=true --set oracledev.forceRedeploy=false --set oracleprod.enabled=true --set oracleprod.forceRedeploy=false'
+
+      - name: Deploy UAT for PagoPA (Oracle or Postgres)
+        uses: pagopa/github-actions-template/aks-deploy@5db4c9108164a07d96527978da1c3febec934f22 #v1.11.1
+        if: ${{ inputs.environment == 'uat' }}
+        with:
+          branch: ${{ github.ref_name }}
+          client_id: ${{ secrets.CD_CLIENT_ID }}
+          subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
+          tenant_id: ${{ secrets.TENANT_ID }}
+          env: ${{ needs.setting_env.outputs.environment }}
+          namespace: ${{ vars.NAMESPACE }}
+          cluster_name: ${{ vars.CLUSTER_NAME }}
+          resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
+          app_name: ${{ env.APP_NAME }}
+          helm_upgrade_options: ' --debug --set postgresql.enabled=true --set oracle.enabled=true'
+
+      - name: Deploy PRF for PagoPA (Oracle or Postgres)
+        uses: pagopa/github-actions-template/aks-deploy@5db4c9108164a07d96527978da1c3febec934f22 #v1.11.1
+        if: ${{ inputs.environment == 'prf' }}
+        with:
+          branch: ${{ github.ref_name }}
+          client_id: ${{ secrets.CD_CLIENT_ID }}
+          subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
+          tenant_id: ${{ secrets.TENANT_ID }}
+          env: ${{ needs.setting_env.outputs.environment }}
+          namespace: ${{ vars.NAMESPACE }}
+          cluster_name: ${{ vars.CLUSTER_NAME }}
+          resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
+          app_name: ${{ env.APP_NAME }}
+          helm_upgrade_options: ' --debug --set postgresql-replica.enabled=true --set oracledev.enabled=true '
+
+      - name: Deploy PROD for PagoPA (Oracle or Postgres)
+        uses: pagopa/github-actions-template/aks-deploy@5db4c9108164a07d96527978da1c3febec934f22 #v1.11.1
+        if: ${{ inputs.environment == 'prod' }}
+        with:
+          branch: ${{ github.ref_name }}
+          client_id: ${{ secrets.CD_CLIENT_ID }}
+          subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
+          tenant_id: ${{ secrets.TENANT_ID }}
+          env: ${{ needs.setting_env.outputs.environment }}
+          namespace: ${{ vars.NAMESPACE }}
+          cluster_name: ${{ vars.CLUSTER_NAME }}
+          resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
+          app_name: ${{ env.APP_NAME }}
+          helm_upgrade_options: ' --debug --set postgresql.enabled=true --set oracle.enabled=true'
+
+      - name: Deploy for Postgres Nexi
+        uses: pagopa/github-actions-template/aks-deploy@main
+        if: ${{ inputs.environment == 'sit_nexi_p' || inputs.environment == 'uat_nexi_p' || inputs.environment == 'prf_nexi_p' }}
+        with:
+          branch: ${{ github.ref_name }}
+          client_id: ${{ secrets.CD_CLIENT_ID }}
+          subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
+          tenant_id: ${{ secrets.TENANT_ID }}
+          env: ${{ needs.setting_env.outputs.environment }}
+          namespace: ${{ vars.NAMESPACE }}
+          cluster_name: ${{ vars.CLUSTER_NAME }}
+          resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
+          app_name: ${{ env.APP_NAME }}
+          helm_upgrade_options: ${{ (inputs.environment == 'sit_nexi_p' || inputs.environment == 'uat_nexi_p') && ' --debug --set postgresql-nexi.enabled=true --set postgresql-nexi.forceRedeploy=false' || inputs.environment == 'prf_nexi_p' && ' --debug --set postgresql-replica-nexi.enabled=true --set postgresql-replica-nexi.forceRedeploy=false' }}
 
   cleanup_runner:
     name: Cleanup Runner
-#    needs: [ create_runner, deploy ]
-    needs: [ setting_env, create_runner ]
+    needs: [ setting_env, create_runner, deploy ]
     if: ${{ success() || failure() && inputs.target == inputs.environment }}
     runs-on: ubuntu-22.04
     environment: ${{ needs.setting_env.outputs.environment }}
@@ -169,36 +168,36 @@ jobs:
           runner_name: ${{ needs.create_runner.outputs.runner_name }}
           pat_token: ${{ secrets.BOT_TOKEN_GITHUB }}
 
-#  update_openapi:
-#    needs: [ deploy ]
-#    runs-on: ubuntu-latest
-#    name: Update OpenAPI
-#    if: ${{ inputs.target == inputs.environment }}
-#    environment: ${{ needs.setting_env.outputs.environment }}
-#    steps:
-#      - name: Checkout
-#        id: checkout
-#        # from https://github.com/actions/checkout/commits/main
-#        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b #v4.1.4
-#        with:
-#          persist-credentials: false
-#
-#      - name: Read current terraform version
-#        run: |
-#          VER=$(cat .terraform-version)
-#          echo "TERRAFORM_VERSION=$VER" >> $GITHUB_ENV
-#
-#      - name: Setup Terraform
-#        # from https://github.com/hashicorp/setup-terraform/commits/main
-#        uses: hashicorp/setup-terraform@97f030cf6dc0b4f5e0da352c7bca9cca34579800 #v3.1.0
-#        with:
-#          terraform_version: "${{ env.TERRAFORM_VERSION }}"
-#
-#      - name: Apply terraform.sh
-#        uses: pagopa/eng-github-actions-iac-template/azure/terraform-sh-apply-azure-action@ae723dfbdc457ffa6b4acd99f2444fc08c1efb85 #v1.11.0
-#        with:
-#          client_id: "${{ secrets.CD_CLIENT_ID }}"
-#          tenant_id: "${{ secrets.TENANT_ID }}"
-#          subscription_id: "${{ secrets.SUBSCRIPTION_ID }}"
-#          tf_environment: "weu-${{ needs.setting_env.outputs.environment }}"
-#          dir: "infra"
+  update_openapi:
+    needs: [ deploy ]
+    runs-on: ubuntu-latest
+    name: Update OpenAPI
+    if: ${{ inputs.target == inputs.environment }}
+    environment: ${{ needs.setting_env.outputs.environment }}
+    steps:
+      - name: Checkout
+        id: checkout
+        # from https://github.com/actions/checkout/commits/main
+        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b #v4.1.4
+        with:
+          persist-credentials: false
+
+      - name: Read current terraform version
+        run: |
+          VER=$(cat .terraform-version)
+          echo "TERRAFORM_VERSION=$VER" >> $GITHUB_ENV
+
+      - name: Setup Terraform
+        # from https://github.com/hashicorp/setup-terraform/commits/main
+        uses: hashicorp/setup-terraform@97f030cf6dc0b4f5e0da352c7bca9cca34579800 #v3.1.0
+        with:
+          terraform_version: "${{ env.TERRAFORM_VERSION }}"
+
+      - name: Apply terraform.sh
+        uses: pagopa/eng-github-actions-iac-template/azure/terraform-sh-apply-azure-action@ae723dfbdc457ffa6b4acd99f2444fc08c1efb85 #v1.11.0
+        with:
+          client_id: "${{ secrets.CD_CLIENT_ID }}"
+          tenant_id: "${{ secrets.TENANT_ID }}"
+          subscription_id: "${{ secrets.SUBSCRIPTION_ID }}"
+          tf_environment: "weu-${{ needs.setting_env.outputs.environment }}"
+          dir: "infra"
