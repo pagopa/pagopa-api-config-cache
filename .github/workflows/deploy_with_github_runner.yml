@@ -25,25 +25,23 @@ jobs:
     name: Setting Environment
     runs-on: ubuntu-22.04
     outputs:
-      env: ${{ steps.get_env.outputs.env }}
+      env: ${{ steps.get_env.outputs.environment }}
     steps:
       - id: get_env
         run: |
-          if [[ ${{ inputs.environment}} == *"nexi"* ]]; then
-            if [[ ${{ inputs.environment}} == *"sit"* ]]; then
-              echo "env=dev" >> $GITHUB_OUTPUT
+          current_env="dev"
+          if [[ "${{ inputs.environment }}" == *"nexi"* ]]; then
+            if [[ "${{ inputs.environment }}" == *"sit"* ]]; then
+              current_env="dev"
             else
-              echo "env=uat" >> $GITHUB_OUTPUT
+              current_env="uat"
             fi
-          elif [[ ${{ inputs.environment}} == *"prf"* ]]; then
-            echo "env=uat" >> $GITHUB_OUTPUT
+          elif [[ "${{ inputs.environment }}" == "prf" ]]; then
+            current_env="uat"
           else
-            echo "env=${{ inputs.environment}}" >> $GITHUB_OUTPUT
+            current_env="${{ inputs.environment }}"
           fi
-      - id: test_env
-        run: echo ${{ needs.setting_env.outputs.env }}
-      - id: test_gh_output
-        run: echo $GITHUB_OUTPUT
+          echo "environment=$current_env" >> $GITHUB_OUTPUT
 
   create_runner:
     name: Create Runner
