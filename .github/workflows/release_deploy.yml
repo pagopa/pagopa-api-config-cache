@@ -96,13 +96,13 @@ jobs:
       - id: get_env
         run: |
           current_env="dev"
-          if [[ ${{ inputs.environment }} == *"nexi"* ]]; then
-            if [[ ${{ inputs.environment }} == *"sit"* ]]; then
+          if [[ "${{ inputs.environment }}" == *"nexi"* ]]; then
+            if [[ "${{ inputs.environment }}" == *"sit"* ]]; then
               current_env="dev"
             else
               current_env="uat"
             fi
-          elif [[ ${{ inputs.environment}} == *"prf"* ]]; then
+          elif [[ "${{ inputs.environment}}" == *"prf"* ]]; then
             current_env="uat"
           else
             current_env="${{ inputs.environment }}"
