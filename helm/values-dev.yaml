@@ -25,7 +25,7 @@ microservice-chart: &microservice-chart
   resources:
     requests:
       memory: "512Mi"
-      cpu: "0.25"
+      cpu: "0.5"
     limits:
       memory: "6G"
       cpu: "2.5"
