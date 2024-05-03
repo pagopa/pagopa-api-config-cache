@@ -157,7 +157,7 @@ jobs:
     if: ${{ always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
     strategy:
       matrix:
-        environment: [ dev, uat, prf, prod, sit_nexi_p, uat_nexi_p, prf_nexi_p ]
+        environment: [ dev, uat, prf, prod, dev_nexi, sit_nexi, uat_nexi, prf_nexi ]
     uses: ./.github/workflows/deploy_with_github_runner.yml
     with:
       environment: ${{ matrix.environment }}

@@ -23,6 +23,7 @@ jobs:
   setting_env:
     name: Setting Environment
     runs-on: ubuntu-22.04
+    if: ${{ inputs.target == inputs.environment }}
     outputs:
       environment: ${{ steps.get_env.outputs.environment }}
     steps:
