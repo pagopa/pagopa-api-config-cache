@@ -17,9 +17,10 @@ on:
           - uat
           - prf
           - prod
-          - sit_nexi_p
-          - uat_nexi_p
-          - prf_nexi_p
+          - dev_nexi
+          - sit_nexi
+          - uat_nexi
+          - prf_nexi
       beta:
         required: false
         type: boolean
