@@ -69,7 +69,7 @@ jobs:
           pat_token: ${{ secrets.BOT_TOKEN_GITHUB }}
 
   deploy:
-    needs: [ create_runner ]
+    needs: [ setting_env, create_runner ]
     runs-on: [ self-hosted, "${{ needs.create_runner.outputs.runner_name }}" ]
     if: ${{ inputs.target == inputs.environment }}
     name: Deploy on AKS
