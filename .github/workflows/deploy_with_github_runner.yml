@@ -171,7 +171,7 @@ jobs:
           pat_token: ${{ secrets.BOT_TOKEN_GITHUB }}
 
   update_openapi:
-    needs: [ deploy ]
+    needs: [ setting_env, deploy ]
     runs-on: ubuntu-latest
     name: Update OpenAPI
     if: ${{ inputs.target == inputs.environment }}
