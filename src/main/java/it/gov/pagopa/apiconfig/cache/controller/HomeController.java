@@ -20,6 +20,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.TimeZone;
+
 @RestController
 @Validated
 public class HomeController {
@@ -100,7 +104,7 @@ public class HomeController {
 
     AppInfo info =
         AppInfo.builder()
-            .name(name)
+            .name(name + " " + LocalDateTime.now())
             .version(version)
             .environment(environment)
             .dbConnection(healthCheckService.checkDatabaseConnection() ? "up" : "down")
