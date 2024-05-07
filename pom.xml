@@ -12,7 +12,7 @@
 
   <groupId>it.gov.pagopa.api-config</groupId>
   <artifactId>cache</artifactId>
-  <version>0.9.7-4-NOD-855-deploy-dev</version>
+  <version>0.9.7-5-NOD-855-deploy-dev</version>
   <name>API-Config Cache</name>
   <description>Generate cache for various microservices</description>
 
