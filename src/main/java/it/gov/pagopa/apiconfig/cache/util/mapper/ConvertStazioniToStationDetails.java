@@ -1,11 +1,6 @@
 package it.gov.pagopa.apiconfig.cache.util.mapper;
 
-import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Connection;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Protocol;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Proxy;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Redirect;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Service;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Timeouts;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.common.*;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.Station;
 import it.gov.pagopa.apiconfig.starter.entity.Stazioni;
 import org.modelmapper.Converter;
@@ -85,6 +80,7 @@ public class ConvertStazioniToStationDetails implements Converter<Stazioni, Stat
                 .build())
         .rtInstantaneousDispatch(source.getInvioRtIstantaneo())
         .primitiveVersion(source.getVersionePrimitive())
+            .standIn(source.getFlagStandin())
         .build();
   }
 }

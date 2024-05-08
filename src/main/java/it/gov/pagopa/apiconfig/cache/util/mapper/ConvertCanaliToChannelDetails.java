@@ -73,6 +73,7 @@ public class ConvertCanaliToChannelDetails implements Converter<CanaliView, Chan
         .primitiveVersion(source.getVersionePrimitive())
         .flagIo(source.getFlagIo())
         .flagTravaso(source.getFlagTravaso())
+        .standIn(source.getFlagStandin())
         .servPlugin(source.getIdServPlugin())
         .build();
   }

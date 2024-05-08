@@ -3,18 +3,10 @@ package it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Connection;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Proxy;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Redirect;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Service;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Timeouts;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.common.*;
+import lombok.*;
+
 import java.io.Serializable;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 /** StationDetails */
 @EqualsAndHashCode
@@ -77,4 +69,7 @@ public class Station implements Serializable {
 
   @JsonProperty(value = "primitive_version", required = true)
   private Integer primitiveVersion;
+
+  @JsonProperty(value = "stand_in")
+  private Boolean standIn;
 }
