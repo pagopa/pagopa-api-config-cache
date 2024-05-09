@@ -1,10 +1,10 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "@project.name@ ${service}",
-    "description": "@project.description@",
+    "title": "API-Config Cache ${service}",
+    "description": "Generate cache for various microservices",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.9.7"
+    "version": "0.9.7-5-NOD-855-deploy-dev"
   },
   "servers": [
     {
@@ -38,9 +38,6 @@
         "summary": "Get Creditor Institution list with Station v2",
         "operationId": "cache",
         "responses": {
-          "403": {
-            "description": "Forbidden"
-          },
           "400": {
             "description": "Bad Request",
             "content": {
@@ -54,15 +51,8 @@
           "429": {
             "description": "Too many requests"
           },
-          "500": {
-            "description": "Service unavailable",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            }
+          "403": {
+            "description": "Forbidden"
           },
           "200": {
             "description": "OK",
@@ -76,6 +66,16 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Service unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
           }
         },
         "security": [

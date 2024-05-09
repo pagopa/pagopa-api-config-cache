@@ -12,7 +12,7 @@
 
   <groupId>it.gov.pagopa.api-config</groupId>
   <artifactId>cache</artifactId>
-  <version>0.9.7</version>
+  <version>0.9.7-5-NOD-855-deploy-dev</version>
   <name>API-Config Cache</name>
   <description>Generate cache for various microservices</description>
 
@@ -267,6 +267,24 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
         <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/resources</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
     <testResources>
