@@ -4,7 +4,7 @@
     "title" : "API-Config Cache ${service}",
     "description" : "Generate cache for various microservices",
     "termsOfService" : "https://www.pagopa.gov.it/",
-    "version" : "0.9.7"
+    "version" : "0.9.7-5-NOD-855-deploy-dev"
   },
   "servers" : [ {
     "url" : "https://{host}/{basePath}",
@@ -26,8 +26,8 @@
         "summary" : "Get xlsx of full chache",
         "operationId" : "xls",
         "responses" : {
-          "500" : {
-            "description" : "Service unavailable",
+          "400" : {
+            "description" : "Bad Request",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -36,8 +36,8 @@
               }
             }
           },
-          "400" : {
-            "description" : "Bad Request",
+          "500" : {
+            "description" : "Service unavailable",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -49,17 +49,17 @@
           "401" : {
             "description" : "Unauthorized"
           },
-          "403" : {
-            "description" : "Forbidden"
-          },
-          "429" : {
-            "description" : "Too many requests"
-          },
           "200" : {
             "description" : "OK",
             "content" : {
               "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
             }
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "429" : {
+            "description" : "Too many requests"
           }
         },
         "security" : [ {
