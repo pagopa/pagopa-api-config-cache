@@ -90,6 +90,6 @@ public class Channel implements Serializable {
   @JsonProperty(value = "flag_travaso", required = true)
   private Boolean flagTravaso;
 
-  @JsonProperty(value = "stand_in")
-  private Boolean standIn;
+  @JsonProperty(value = "flag_standin")
+  private Boolean flagStandIn;
 }

@@ -80,7 +80,7 @@ public class ConvertStazioniToStationDetails implements Converter<Stazioni, Stat
                 .build())
         .rtInstantaneousDispatch(source.getInvioRtIstantaneo())
         .primitiveVersion(source.getVersionePrimitive())
-            .standIn(source.getFlagStandin())
+            .flagStandIn(source.getFlagStandin())
         .build();
   }
 }

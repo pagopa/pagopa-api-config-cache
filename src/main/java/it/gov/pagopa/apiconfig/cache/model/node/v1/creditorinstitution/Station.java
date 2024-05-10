@@ -70,6 +70,6 @@ public class Station implements Serializable {
   @JsonProperty(value = "primitive_version", required = true)
   private Integer primitiveVersion;
 
-  @JsonProperty(value = "stand_in")
-  private Boolean standIn;
+  @JsonProperty(value = "flag_standin")
+  private Boolean flagStandIn;
 }

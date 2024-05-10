@@ -1667,7 +1667,7 @@
           "flag_travaso" : {
             "type" : "boolean"
           },
-          "stand_in" : {
+          "flag_standin" : {
             "type" : "boolean"
           }
         }
@@ -2275,7 +2275,7 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "stand_in" : {
+          "flag_standin" : {
             "type" : "boolean"
           }
         }
