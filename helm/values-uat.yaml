@@ -2,7 +2,7 @@ microservice-chart: &microservice-chart
   namespace: "apiconfig"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: 0.9.7-5-NOD-855-deploy-dev
+    tag: 0.9.7-6-NOD-872_standin
   canaryDelivery:
     deployment:
       image:
