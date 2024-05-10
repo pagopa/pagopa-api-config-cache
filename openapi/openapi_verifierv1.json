@@ -4,7 +4,7 @@
     "title": "API-Config Cache ${service}",
     "description": "Generate cache for various microservices",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.9.7-5-NOD-855-deploy-dev"
+    "version": "0.9.7-6-NOD-872_standin"
   },
   "servers": [
     {
@@ -38,8 +38,8 @@
         "summary": "Get Creditor Institution list with Station v2",
         "operationId": "cache",
         "responses": {
-          "400": {
-            "description": "Bad Request",
+          "500": {
+            "description": "Service unavailable",
             "content": {
               "application/json": {
                 "schema": {
@@ -48,8 +48,8 @@
               }
             }
           },
-          "429": {
-            "description": "Too many requests"
+          "401": {
+            "description": "Unauthorized"
           },
           "403": {
             "description": "Forbidden"
@@ -64,11 +64,8 @@
               }
             }
           },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Service unavailable",
+          "400": {
+            "description": "Bad Request",
             "content": {
               "application/json": {
                 "schema": {
@@ -76,6 +73,9 @@
                 }
               }
             }
+          },
+          "429": {
+            "description": "Too many requests"
           }
         },
         "security": [

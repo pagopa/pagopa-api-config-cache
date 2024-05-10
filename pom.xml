@@ -12,14 +12,14 @@
 
   <groupId>it.gov.pagopa.api-config</groupId>
   <artifactId>cache</artifactId>
-  <version>0.9.7-5-NOD-855-deploy-dev</version>
+  <version>0.9.7-6-NOD-872_standin</version>
   <name>API-Config Cache</name>
   <description>Generate cache for various microservices</description>
 
   <properties>
     <java.version>17</java.version>
     <spring-version>2.7.7</spring-version>
-    <starter.version>1.15.0</starter.version>
+    <starter.version>1.19.3</starter.version>
     <springdoc.version>1.6.11</springdoc.version>
     <postgresql.version>42.5.4</postgresql.version>
     <oracle.version>21.4.0.0</oracle.version>

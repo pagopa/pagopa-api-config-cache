@@ -4,7 +4,7 @@
     "title": "API-Config Cache ${service}",
     "description": "Generate cache for various microservices",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.9.7-5-NOD-855-deploy-dev"
+    "version": "0.9.7-6-NOD-872_standin"
   },
   "servers": [
     {
@@ -1805,6 +1805,9 @@
           },
           "flag_travaso": {
             "type": "boolean"
+          },
+          "flag_standin": {
+            "type": "boolean"
           }
         }
       },
@@ -2519,6 +2522,9 @@
           "primitive_version": {
             "type": "integer",
             "format": "int32"
+          },
+          "flag_standin": {
+            "type": "boolean"
           }
         }
       },
