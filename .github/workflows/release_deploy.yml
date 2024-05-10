@@ -15,7 +15,12 @@ on:
         options:
           - dev
           - uat
+          - prf
           - prod
+          - dev_nexi
+          - sit_nexi
+          - uat_nexi
+          - prf_nexi
       beta:
         required: false
         type: boolean
@@ -74,14 +79,14 @@ jobs:
         run: echo "semver=${{env.SEMVER}}" >> $GITHUB_OUTPUT
 
       # Set Environment
-      - run: echo "ENVIRNOMENT=${{ inputs.environment}}" >> $GITHUB_ENV
+      - run: echo "ENVIRONMENT=${{ inputs.environment}}" >> $GITHUB_ENV
 
       - if: ${{ inputs.environment == null }}
-        run: echo "ENVIRNOMENT=dev" >> $GITHUB_ENV
+        run: echo "ENVIRONMENT=dev" >> $GITHUB_ENV
 
       - id: get_env
         name: Set Output
-        run: echo "environment=${{env.ENVIRNOMENT}}" >> $GITHUB_OUTPUT
+        run: echo "environment=${{env.ENVIRONMENT}}" >> $GITHUB_OUTPUT
 
 
   release:
@@ -104,7 +109,8 @@ jobs:
     needs: [ setup, release ]
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
-    if: ${{ inputs.semver != 'skip' }}
+#    if: ${{ inputs.semver != 'skip' }}
+    if: ${{ needs.setup.outputs.semver != 'skip' }}
     steps:
       #      - name: Build and Push
       #        id: semver
@@ -145,13 +151,14 @@ jobs:
           secrets: |
             GH_TOKEN=${{ secrets.READ_PACKAGES_TOKEN }}
 
+
   deploy_aks:
     name: Deploy on AKS
     needs: [ setup, release, image ]
     if: ${{ always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
     strategy:
       matrix:
-        environment: [ dev, uat, prod ]
+        environment: [ dev, uat, prf, prod, dev_nexi, sit_nexi, uat_nexi, prf_nexi ]
     uses: ./.github/workflows/deploy_with_github_runner.yml
     with:
       environment: ${{ matrix.environment }}
