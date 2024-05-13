@@ -128,11 +128,11 @@ postgresql-nexi:
     !!merge <<: *azureSecretProvider
     envSecrets:
       !!merge <<: *envSecret
-      DB_CONFIG_PASSWORD: "db-nexi-cfg-password"
+      DB_CONFIG_PASSWORD: "db-postgres-nexi-cfg-password"
 # postgres nexi - replica not present in dev environment
 postgresql-replica-nexi:
   enabled: false
-# oracle nexi - SIT
+# oracle nexi - UAT
 oracle:
   !!merge <<: *microservice-chart
   ingress:
