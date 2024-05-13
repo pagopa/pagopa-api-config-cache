@@ -63,6 +63,10 @@ microservice-chart: &microservice-chart
                 values:
                   - user
 # Configuration used to update image tag
+##############
+## SERVICES ##
+##############
+# postgres pagopa - DEV
 postgresql:
   !!merge <<: *microservice-chart
   ingress:
@@ -83,6 +87,7 @@ postgresql:
     envSecrets:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
+# postgres pagopa - IT
 postgresql-replica:
   !!merge <<: *microservice-chart
   ingress:
@@ -103,6 +108,31 @@ postgresql-replica:
     envSecrets:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
+# postgres nexi - SIT
+postgresql-nexi:
+  !!merge <<: *microservice-chart
+  ingress:
+    !!merge <<: *ingress
+    path: /api-config-cache/nexi/p(/|$)(.*)
+  envConfig:
+    !!merge <<: *envConfig
+    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql-nexi"
+    DB_CONFIG_URL: "jdbc:postgresql://db-postgres-ndp.u.db-nodo-pagamenti.com:5444/ndpspca?prepareThreshold=0&currentSchema=NODO4_CFG"
+    DB_CONFIG_USER: "pp_nodo4_cfg"
+    DB_CONFIG_DRIVER: "org.postgresql.Driver"
+    DATABASE_ID: "pnexi"
+    HEALTHCHECK_QUERY: "select 1"
+    SAVE_DB: "true"
+    SEND_EVENT: "false"
+  secretProvider:
+    !!merge <<: *azureSecretProvider
+    envSecrets:
+      !!merge <<: *envSecret
+      DB_CONFIG_PASSWORD: "db-nexi-cfg-password"
+# postgres nexi - replica not present in dev environment
+postgresql-replica-nexi:
+  enabled: false
+# oracle nexi - SIT
 oracle:
   !!merge <<: *microservice-chart
   ingress:
@@ -122,7 +152,8 @@ oracle:
     !!merge <<: *azureSecretProvider
     envSecrets:
       !!merge <<: *envSecret
-      DB_CONFIG_PASSWORD: "oracle-db-cfg-password-tmp"
+      DB_CONFIG_PASSWORD: "oracle-db-cfg-password"
+# oracle nexi - DEV
 oracledev:
   !!merge <<: *microservice-chart
   ingress:
@@ -142,8 +173,13 @@ oracledev:
     envSecrets:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "oracle-db-cfg-prf-password"
+# oracle nexi - PROD x TEST
 oracleprod:
   enabled: false
+#############
+## REFRESH ##
+#############
+# postgres pagopa - DEV
 refresh-p:
   namespace: "apiconfig"
   schedule: "0 0 * * *"
@@ -187,6 +223,7 @@ refresh-p:
                 operator: In
                 values:
                   - user
+# postgres pagopa - IT
 refresh-p-replica:
   namespace: "apiconfig"
   schedule: "0 0 * * *"
@@ -230,6 +267,7 @@ refresh-p-replica:
                 operator: In
                 values:
                   - user
+# oracle nexi - SIT
 refresh-o:
   namespace: "apiconfig"
   schedule: "0 0 * * *"
@@ -273,6 +311,7 @@ refresh-o:
                 operator: In
                 values:
                   - user
+# oracle nexi - DEV
 refresh-odev:
   namespace: "apiconfig"
   schedule: "0 0 * * *"
@@ -316,5 +355,6 @@ refresh-odev:
                 operator: In
                 values:
                   - user
+# oracle nexi - PROD x TEST
 refresh-oprod:
   enabled: false
