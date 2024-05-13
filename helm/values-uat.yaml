@@ -129,7 +129,7 @@ postgresql-nexi:
     envSecrets:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "db-postgres-nexi-cfg-password"
-# postgres nexi - replica not present in dev environment
+# postgres nexi - replica should be prf in uat environment
 postgresql-replica-nexi:
   enabled: false
 # oracle nexi - UAT
