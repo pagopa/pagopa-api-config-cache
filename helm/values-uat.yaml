@@ -152,7 +152,7 @@ oracle:
     !!merge <<: *azureSecretProvider
     envSecrets:
       !!merge <<: *envSecret
-      DB_CONFIG_PASSWORD: "oracle-db-cfg-password"
+      DB_CONFIG_PASSWORD: "oracle-db-cfg-password-tmp"
 # oracle nexi - DEV
 oracledev:
   !!merge <<: *microservice-chart
@@ -241,6 +241,50 @@ refresh-p-replica:
     - "--header"
     - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
     - "https://api.uat.platform.pagopa.it/api-config-cache/pr/v1/cache/refresh"
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "150m"
+  secretProvider:
+    !!merge <<: *azureSecretProvider
+    envSecrets:
+      !!merge <<: *envSecret
+      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
+  tolerations:
+    - key: dedicated
+      operator: Equal
+      value: "apiconfig"
+      effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node_type
+                operator: In
+                values:
+                  - user
+# postgres nexi - UAT
+refresh-p-nexi:
+  namespace: "apiconfig"
+  schedule: "0 0 * * *"
+  timeZone: "Europe/Rome"
+  successfulJobsHistoryLimit: "1"
+  image:
+    repository: "curlimages/curl"
+    tag: "latest"
+    pullPolicy: "Always"
+  command:
+    - "curl"
+    - "-k"
+    - "-m"
+    - "\"300\""
+    - "--header"
+    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
+    - "https://api.uat.platform.pagopa.it/api-config-cache/nexi/p/v1/cache/refresh"
   resources:
     requests:
       memory: "256Mi"
