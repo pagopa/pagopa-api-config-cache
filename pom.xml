@@ -21,7 +21,7 @@
     <spring-version>2.7.7</spring-version>
     <starter.version>1.19.3</starter.version>
     <springdoc.version>1.6.11</springdoc.version>
-    <postgresql.version>42.5.4</postgresql.version>
+    <postgresql.version>42.5.5</postgresql.version>
     <oracle.version>21.4.0.0</oracle.version>
     <modelmapper.version>3.1.0</modelmapper.version>
     <sonar.exclusions>**/imported/**,**/exception/**,**/model/**</sonar.exclusions>
