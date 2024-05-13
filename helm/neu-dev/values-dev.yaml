@@ -23,13 +23,13 @@ basecache: &basecache
   envConfig: &envConfig
     TZ: "Europe/Rome"
     AZURE_INSIGHTS_ENABLED: "true"
-    REDIS_HOST: "pagopa-d-redis.redis.cache.windows.net"
     REDIS_PORT: "6380"
   secretProvider: &azureSecretProvider
     create: true
     envSecrets: &envSecret
       APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-d-connection-string"
       REDIS_PWD: "redis-password"
+      REDIS_HOST: "redis-hostname"
     keyvault:
       name: "pagopa-d-apiconfig-kv"
       tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
