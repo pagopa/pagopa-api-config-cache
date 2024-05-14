@@ -33,7 +33,6 @@ microservice-chart: &microservice-chart
     ENV: "uat"
     TZ: "Europe/Rome"
     AZURE_INSIGHTS_ENABLED: "true"
-    REDIS_HOST: "pagopa-u-redis.redis.cache.windows.net"
     REDIS_PORT: "6380"
     OTEL_SERVICE_NAME: "pagopa-api-config-cache"
     OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=azure-uat"
@@ -46,6 +45,7 @@ microservice-chart: &microservice-chart
     envSecrets: &envSecret
       APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-u-connection-string"
       REDIS_PWD: "redis-password"
+      REDIS_HOST: "redis-hostname"
       OTEL_EXPORTER_OTLP_HEADERS: elastic-apm-secret-token
       CACHE_TX_CONNECTION_STRING: "nodo-dei-pagamenti-cache-tx-connection-string-key"
     keyvault:
