@@ -75,13 +75,13 @@ postgresql:
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql"
-    DB_CONFIG_URL: "jdbc:postgresql://ndp.d.db-nodo-pagamenti.com:6432/nodo?sslmode=require&prepareThreshold=0&currentSchema=cfg"
+    DB_CONFIG_URL: "jdbc:postgresql://nodo-db.d.internal.postgresql.pagopa.it:6432/nodo?sslmode=require&prepareThreshold=0&currentSchema=cfg"
     DB_CONFIG_USER: "cfg"
     DB_CONFIG_DRIVER: "org.postgresql.Driver"
     DATABASE_ID: "p"
     HEALTHCHECK_QUERY: "select 1"
     SAVE_DB: "false"
-    SEND_EVENT: "false"
+    SEND_EVENT: "true"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:
@@ -96,12 +96,12 @@ postgresql-replica:
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql-replica"
-    DB_CONFIG_URL: "jdbc:postgresql://ndp.d.db-nodo-pagamenti.com:6432/nodo-replica?sslmode=require&prepareThreshold=0&currentSchema=cfg"
+    DB_CONFIG_URL: "jdbc:postgresql://nodo-db.d.internal.postgresql.pagopa.it:6432/nodo-replica?sslmode=require&prepareThreshold=0&currentSchema=cfg"
     DB_CONFIG_USER: "cfg"
     DB_CONFIG_DRIVER: "org.postgresql.Driver"
     DATABASE_ID: "pr"
     HEALTHCHECK_QUERY: "select 1"
-    SAVE_DB: "false"
+    SAVE_DB: "true"
     SEND_EVENT: "false"
   secretProvider:
     !!merge <<: *azureSecretProvider
@@ -147,7 +147,7 @@ oracle:
     DATABASE_ID: "o"
     HEALTHCHECK_QUERY: "select 1 from dual"
     SAVE_DB: "false"
-    SEND_EVENT: "true"
+    SEND_EVENT: "false"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:
