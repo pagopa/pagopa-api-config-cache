@@ -9,6 +9,7 @@ locals {
     hostname = "api.${var.apim_dns_zone_prefix}.${var.external_domain}"
   }
   apim_x_node_product_id = "apim_for_node"
+  cfg_x_node_product_id = "cfg-for-node"
   technical_support_product_id = "technical_support_api"
 
   oracle   = "o"
