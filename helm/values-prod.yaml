@@ -72,6 +72,10 @@ microservice-chart: &microservice-chart
             namespaces: ["apiconfig"]
             topologyKey: topology.kubernetes.io/zone
 # Configuration used to update image tag
+##############
+## SERVICES ##
+##############
+# postgres pagopa - PROD
 postgresql:
   !!merge <<: *microservice-chart
   ingress:
@@ -94,6 +98,12 @@ postgresql:
       DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
 postgresql-replica:
   enabled: false
+# postgres nexi - PROD
+postgresql-nexi:
+  enabled: false
+postgresql-replica-nexi:
+  enabled: false
+# oracle nexi - PROD
 oracle:
   !!merge <<: *microservice-chart
   ingress:
@@ -120,6 +130,9 @@ oracledev:
   enabled: false
 oracleprod:
   enabled: false
+#############
+## REFRESH ##
+#############
 refresh-p:
   namespace: "apiconfig"
   schedule: "0 0 * * *"
@@ -174,6 +187,9 @@ refresh-p:
             topologyKey: topology.kubernetes.io/zone
 refresh-p-replica:
   enabled: false
+refresh-p-nexi:
+  enabled: false
+# oracle nexi - PROD
 refresh-o:
   namespace: "apiconfig"
   schedule: "0 0 * * *"
