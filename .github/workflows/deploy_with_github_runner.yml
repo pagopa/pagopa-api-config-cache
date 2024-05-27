@@ -135,7 +135,7 @@ jobs:
           cluster_name: ${{ vars.CLUSTER_NAME }}
           resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
           app_name: ${{ env.APP_NAME }}
-          helm_upgrade_options: ' --debug --set postgresql.enabled=true --set oracle.enabled=true'
+          helm_upgrade_options: ' --debug --set postgresql.enabled=true --set oracle.enabled=true --set postgresql-nexi.enabled=false'
 
       - name: Deploy for Nexi
         uses: pagopa/github-actions-template/aks-deploy@main
