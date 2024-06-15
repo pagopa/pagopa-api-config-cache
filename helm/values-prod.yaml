@@ -90,7 +90,7 @@ postgresql:
     DATABASE_ID: "p"
     HEALTHCHECK_QUERY: "select 1"
     SAVE_DB: "false"
-    SEND_EVENT: "false"
+    SEND_EVENT: "true"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:
@@ -120,7 +120,7 @@ oracle:
     IN_PROGRESS_TTL: "20"
     HEALTHCHECK_QUERY: "select 1 from dual"
     SAVE_DB: "false"
-    SEND_EVENT: "true"
+    SEND_EVENT: "false"
   secretProvider:
     !!merge <<: *azureSecretProvider
     envSecrets:
