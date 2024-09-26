@@ -72,4 +72,10 @@ public class Station implements Serializable {
 
   @JsonProperty(value = "flag_standin")
   private Boolean flagStandIn;
+
+  @JsonProperty("is_payment_options_enabled")
+  private Boolean isPaymentOptionsEnabled = false;
+
+  @JsonProperty("rest_endpoint")
+  private String restEndpoint;
 }
