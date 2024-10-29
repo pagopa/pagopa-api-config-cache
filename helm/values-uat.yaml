@@ -149,7 +149,7 @@ postgresql-replica-nexi:
     !!merge <<: *azureSecretProvider
     envSecrets:
       !!merge <<: *envSecret
-      DB_CONFIG_PASSWORD: "db-nexi-cfg-password-prf"
+      DB_CONFIG_PASSWORD: "db-postgres-nexi-cfg-password-prf"
 # oracle nexi - UAT
 oracle:
   enabled: false
