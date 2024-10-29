@@ -142,6 +142,7 @@ postgresql-replica-nexi:
     DB_CONFIG_USER: "pp_nodo4_cfg"
     DB_CONFIG_DRIVER: "org.postgresql.Driver"
     DATABASE_ID: "prnexi"
+    ENV: "prf"
     HEALTHCHECK_QUERY: "select 1"
     SAVE_DB: "true"
     SEND_EVENT: "false"
