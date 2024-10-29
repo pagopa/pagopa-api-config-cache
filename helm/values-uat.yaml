@@ -332,7 +332,7 @@ refresh-p-nexi:
                 values:
                   - user
 # postgres nexi - PRF
-refresh-pr-nexi:
+refresh-p-replica-nexi:
   namespace: "apiconfig"
   schedule: "0 0 * * *"
   timeZone: "Europe/Rome"
