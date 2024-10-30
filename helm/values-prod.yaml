@@ -105,27 +105,28 @@ postgresql-replica-nexi:
   enabled: false
 # oracle nexi - PROD
 oracle:
-  !!merge <<: *microservice-chart
-  ingress:
-    !!merge <<: *ingress
-    path: /api-config-cache/o(/|$)(.*)
-  envConfig:
-    !!merge <<: *envConfig
-    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-oracle"
-    DB_CONFIG_URL: "jdbc:oracle:thin:@(DESCRIPTION=(ENABLE=BROKEN)(ADDRESS=(PROTOCOL=tcp)(PORT=1521)(HOST=db-nodo-pagamenti.p.db-nodo-pagamenti.com))(CONNECT_DATA=(SERVICE_NAME=NDPSPCP_NODO4_CFG))(SO_KEEPALIVE=true)(TCP_KEEPIDLE=60)(TCP_KEEPINTVL=30)(TCP_KEEPCNT=15))"
-    DB_CONFIG_USER: "NODO4_CFG"
-    DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
-    JAVA_OPTS: "-XX:MaxHeapSize=6g"
-    DATABASE_ID: "o"
-    IN_PROGRESS_TTL: "20"
-    HEALTHCHECK_QUERY: "select 1 from dual"
-    SAVE_DB: "false"
-    SEND_EVENT: "false"
-  secretProvider:
-    !!merge <<: *azureSecretProvider
-    envSecrets:
-      !!merge <<: *envSecret
-      DB_CONFIG_PASSWORD: "oracle-db-cfg-password"
+  enabled: false
+#  !!merge <<: *microservice-chart
+#  ingress:
+#    !!merge <<: *ingress
+#    path: /api-config-cache/o(/|$)(.*)
+#  envConfig:
+#    !!merge <<: *envConfig
+#    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-oracle"
+#    DB_CONFIG_URL: "jdbc:oracle:thin:@(DESCRIPTION=(ENABLE=BROKEN)(ADDRESS=(PROTOCOL=tcp)(PORT=1521)(HOST=db-nodo-pagamenti.p.db-nodo-pagamenti.com))(CONNECT_DATA=(SERVICE_NAME=NDPSPCP_NODO4_CFG))(SO_KEEPALIVE=true)(TCP_KEEPIDLE=60)(TCP_KEEPINTVL=30)(TCP_KEEPCNT=15))"
+#    DB_CONFIG_USER: "NODO4_CFG"
+#    DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
+#    JAVA_OPTS: "-XX:MaxHeapSize=6g"
+#    DATABASE_ID: "o"
+#    IN_PROGRESS_TTL: "20"
+#    HEALTHCHECK_QUERY: "select 1 from dual"
+#    SAVE_DB: "false"
+#    SEND_EVENT: "false"
+#  secretProvider:
+#    !!merge <<: *azureSecretProvider
+#    envSecrets:
+#      !!merge <<: *envSecret
+#      DB_CONFIG_PASSWORD: "oracle-db-cfg-password"
 oracledev:
   enabled: false
 oracleprod:
@@ -191,57 +192,58 @@ refresh-p-nexi:
   enabled: false
 # oracle nexi - PROD
 refresh-o:
-  namespace: "apiconfig"
-  schedule: "0 0 * * *"
-  timeZone: "Europe/Rome"
-  successfulJobsHistoryLimit: "2"
-  image:
-    repository: "curlimages/curl"
-    tag: "latest"
-    pullPolicy: "Always"
-  command:
-    - "curl"
-    - "-k"
-    - "-m"
-    - "\"300\""
-    - "--header"
-    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
-    - "https://api.platform.pagopa.it/api-config-cache/o/v1/cache/refresh"
-  resources:
-    requests:
-      memory: "256Mi"
-      cpu: "100m"
-    limits:
-      memory: "512Mi"
-      cpu: "150m"
-  secretProvider:
-    !!merge <<: *azureSecretProvider
-    envSecrets:
-      !!merge <<: *envSecret
-      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
-  tolerations:
-    - key: dedicated
-      operator: Equal
-      value: "apiconfig"
-      effect: NoSchedule
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: node_type
-                operator: In
-                values:
-                  - user
-    podAntiAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          podAffinityTerm:
-            labelSelector:
-              matchLabels:
-                app.kubernetes.io/instance: "cache"
-            namespaces: ["apiconfig"]
-            topologyKey: topology.kubernetes.io/zone
+  enabled: false
+#  namespace: "apiconfig"
+#  schedule: "0 0 * * *"
+#  timeZone: "Europe/Rome"
+#  successfulJobsHistoryLimit: "2"
+#  image:
+#    repository: "curlimages/curl"
+#    tag: "latest"
+#    pullPolicy: "Always"
+#  command:
+#    - "curl"
+#    - "-k"
+#    - "-m"
+#    - "\"300\""
+#    - "--header"
+#    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
+#    - "https://api.platform.pagopa.it/api-config-cache/o/v1/cache/refresh"
+#  resources:
+#    requests:
+#      memory: "256Mi"
+#      cpu: "100m"
+#    limits:
+#      memory: "512Mi"
+#      cpu: "150m"
+#  secretProvider:
+#    !!merge <<: *azureSecretProvider
+#    envSecrets:
+#      !!merge <<: *envSecret
+#      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
+#  tolerations:
+#    - key: dedicated
+#      operator: Equal
+#      value: "apiconfig"
+#      effect: NoSchedule
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#          - matchExpressions:
+#              - key: node_type
+#                operator: In
+#                values:
+#                  - user
+#    podAntiAffinity:
+#      preferredDuringSchedulingIgnoredDuringExecution:
+#        - weight: 100
+#          podAffinityTerm:
+#            labelSelector:
+#              matchLabels:
+#                app.kubernetes.io/instance: "cache"
+#            namespaces: ["apiconfig"]
+#            topologyKey: topology.kubernetes.io/zone
 refresh-odev:
   enabled: false
 refresh-oprod:

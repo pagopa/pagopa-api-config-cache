@@ -66,7 +66,7 @@ microservice-chart: &microservice-chart
 ##############
 ## SERVICES ##
 ##############
-# postgres pagopa - DEV
+# postgres pagopa - UAT
 postgresql:
   !!merge <<: *microservice-chart
   ingress:
@@ -87,7 +87,7 @@ postgresql:
     envSecrets:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
-# postgres pagopa - IT
+# postgres pagopa - PRF
 postgresql-replica:
   !!merge <<: *microservice-chart
   ingress:
@@ -108,7 +108,7 @@ postgresql-replica:
     envSecrets:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
-# postgres nexi - SIT
+# postgres nexi - UAT
 postgresql-nexi:
   !!merge <<: *microservice-chart
   ingress:
@@ -129,7 +129,7 @@ postgresql-nexi:
     envSecrets:
       !!merge <<: *envSecret
       DB_CONFIG_PASSWORD: "db-postgres-nexi-cfg-password"
-# postgres nexi - replica should be prf in uat environment
+# postgres nexi - PRF
 postgresql-replica-nexi:
   !!merge <<: *microservice-chart
   ingress:
@@ -138,9 +138,11 @@ postgresql-replica-nexi:
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql-replica-nexi"
-    DB_CONFIG_URL: "jdbc:postgresql://db-postgres-ndp-prf.u.db-nodo-pagamenti.com:5444/ndpspcq?prepareThreshold=0&currentSchema=NODO4_CFG"
-    #DB_CONFIG_URL: "jdbc:postgresql://db-postgres-ndp-prf-1.u.db-nodo-pagamenti.com:5444,db-postgres-ndp-prf-2.u.db-nodo-pagamenti.com:5444/ndpspcq?prepareThreshold=0&currentSchema=NODO4_CFG"
+    #DB_CONFIG_URL: "jdbc:postgresql://db-postgres-ndp-prf.u.db-nodo-pagamenti.com:5444/ndpspcq?prepareThreshold=0&currentSchema=NODO4_CFG" # OK!
+    DB_CONFIG_URL: "jdbc:postgresql://db-postgres-ndp-prf-1.u.db-nodo-pagamenti.com:6432,db-postgres-ndp-prf-2.u.db-nodo-pagamenti.com:6432/ndpspcq"
+    #DB_CONFIG_URL: "jdbc:postgresql://db-postgres-ndp-prf-1.u.db-nodo-pagamenti.com:6432/ndpspcq"
     DB_CONFIG_USER: "pp_nodo4_cfg"
+#    DB_CONFIG_USER: "nodo4_cfg"
     DB_CONFIG_DRIVER: "org.postgresql.Driver"
     DATABASE_ID: "prnexi"
     ENV: "prf"
