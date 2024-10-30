@@ -48,6 +48,8 @@ jobs:
     if: ${{ inputs.target == inputs.environment }}
     outputs:
       environment: ${{ steps.get_env.outputs.environment }}
+      pagopa_rel: ${{ steps.get_releases.outputs.pagopa_rel }}
+      nexi_rel: ${{ steps.get_releases.outputs.nexi_rel }}
     steps:
       - name: Get Environment
         id: get_env
