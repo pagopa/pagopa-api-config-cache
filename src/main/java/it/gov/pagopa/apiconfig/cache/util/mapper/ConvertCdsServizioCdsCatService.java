@@ -1,6 +1,6 @@
 package it.gov.pagopa.apiconfig.cache.util.mapper;
 
-import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsService;
+import it.gov.pagopa.apiconfig.cache.model.latest.cds.CdsService;
 import it.gov.pagopa.apiconfig.starter.entity.CdsServizio;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;

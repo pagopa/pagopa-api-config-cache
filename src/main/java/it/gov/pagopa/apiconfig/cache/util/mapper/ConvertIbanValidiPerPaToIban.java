@@ -1,11 +1,12 @@
 package it.gov.pagopa.apiconfig.cache.util.mapper;
 
-import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.Iban;
+import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.Iban;
 import it.gov.pagopa.apiconfig.starter.entity.IbanValidiPerPa;
-import java.time.ZoneId;
-import java.util.Optional;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
+
+import java.time.ZoneId;
+import java.util.Optional;
 
 public class ConvertIbanValidiPerPaToIban implements Converter<IbanValidiPerPa, Iban> {
 

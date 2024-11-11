@@ -1,6 +1,6 @@
 package it.gov.pagopa.apiconfig.cache.util.mapper;
 
-import it.gov.pagopa.apiconfig.cache.model.node.v1.configuration.FtpServer;
+import it.gov.pagopa.apiconfig.cache.model.latest.configuration.FtpServer;
 import it.gov.pagopa.apiconfig.starter.entity.FtpServers;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;

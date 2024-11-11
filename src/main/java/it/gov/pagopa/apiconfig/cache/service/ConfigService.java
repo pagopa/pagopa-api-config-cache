@@ -106,6 +106,7 @@ public class ConfigService {
   @Autowired private RedisRepository redisRepository;
   @Autowired private CacheRepository cacheRepository;
   @Autowired private ConfigMapper modelMapper;
+
   @Autowired private ConfigurationKeysRepository configurationKeysRepository;
   @Autowired private IntermediariPaRepository intermediariPaRepository;
   @Autowired private IntermediariPspRepository intermediariPspRepository;
@@ -125,11 +126,7 @@ public class ConfigService {
   @Autowired private PaStazionePaRepository paStazioniRepository;
   @Autowired private PaRepository paRepository;
   @Autowired private CanaliViewRepository canaliViewRepository;
-  @Autowired private ObjectMapper objectMapper;
-
-  @Autowired
-  private PspCanaleTipoVersamentoCanaleRepository pspCanaleTipoVersamentoCanaleRepository;
-
+  @Autowired private PspCanaleTipoVersamentoCanaleRepository pspCanaleTipoVersamentoCanaleRepository;
   @Autowired private PspRepository pspRepository;
   @Autowired private CdiMasterValidRepository cdiMasterValidRepository;
   @Autowired private CdiDetailRepository cdiDetailRepository;
@@ -139,7 +136,9 @@ public class ConfigService {
   @Autowired private InformativePaMasterRepository informativePaMasterRepository;
   @Autowired private InformativePaDetailRepository informativePaDetailRepository;
   @Autowired private InformativePaFasceRepository informativePaFasceRepository;
+
   @Autowired private CacheEventHubService eventHubService;
+  @Autowired private ObjectMapper objectMapper;
 
   private JAXBContext ctListaInformativePSPJaxbContext;
   private JAXBContext tplInformativaPSPJaxbContext;
@@ -158,7 +157,7 @@ public class ConfigService {
   }
 
   public Map<String, Object> loadFullCache() throws IOException {
-    log.info("Initializing cache");
+    log.info("Loading full cache");
 
     byte[] bytes = redisRepository.get(getKeyV1(Constants.FULL));
     byte[] unzipped = ZipUtils.unzip(bytes);
@@ -199,8 +198,7 @@ public class ConfigService {
     return configData;
   }
 
-  public Map<String, Object> newCacheV1()
-      throws IOException {
+  public Map<String, Object> newCacheV1() throws IOException {
 
     setCacheV1InProgress(Constants.FULL);
 

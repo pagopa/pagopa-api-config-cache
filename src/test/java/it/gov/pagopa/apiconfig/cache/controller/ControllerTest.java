@@ -47,7 +47,7 @@ class ControllerTest {
   @MockBean private VerifierService verifierService;
   @MockBean private EntityManager entityManager;
   @Autowired private ConfigMapper modelMapper;
-  @Autowired private RefreshController refreshController;
+  @Autowired private CacheController cacheController;
 
   @BeforeEach
   void setUp() throws IOException {
@@ -80,7 +80,7 @@ class ControllerTest {
     when(verifierService.getPaV2()).thenReturn(Arrays.asList("1", "2"));
     when(healthCheckService.checkDatabaseConnection()).thenReturn(true);
 
-    org.springframework.test.util.ReflectionTestUtils.setField(refreshController, "inMemoryCache", objectObjectHashMap);
+    org.springframework.test.util.ReflectionTestUtils.setField(cacheController, "inMemoryCache", objectObjectHashMap);
   }
 
   @Test

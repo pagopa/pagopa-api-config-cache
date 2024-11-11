@@ -1,7 +1,12 @@
 package it.gov.pagopa.apiconfig.cache.util.mapper;
 
-import it.gov.pagopa.apiconfig.cache.model.node.v1.common.*;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.Station;
+import it.gov.pagopa.apiconfig.cache.model.latest.common.Connection;
+import it.gov.pagopa.apiconfig.cache.model.latest.common.Protocol;
+import it.gov.pagopa.apiconfig.cache.model.latest.common.Proxy;
+import it.gov.pagopa.apiconfig.cache.model.latest.common.Redirect;
+import it.gov.pagopa.apiconfig.cache.model.latest.common.Service;
+import it.gov.pagopa.apiconfig.cache.model.latest.common.Timeouts;
+import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.Station;
 import it.gov.pagopa.apiconfig.starter.entity.Stazioni;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;

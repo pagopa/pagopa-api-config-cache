@@ -48,7 +48,7 @@ class CacheNotInitializedTest {
   @MockBean private VerifierService verifierService;
   @MockBean private EntityManager entityManager;
   @Autowired private ConfigMapper modelMapper;
-  @Autowired private RefreshController refreshController;
+  @Autowired private CacheController cacheController;
 
   @BeforeEach
   void setUp() throws IOException {

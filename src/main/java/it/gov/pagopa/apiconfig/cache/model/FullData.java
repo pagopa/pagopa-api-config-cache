@@ -2,13 +2,13 @@ package it.gov.pagopa.apiconfig.cache.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsCategory;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsService;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsSubject;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsSubjectService;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.configuration.*;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.*;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.*;
+import it.gov.pagopa.apiconfig.cache.model.latest.cds.CdsCategory;
+import it.gov.pagopa.apiconfig.cache.model.latest.cds.CdsService;
+import it.gov.pagopa.apiconfig.cache.model.latest.cds.CdsSubject;
+import it.gov.pagopa.apiconfig.cache.model.latest.cds.CdsSubjectService;
+import it.gov.pagopa.apiconfig.cache.model.latest.configuration.*;
+import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.*;
+import it.gov.pagopa.apiconfig.cache.model.latest.psp.*;
 import lombok.Getter;
 import lombok.Setter;
 

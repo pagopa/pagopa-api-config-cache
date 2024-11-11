@@ -1,6 +1,6 @@
 package it.gov.pagopa.apiconfig.cache.util.mapper;
 
-import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.BrokerCreditorInstitution;
+import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.BrokerCreditorInstitution;
 import it.gov.pagopa.apiconfig.starter.entity.IntermediariPa;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;

@@ -1,10 +1,19 @@
-package it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution;
+package it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.common.*;
-import lombok.*;
+import it.gov.pagopa.apiconfig.cache.model.latest.common.Connection;
+import it.gov.pagopa.apiconfig.cache.model.latest.common.Proxy;
+import it.gov.pagopa.apiconfig.cache.model.latest.common.Redirect;
+import it.gov.pagopa.apiconfig.cache.model.latest.common.Service;
+import it.gov.pagopa.apiconfig.cache.model.latest.common.Timeouts;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.io.Serializable;
 
@@ -72,4 +81,10 @@ public class Station implements Serializable {
 
   @JsonProperty(value = "flag_standin")
   private Boolean flagStandIn;
+
+  @JsonProperty("is_payment_options_enabled")
+  private Boolean isPaymentOptionsEnabled = false;
+
+  @JsonProperty("rest_endpoint")
+  private String restEndpoint;
 }

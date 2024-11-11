@@ -1,6 +1,6 @@
 package it.gov.pagopa.apiconfig.cache.util.mapper;
 
-import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.PaymentServiceProvider;
+import it.gov.pagopa.apiconfig.cache.model.latest.psp.PaymentServiceProvider;
 import it.gov.pagopa.apiconfig.starter.entity.Psp;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
