@@ -26,7 +26,7 @@ public class ConfigDataUtil {
                 try {
                     Type parameterType = sumInstanceMethod.getGenericParameterTypes()[0];
                     Class<?> valueType;
-                    if (parameterType instanceof ParameterizedType) {
+                    if (parameterType == Map.class) {//parameterType instanceof ParameterizedType) {
                         ParameterizedType parameterizedType = (ParameterizedType) parameterType;
 
                         // Get the actual type arguments for the parameterized Map type
@@ -43,7 +43,9 @@ public class ConfigDataUtil {
                         });
                         sumInstanceMethod.invoke(configDataV1, data);
                     }
-//                    sumInstanceMethod.invoke(configDataV1, inMemoryCache.get(k));
+                    else {
+                        sumInstanceMethod.invoke(configDataV1, inMemoryCache.get(k));
+                    }
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 } catch (InvocationTargetException e) {
