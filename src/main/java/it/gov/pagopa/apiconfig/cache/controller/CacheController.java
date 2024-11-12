@@ -338,7 +338,7 @@ public class CacheController {
     }
 
     private void docache() throws IOException {
-        inMemoryCache = configService.newCacheV1();
+        inMemoryCache = configService.newCache();
         configService.sendEvent(
             (String)inMemoryCache.get(Constants.VERSION),
             (ZonedDateTime)inMemoryCache.get(Constants.TIMESTAMP)

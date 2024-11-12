@@ -198,7 +198,7 @@ public class ConfigService {
     return configData;
   }
 
-  public Map<String, Object> newCacheV1() throws IOException {
+  public Map<String, Object> newCache() throws IOException {
 
     setCacheV1InProgress(Constants.FULL);
 
@@ -1224,7 +1224,7 @@ public class ConfigService {
                 .getInformativaControparte()
                 .addAll(ctListaInformativeControparte.getInformativaControparte());
           }
-          log.debug("Processed  pa:" + pa.getIdDominio());
+          log.debug("Processed pa:" + pa.getIdDominio());
         });
 
     log.debug("creating cache info full");
@@ -1239,8 +1239,7 @@ public class ConfigService {
     return informativePaSingleCache;
   }
 
-  private CtErogazione infoDetailToCtErogazione(
-      List<InformativePaFasce> allFasce, InformativePaDetail det) {
+  private CtErogazione infoDetailToCtErogazione(List<InformativePaFasce> allFasce, InformativePaDetail det) {
     List<CtFasciaOraria> fasce = new ArrayList<>();
     try {
       fasce =
@@ -1275,8 +1274,7 @@ public class ConfigService {
     return ctErogazione;
   }
 
-  private XMLGregorianCalendar stringToXmlGCTime(String time)
-      throws DatatypeConfigurationException {
+  private XMLGregorianCalendar stringToXmlGCTime(String time) throws DatatypeConfigurationException {
     if (time == null) {
       return null;
     }

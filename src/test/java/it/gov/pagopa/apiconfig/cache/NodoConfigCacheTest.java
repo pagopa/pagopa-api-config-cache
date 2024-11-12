@@ -2,7 +2,6 @@ package it.gov.pagopa.apiconfig.cache;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.apiconfig.cache.controller.stakeholders.NodeCacheController;
-import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.service.CacheEventHubService;
@@ -19,14 +18,10 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 // @SpringBootTest(classes = Application.class)
@@ -134,7 +129,7 @@ class NodoConfigCacheTest {
     when(informativePaMasterRepository.findAll()).thenReturn(TestUtils.informativePaMaster);
     when(jsonSerializer.serialize(any())).thenReturn("{}".getBytes(StandardCharsets.UTF_8));
 
-    byte[] export = new JsonToXls(false).convert(configService.newCacheV1());
+    byte[] export = new JsonToXls(false).convert(configService.newCache());
 //    Files.write(Path.of("./target/output.xlsx"), export);
 
     ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(export);
@@ -177,7 +172,7 @@ class NodoConfigCacheTest {
     when(informativePaMasterRepository.findAll()).thenReturn(TestUtils.informativePaMaster);
     when(jsonSerializer.serialize(any())).thenReturn("{}".getBytes(StandardCharsets.UTF_8));
 
-    ConfigDataV1 allData = ConfigDataUtil.cacheToConfigDataV1(configService.newCacheV1(), NodeCacheController.KEYS);
+    ConfigDataV1 allData = ConfigDataUtil.cacheToConfigDataV1(configService.newCache(), NodeCacheController.KEYS);
     assertThat(allData.getConfigurations())
         .containsKey(
             TestUtils.mockConfigurationKeys.get(0).getConfigCategory()
@@ -305,7 +300,7 @@ class NodoConfigCacheTest {
     when(dizionarioMetadatiRepository.findAll()).thenReturn(TestUtils.mockMetadataDicts);
     when(paRepository.findAll()).thenReturn(TestUtils.pas);
 
-    ConfigDataV1 allData = ConfigDataUtil.cacheToConfigDataV1(configService.newCacheV1(),NodeCacheController.KEYS);
+    ConfigDataV1 allData = ConfigDataUtil.cacheToConfigDataV1(configService.newCache(),NodeCacheController.KEYS);
     assertThat(allData.getConfigurations())
         .containsKey(
             TestUtils.mockConfigurationKeys.get(0).getConfigCategory()

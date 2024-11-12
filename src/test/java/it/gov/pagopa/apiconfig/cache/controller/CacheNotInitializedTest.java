@@ -76,7 +76,7 @@ class CacheNotInitializedTest {
     )));
 
     when(configService.getCacheV1Id("")).thenReturn(new CacheVersion("1111"));
-    when(configService.newCacheV1()).thenReturn(objectObjectHashMap);
+    when(configService.newCache()).thenReturn(objectObjectHashMap);
     when(configService.loadFullCache()).thenReturn(objectObjectHashMap);
     when(verifierService.getPaV2()).thenReturn(Arrays.asList("1", "2"));
     when(healthCheckService.checkDatabaseConnection()).thenReturn(true);
