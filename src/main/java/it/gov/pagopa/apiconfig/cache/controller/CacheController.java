@@ -42,7 +42,7 @@ import java.util.Map;
 @Slf4j
 public class CacheController {
 
-    private Map<String, Object> inMemoryCache;
+    private HashMap<String, Object> inMemoryCache;
 
     @Autowired
     private ConfigService configService;
@@ -68,7 +68,7 @@ public class CacheController {
         }
     }
 
-    public Map<String,Object> getInMemoryCache() throws IOException {
+    public HashMap<String, Object> getInMemoryCache() throws IOException {
         if(inMemoryCache==null) {
             docache();
         }

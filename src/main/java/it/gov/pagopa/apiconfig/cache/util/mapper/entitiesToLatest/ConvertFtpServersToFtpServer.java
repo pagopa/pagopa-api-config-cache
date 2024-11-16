@@ -1,4 +1,4 @@
-package it.gov.pagopa.apiconfig.cache.util.mapper;
+package it.gov.pagopa.apiconfig.cache.util.mapper.entitiesToLatest;
 
 import it.gov.pagopa.apiconfig.cache.model.latest.configuration.FtpServer;
 import it.gov.pagopa.apiconfig.starter.entity.FtpServers;

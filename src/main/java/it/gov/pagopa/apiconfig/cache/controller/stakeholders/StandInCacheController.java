@@ -18,9 +18,16 @@ public class StandInCacheController extends StakeholderController {
           Constants.STATIONS,
   };
 
+  public static String STAKEHOLDER = "standin";
+
   @Override
   protected String[] keys() {
     return StandInCacheController.KEYS;
+  }
+
+  @Override
+  protected String stakeholder() {
+    return StandInCacheController.STAKEHOLDER;
   }
 
 }

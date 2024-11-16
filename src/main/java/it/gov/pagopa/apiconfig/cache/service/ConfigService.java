@@ -15,14 +15,14 @@ import it.gov.pagopa.apiconfig.cache.imported.controparti.*;
 import it.gov.pagopa.apiconfig.cache.imported.template.*;
 import it.gov.pagopa.apiconfig.cache.model.FullData;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsCategory;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsService;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsSubject;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsSubjectService;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.configuration.*;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.Iban;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.*;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.*;
+import it.gov.pagopa.apiconfig.cache.model.latest.cds.CdsCategory;
+import it.gov.pagopa.apiconfig.cache.model.latest.cds.CdsService;
+import it.gov.pagopa.apiconfig.cache.model.latest.cds.CdsSubject;
+import it.gov.pagopa.apiconfig.cache.model.latest.cds.CdsSubjectService;
+import it.gov.pagopa.apiconfig.cache.model.latest.configuration.*;
+import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.Iban;
+import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.*;
+import it.gov.pagopa.apiconfig.cache.model.latest.psp.*;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
@@ -156,7 +156,7 @@ public class ConfigService {
     }
   }
 
-  public Map<String, Object> loadFullCache() throws IOException {
+  public HashMap<String, Object> loadFullCache() throws IOException {
     log.info("Loading full cache");
 
     byte[] bytes = redisRepository.get(getKeyV1(Constants.FULL));
@@ -198,7 +198,7 @@ public class ConfigService {
     return configData;
   }
 
-  public Map<String, Object> newCache() throws IOException {
+  public HashMap<String, Object> newCache() throws IOException {
 
     setCacheV1InProgress(Constants.FULL);
 
@@ -370,14 +370,14 @@ public class ConfigService {
       ZonedDateTime now = ZonedDateTime.now();
       long endTime = System.nanoTime();
       String id = "" + endTime;
-      String cacheVersion=Constants.GZIP_JSON_V1 + "-" + appVersion;
-      configData.put(Constants.VERSION,id);
-      configData.put(Constants.TIMESTAMP,now);
-      configData.put(Constants.CACHE_VERSION,cacheVersion);
+      String cacheVersion = Constants.GZIP_JSON_V1 + "-" + appVersion;
+      configData.put(Constants.VERSION, id);
+      configData.put(Constants.TIMESTAMP, now);
+      configData.put(Constants.CACHE_VERSION, cacheVersion);
 
-      appendObjectToJson(jsonGenerator,Constants.VERSION,id);
-      appendObjectToJson(jsonGenerator,Constants.TIMESTAMP,now);
-      appendObjectToJson(jsonGenerator,Constants.CACHE_VERSION,cacheVersion);
+      appendObjectToJson(jsonGenerator, Constants.VERSION, id);
+      appendObjectToJson(jsonGenerator, Constants.TIMESTAMP, now);
+      appendObjectToJson(jsonGenerator, Constants.CACHE_VERSION, cacheVersion);
 
       jsonGenerator.writeEndObject();
       jsonGenerator.close();
@@ -395,6 +395,8 @@ public class ConfigService {
       log.info(String.format("saving on Redis %s %s", actualKey, actualKeyV1));
       redisRepository.pushToRedisAsync(actualKey, actualKeyV1, cachebyteArray, id.getBytes(StandardCharsets.UTF_8));
 
+      // TODO remove this
+      // TODO generate in async stakeholder cache
       if (saveDB) {
         log.info("saving on CACHE table " + configData.get(Constants.VERSION));
         try {

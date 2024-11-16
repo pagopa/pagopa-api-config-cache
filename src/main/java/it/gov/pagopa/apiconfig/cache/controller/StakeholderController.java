@@ -10,8 +10,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import it.gov.pagopa.apiconfig.cache.model.ProblemJson;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
-import it.gov.pagopa.apiconfig.cache.util.ConfigDataUtil;
-import it.gov.pagopa.apiconfig.cache.util.Constants;
+import it.gov.pagopa.apiconfig.cache.service.StakeholderConfigServiceV1;
+import it.gov.pagopa.apiconfig.cache.util.ConfigData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -22,18 +22,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
 @RestController
 public abstract class StakeholderController {
-
   protected abstract String[] keys();
+  protected abstract String stakeholder();
 
   @Autowired private CacheController cacheController;
+  @Autowired private StakeholderConfigServiceV1 stakeholderConfigServiceV1;
 
   private String X_CACHE_ID = "X-CACHE-ID";
   private String X_CACHE_TIMESTAMP = "X-CACHE-TIMESTAMP";
@@ -86,21 +84,21 @@ public abstract class StakeholderController {
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ConfigDataV1> cache(@Deprecated @RequestParam @Parameter(description = "to force the refresh of the cache") Optional<Boolean> refresh)
       throws IOException {
-      if(refresh.orElse(false)){
+      if(refresh.orElse(false)) {
           log.warn("Deprecated refresh from nodo,change this to call /cache/refresh");
           cacheController.refresh();
       }
-      Map<String, Object> inMemoryCache = cacheController.getInMemoryCache();
-      ConfigDataV1 configDataV1 = ConfigDataUtil.cacheToConfigDataV1(inMemoryCache,keys());
+      ConfigData config = stakeholderConfigServiceV1.getCache(stakeholder(), keys());
 
       HttpHeaders responseHeaders = new HttpHeaders();
-      responseHeaders.set(X_CACHE_ID,(String)inMemoryCache.getOrDefault(Constants.VERSION,"n/a"));
-      responseHeaders.set(X_CACHE_TIMESTAMP, DateTimeFormatter.ISO_DATE_TIME.format((ZonedDateTime)inMemoryCache.get(Constants.TIMESTAMP)));
-      responseHeaders.set(X_CACHE_VERSION,(String)inMemoryCache.getOrDefault(Constants.CACHE_VERSION,"n/a"));
+
+      responseHeaders.set(X_CACHE_ID, config.getXCacheId());
+      responseHeaders.set(X_CACHE_TIMESTAMP, config.getXCacheTimestamp());
+      responseHeaders.set(X_CACHE_VERSION, config.getXCacheVersion());
 
       return ResponseEntity.ok()
               .headers(responseHeaders)
-              .body(configDataV1);
+              .body(config.getConfigDataV1());
   }
 
   @Operation(
@@ -155,4 +153,59 @@ public abstract class StakeholderController {
   public ResponseEntity<CacheVersion> idV1() throws IOException {
     return cacheController.id();
   }
+
+    @Operation(
+            summary = "Get xlsx of last v1 {stakeholder} cache version",
+            security = {@SecurityRequirement(name = "ApiKey")},
+            tags = {
+                    "Cache",
+            })
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "OK",
+                            content =
+                            @Content(
+                                    mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad Request",
+                            content =
+                            @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ProblemJson.class))),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(schema = @Schema())),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden",
+                            content = @Content(schema = @Schema())),
+                    @ApiResponse(
+                            responseCode = "429",
+                            description = "Too many requests",
+                            content = @Content(schema = @Schema())),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Service unavailable",
+                            content =
+                            @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ProblemJson.class)))
+            })
+    @GetMapping(value = "/v1/xlsx",
+            produces = {"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"})
+    public ResponseEntity<byte[]> xls() {
+        byte[] convert = null;
+        try {
+            convert = stakeholderConfigServiceV1.getXLSX(stakeholder(), keys());
+        } catch (Exception e){
+            log.error("Error creating xlsx",e);
+        }
+
+        return ResponseEntity.ok()
+                .body(convert);
+    }
 }

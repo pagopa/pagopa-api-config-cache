@@ -1,4 +1,4 @@
-package it.gov.pagopa.apiconfig.cache.util.mapper;
+package it.gov.pagopa.apiconfig.cache.util.mapper.entitiesToLatest;
 
 import it.gov.pagopa.apiconfig.cache.model.latest.common.Connection;
 import it.gov.pagopa.apiconfig.cache.model.latest.common.Protocol;

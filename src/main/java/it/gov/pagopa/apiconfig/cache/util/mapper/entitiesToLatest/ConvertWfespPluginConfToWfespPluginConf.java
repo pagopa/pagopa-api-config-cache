@@ -1,4 +1,4 @@
-package it.gov.pagopa.apiconfig.cache.util.mapper;
+package it.gov.pagopa.apiconfig.cache.util.mapper.entitiesToLatest;
 
 import it.gov.pagopa.apiconfig.cache.model.latest.configuration.Plugin;
 import it.gov.pagopa.apiconfig.starter.entity.WfespPluginConf;

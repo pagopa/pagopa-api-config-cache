@@ -18,8 +18,7 @@ public enum Protocol implements Serializable {
     if (value == null) {
       return null;
     }
-    Optional<Protocol> protocol =
-        Arrays.stream(Protocol.values()).filter(elem -> elem.value.equals(value)).findFirst();
+    Optional<Protocol> protocol = Arrays.stream(Protocol.values()).filter(elem -> elem.value.equals(value)).findFirst();
     if (protocol.isPresent()) {
       return protocol.get();
     } else {

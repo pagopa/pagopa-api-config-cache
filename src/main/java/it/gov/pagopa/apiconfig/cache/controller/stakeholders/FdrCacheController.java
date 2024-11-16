@@ -29,9 +29,16 @@ public class FdrCacheController extends StakeholderController {
           Constants.GDE_CONFIGURATIONS
   };
 
+  public static String STAKEHOLDER = "fdr";
+
   @Override
   protected String[] keys() {
     return FdrCacheController.KEYS;
+  }
+
+  @Override
+  protected String stakeholder() {
+    return FdrCacheController.STAKEHOLDER;
   }
 
 }
