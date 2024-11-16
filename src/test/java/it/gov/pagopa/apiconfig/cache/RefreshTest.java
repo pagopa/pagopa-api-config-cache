@@ -1,13 +1,10 @@
 package it.gov.pagopa.apiconfig.cache;
 
 import it.gov.pagopa.apiconfig.Application;
-import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.service.CacheEventHubService;
-import it.gov.pagopa.apiconfig.cache.service.ConfigService;
+import it.gov.pagopa.apiconfig.cache.service.CacheConfigService;
 import it.gov.pagopa.apiconfig.cache.service.HealthCheckService;
 import it.gov.pagopa.apiconfig.cache.service.VerifierService;
-import it.gov.pagopa.apiconfig.cache.util.Constants;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.persistence.EntityManager;
-import java.io.IOException;
-import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
 
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -35,7 +27,7 @@ class RefreshTest {
 
   @Autowired private MockMvc mvc;
 
-  @MockBean private ConfigService configService;
+  @MockBean private CacheConfigService cacheConfigService;
   @MockBean private CacheEventHubService cacheEventHubService;
   @MockBean private HealthCheckService healthCheckService;
   @MockBean private VerifierService verifierService;

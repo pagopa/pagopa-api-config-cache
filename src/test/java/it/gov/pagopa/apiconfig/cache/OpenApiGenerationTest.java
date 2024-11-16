@@ -5,7 +5,7 @@ import it.gov.pagopa.apiconfig.cache.controller.stakeholders.FdrCacheController;
 import it.gov.pagopa.apiconfig.cache.controller.HomeController;
 import it.gov.pagopa.apiconfig.cache.controller.stakeholders.VerifierCacheController;
 import it.gov.pagopa.apiconfig.cache.service.CacheEventHubService;
-import it.gov.pagopa.apiconfig.cache.service.ConfigService;
+import it.gov.pagopa.apiconfig.cache.service.CacheConfigService;
 import it.gov.pagopa.apiconfig.cache.service.HealthCheckService;
 import it.gov.pagopa.apiconfig.cache.service.VerifierService;
 import it.gov.pagopa.apiconfig.cache.util.JsonSerializer;
@@ -16,7 +16,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -42,7 +41,7 @@ class OpenApiGenerationTest {
     FdrCacheController fdrCacheController;
 
     @MockBean
-    ConfigService configService;
+    CacheConfigService cacheConfigService;
 
     @MockBean
     HomeController homeController;

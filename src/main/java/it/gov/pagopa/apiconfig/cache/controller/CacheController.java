@@ -11,7 +11,7 @@ import it.gov.pagopa.apiconfig.cache.exception.AppException;
 import it.gov.pagopa.apiconfig.cache.model.ProblemJson;
 import it.gov.pagopa.apiconfig.cache.model.RefreshResponse;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
-import it.gov.pagopa.apiconfig.cache.service.ConfigService;
+import it.gov.pagopa.apiconfig.cache.service.CacheConfigService;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.cache.util.JsonToXls;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +45,7 @@ public class CacheController {
     private HashMap<String, Object> inMemoryCache;
 
     @Autowired
-    private ConfigService configService;
+    private CacheConfigService cacheConfigService;
 
     @Value("${preload:true}")
     private Boolean preload;
@@ -61,7 +61,7 @@ public class CacheController {
     public void preloadKeysFromRedis() {
         if(preload){
             try {
-                inMemoryCache = configService.loadFullCache();
+                inMemoryCache = cacheConfigService.loadFullCache();
             } catch (Exception e){
                 log.warn("could not load single keys cache from redis");
             }
@@ -69,7 +69,7 @@ public class CacheController {
     }
 
     public HashMap<String, Object> getInMemoryCache() throws IOException {
-        if(inMemoryCache==null) {
+        if (inMemoryCache == null) {
             docache();
         }
         return inMemoryCache;
@@ -316,10 +316,11 @@ public class CacheController {
             value = "/refresh",
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity refresh() throws IOException {
-        boolean cacheV1InProgress = configService.getCacheV1InProgress(Constants.FULL);
-        if (cacheV1InProgress) {
+        boolean fullCacheInProgress = cacheConfigService.getCacheInProgress();
+        if (fullCacheInProgress) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
-        }else{
+        }
+        else {
             docache();
 
             String cacheVersion = (String)inMemoryCache.get(Constants.CACHE_VERSION);
@@ -338,8 +339,9 @@ public class CacheController {
     }
 
     private void docache() throws IOException {
-        inMemoryCache = configService.newCache();
-        configService.sendEvent(
+        inMemoryCache = cacheConfigService.newCache();
+
+        cacheConfigService.sendEvent(
             (String)inMemoryCache.get(Constants.VERSION),
             (ZonedDateTime)inMemoryCache.get(Constants.TIMESTAMP)
         );

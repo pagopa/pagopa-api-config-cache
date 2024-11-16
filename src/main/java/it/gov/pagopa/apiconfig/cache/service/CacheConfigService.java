@@ -67,42 +67,29 @@ import java.util.zip.GZIPOutputStream;
 @Slf4j
 @Service
 @Transactional
-public class ConfigService {
+public class CacheConfigService {
 
   @Value("${info.application.version}")
-  private String appVersion;
-
-  @Value("#{'${canary}'=='true' ? '_canary' : ''}")
-  private String keySuffix;
-
-  @Value("apicfg_${spring.database.id}_{{stakeholder}}_v1")
-  private String keyV1;
-
-  @Value("apicfg_${spring.database.id}_{{stakeholder}}_v1_id")
-  private String keyV1Id;
-
-  @Value("apicfg_${spring.database.id}_{{stakeholder}}_v1_in_progress")
-  private String keyV1InProgress;
+  private String APP_VERSION;
 
   @Value("#{'${saveDB}'=='true'}")
-  private Boolean saveDB;
+  private Boolean SAVE_DB;
 
   @Value("#{'${sendEvent}'=='true'}")
-  private Boolean sendEvent;
+  private Boolean SEND_EVENT;
 
-  private static String daCompilareFlusso =
+  private static String STAKEHOLDER_PLACEHOLDER = "{{stakeholder}}";
+
+  private static String DA_COMPILARE_FLUSSO =
       "DA COMPILARE (formato: [IDPSP]_dd-mm-yyyy - esempio: ESEMPIO_31-12-2001)";
-  private static String daCompilare = "DA COMPILARE";
-  private static String schemaInstance = "http://www.w3.org/2001/XMLSchema-instance";
-  private static double costoConvenzioneFormat = 100d;
-
-  private static String stakeholderPlaceholder = "{{stakeholder}}";
+  private static String DA_COMPILARE = "DA COMPILARE";
+  private static String SCHEMAM_INSTANCE = "http://www.w3.org/2001/XMLSchema-instance";
+  private static double COSTO_CONVENZIONE_FORMAT = 100d;
 
   @Value("${in_progress.ttl}")
   private long IN_PROGRESS_TTL;
 
   @Autowired private JsonSerializer jsonSerializer;
-//  @Autowired private PlatformTransactionManager transactionManager;
   @Autowired private RedisRepository redisRepository;
   @Autowired private CacheRepository cacheRepository;
   @Autowired private ConfigMapper modelMapper;
@@ -140,6 +127,7 @@ public class ConfigService {
   @Autowired private CacheEventHubService eventHubService;
   @Autowired private ObjectMapper objectMapper;
 
+  @Autowired private CacheKeyUtils cacheKeyUtils;
   private JAXBContext ctListaInformativePSPJaxbContext;
   private JAXBContext tplInformativaPSPJaxbContext;
   private JAXBContext ctListaInformativeControparteJaxbContext;
@@ -159,7 +147,7 @@ public class ConfigService {
   public HashMap<String, Object> loadFullCache() throws IOException {
     log.info("Loading full cache");
 
-    byte[] bytes = redisRepository.get(getKeyV1(Constants.FULL));
+    byte[] bytes = redisRepository.get(cacheKeyUtils.getCacheKey(Constants.FULL));
     byte[] unzipped = ZipUtils.unzip(bytes);
     JsonFactory jsonFactory = new JsonFactory();
     JsonParser jsonParser = jsonFactory.createParser(unzipped);
@@ -167,40 +155,40 @@ public class ConfigService {
     jsonParser.close();
 
     HashMap<String, Object> configData = new HashMap<>();
-    configData.put(Constants.VERSION,fulldata.getVersion());
-    configData.put(Constants.TIMESTAMP,fulldata.getTimestamp());
-    configData.put(Constants.CACHE_VERSION,fulldata.getCacheVersion());
-    configData.put(Constants.CREDITOR_INSTITUTIONS,fulldata.getCreditorInstitutions());
-    configData.put(Constants.CREDITOR_INSTITUTION_BROKERS,fulldata.getCreditorInstitutionBrokers());
-    configData.put(Constants.STATIONS,fulldata.getStations());
-    configData.put(Constants.CREDITOR_INSTITUTION_STATIONS,fulldata.getCreditorInstitutionStations());
-    configData.put(Constants.ENCODINGS,fulldata.getEncodings());
-    configData.put(Constants.CREDITOR_INSTITUTION_ENCODINGS,fulldata.getCreditorInstitutionEncodings());
-    configData.put(Constants.IBANS,fulldata.getIbans());
-    configData.put(Constants.CREDITOR_INSTITUTION_INFORMATIONS,fulldata.getCreditorInstitutionInformations());
-    configData.put(Constants.PSPS,fulldata.getPsps());
-    configData.put(Constants.PSP_BROKERS,fulldata.getPspBrokers());
-    configData.put(Constants.PAYMENT_TYPES,fulldata.getPaymentTypes());
-    configData.put(Constants.PSP_CHANNEL_PAYMENT_TYPES,fulldata.getPspChannelPaymentTypes());
-    configData.put(Constants.PLUGINS,fulldata.getPlugins());
-    configData.put(Constants.PSP_INFORMATION_TEMPLATES,fulldata.getPspInformationTemplates());
-    configData.put(Constants.PSP_INFORMATIONS,fulldata.getPspInformations());
-    configData.put(Constants.CHANNELS,fulldata.getChannels());
-    configData.put(Constants.CDS_SERVICES,fulldata.getCdsServices());
-    configData.put(Constants.CDS_SUBJECTS,fulldata.getCdsSubjects());
-    configData.put(Constants.CDS_SUBJECT_SERVICES,fulldata.getCdsSubjectServices());
-    configData.put(Constants.CDS_CATEGORIES,fulldata.getCdsCategories());
-    configData.put(Constants.CONFIGURATIONS,fulldata.getConfigurations());
-    configData.put(Constants.FTP_SERVERS,fulldata.getFtpServers());
-    configData.put(Constants.LANGUAGES,fulldata.getLanguages());
-    configData.put(Constants.GDE_CONFIGURATIONS,fulldata.getGdeConfigurations());
-    configData.put(Constants.METADATA_DICT,fulldata.getMetadataDict());
+    configData.put(Constants.VERSION, fulldata.getVersion());
+    configData.put(Constants.TIMESTAMP, fulldata.getTimestamp());
+    configData.put(Constants.CACHE_VERSION, fulldata.getCacheVersion());
+    configData.put(Constants.CREDITOR_INSTITUTIONS, fulldata.getCreditorInstitutions());
+    configData.put(Constants.CREDITOR_INSTITUTION_BROKERS, fulldata.getCreditorInstitutionBrokers());
+    configData.put(Constants.STATIONS, fulldata.getStations());
+    configData.put(Constants.CREDITOR_INSTITUTION_STATIONS, fulldata.getCreditorInstitutionStations());
+    configData.put(Constants.ENCODINGS, fulldata.getEncodings());
+    configData.put(Constants.CREDITOR_INSTITUTION_ENCODINGS, fulldata.getCreditorInstitutionEncodings());
+    configData.put(Constants.IBANS, fulldata.getIbans());
+    configData.put(Constants.CREDITOR_INSTITUTION_INFORMATIONS, fulldata.getCreditorInstitutionInformations());
+    configData.put(Constants.PSPS, fulldata.getPsps());
+    configData.put(Constants.PSP_BROKERS, fulldata.getPspBrokers());
+    configData.put(Constants.PAYMENT_TYPES, fulldata.getPaymentTypes());
+    configData.put(Constants.PSP_CHANNEL_PAYMENT_TYPES, fulldata.getPspChannelPaymentTypes());
+    configData.put(Constants.PLUGINS, fulldata.getPlugins());
+    configData.put(Constants.PSP_INFORMATION_TEMPLATES, fulldata.getPspInformationTemplates());
+    configData.put(Constants.PSP_INFORMATIONS, fulldata.getPspInformations());
+    configData.put(Constants.CHANNELS, fulldata.getChannels());
+    configData.put(Constants.CDS_SERVICES, fulldata.getCdsServices());
+    configData.put(Constants.CDS_SUBJECTS, fulldata.getCdsSubjects());
+    configData.put(Constants.CDS_SUBJECT_SERVICES, fulldata.getCdsSubjectServices());
+    configData.put(Constants.CDS_CATEGORIES, fulldata.getCdsCategories());
+    configData.put(Constants.CONFIGURATIONS, fulldata.getConfigurations());
+    configData.put(Constants.FTP_SERVERS, fulldata.getFtpServers());
+    configData.put(Constants.LANGUAGES, fulldata.getLanguages());
+    configData.put(Constants.GDE_CONFIGURATIONS, fulldata.getGdeConfigurations());
+    configData.put(Constants.METADATA_DICT, fulldata.getMetadataDict());
     return configData;
   }
 
   public HashMap<String, Object> newCache() throws IOException {
 
-    setCacheV1InProgress(Constants.FULL);
+    setCacheInProgress();
 
     HashMap<String, Object> configData = new HashMap<>();
     try {
@@ -370,7 +358,7 @@ public class ConfigService {
       ZonedDateTime now = ZonedDateTime.now();
       long endTime = System.nanoTime();
       String id = "" + endTime;
-      String cacheVersion = Constants.GZIP_JSON_V1 + "-" + appVersion;
+      String cacheVersion = Constants.GZIP_JSON + "-" + APP_VERSION;
       configData.put(Constants.VERSION, id);
       configData.put(Constants.TIMESTAMP, now);
       configData.put(Constants.CACHE_VERSION, cacheVersion);
@@ -382,22 +370,22 @@ public class ConfigService {
       jsonGenerator.writeEndObject();
       jsonGenerator.close();
 
-      byte[] cachebyteArray = baos.toByteArray();
+      byte[] cacheByteArray = baos.toByteArray();
 
       long duration = (endTime - startTime) / 1000000;
-      log.info("cache loaded in " + duration + "ms");
+      log.info(String.format("%s cache loaded in %s ms", Constants.FULL, duration));
 
 
 
-      String actualKey = getKeyV1(Constants.FULL);
-      String actualKeyV1 = getKeyV1Id(Constants.FULL);
+      String actualKey = cacheKeyUtils.getCacheKey(Constants.FULL);
+      String actualKeyV1 = cacheKeyUtils.getCacheIdKey(Constants.FULL);
 
-      log.info(String.format("saving on Redis %s %s", actualKey, actualKeyV1));
-      redisRepository.pushToRedisAsync(actualKey, actualKeyV1, cachebyteArray, id.getBytes(StandardCharsets.UTF_8));
+      log.info(String.format("Saving on Redis %s %s", actualKey, actualKeyV1));
+      redisRepository.pushToRedisAsync(actualKey, actualKeyV1, cacheByteArray, id.getBytes(StandardCharsets.UTF_8));
 
       // TODO remove this
       // TODO generate in async stakeholder cache
-      if (saveDB) {
+      if (SAVE_DB && false) {
         log.info("saving on CACHE table " + configData.get(Constants.VERSION));
         try {
           HashMap<String, Object> cloned = (HashMap<String, Object>)configData.clone();
@@ -418,17 +406,17 @@ public class ConfigService {
       }
     } catch (Exception e) {
       log.error("[ALERT] problem to generate cache", e);
-      removeCacheV1InProgress(Constants.FULL);
+      removeCacheInProgress();
       throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
     }
-    removeCacheV1InProgress(Constants.FULL);
+    removeCacheInProgress();
     return configData;
   }
 
-  public void sendEvent(String id,ZonedDateTime now){
-    if(sendEvent){
+  public void sendEvent(String id, ZonedDateTime now) {
+    if(SEND_EVENT){
         try {
-            eventHubService.publishEvent(id,now,Constants.GZIP_JSON_V1 + "-" + appVersion);
+            eventHubService.publishEvent(id,now,Constants.GZIP_JSON_V1 + "-" + APP_VERSION);
         } catch (JsonProcessingException e) {
             throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
         }
@@ -436,30 +424,30 @@ public class ConfigService {
   }
 
   private String getVersion() {
-    String version = Constants.GZIP_JSON_V1 + "-" + appVersion;
+    String version = Constants.GZIP_JSON_V1 + "-" + APP_VERSION;
     if (version.length() > 32) {
       return version.substring(0, 32);
     }
     return version;
   }
 
-  public void removeCacheV1InProgress(String stakeholder) {
-    String actualKeyV1 = getKeyV1InProgress(stakeholder);
+  public void removeCacheInProgress() {
+    String actualKeyV1 = cacheKeyUtils.getCacheKeyInProgress(Constants.FULL);
     redisRepository.remove(actualKeyV1);
   }
 
-  public void setCacheV1InProgress(String stakeholder) {
-    String actualKeyV1 = getKeyV1InProgress(stakeholder);
+  private void setCacheInProgress() {
+    String actualKeyV1 = cacheKeyUtils.getCacheKeyInProgress(Constants.FULL);
     redisRepository.save(actualKeyV1, "1".getBytes(StandardCharsets.UTF_8), IN_PROGRESS_TTL);
   }
 
-  public Boolean getCacheV1InProgress(String stakeholder) {
-    String actualKeyV1 = getKeyV1InProgress(stakeholder);
+  public Boolean getCacheInProgress() {
+    String actualKeyV1 = cacheKeyUtils.getCacheKeyInProgress(Constants.FULL);
     return redisRepository.getBooleanByKeyId(actualKeyV1);
   }
 
-  public CacheVersion getCacheV1Id(String stakeholder) {
-    String actualKeyV1 = getKeyV1Id(stakeholder);
+  public CacheVersion getCacheId() {
+    String actualKeyV1 = cacheKeyUtils.getCacheIdKey(Constants.FULL);
     String cacheId =
         Optional.ofNullable(redisRepository.getStringByKeyId(actualKeyV1))
             .orElseThrow(() -> new AppException(AppError.CACHE_ID_NOT_FOUND, actualKeyV1));
@@ -660,7 +648,7 @@ public class ConfigService {
               .createInformativaPSP(element);
       Marshaller marshaller = tplInformativaPSPJaxbContext.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
-      marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaInstance);
+      marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, SCHEMAM_INSTANCE);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       marshaller.marshal(informativaPSP, baos);
       return Constants.ENCODER.encodeToString(baos.toByteArray());
@@ -677,7 +665,7 @@ public class ConfigService {
               .createListaInformativePSP(element);
       Marshaller marshaller = ctListaInformativePSPJaxbContext.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
-      marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaInstance);
+      marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, SCHEMAM_INSTANCE);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       marshaller.marshal(informativaPSP, baos);
       return Constants.ENCODER.encodeToString(baos.toByteArray());
@@ -694,7 +682,7 @@ public class ConfigService {
               .createListaInformativeControparte(element);
       Marshaller marshaller = ctListaInformativeControparteJaxbContext.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
-      marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaInstance);
+      marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, SCHEMAM_INSTANCE);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       marshaller.marshal(informativaPA, baos);
       return Constants.ENCODER.encodeToString(baos.toByteArray());
@@ -877,7 +865,7 @@ public class ConfigService {
                                 List<Double> costiConvenzione =
                                     cdiPreferenceStream
                                         .stream()
-                                        .map(p -> p.getCostoConvenzione() / costoConvenzioneFormat)
+                                        .map(p -> p.getCostoConvenzione() / COSTO_CONVENZIONE_FORMAT)
                                         .collect(Collectors.toList());
 
                                 CtCostiServizio costiServizio = new CtCostiServizio();
@@ -976,23 +964,23 @@ public class ConfigService {
                     .filter(m -> m.getFkPsp().getObjId().equals(psp.getObjId()))
                     .findFirst();
             TplInformativaPSP tplInformativaPSP = new TplInformativaPSP();
-            tplInformativaPSP.setRagioneSociale(daCompilare);
-            tplInformativaPSP.setIdentificativoPSP(daCompilare);
+            tplInformativaPSP.setRagioneSociale(DA_COMPILARE);
+            tplInformativaPSP.setIdentificativoPSP(DA_COMPILARE);
             tplInformativaPSP.setCodiceABI(
-                Objects.isNull(psp.getAbi()) ? daCompilare : psp.getAbi());
+                Objects.isNull(psp.getAbi()) ? DA_COMPILARE : psp.getAbi());
             tplInformativaPSP.setCodiceBIC(
-                Objects.isNull(psp.getBic()) ? daCompilare : psp.getBic());
-            tplInformativaPSP.setIdentificativoFlusso(daCompilareFlusso);
+                Objects.isNull(psp.getBic()) ? DA_COMPILARE : psp.getBic());
+            tplInformativaPSP.setIdentificativoFlusso(DA_COMPILARE_FLUSSO);
             tplInformativaPSP.setMybankIDVS(
-                Objects.isNull(psp.getCodiceMybank()) ? daCompilare : psp.getCodiceMybank());
+                Objects.isNull(psp.getCodiceMybank()) ? DA_COMPILARE : psp.getCodiceMybank());
 
             TplInformativaMaster tplInformativaMaster = new TplInformativaMaster();
-            tplInformativaMaster.setLogoPSP(daCompilare);
-            tplInformativaMaster.setDataInizioValidita(daCompilare);
-            tplInformativaMaster.setDataPubblicazione(daCompilare);
-            tplInformativaMaster.setUrlConvenzioniPSP(daCompilare);
-            tplInformativaMaster.setUrlInformativaPSP(daCompilare);
-            tplInformativaMaster.setUrlInformazioniPSP(daCompilare);
+            tplInformativaMaster.setLogoPSP(DA_COMPILARE);
+            tplInformativaMaster.setDataInizioValidita(DA_COMPILARE);
+            tplInformativaMaster.setDataPubblicazione(DA_COMPILARE);
+            tplInformativaMaster.setUrlConvenzioniPSP(DA_COMPILARE);
+            tplInformativaMaster.setUrlInformativaPSP(DA_COMPILARE);
+            tplInformativaMaster.setUrlInformazioniPSP(DA_COMPILARE);
             tplInformativaMaster.setMarcaBolloDigitale(0);
             tplInformativaMaster.setStornoPagamento(0);
             tplInformativaPSP.setInformativaMaster(tplInformativaMaster);
@@ -1049,30 +1037,30 @@ public class ConfigService {
   private TplInformativaDetail makeTplInformativaDetail(
       String idCanale, String idInter, String tv, Long modello) {
     TplInformativaDetail tplInformativaDetail = new TplInformativaDetail();
-    tplInformativaDetail.setCanaleApp(daCompilare);
-    tplInformativaDetail.setIdentificativoCanale(Objects.isNull(idCanale) ? daCompilare : idCanale);
-    tplInformativaDetail.setPriorita(daCompilare);
+    tplInformativaDetail.setCanaleApp(DA_COMPILARE);
+    tplInformativaDetail.setIdentificativoCanale(Objects.isNull(idCanale) ? DA_COMPILARE : idCanale);
+    tplInformativaDetail.setPriorita(DA_COMPILARE);
     tplInformativaDetail.setTipoVersamento(
         Objects.isNull(tv)
             ? it.gov.pagopa.apiconfig.cache.imported.template.StTipoVersamento.BBT
             : it.gov.pagopa.apiconfig.cache.imported.template.StTipoVersamento.fromValue(tv));
     tplInformativaDetail.setModelloPagamento(Objects.isNull(modello) ? 0 : modello.intValue());
     tplInformativaDetail.setIdentificativoIntermediario(
-        Objects.isNull(idInter) ? daCompilare : idInter);
+        Objects.isNull(idInter) ? DA_COMPILARE : idInter);
     tplInformativaDetail.setServizioAlleImprese(null);
 
     TplIdentificazioneServizio tplIdentificazioneServizio = new TplIdentificazioneServizio();
-    tplIdentificazioneServizio.setLogoServizio(daCompilare);
-    tplIdentificazioneServizio.setNomeServizio(daCompilare);
+    tplIdentificazioneServizio.setLogoServizio(DA_COMPILARE);
+    tplIdentificazioneServizio.setNomeServizio(DA_COMPILARE);
     tplInformativaDetail.setIdentificazioneServizio(tplIdentificazioneServizio);
 
     TplCostiServizio tplCostiServizio = new TplCostiServizio();
     tplCostiServizio.setTipoCommissione("0");
     tplCostiServizio.setTipoCostoTransazione("0");
     TplFasciaCostoServizio tplFasciaCostoServizio = new TplFasciaCostoServizio();
-    tplFasciaCostoServizio.setCostoFisso(daCompilare);
-    tplFasciaCostoServizio.setImportoMassimoFascia(daCompilare);
-    tplFasciaCostoServizio.setCostoFisso(daCompilare);
+    tplFasciaCostoServizio.setCostoFisso(DA_COMPILARE);
+    tplFasciaCostoServizio.setImportoMassimoFascia(DA_COMPILARE);
+    tplFasciaCostoServizio.setCostoFisso(DA_COMPILARE);
     List<TplFasciaCostoServizio> tplFasciaCostoServizios =
         Arrays.asList(tplFasciaCostoServizio, tplFasciaCostoServizio, tplFasciaCostoServizio);
     TplListaFasceCostoServizio fasce = new TplListaFasceCostoServizio();
@@ -1081,9 +1069,9 @@ public class ConfigService {
     tplInformativaDetail.setCostiServizio(tplCostiServizio);
 
     TplListaParoleChiave ks = new TplListaParoleChiave();
-    ks.getParoleChiave().add(daCompilare);
-    ks.getParoleChiave().add(daCompilare);
-    ks.getParoleChiave().add(daCompilare);
+    ks.getParoleChiave().add(DA_COMPILARE);
+    ks.getParoleChiave().add(DA_COMPILARE);
+    ks.getParoleChiave().add(DA_COMPILARE);
     tplInformativaDetail.setListaParoleChiave(ks);
 
     TplListaInformazioniServizio info = new TplListaInformazioniServizio();
@@ -1099,10 +1087,10 @@ public class ConfigService {
               TplInformazioniServizio infoser = new TplInformazioniServizio();
               infoser.setCodiceLingua(
                   it.gov.pagopa.apiconfig.cache.imported.template.StCodiceLingua.IT);
-              infoser.setDescrizioneServizio(daCompilare);
-              infoser.setDescrizioneServizio(daCompilare);
-              infoser.setUrlInformazioniCanale(daCompilare);
-              infoser.setLimitazioniServizio(daCompilare);
+              infoser.setDescrizioneServizio(DA_COMPILARE);
+              infoser.setDescrizioneServizio(DA_COMPILARE);
+              infoser.setUrlInformazioniCanale(DA_COMPILARE);
+              infoser.setLimitazioniServizio(DA_COMPILARE);
               info.getInformazioniServizio().add(infoser);
             });
     tplInformativaDetail.setListaInformazioniServizio(info);
@@ -1295,17 +1283,17 @@ public class ConfigService {
     return DatatypeFactory.newInstance().newXMLGregorianCalendar(formatter.format(dateTime));
   }
 
-  private String getKeyV1(String stakeholder) {
-    return keyV1.replace(stakeholderPlaceholder, stakeholder) + keySuffix;
-  }
-
-  private String getKeyV1Id(String stakeholder) {
-    return keyV1Id.replace(stakeholderPlaceholder, stakeholder) + keySuffix;
-  }
-
-  private String getKeyV1InProgress(String stakeholder) {
-    return keyV1InProgress.replace(stakeholderPlaceholder, stakeholder) + keySuffix;
-  }
+//  private String getKeyV1(String stakeholder) {
+//    return CACHE_KEY.replace(STAKEHOLDER_PLACEHOLDER, stakeholder) + KEY_SUFFIX;
+//  }
+//
+//  private String getKeyV1Id(String stakeholder) {
+//    return CACHE_ID_KEY.replace(STAKEHOLDER_PLACEHOLDER, stakeholder) + KEY_SUFFIX;
+//  }
+//
+//  private String getCacheKeyInProgress() {
+//    return CACHE_KEY_IN_PROGRESS.replace(STAKEHOLDER_PLACEHOLDER, Constants.FULL) + KEY_SUFFIX;
+//  }
 
   public void appendObjectToJson(JsonGenerator jsonGenerator,String fieldName, Object object) throws IOException {
       jsonGenerator.writeFieldName(fieldName);

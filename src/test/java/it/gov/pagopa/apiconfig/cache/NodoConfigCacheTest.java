@@ -1,11 +1,9 @@
 package it.gov.pagopa.apiconfig.cache;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.gov.pagopa.apiconfig.cache.controller.stakeholders.NodeCacheController;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.service.CacheEventHubService;
-import it.gov.pagopa.apiconfig.cache.service.ConfigService;
+import it.gov.pagopa.apiconfig.cache.service.CacheConfigService;
 import it.gov.pagopa.apiconfig.cache.util.*;
 import it.gov.pagopa.apiconfig.starter.repository.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -64,18 +62,18 @@ class NodoConfigCacheTest {
 
   @Spy private ConfigMapper configMapper = new ConfigMapper();
 
-  @InjectMocks private ConfigService configService;
+  @InjectMocks private CacheConfigService cacheConfigService;
 
   @BeforeEach
   void setUp() {
-    org.springframework.test.util.ReflectionTestUtils.setField(configService, "keyV1Id", "value");
-    org.springframework.test.util.ReflectionTestUtils.setField(configService, "keyV1", "value");
-    org.springframework.test.util.ReflectionTestUtils.setField(configService, "keyV1InProgress", "value");
-    org.springframework.test.util.ReflectionTestUtils.setField(configService, "saveDB", true);
-    org.springframework.test.util.ReflectionTestUtils.setField(configService, "sendEvent", true);
-    org.springframework.test.util.ReflectionTestUtils.setField(configService, "objectMapper", new ObjectMapper().findAndRegisterModules());
+    org.springframework.test.util.ReflectionTestUtils.setField(cacheConfigService, "keyV1Id", "value");
+    org.springframework.test.util.ReflectionTestUtils.setField(cacheConfigService, "keyV1", "value");
+    org.springframework.test.util.ReflectionTestUtils.setField(cacheConfigService, "keyV1InProgress", "value");
+    org.springframework.test.util.ReflectionTestUtils.setField(cacheConfigService, "saveDB", true);
+    org.springframework.test.util.ReflectionTestUtils.setField(cacheConfigService, "sendEvent", true);
+    org.springframework.test.util.ReflectionTestUtils.setField(cacheConfigService, "objectMapper", new ObjectMapper().findAndRegisterModules());
 
-    configService.postConstruct();
+    cacheConfigService.postConstruct();
   }
 
 //  @Test
@@ -129,7 +127,7 @@ class NodoConfigCacheTest {
     when(informativePaMasterRepository.findAll()).thenReturn(TestUtils.informativePaMaster);
     when(jsonSerializer.serialize(any())).thenReturn("{}".getBytes(StandardCharsets.UTF_8));
 
-    byte[] export = new JsonToXls(false).convert(configService.newCache());
+    byte[] export = new JsonToXls(false).convert(cacheConfigService.newCache());
 //    Files.write(Path.of("./target/output.xlsx"), export);
 
     ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(export);

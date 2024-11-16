@@ -11,7 +11,7 @@ import it.gov.pagopa.apiconfig.cache.model.ProblemJson;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.service.StakeholderConfigServiceV1;
-import it.gov.pagopa.apiconfig.cache.util.ConfigData;
+import it.gov.pagopa.apiconfig.cache.model.ConfigData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -29,6 +29,9 @@ import java.util.Optional;
 public abstract class StakeholderController {
   protected abstract String[] keys();
   protected abstract String stakeholder();
+  protected boolean saveOnDB() {
+      return false;
+  };
 
   @Autowired private CacheController cacheController;
   @Autowired private StakeholderConfigServiceV1 stakeholderConfigServiceV1;
@@ -82,13 +85,20 @@ public abstract class StakeholderController {
   @GetMapping(
       value = "/v1",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ConfigDataV1> cache(@Deprecated @RequestParam @Parameter(description = "to force the refresh of the cache") Optional<Boolean> refresh)
-      throws IOException {
+  public ResponseEntity<ConfigDataV1> cache(@Deprecated @RequestParam @Parameter(description = "to force the refresh of the cache") Optional<Boolean> refresh) throws IOException {
       if(refresh.orElse(false)) {
-          log.warn("Deprecated refresh from nodo,change this to call /cache/refresh");
+          log.warn("Deprecated refresh from stakeholder,change this to call /cache/refresh");
+          // TODO set in progress
           cacheController.refresh();
+          // TODO remove in progress
       }
-      ConfigData config = stakeholderConfigServiceV1.getCache(stakeholder(), keys());
+      String stakeholder = stakeholder() + "_v1";
+      ConfigData config = stakeholderConfigServiceV1.getCache(stakeholder, keys());
+
+      // save on db according configuration
+      if (saveOnDB()) {
+          stakeholderConfigServiceV1.saveOnDB( config,"v1");
+      }
 
       HttpHeaders responseHeaders = new HttpHeaders();
 
@@ -98,7 +108,7 @@ public abstract class StakeholderController {
 
       return ResponseEntity.ok()
               .headers(responseHeaders)
-              .body(config.getConfigDataV1());
+              .body((ConfigDataV1) config.getConfigDataV1());
   }
 
   @Operation(
@@ -151,6 +161,7 @@ public abstract class StakeholderController {
       value = "/v1/id",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<CacheVersion> idV1() throws IOException {
+      // TODO deve far riferimento all'id della cache dello stakeholder!
     return cacheController.id();
   }
 
@@ -200,7 +211,8 @@ public abstract class StakeholderController {
     public ResponseEntity<byte[]> xls() {
         byte[] convert = null;
         try {
-            convert = stakeholderConfigServiceV1.getXLSX(stakeholder(), keys());
+            String stakeholder = stakeholder() + "_v1";
+            convert = stakeholderConfigServiceV1.getXLSX(stakeholder, keys());
         } catch (Exception e){
             log.error("Error creating xlsx",e);
         }

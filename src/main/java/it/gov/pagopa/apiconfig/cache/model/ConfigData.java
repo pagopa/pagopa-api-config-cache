@@ -1,4 +1,4 @@
-package it.gov.pagopa.apiconfig.cache.util;
+package it.gov.pagopa.apiconfig.cache.model;
 
 
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;

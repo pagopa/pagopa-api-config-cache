@@ -6,7 +6,7 @@ import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.Station;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.Channel;
 import it.gov.pagopa.apiconfig.cache.service.CacheEventHubService;
-import it.gov.pagopa.apiconfig.cache.service.ConfigService;
+import it.gov.pagopa.apiconfig.cache.service.CacheConfigService;
 import it.gov.pagopa.apiconfig.cache.service.HealthCheckService;
 import it.gov.pagopa.apiconfig.cache.service.VerifierService;
 import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
@@ -41,7 +41,7 @@ class ControllerTest {
 
   @Autowired private MockMvc mvc;
 
-  @MockBean private ConfigService configService;
+  @MockBean private CacheConfigService cacheConfigService;
   @MockBean private CacheEventHubService cacheEventHubService;
   @MockBean private HealthCheckService healthCheckService;
   @MockBean private VerifierService verifierService;
@@ -74,9 +74,9 @@ class ControllerTest {
             ss->ss
     )));
 
-    when(configService.getCacheV1Id("")).thenReturn(new CacheVersion("1111"));
-    when(configService.newCache()).thenReturn(objectObjectHashMap);
-    when(configService.loadFullCache()).thenReturn(objectObjectHashMap);
+    when(cacheConfigService.getCacheId()).thenReturn(new CacheVersion("1111"));
+    when(cacheConfigService.newCache()).thenReturn(objectObjectHashMap);
+    when(cacheConfigService.loadFullCache()).thenReturn(objectObjectHashMap);
     when(verifierService.getPaV2()).thenReturn(Arrays.asList("1", "2"));
     when(healthCheckService.checkDatabaseConnection()).thenReturn(true);
 
