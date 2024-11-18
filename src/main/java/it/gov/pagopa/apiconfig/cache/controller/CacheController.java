@@ -398,8 +398,9 @@ public class CacheController {
         } catch (Exception e){
             log.error("Error creating xlsx",e);
         }
-
+        String fileName = String.format("%s.xlsx", inMemoryCache.getOrDefault(Constants.CACHE_VERSION, "cache"));
         return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=\"%s\"", fileName))
                 .body(convert);
     }
 

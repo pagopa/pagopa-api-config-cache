@@ -92,8 +92,7 @@ public class StakeholderConfigService {
         ConfigData configData = loadCache(stakeholder);
 
         if (configData == null) {
-
-            // retrieve full cache
+            // retrieve full cache and generate configDava
             HashMap<String, Object> inMemoryCache = cacheController.getInMemoryCache();
             HashMap<String, Object> clonedInMemoryCache = (HashMap<String, Object>)inMemoryCache.clone();
 

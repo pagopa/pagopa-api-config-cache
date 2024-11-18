@@ -356,15 +356,16 @@ public class CacheConfigService {
       appendMapToJson(jsonGenerator,Constants.CREDITOR_INSTITUTION_INFORMATIONS,infopasMap);
 
       ZonedDateTime now = ZonedDateTime.now();
+      ZonedDateTime romeDateTime = now.withZoneSameInstant(ZoneId.of("Europe/Rome"));
       long endTime = System.nanoTime();
       String id = "" + endTime;
       String cacheVersion = getVersion();
       configData.put(Constants.VERSION, id);
-      configData.put(Constants.TIMESTAMP, now);
+      configData.put(Constants.TIMESTAMP, romeDateTime);
       configData.put(Constants.CACHE_VERSION, cacheVersion);
 
       appendObjectToJson(jsonGenerator, Constants.VERSION, id);
-      appendObjectToJson(jsonGenerator, Constants.TIMESTAMP, now);
+      appendObjectToJson(jsonGenerator, Constants.TIMESTAMP, romeDateTime);
       appendObjectToJson(jsonGenerator, Constants.CACHE_VERSION, cacheVersion);
 
       jsonGenerator.writeEndObject();
