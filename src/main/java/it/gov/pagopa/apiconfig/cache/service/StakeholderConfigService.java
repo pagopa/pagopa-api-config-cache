@@ -2,7 +2,6 @@ package it.gov.pagopa.apiconfig.cache.service;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -20,21 +19,28 @@ import it.gov.pagopa.apiconfig.cache.util.ZipUtils;
 import it.gov.pagopa.apiconfig.starter.entity.Cache;
 import it.gov.pagopa.apiconfig.starter.repository.CacheRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
 import javax.transaction.Transactional;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.zip.GZIPOutputStream;
 
@@ -92,11 +98,16 @@ public class StakeholderConfigService {
             HashMap<String, Object> clonedInMemoryCache = (HashMap<String, Object>)inMemoryCache.clone();
 
             String xCacheId = (String)clonedInMemoryCache.getOrDefault(Constants.VERSION, Constants.NA);
-            String xCacheTimestamp = DateTimeFormatter.ISO_DATE_TIME.format((ZonedDateTime)clonedInMemoryCache.get(Constants.TIMESTAMP));
-//            String xCacheVersion = (String)clonedInMemoryCache.getOrDefault(Constants.CACHE_VERSION, Constants.NA);
+            ZonedDateTime utcDateTime = (ZonedDateTime) clonedInMemoryCache.get(Constants.TIMESTAMP);
+            ZonedDateTime romeDateTime = utcDateTime.withZoneSameInstant(ZoneId.of("Europe/Rome"));
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXXXX'['VV']'");
+            String xCacheTimestamp = formatter.format(romeDateTime);
             String xCacheVersion = getGZIPVersion(schemaVersion);
 
             // generate v1 cache version
+            clonedInMemoryCache.put(Constants.VERSION, xCacheId);
+            clonedInMemoryCache.put(Constants.CACHE_VERSION, xCacheVersion);
+            clonedInMemoryCache.put(Constants.TIMESTAMP, xCacheTimestamp);
             ConfigDataV1 configDataV1 = cacheToConfigDataV1(clonedInMemoryCache, keys);
 
             configData = ConfigData.builder()
@@ -158,9 +169,25 @@ public class StakeholderConfigService {
             throw new AppException(AppError.CACHE_NOT_READABLE);
         }
         if (configData != null) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, Object> configDataV1 = objectMapper.convertValue(configData.getConfigDataV1(), new TypeReference<Map<String, Object>>() {});
-            return new JsonToXls(xlsMaskPasswords).convert(configDataV1);
+            HashMap<String, Object> inMemoryCacheFormat = new HashMap<>();
+            ConfigDataV1 configDataV1 = configData.getConfigDataV1();
+
+            ReflectionUtils.doWithFields(configDataV1.getClass(), field -> {
+                Method method = ReflectionUtils.findMethod(configDataV1.getClass(), "get" + StringUtils.capitalize(field.getName()));
+                if (method != null) {
+                    try {
+                        Object object = method.invoke(configDataV1);
+                        inMemoryCacheFormat.put(field.getName(), Objects.requireNonNullElseGet(object, HashMap::new));
+                    } catch (InvocationTargetException | IllegalAccessException e) {
+                        throw new RuntimeException("No method found " + field.getName(), e);
+                    }
+                }
+            });
+            inMemoryCacheFormat.put(Constants.VERSION, configData.getXCacheId());
+            inMemoryCacheFormat.put(Constants.TIMESTAMP, configData.getXCacheTimestamp());
+            inMemoryCacheFormat.put(Constants.CACHE_VERSION, getGZIPVersion(schemaVersion));
+
+            return new JsonToXls(xlsMaskPasswords).convert(inMemoryCacheFormat);
         }
 
         throw new AppException(AppError.CACHE_NOT_INITIALIZED);
@@ -185,7 +212,7 @@ public class StakeholderConfigService {
     }
 
     private String getGZIPVersion(String schemaVersion) {
-        String version = String.format("%s_%s-%s", Constants.GZIP_JSON, schemaVersion, APP_VERSION);
+        String version = String.format("%s-%s-%s", Constants.GZIP_JSON, schemaVersion, APP_VERSION);
         if (version.length() > 32) {
             return version.substring(0, 32);
         }
@@ -209,20 +236,16 @@ public class StakeholderConfigService {
         return configData;
     }
     private static byte[] compressJsonToGzip(Object object) throws IOException {
-        // Creare un ByteArrayOutputStream per memorizzare il risultato
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-        // Usare GZIPOutputStream per comprimere i dati
+        // use GZIPOutputStream to compress data
         try (GZIPOutputStream gzipOut = new GZIPOutputStream(byteArrayOutputStream);
-             OutputStreamWriter writer = new OutputStreamWriter(gzipOut)) {
-
-            // Serializzare l'oggetto in JSON e scriverlo nel flusso compresso
+                OutputStreamWriter writer = new OutputStreamWriter(gzipOut)) {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.registerModule(new JavaTimeModule());
             objectMapper.writeValue(writer, object);
         }
 
-        // Ottenere il risultato come byte[]
         return byteArrayOutputStream.toByteArray();
     }
 

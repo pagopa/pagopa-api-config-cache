@@ -358,7 +358,7 @@ public class CacheConfigService {
       ZonedDateTime now = ZonedDateTime.now();
       long endTime = System.nanoTime();
       String id = "" + endTime;
-      String cacheVersion = Constants.GZIP_JSON + "-" + APP_VERSION;
+      String cacheVersion = getVersion();
       configData.put(Constants.VERSION, id);
       configData.put(Constants.TIMESTAMP, now);
       configData.put(Constants.CACHE_VERSION, cacheVersion);
@@ -382,28 +382,6 @@ public class CacheConfigService {
 
       log.info(String.format("Saving on Redis %s %s %s", actualKey, actualKeyV1, id));
       redisRepository.pushToRedisAsync(actualKey, actualKeyV1, cacheByteArray, id.getBytes(StandardCharsets.UTF_8));
-
-      // TODO remove this
-      // TODO generate in async stakeholder cache
-      if (SAVE_DB && false) {
-        log.info("saving on CACHE table " + configData.get(Constants.VERSION));
-        try {
-          HashMap<String, Object> cloned = (HashMap<String, Object>)configData.clone();
-          cloned.remove(Constants.TIMESTAMP);
-          cloned.remove(Constants.CACHE_VERSION);
-          //cloned to remove data not in ConfigDataV1
-          cacheRepository.save(
-              Cache.builder()
-                  .id(id)
-                  .cache(jsonSerializer.serialize(cloned))
-                  .time(now)
-                  .version(getVersion())
-                  .build());
-          log.info("saved on CACHE table " + id);
-        } catch (Exception e) {
-          log.error("[ALERT] could not save on db", e);
-        }
-      }
     } catch (Exception e) {
       log.error("[ALERT] problem to generate cache", e);
       removeCacheInProgress();
@@ -416,7 +394,7 @@ public class CacheConfigService {
   public void sendEvent(String id, ZonedDateTime now) {
     if(SEND_EVENT){
         try {
-            eventHubService.publishEvent(id,now,Constants.GZIP_JSON_V1 + "-" + APP_VERSION);
+            eventHubService.publishEvent(id,now,getVersion());
         } catch (JsonProcessingException e) {
             throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
         }
@@ -424,7 +402,7 @@ public class CacheConfigService {
   }
 
   private String getVersion() {
-    String version = Constants.GZIP_JSON_V1 + "-" + APP_VERSION;
+    String version = Constants.GZIP_JSON + "-" + APP_VERSION;
     if (version.length() > 32) {
       return version.substring(0, 32);
     }
