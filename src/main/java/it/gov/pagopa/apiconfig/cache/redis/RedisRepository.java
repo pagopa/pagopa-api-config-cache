@@ -61,7 +61,7 @@ public class RedisRepository {
       log.info("saving {} on redis", key);
       save(key, object, 1440);
       save(keyId, keyobject, 1440);
-      log.info("saved {} on redis,id {}", key, new String(keyobject, StandardCharsets.UTF_8));
+      log.info("saved {} on redis, id {}", key, new String(keyobject, StandardCharsets.UTF_8));
     } catch (Exception e) {
       log.error("could not save on redis", e);
     }

@@ -380,7 +380,7 @@ public class CacheConfigService {
       String actualKey = cacheKeyUtils.getCacheKey(Constants.FULL);
       String actualKeyV1 = cacheKeyUtils.getCacheIdKey(Constants.FULL);
 
-      log.info(String.format("Saving on Redis %s %s", actualKey, actualKeyV1));
+      log.info(String.format("Saving on Redis %s %s %s", actualKey, actualKeyV1, id));
       redisRepository.pushToRedisAsync(actualKey, actualKeyV1, cacheByteArray, id.getBytes(StandardCharsets.UTF_8));
 
       // TODO remove this

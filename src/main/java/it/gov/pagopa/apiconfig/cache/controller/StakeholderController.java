@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import it.gov.pagopa.apiconfig.cache.model.ProblemJson;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
-import it.gov.pagopa.apiconfig.cache.service.StakeholderConfigServiceV1;
+import it.gov.pagopa.apiconfig.cache.service.StakeholderConfigService;
 import it.gov.pagopa.apiconfig.cache.model.ConfigData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ public abstract class StakeholderController {
   };
 
   @Autowired private CacheController cacheController;
-  @Autowired private StakeholderConfigServiceV1 stakeholderConfigServiceV1;
+  @Autowired private StakeholderConfigService stakeholderConfigService;
 
   private String X_CACHE_ID = "X-CACHE-ID";
   private String X_CACHE_TIMESTAMP = "X-CACHE-TIMESTAMP";
@@ -92,12 +92,11 @@ public abstract class StakeholderController {
           cacheController.refresh();
           // TODO remove in progress
       }
-      String stakeholder = stakeholder() + "_v1";
-      ConfigData config = stakeholderConfigServiceV1.getCache(stakeholder, keys());
+      ConfigData config = stakeholderConfigService.getCache(stakeholder(), "v1", keys());
 
       // save on db according configuration
       if (saveOnDB()) {
-          stakeholderConfigServiceV1.saveOnDB( config,"v1");
+          stakeholderConfigService.saveOnDB( config,"v1");
       }
 
       HttpHeaders responseHeaders = new HttpHeaders();
@@ -161,8 +160,7 @@ public abstract class StakeholderController {
       value = "/v1/id",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<CacheVersion> idV1() throws IOException {
-      // TODO deve far riferimento all'id della cache dello stakeholder!
-    return cacheController.id();
+    return ResponseEntity.ok().body(stakeholderConfigService.getVersionId(stakeholder(), "v1"));
   }
 
     @Operation(
@@ -210,13 +208,7 @@ public abstract class StakeholderController {
             produces = {"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"})
     public ResponseEntity<byte[]> xls() {
         byte[] convert = null;
-        try {
-            String stakeholder = stakeholder() + "_v1";
-            convert = stakeholderConfigServiceV1.getXLSX(stakeholder, keys());
-        } catch (Exception e){
-            log.error("Error creating xlsx",e);
-        }
-
+        convert = stakeholderConfigService.getXLSX(stakeholder(), "v1");
         return ResponseEntity.ok()
                 .body(convert);
     }

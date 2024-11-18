@@ -2,10 +2,14 @@ package it.gov.pagopa.apiconfig.cache.service;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import it.gov.pagopa.apiconfig.cache.controller.CacheController;
+import it.gov.pagopa.apiconfig.cache.exception.AppError;
+import it.gov.pagopa.apiconfig.cache.exception.AppException;
+import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.model.ConfigData;
@@ -37,7 +41,7 @@ import java.util.zip.GZIPOutputStream;
 @Slf4j
 @Service
 @Transactional
-public class StakeholderConfigServiceV1 {
+public class StakeholderConfigService {
 
     @Value("${info.application.version}")
     private String APP_VERSION;
@@ -71,13 +75,13 @@ public class StakeholderConfigServiceV1 {
         byte[] fullCacheId = redisRepository.get(cacheKeyUtils.getCacheIdKey(Constants.FULL));
         if (stakeholderCacheId != null && Arrays.equals(stakeholderCacheId, fullCacheId)) {
             // retrieve stakeholder cache
-            byte[] bytes = redisRepository.get(cacheKeyUtils.getCacheKey(stakeholder));
-            return bytes == null ? null : decompressGzipToConfigData(bytes);
+            return getCacheFromRedis(stakeholder);
         }
         return null;
     }
 
-    public ConfigData getCache(String stakeholder, String[] keys) throws IOException {
+    public ConfigData getCache(String stakeholder, String schemaVersion, String[] keys) throws IOException {
+        stakeholder = getStakeholderWithSchema(stakeholder, schemaVersion);
         // retrieve configDataVersion from Redis
         ConfigData configData = loadCache(stakeholder);
 
@@ -89,7 +93,8 @@ public class StakeholderConfigServiceV1 {
 
             String xCacheId = (String)clonedInMemoryCache.getOrDefault(Constants.VERSION, Constants.NA);
             String xCacheTimestamp = DateTimeFormatter.ISO_DATE_TIME.format((ZonedDateTime)clonedInMemoryCache.get(Constants.TIMESTAMP));
-            String xCacheVersion = (String)clonedInMemoryCache.getOrDefault(Constants.CACHE_VERSION, Constants.NA);
+//            String xCacheVersion = (String)clonedInMemoryCache.getOrDefault(Constants.CACHE_VERSION, Constants.NA);
+            String xCacheVersion = getGZIPVersion(schemaVersion);
 
             // generate v1 cache version
             ConfigDataV1 configDataV1 = cacheToConfigDataV1(clonedInMemoryCache, keys);
@@ -133,12 +138,36 @@ public class StakeholderConfigServiceV1 {
         }
     }
 
-    public byte[] getXLSX(String stakeholder, String[] keys) throws IOException {
-        ConfigData configData = getCache(stakeholder, keys);
-        ObjectMapper objectMapper = new ObjectMapper();
-        HashMap<String, Object> configDataV1 = objectMapper.convertValue(configData.getConfigDataV1(), HashMap.class);
-        // TODO fix xlsx
-        return new JsonToXls(xlsMaskPasswords).convert(configDataV1);
+    public CacheVersion getVersionId(String stakeholder, String schemaVersion) {
+        stakeholder = getStakeholderWithSchema(stakeholder, schemaVersion);
+        byte[] stakeholderCacheId = redisRepository.get(cacheKeyUtils.getCacheIdKey(stakeholder));
+        if (stakeholderCacheId != null) {
+            return CacheVersion.builder()
+                    .version(new String(stakeholderCacheId, StandardCharsets.UTF_8))
+                    .build();
+        }
+        throw new AppException(AppError.CACHE_NOT_INITIALIZED);
+    }
+
+    public byte[] getXLSX(String stakeholder, String schemaVersion) {
+        stakeholder = getStakeholderWithSchema(stakeholder, schemaVersion);
+        ConfigData configData = null;
+        try {
+            configData = getCacheFromRedis(stakeholder);
+        } catch (IOException e) {
+            throw new AppException(AppError.CACHE_NOT_READABLE);
+        }
+        if (configData != null) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> configDataV1 = objectMapper.convertValue(configData.getConfigDataV1(), new TypeReference<Map<String, Object>>() {});
+            return new JsonToXls(xlsMaskPasswords).convert(configDataV1);
+        }
+
+        throw new AppException(AppError.CACHE_NOT_INITIALIZED);
+    }
+
+    private String getStakeholderWithSchema(String stakeholder, String schemaVersion) {
+        return String.format("%s_%s", stakeholder, schemaVersion);
     }
 
     private ConfigDataV1 cacheToConfigDataV1(Map<String,Object> inMemoryCache, String[] keys) {
@@ -150,8 +179,13 @@ public class StakeholderConfigServiceV1 {
         return objectMapper.convertValue(inMemoryCache, ConfigDataV1.class);
     }
 
-    private String getVersion(String schemaVersion) {
-        String version = Constants.GZIP_JSON_V1 + "-" + APP_VERSION;
+    private ConfigData getCacheFromRedis(String stakeholder) throws IOException {
+        byte[] bytes = redisRepository.get(cacheKeyUtils.getCacheKey(stakeholder));
+        return bytes == null ? null : decompressGzipToConfigData(bytes);
+    }
+
+    private String getGZIPVersion(String schemaVersion) {
+        String version = String.format("%s_%s-%s", Constants.GZIP_JSON, schemaVersion, APP_VERSION);
         if (version.length() > 32) {
             return version.substring(0, 32);
         }
