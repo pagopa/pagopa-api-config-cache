@@ -3,10 +3,12 @@ package it.gov.pagopa.apiconfig.cache;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.apiconfig.cache.controller.stakeholders.FdrCacheController;
 import it.gov.pagopa.apiconfig.cache.controller.HomeController;
+import it.gov.pagopa.apiconfig.cache.controller.stakeholders.NodeCacheController;
 import it.gov.pagopa.apiconfig.cache.controller.stakeholders.VerifierCacheController;
 import it.gov.pagopa.apiconfig.cache.service.CacheEventHubService;
 import it.gov.pagopa.apiconfig.cache.service.CacheConfigService;
 import it.gov.pagopa.apiconfig.cache.service.HealthCheckService;
+import it.gov.pagopa.apiconfig.cache.service.StakeholderConfigService;
 import it.gov.pagopa.apiconfig.cache.service.VerifierService;
 import it.gov.pagopa.apiconfig.cache.util.JsonSerializer;
 import it.gov.pagopa.apiconfig.starter.repository.HealthCheckRepository;
@@ -41,6 +43,9 @@ class OpenApiGenerationTest {
     FdrCacheController fdrCacheController;
 
     @MockBean
+    NodeCacheController nodeCacheController;
+
+    @MockBean
     CacheConfigService cacheConfigService;
 
     @MockBean
@@ -51,6 +56,9 @@ class OpenApiGenerationTest {
 
     @MockBean
     HealthCheckService healthCheckService;
+
+    @MockBean
+    StakeholderConfigService stakeholderConfigService;
 
     @MockBean
     VerifierService verifierService;

@@ -665,14 +665,14 @@ public class CacheConfigService {
   }
 
   public Pair<List<PspInformation>, List<PspInformation>> getInformativePspAndTemplates() {
-    List<Psp> psps = pspRepository.findAll();
-    List<CdiPreference> preferences = cdiPreferenceRepository.findAll();
-    List<CdiFasciaCostoServizio> allFasce = cdiFasceRepository.findAll();
+//    List<Psp> psps = pspRepository.findAll();
+//    List<CdiPreference> preferences = cdiPreferenceRepository.findAll();
+//    List<CdiFasciaCostoServizio> allFasce = cdiFasceRepository.findAll();
     List<CdiMasterValid> masters =
         StreamSupport.stream(cdiMasterValidRepository.findAll().spliterator(), false)
             .collect(Collectors.toList());
-    List<CdiDetail> details = cdiDetailRepository.findAll();
-    List<CdiInformazioniServizio> allInformazioni = cdiInformazioniServizioRepository.findAll();
+//    List<CdiDetail> details = cdiDetailRepository.findAll();
+//    List<CdiInformazioniServizio> allInformazioni = cdiInformazioniServizioRepository.findAll();
 
     List<PspInformation> informativePsp =
         new ArrayList<>(); // getInformativePsp(psps, masters, details, preferences, allFasce,
