@@ -13,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-// @SpringBootTest(classes = Application.class)
 @ExtendWith(MockitoExtension.class)
 class HealthTest {
 
@@ -27,7 +26,7 @@ class HealthTest {
   }
 
   @Test
-  void getCacheV1() throws Exception {
+  void getCacheV1() {
     assertThat(healthCheckService.checkDatabaseConnection());
   }
 }

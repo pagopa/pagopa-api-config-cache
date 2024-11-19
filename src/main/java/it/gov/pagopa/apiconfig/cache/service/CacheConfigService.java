@@ -72,13 +72,8 @@ public class CacheConfigService {
   @Value("${info.application.version}")
   private String APP_VERSION;
 
-  @Value("#{'${saveDB}'=='true'}")
-  private Boolean SAVE_DB;
-
   @Value("#{'${sendEvent}'=='true'}")
   private Boolean SEND_EVENT;
-
-  private static String STAKEHOLDER_PLACEHOLDER = "{{stakeholder}}";
 
   private static String DA_COMPILARE_FLUSSO =
       "DA COMPILARE (formato: [IDPSP]_dd-mm-yyyy - esempio: ESEMPIO_31-12-2001)";
@@ -89,9 +84,7 @@ public class CacheConfigService {
   @Value("${in_progress.ttl}")
   private long IN_PROGRESS_TTL;
 
-  @Autowired private JsonSerializer jsonSerializer;
   @Autowired private RedisRepository redisRepository;
-  @Autowired private CacheRepository cacheRepository;
   @Autowired private ConfigMapper modelMapper;
 
   @Autowired private ConfigurationKeysRepository configurationKeysRepository;
@@ -689,245 +682,245 @@ public class CacheConfigService {
     return Pair.of(informativePsp, templateInformativePsp);
   }
 
-  public List<PspInformation> getInformativePsp(
-      List<Psp> psps,
-      List<CdiMasterValid> masters,
-      List<CdiDetail> details,
-      List<CdiPreference> preferences,
-      List<CdiFasciaCostoServizio> allFasce,
-      List<CdiInformazioniServizio> allInformazioni) {
-    log.info("loading InformativePsp");
-
-    List<CtListaInformativePSP> informativePspSingle =
-        masters
-            .stream()
-            .filter(
-                m -> details.stream().anyMatch(d -> d.getFkCdiMaster().getId().equals(m.getId())))
-            .map(
-                cdiMaster -> {
-                  Psp psp =
-                      psps.stream()
-                          .filter(p -> p.getObjId().equals(cdiMaster.getFkPsp().getObjId()))
-                          .findFirst()
-                          .get();
-                  CtInformativaPSP ctInformativaPSP = new CtInformativaPSP();
-                  ctInformativaPSP.setCodiceABI(psp.getAbi());
-                  ctInformativaPSP.setCodiceBIC(psp.getBic());
-                  ctInformativaPSP.setIdentificativoPSP(psp.getIdPsp());
-                  ctInformativaPSP.setRagioneSociale(psp.getRagioneSociale());
-                  CtInformativaMaster ctInformativaMaster = new CtInformativaMaster();
-                  try {
-                    ctInformativaMaster.setDataInizioValidita(
-                        tsToXmlGC(cdiMaster.getDataInizioValidita()));
-                  } catch (DatatypeConfigurationException e) {
-                    throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
-                  }
-                  try {
-                    ctInformativaMaster.setDataPubblicazione(
-                        tsToXmlGC(cdiMaster.getDataPubblicazione()));
-                  } catch (DatatypeConfigurationException e) {
-                    throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
-                  }
-                  ctInformativaMaster.setLogoPSP("".getBytes(StandardCharsets.UTF_8));
-                  ctInformativaMaster.setStornoPagamento(
-                      Boolean.TRUE.equals(cdiMaster.getStornoPagamento()) ? 1 : 0);
-                  ctInformativaMaster.setUrlInformazioniPSP(cdiMaster.getUrlInformazioniPsp());
-                  ctInformativaMaster.setMarcaBolloDigitale(
-                      Boolean.TRUE.equals(cdiMaster.getMarcaBolloDigitale()) ? 1 : 0);
-                  ctInformativaPSP.setInformativaMaster(ctInformativaMaster);
-                  ctInformativaPSP.setIdentificativoFlusso(cdiMaster.getIdInformativaPsp());
-
-                  List<CtInformativaDetail> masterdetails =
-                      details
-                          .stream()
-                          .filter(d -> d.getFkCdiMaster().getId().equals(cdiMaster.getId()))
-                          .filter(
-                              d ->
-                                  !d.getPspCanaleTipoVersamento()
-                                      .getCanaleTipoVersamento()
-                                      .getTipoVersamento()
-                                      .equals("PPAY"))
-                          .map(
-                              cdiDetail -> {
-                                var pspCanaleTipoVersamento =
-                                    cdiDetail.getPspCanaleTipoVersamento();
-
-                                CtIdentificazioneServizio ctIdentificazioneServizio =
-                                    new CtIdentificazioneServizio();
-                                ctIdentificazioneServizio.setNomeServizio(
-                                    cdiDetail.getNomeServizio());
-                                ctIdentificazioneServizio.setLogoServizio(
-                                    "".getBytes(StandardCharsets.UTF_8));
-
-                                List<CdiInformazioniServizio> it =
-                                    allInformazioni
-                                        .stream()
-                                        .filter(
-                                            ii ->
-                                                ii.getFkCdiDetail()
-                                                    .getId()
-                                                    .equals(cdiDetail.getId()))
-                                        .filter(info -> info.getCodiceLingua().equals("IT"))
-                                        .collect(Collectors.toList());
-                                CtListaInformazioniServizio ctListaInformazioniServizio =
-                                    new CtListaInformazioniServizio();
-                                if (!it.isEmpty()) {
-                                  CtInformazioniServizio ctInformazioniServizio =
-                                      new CtInformazioniServizio();
-                                  ctInformazioniServizio.setDescrizioneServizio(
-                                      it.get(0).getDescrizioneServizio());
-                                  ctInformazioniServizio.setCodiceLingua(
-                                          StCodiceLingua.fromValue(it.get(0).getCodiceLingua()));
-                                  ctInformazioniServizio.setDisponibilitaServizio(
-                                      it.get(0).getDisponibilitaServizio());
-                                  ctInformazioniServizio.setUrlInformazioniCanale(
-                                      it.get(0).getUrlInformazioniCanale());
-                                  ctListaInformazioniServizio
-                                      .getInformazioniServizio()
-                                      .add(ctInformazioniServizio);
-                                }
-
-                                List<CtFasciaCostoServizio> fasce =
-                                    allFasce
-                                        .stream()
-                                        .filter(
-                                            fas ->
-                                                fas.getFkCdiDetail()
-                                                    .getId()
-                                                    .equals(cdiDetail.getId()))
-                                        .map(
-                                            fascia -> {
-                                              CtFasciaCostoServizio ctFasciaCostoServizio =
-                                                  new CtFasciaCostoServizio();
-                                              ctFasciaCostoServizio.setCostoFisso(
-                                                  BigDecimal.valueOf(fascia.getCostoFisso())
-                                                      .setScale(2, RoundingMode.FLOOR));
-                                              ctFasciaCostoServizio.setImportoMassimoFascia(
-                                                  BigDecimal.valueOf(fascia.getImportoMassimo())
-                                                      .setScale(2, RoundingMode.FLOOR));
-                                              ctFasciaCostoServizio.setValoreCommissione(
-                                                  (BigDecimal.valueOf(fascia.getValoreCommissione())
-                                                      .setScale(2, RoundingMode.FLOOR)));
-                                              return ctFasciaCostoServizio;
-                                            })
-                                        .collect(Collectors.toList());
-                                CtListaFasceCostoServizio ctListaFasceCostoServizio =
-                                    new CtListaFasceCostoServizio();
-                                ctListaFasceCostoServizio.getFasciaCostoServizio().addAll(fasce);
-
-                                List<CdiPreference> cdiPreferenceStream =
-                                    preferences
-                                        .stream()
-                                        .filter(
-                                            pref ->
-                                                pref.getCdiDetail()
-                                                    .getId()
-                                                    .equals(cdiDetail.getId()))
-                                        .collect(Collectors.toList());
-                                List<String> buyers =
-                                    cdiPreferenceStream
-                                        .stream()
-                                        .map(p -> p.getBuyer())
-                                        .collect(Collectors.toList());
-                                CtListaConvenzioni listaConvenzioni = new CtListaConvenzioni();
-                                listaConvenzioni.getCodiceConvenzione().addAll(buyers);
-
-                                CtInformativaDetail ctInformativaDetail = new CtInformativaDetail();
-                                ctInformativaDetail.setCanaleApp(
-                                    cdiDetail.getCanaleApp().intValue());
-                                ctInformativaDetail.setIdentificativoCanale(
-                                    pspCanaleTipoVersamento
-                                        .getCanaleTipoVersamento()
-                                        .getCanale()
-                                        .getIdCanale());
-
-                                List<Double> costiConvenzione =
-                                    cdiPreferenceStream
-                                        .stream()
-                                        .map(p -> p.getCostoConvenzione() / COSTO_CONVENZIONE_FORMAT)
-                                        .collect(Collectors.toList());
-
-                                CtCostiServizio costiServizio = new CtCostiServizio();
-                                costiServizio.setTipoCostoTransazione(1);
-                                costiServizio.setTipoCommissione(0);
-                                costiServizio.setListaFasceCostoServizio(ctListaFasceCostoServizio);
-                                if (!costiConvenzione.isEmpty()) {
-                                  costiServizio.setCostoConvenzione(
-                                      BigDecimal.valueOf(costiConvenzione.get(0)));
-                                }
-                                ctInformativaDetail.setCostiServizio(costiServizio);
-
-                                ctInformativaDetail.setPriorita(cdiDetail.getPriorita().intValue());
-                                ctInformativaDetail.setListaConvenzioni(listaConvenzioni);
-                                ctInformativaDetail.setIdentificativoIntermediario(
-                                    pspCanaleTipoVersamento
-                                        .getCanaleTipoVersamento()
-                                        .getCanale()
-                                        .getFkIntermediarioPsp()
-                                        .getIdIntermediarioPsp());
-                                ctInformativaDetail.setIdentificazioneServizio(
-                                    ctIdentificazioneServizio);
-                                ctInformativaDetail.setListaInformazioniServizio(
-                                    ctListaInformazioniServizio);
-                                if (cdiDetail.getTags() != null) {
-                                  CtListaParoleChiave ctListaParoleChiave =
-                                      new CtListaParoleChiave();
-                                  ctListaParoleChiave
-                                      .getParoleChiave()
-                                      .addAll(
-                                          Arrays.stream(cdiDetail.getTags().split(";"))
-                                              .map(StParoleChiave::fromValue)
-                                              .collect(Collectors.toList()));
-                                  ctInformativaDetail.setListaParoleChiave(ctListaParoleChiave);
-                                }
-                                ctInformativaDetail.setModelloPagamento(
-                                    cdiDetail.getModelloPagamento().intValue());
-                                ctInformativaDetail.setTipoVersamento(
-                                    StTipoVersamento.fromValue(
-                                        pspCanaleTipoVersamento
-                                            .getCanaleTipoVersamento()
-                                            .getTipoVersamento()
-                                            .getTipoVersamento()));
-                                return ctInformativaDetail;
-                              })
-                          .collect(Collectors.toList());
-                  CtListaInformativaDetail listaInformativaDetail = new CtListaInformativaDetail();
-                  listaInformativaDetail.getInformativaDetail().addAll(masterdetails);
-                  ctInformativaPSP.setListaInformativaDetail(listaInformativaDetail);
-
-                  CtListaInformativePSP ctListaInformativePSP = new CtListaInformativePSP();
-                  ctListaInformativePSP.getInformativaPSP().add(ctInformativaPSP);
-                  return ctListaInformativePSP;
-                })
-            .collect(Collectors.toList());
-
-    CtListaInformativePSP informativaPspFull = new CtListaInformativePSP();
-    informativePspSingle.forEach(
-        i -> informativaPspFull.getInformativaPSP().addAll(i.getInformativaPSP()));
-
-    CtListaInformativePSP informativaEmpty = new CtListaInformativePSP();
-
-    List<PspInformation> informativePspSingleCache =
-        informativePspSingle
-            .stream()
-            .map(
-                i ->
-                    PspInformation.builder()
-                        .psp(i.getInformativaPSP().get(0).getIdentificativoPSP())
-                        .informativa(toXml(i))
-                        .build())
-            .collect(Collectors.toList());
-
-    PspInformation informativaPSPFull =
-        PspInformation.builder().psp(Constants.FULL_INFORMATION).informativa(toXml(informativaPspFull)).build();
-
-    PspInformation informativaPSPEmpty =
-        PspInformation.builder().psp("EMPTY").informativa(toXml(informativaEmpty)).build();
-
-    informativePspSingleCache.add(informativaPSPFull);
-    informativePspSingleCache.add(informativaPSPEmpty);
-    return informativePspSingleCache;
-  }
+//  public List<PspInformation> getInformativePsp(
+//      List<Psp> psps,
+//      List<CdiMasterValid> masters,
+//      List<CdiDetail> details,
+//      List<CdiPreference> preferences,
+//      List<CdiFasciaCostoServizio> allFasce,
+//      List<CdiInformazioniServizio> allInformazioni) {
+//    log.info("loading InformativePsp");
+//
+//    List<CtListaInformativePSP> informativePspSingle =
+//        masters
+//            .stream()
+//            .filter(
+//                m -> details.stream().anyMatch(d -> d.getFkCdiMaster().getId().equals(m.getId())))
+//            .map(
+//                cdiMaster -> {
+//                  Psp psp =
+//                      psps.stream()
+//                          .filter(p -> p.getObjId().equals(cdiMaster.getFkPsp().getObjId()))
+//                          .findFirst()
+//                          .get();
+//                  CtInformativaPSP ctInformativaPSP = new CtInformativaPSP();
+//                  ctInformativaPSP.setCodiceABI(psp.getAbi());
+//                  ctInformativaPSP.setCodiceBIC(psp.getBic());
+//                  ctInformativaPSP.setIdentificativoPSP(psp.getIdPsp());
+//                  ctInformativaPSP.setRagioneSociale(psp.getRagioneSociale());
+//                  CtInformativaMaster ctInformativaMaster = new CtInformativaMaster();
+//                  try {
+//                    ctInformativaMaster.setDataInizioValidita(
+//                        tsToXmlGC(cdiMaster.getDataInizioValidita()));
+//                  } catch (DatatypeConfigurationException e) {
+//                    throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
+//                  }
+//                  try {
+//                    ctInformativaMaster.setDataPubblicazione(
+//                        tsToXmlGC(cdiMaster.getDataPubblicazione()));
+//                  } catch (DatatypeConfigurationException e) {
+//                    throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
+//                  }
+//                  ctInformativaMaster.setLogoPSP("".getBytes(StandardCharsets.UTF_8));
+//                  ctInformativaMaster.setStornoPagamento(
+//                      Boolean.TRUE.equals(cdiMaster.getStornoPagamento()) ? 1 : 0);
+//                  ctInformativaMaster.setUrlInformazioniPSP(cdiMaster.getUrlInformazioniPsp());
+//                  ctInformativaMaster.setMarcaBolloDigitale(
+//                      Boolean.TRUE.equals(cdiMaster.getMarcaBolloDigitale()) ? 1 : 0);
+//                  ctInformativaPSP.setInformativaMaster(ctInformativaMaster);
+//                  ctInformativaPSP.setIdentificativoFlusso(cdiMaster.getIdInformativaPsp());
+//
+//                  List<CtInformativaDetail> masterdetails =
+//                      details
+//                          .stream()
+//                          .filter(d -> d.getFkCdiMaster().getId().equals(cdiMaster.getId()))
+//                          .filter(
+//                              d ->
+//                                  !d.getPspCanaleTipoVersamento()
+//                                      .getCanaleTipoVersamento()
+//                                      .getTipoVersamento()
+//                                      .equals("PPAY"))
+//                          .map(
+//                              cdiDetail -> {
+//                                var pspCanaleTipoVersamento =
+//                                    cdiDetail.getPspCanaleTipoVersamento();
+//
+//                                CtIdentificazioneServizio ctIdentificazioneServizio =
+//                                    new CtIdentificazioneServizio();
+//                                ctIdentificazioneServizio.setNomeServizio(
+//                                    cdiDetail.getNomeServizio());
+//                                ctIdentificazioneServizio.setLogoServizio(
+//                                    "".getBytes(StandardCharsets.UTF_8));
+//
+//                                List<CdiInformazioniServizio> it =
+//                                    allInformazioni
+//                                        .stream()
+//                                        .filter(
+//                                            ii ->
+//                                                ii.getFkCdiDetail()
+//                                                    .getId()
+//                                                    .equals(cdiDetail.getId()))
+//                                        .filter(info -> info.getCodiceLingua().equals("IT"))
+//                                        .collect(Collectors.toList());
+//                                CtListaInformazioniServizio ctListaInformazioniServizio =
+//                                    new CtListaInformazioniServizio();
+//                                if (!it.isEmpty()) {
+//                                  CtInformazioniServizio ctInformazioniServizio =
+//                                      new CtInformazioniServizio();
+//                                  ctInformazioniServizio.setDescrizioneServizio(
+//                                      it.get(0).getDescrizioneServizio());
+//                                  ctInformazioniServizio.setCodiceLingua(
+//                                          StCodiceLingua.fromValue(it.get(0).getCodiceLingua()));
+//                                  ctInformazioniServizio.setDisponibilitaServizio(
+//                                      it.get(0).getDisponibilitaServizio());
+//                                  ctInformazioniServizio.setUrlInformazioniCanale(
+//                                      it.get(0).getUrlInformazioniCanale());
+//                                  ctListaInformazioniServizio
+//                                      .getInformazioniServizio()
+//                                      .add(ctInformazioniServizio);
+//                                }
+//
+//                                List<CtFasciaCostoServizio> fasce =
+//                                    allFasce
+//                                        .stream()
+//                                        .filter(
+//                                            fas ->
+//                                                fas.getFkCdiDetail()
+//                                                    .getId()
+//                                                    .equals(cdiDetail.getId()))
+//                                        .map(
+//                                            fascia -> {
+//                                              CtFasciaCostoServizio ctFasciaCostoServizio =
+//                                                  new CtFasciaCostoServizio();
+//                                              ctFasciaCostoServizio.setCostoFisso(
+//                                                  BigDecimal.valueOf(fascia.getCostoFisso())
+//                                                      .setScale(2, RoundingMode.FLOOR));
+//                                              ctFasciaCostoServizio.setImportoMassimoFascia(
+//                                                  BigDecimal.valueOf(fascia.getImportoMassimo())
+//                                                      .setScale(2, RoundingMode.FLOOR));
+//                                              ctFasciaCostoServizio.setValoreCommissione(
+//                                                  (BigDecimal.valueOf(fascia.getValoreCommissione())
+//                                                      .setScale(2, RoundingMode.FLOOR)));
+//                                              return ctFasciaCostoServizio;
+//                                            })
+//                                        .collect(Collectors.toList());
+//                                CtListaFasceCostoServizio ctListaFasceCostoServizio =
+//                                    new CtListaFasceCostoServizio();
+//                                ctListaFasceCostoServizio.getFasciaCostoServizio().addAll(fasce);
+//
+//                                List<CdiPreference> cdiPreferenceStream =
+//                                    preferences
+//                                        .stream()
+//                                        .filter(
+//                                            pref ->
+//                                                pref.getCdiDetail()
+//                                                    .getId()
+//                                                    .equals(cdiDetail.getId()))
+//                                        .collect(Collectors.toList());
+//                                List<String> buyers =
+//                                    cdiPreferenceStream
+//                                        .stream()
+//                                        .map(p -> p.getBuyer())
+//                                        .collect(Collectors.toList());
+//                                CtListaConvenzioni listaConvenzioni = new CtListaConvenzioni();
+//                                listaConvenzioni.getCodiceConvenzione().addAll(buyers);
+//
+//                                CtInformativaDetail ctInformativaDetail = new CtInformativaDetail();
+//                                ctInformativaDetail.setCanaleApp(
+//                                    cdiDetail.getCanaleApp().intValue());
+//                                ctInformativaDetail.setIdentificativoCanale(
+//                                    pspCanaleTipoVersamento
+//                                        .getCanaleTipoVersamento()
+//                                        .getCanale()
+//                                        .getIdCanale());
+//
+//                                List<Double> costiConvenzione =
+//                                    cdiPreferenceStream
+//                                        .stream()
+//                                        .map(p -> p.getCostoConvenzione() / COSTO_CONVENZIONE_FORMAT)
+//                                        .collect(Collectors.toList());
+//
+//                                CtCostiServizio costiServizio = new CtCostiServizio();
+//                                costiServizio.setTipoCostoTransazione(1);
+//                                costiServizio.setTipoCommissione(0);
+//                                costiServizio.setListaFasceCostoServizio(ctListaFasceCostoServizio);
+//                                if (!costiConvenzione.isEmpty()) {
+//                                  costiServizio.setCostoConvenzione(
+//                                      BigDecimal.valueOf(costiConvenzione.get(0)));
+//                                }
+//                                ctInformativaDetail.setCostiServizio(costiServizio);
+//
+//                                ctInformativaDetail.setPriorita(cdiDetail.getPriorita().intValue());
+//                                ctInformativaDetail.setListaConvenzioni(listaConvenzioni);
+//                                ctInformativaDetail.setIdentificativoIntermediario(
+//                                    pspCanaleTipoVersamento
+//                                        .getCanaleTipoVersamento()
+//                                        .getCanale()
+//                                        .getFkIntermediarioPsp()
+//                                        .getIdIntermediarioPsp());
+//                                ctInformativaDetail.setIdentificazioneServizio(
+//                                    ctIdentificazioneServizio);
+//                                ctInformativaDetail.setListaInformazioniServizio(
+//                                    ctListaInformazioniServizio);
+//                                if (cdiDetail.getTags() != null) {
+//                                  CtListaParoleChiave ctListaParoleChiave =
+//                                      new CtListaParoleChiave();
+//                                  ctListaParoleChiave
+//                                      .getParoleChiave()
+//                                      .addAll(
+//                                          Arrays.stream(cdiDetail.getTags().split(";"))
+//                                              .map(StParoleChiave::fromValue)
+//                                              .collect(Collectors.toList()));
+//                                  ctInformativaDetail.setListaParoleChiave(ctListaParoleChiave);
+//                                }
+//                                ctInformativaDetail.setModelloPagamento(
+//                                    cdiDetail.getModelloPagamento().intValue());
+//                                ctInformativaDetail.setTipoVersamento(
+//                                    StTipoVersamento.fromValue(
+//                                        pspCanaleTipoVersamento
+//                                            .getCanaleTipoVersamento()
+//                                            .getTipoVersamento()
+//                                            .getTipoVersamento()));
+//                                return ctInformativaDetail;
+//                              })
+//                          .collect(Collectors.toList());
+//                  CtListaInformativaDetail listaInformativaDetail = new CtListaInformativaDetail();
+//                  listaInformativaDetail.getInformativaDetail().addAll(masterdetails);
+//                  ctInformativaPSP.setListaInformativaDetail(listaInformativaDetail);
+//
+//                  CtListaInformativePSP ctListaInformativePSP = new CtListaInformativePSP();
+//                  ctListaInformativePSP.getInformativaPSP().add(ctInformativaPSP);
+//                  return ctListaInformativePSP;
+//                })
+//            .collect(Collectors.toList());
+//
+//    CtListaInformativePSP informativaPspFull = new CtListaInformativePSP();
+//    informativePspSingle.forEach(
+//        i -> informativaPspFull.getInformativaPSP().addAll(i.getInformativaPSP()));
+//
+//    CtListaInformativePSP informativaEmpty = new CtListaInformativePSP();
+//
+//    List<PspInformation> informativePspSingleCache =
+//        informativePspSingle
+//            .stream()
+//            .map(
+//                i ->
+//                    PspInformation.builder()
+//                        .psp(i.getInformativaPSP().get(0).getIdentificativoPSP())
+//                        .informativa(toXml(i))
+//                        .build())
+//            .collect(Collectors.toList());
+//
+//    PspInformation informativaPSPFull =
+//        PspInformation.builder().psp(Constants.FULL_INFORMATION).informativa(toXml(informativaPspFull)).build();
+//
+//    PspInformation informativaPSPEmpty =
+//        PspInformation.builder().psp("EMPTY").informativa(toXml(informativaEmpty)).build();
+//
+//    informativePspSingleCache.add(informativaPSPFull);
+//    informativePspSingleCache.add(informativaPSPEmpty);
+//    return informativePspSingleCache;
+//  }
 
   public List<PspInformation> getTemplateInformativePsp(List<CdiMasterValid> allMasters) {
     log.info("loading TemplateInformativePsp");
@@ -1261,18 +1254,6 @@ public class CacheConfigService {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     return DatatypeFactory.newInstance().newXMLGregorianCalendar(formatter.format(dateTime));
   }
-
-//  private String getKeyV1(String stakeholder) {
-//    return CACHE_KEY.replace(STAKEHOLDER_PLACEHOLDER, stakeholder) + KEY_SUFFIX;
-//  }
-//
-//  private String getKeyV1Id(String stakeholder) {
-//    return CACHE_ID_KEY.replace(STAKEHOLDER_PLACEHOLDER, stakeholder) + KEY_SUFFIX;
-//  }
-//
-//  private String getCacheKeyInProgress() {
-//    return CACHE_KEY_IN_PROGRESS.replace(STAKEHOLDER_PLACEHOLDER, Constants.FULL) + KEY_SUFFIX;
-//  }
 
   public void appendObjectToJson(JsonGenerator jsonGenerator,String fieldName, Object object) throws IOException {
       jsonGenerator.writeFieldName(fieldName);

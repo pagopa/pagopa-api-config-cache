@@ -83,7 +83,8 @@ class CacheNotInitializedTest {
           "/cache",
   })
   void testGetsKO(String url) throws Exception {
-    mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
+    mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
   }
 
 }
