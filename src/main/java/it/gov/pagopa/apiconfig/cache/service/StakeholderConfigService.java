@@ -211,12 +211,6 @@ public class StakeholderConfigService {
         return version;
     }
 
-//    private void setCacheV1InProgress(String stakeholder) {
-//        String actualKeyV1 = getKeyV1InProgress(stakeholder);
-//        redisRepository.save(actualKeyV1, "1".getBytes(StandardCharsets.UTF_8), IN_PROGRESS_TTL);
-//    }
-//
-
     private static ConfigData decompressGzipToConfigData(byte[] gzipBytes) throws IOException {
         byte[] unzipped = ZipUtils.unzip(gzipBytes);
         ObjectMapper objectMapper = new ObjectMapper();
