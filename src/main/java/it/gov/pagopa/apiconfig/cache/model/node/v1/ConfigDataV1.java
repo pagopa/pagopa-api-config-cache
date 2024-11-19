@@ -10,6 +10,7 @@ import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsSubjectService;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.configuration.*;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution.*;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.psp.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 

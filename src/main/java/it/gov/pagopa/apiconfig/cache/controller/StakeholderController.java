@@ -12,6 +12,7 @@ import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.service.StakeholderConfigService;
 import it.gov.pagopa.apiconfig.cache.model.ConfigData;
+import it.gov.pagopa.apiconfig.cache.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -35,10 +36,6 @@ public abstract class StakeholderController {
 
   @Autowired private CacheController cacheController;
   @Autowired private StakeholderConfigService stakeholderConfigService;
-
-  private String X_CACHE_ID = "X-CACHE-ID";
-  private String X_CACHE_TIMESTAMP = "X-CACHE-TIMESTAMP";
-  private String X_CACHE_VERSION = "X-CACHE-VERSION";
 
   @Operation(
       summary = "Get selected key of {stakeholder} cache v1 config",
@@ -101,13 +98,13 @@ public abstract class StakeholderController {
 
       HttpHeaders responseHeaders = new HttpHeaders();
 
-      responseHeaders.set(X_CACHE_ID, config.getXCacheId());
-      responseHeaders.set(X_CACHE_TIMESTAMP, config.getXCacheTimestamp());
-      responseHeaders.set(X_CACHE_VERSION, config.getXCacheVersion());
+      responseHeaders.set(Constants.HEADER_X_CACHE_ID, config.getXCacheId());
+      responseHeaders.set(Constants.HEADER_X_CACHE_TIMESTAMP, config.getXCacheTimestamp());
+      responseHeaders.set(Constants.HEADER_X_CACHE_VERSION, config.getXCacheVersion());
 
       return ResponseEntity.ok()
               .headers(responseHeaders)
-              .body((ConfigDataV1) config.getConfigDataV1());
+              .body(config.getConfigDataV1());
   }
 
   @Operation(
@@ -159,7 +156,7 @@ public abstract class StakeholderController {
   @GetMapping(
       value = "/v1/id",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<CacheVersion> idV1() throws IOException {
+  public ResponseEntity<CacheVersion> idV1() {
     return ResponseEntity.ok().body(stakeholderConfigService.getVersionId(stakeholder(), "v1"));
   }
 

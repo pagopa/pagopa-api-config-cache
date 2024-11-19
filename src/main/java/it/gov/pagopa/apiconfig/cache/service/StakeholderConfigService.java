@@ -33,7 +33,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -51,12 +50,6 @@ public class StakeholderConfigService {
 
     @Value("${info.application.version}")
     private String APP_VERSION;
-
-    @Value("#{'${canary}'=='true' ? '_canary' : ''}")
-    private String keySuffix;
-
-    @Value("#{'${sendEvent}'=='true'}")
-    private Boolean sendEvent;
 
     @Value("${xls.mask-passwords}")
     private boolean xlsMaskPasswords;
