@@ -10,6 +10,10 @@ public class Constants {
   public static final Base64.Encoder ENCODER = Base64.getEncoder();
 
   public static final String HEADER_REQUEST_ID = "X-Request-Id";
+
+  public static final String HEADER_X_CACHE_ID = "X-CACHE-ID";
+  public static final String HEADER_X_CACHE_TIMESTAMP = "X-CACHE-TIMESTAMP";
+  public static final String HEADER_X_CACHE_VERSION = "X-CACHE-VERSION";
   public static final String GZIP_JSON = "GZIP_JSON";
   public static final String GZIP_JSON_V1 = GZIP_JSON +"-v1";
   public static final String FULL = "full";

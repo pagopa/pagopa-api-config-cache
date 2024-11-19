@@ -53,10 +53,6 @@ public class CacheController {
     @Value("${xls.mask-passwords}")
     private boolean xlsMaskPasswords;
 
-    private String X_CACHE_ID = "X-CACHE-ID";
-    private String X_CACHE_TIMESTAMP = "X-CACHE-TIMESTAMP";
-    private String X_CACHE_VERSION = "X-CACHE-VERSION";
-
     @PostConstruct
     public void preloadKeysFromRedis() {
         if(preload){
@@ -194,9 +190,9 @@ public class CacheController {
         }
 
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(X_CACHE_ID, (String)inMemoryCache.get(Constants.VERSION));
-        responseHeaders.set(X_CACHE_TIMESTAMP, DateTimeFormatter.ISO_DATE_TIME.format((ZonedDateTime)inMemoryCache.get(Constants.TIMESTAMP)));
-        responseHeaders.set(X_CACHE_VERSION, (String)inMemoryCache.get(Constants.CACHE_VERSION));
+        responseHeaders.set(Constants.HEADER_X_CACHE_ID, (String)inMemoryCache.get(Constants.VERSION));
+        responseHeaders.set(Constants.HEADER_X_CACHE_TIMESTAMP, DateTimeFormatter.ISO_DATE_TIME.format((ZonedDateTime)inMemoryCache.get(Constants.TIMESTAMP)));
+        responseHeaders.set(Constants.HEADER_X_CACHE_VERSION, (String)inMemoryCache.get(Constants.CACHE_VERSION));
         if(keys!=null && !keys.isEmpty()){
             Map<String,Object> returnMap = new HashMap<>();
             keys.forEach(k->{
@@ -207,7 +203,7 @@ public class CacheController {
             return ResponseEntity.ok()
                     .headers(responseHeaders)
                     .body(returnMap);
-        }else{
+        } else {
             return ResponseEntity.ok()
                     .headers(responseHeaders)
                     .body(inMemoryCache);
@@ -262,9 +258,9 @@ public class CacheController {
     public ResponseEntity<CacheVersion> id() throws IOException {
 
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set(X_CACHE_ID,(String)inMemoryCache.get(Constants.VERSION));
-        responseHeaders.set(X_CACHE_TIMESTAMP, DateTimeFormatter.ISO_DATE_TIME.format((ZonedDateTime)inMemoryCache.get(Constants.TIMESTAMP)));
-        responseHeaders.set(X_CACHE_VERSION,(String)inMemoryCache.get(Constants.CACHE_VERSION));
+        responseHeaders.set(Constants.HEADER_X_CACHE_ID, (String)inMemoryCache.get(Constants.VERSION));
+        responseHeaders.set(Constants.HEADER_X_CACHE_TIMESTAMP, DateTimeFormatter.ISO_DATE_TIME.format((ZonedDateTime)inMemoryCache.get(Constants.TIMESTAMP)));
+        responseHeaders.set(Constants.HEADER_X_CACHE_VERSION, (String)inMemoryCache.get(Constants.CACHE_VERSION));
 
         return ResponseEntity.ok()
                 .headers(responseHeaders)
@@ -328,9 +324,9 @@ public class CacheController {
             ZonedDateTime timestamp = (ZonedDateTime)inMemoryCache.get(Constants.TIMESTAMP);
 
             HttpHeaders responseHeaders = new HttpHeaders();
-            responseHeaders.set(X_CACHE_ID,cacheId);
-            responseHeaders.set(X_CACHE_TIMESTAMP,DateTimeFormatter.ISO_DATE_TIME.format(timestamp));
-            responseHeaders.set(X_CACHE_VERSION,cacheVersion);
+            responseHeaders.set(Constants.HEADER_X_CACHE_ID,cacheId);
+            responseHeaders.set(Constants.HEADER_X_CACHE_TIMESTAMP, DateTimeFormatter.ISO_DATE_TIME.format(timestamp));
+            responseHeaders.set(Constants.HEADER_X_CACHE_VERSION,cacheVersion);
 
             return ResponseEntity.ok()
                     .headers(responseHeaders)

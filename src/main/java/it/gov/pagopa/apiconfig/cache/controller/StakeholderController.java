@@ -12,7 +12,6 @@ import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.service.StakeholderConfigService;
 import it.gov.pagopa.apiconfig.cache.model.ConfigData;
-import it.gov.pagopa.apiconfig.cache.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
