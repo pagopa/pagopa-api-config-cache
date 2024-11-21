@@ -119,7 +119,7 @@ class StakeholderConfigServiceTest {
     String version = "111";
     String cacheVersion = Constants.GZIP_JSON + "-test";
     ZonedDateTime now = ZonedDateTime.now();
-    ZonedDateTime romeDateTime = now.withZoneSameInstant(ZoneId.of("Europe/Rome"));
+    ZonedDateTime romeDateTime = DateTimeUtils.getZonedDateTime(now);
     TestUtils.inizializeInMemoryCache(cacheController, configMapper, version, cacheVersion, romeDateTime);
     ConfigData configData = stakeholderConfigService.getCache("test", "v1", NodeCacheController.KEYS);
     assertThat(configData).isNotNull();
@@ -132,7 +132,7 @@ class StakeholderConfigServiceTest {
     String version = "111";
     String cacheVersion = Constants.GZIP_JSON + "-test";
     ZonedDateTime now = ZonedDateTime.now();
-    ZonedDateTime romeDateTime = now.withZoneSameInstant(ZoneId.of("Europe/Rome"));
+    ZonedDateTime romeDateTime = DateTimeUtils.getZonedDateTime(now);
     TestUtils.inizializeInMemoryCache(cacheController, configMapper, version, cacheVersion, romeDateTime);
     ConfigData configData = stakeholderConfigService.getCache("test", "v1", NodeCacheController.KEYS);
     stakeholderConfigService.saveOnDB(configData, "v1");
@@ -151,7 +151,7 @@ class StakeholderConfigServiceTest {
     String version = "111";
     String cacheVersion = Constants.GZIP_JSON + "-test";
     ZonedDateTime now = ZonedDateTime.now();
-    ZonedDateTime romeDateTime = now.withZoneSameInstant(ZoneId.of("Europe/Rome"));
+    ZonedDateTime romeDateTime = DateTimeUtils.getZonedDateTime(now);
     ConfigMapper modelMapper = new ConfigMapper();
     ConfigDataV1 configDataV1 = stakeholderConfigService.cacheToConfigDataV1(
             TestUtils.inMemoryCache(

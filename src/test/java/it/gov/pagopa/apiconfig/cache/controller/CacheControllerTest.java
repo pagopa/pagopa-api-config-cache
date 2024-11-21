@@ -9,6 +9,7 @@ import it.gov.pagopa.apiconfig.cache.service.StakeholderConfigService;
 import it.gov.pagopa.apiconfig.cache.service.VerifierService;
 import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
+import it.gov.pagopa.apiconfig.cache.util.DateTimeUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -24,6 +25,7 @@ import javax.persistence.EntityManager;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -69,15 +71,14 @@ class CacheControllerTest {
     String version = "111";
     String cacheVersion = Constants.GZIP_JSON + "-test";
     ZonedDateTime now = ZonedDateTime.now();
-    ZonedDateTime romeDateTime = now.withZoneSameInstant(ZoneId.of("Europe/Rome"));
+    ZonedDateTime romeDateTime = DateTimeUtils.getZonedDateTime(now);
 
     TestUtils.inizializeInMemoryCache(cacheController, modelMapper, version, cacheVersion, romeDateTime);
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXXXX'['VV']'");
     mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(header().string(Constants.HEADER_X_CACHE_ID, version))
             .andExpect(header().string(Constants.HEADER_X_CACHE_VERSION, cacheVersion))
-            .andExpect(header().string(Constants.HEADER_X_CACHE_TIMESTAMP, formatter.format(romeDateTime)))
+            .andExpect(header().string(Constants.HEADER_X_CACHE_TIMESTAMP, DateTimeUtils.getString(now)))
     ;
   }
 
@@ -102,8 +103,7 @@ class CacheControllerTest {
     String version = "111";
     String cacheVersion = Constants.GZIP_JSON + "-test";
     ZonedDateTime now = ZonedDateTime.now();
-    ZonedDateTime romeDateTime = now.withZoneSameInstant(ZoneId.of("Europe/Rome"));
-    TestUtils.inizializeInMemoryCache(cacheController, modelMapper, version, cacheVersion, romeDateTime);
+    TestUtils.inizializeInMemoryCache(cacheController, modelMapper, version, cacheVersion, DateTimeUtils.getZonedDateTime(now));
     mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(header().string("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
@@ -116,8 +116,7 @@ class CacheControllerTest {
     String version = "111";
     String cacheVersion = Constants.GZIP_JSON + "-test";
     ZonedDateTime now = ZonedDateTime.now();
-    ZonedDateTime romeDateTime = now.withZoneSameInstant(ZoneId.of("Europe/Rome"));
-    when(cacheConfigService.newCache()).thenReturn(TestUtils.inMemoryCache(modelMapper, version, cacheVersion, romeDateTime));
+    when(cacheConfigService.newCache()).thenReturn(TestUtils.inMemoryCache(modelMapper, version, cacheVersion, DateTimeUtils.getString(version)));
 
     String url = "/cache/refresh";
 
@@ -125,7 +124,7 @@ class CacheControllerTest {
             .andExpect(status().isOk())
             .andExpect(header().string(Constants.HEADER_X_CACHE_ID, version))
             .andExpect(header().string(Constants.HEADER_X_CACHE_VERSION, cacheVersion))
-            .andExpect(header().string(Constants.HEADER_X_CACHE_TIMESTAMP, romeDateTime.toString()))
+            .andExpect(header().string(Constants.HEADER_X_CACHE_TIMESTAMP, DateTimeUtils.getString(now)))
     ;
   }
 
@@ -136,8 +135,7 @@ class CacheControllerTest {
     String version = "111";
     String cacheVersion = Constants.GZIP_JSON + "-test";
     ZonedDateTime now = ZonedDateTime.now();
-    ZonedDateTime romeDateTime = now.withZoneSameInstant(ZoneId.of("Europe/Rome"));
-    when(cacheConfigService.newCache()).thenReturn(TestUtils.inMemoryCache(modelMapper, version, cacheVersion, romeDateTime));
+    when(cacheConfigService.newCache()).thenReturn(TestUtils.inMemoryCache(modelMapper, version, cacheVersion, DateTimeUtils.getZonedDateTime(now)));
 
     String url = "/cache/refresh";
 

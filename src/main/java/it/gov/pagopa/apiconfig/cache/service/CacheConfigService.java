@@ -26,6 +26,7 @@ import it.gov.pagopa.apiconfig.cache.model.latest.psp.*;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
+import it.gov.pagopa.apiconfig.cache.util.DateTimeUtils;
 import it.gov.pagopa.apiconfig.cache.util.JsonSerializer;
 import it.gov.pagopa.apiconfig.cache.util.ZipUtils;
 import it.gov.pagopa.apiconfig.starter.entity.*;
@@ -349,7 +350,7 @@ public class CacheConfigService {
       appendMapToJson(jsonGenerator,Constants.CREDITOR_INSTITUTION_INFORMATIONS,infopasMap);
 
       ZonedDateTime now = ZonedDateTime.now();
-      ZonedDateTime romeDateTime = now.withZoneSameInstant(ZoneId.of("Europe/Rome"));
+      ZonedDateTime romeDateTime = DateTimeUtils.getZonedDateTime(now);
       long endTime = System.nanoTime();
       String id = "" + endTime;
       String cacheVersion = getVersion();
@@ -358,8 +359,7 @@ public class CacheConfigService {
       configData.put(Constants.CACHE_VERSION, cacheVersion);
 
       appendObjectToJson(jsonGenerator, Constants.VERSION, id);
-      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXXXX'['VV']'");
-      appendObjectToJson(jsonGenerator, Constants.TIMESTAMP, formatter.format(romeDateTime));
+      appendObjectToJson(jsonGenerator, Constants.TIMESTAMP, DateTimeUtils.getString(now));
       appendObjectToJson(jsonGenerator, Constants.CACHE_VERSION, cacheVersion);
 
       jsonGenerator.writeEndObject();

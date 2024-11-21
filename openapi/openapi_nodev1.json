@@ -46,12 +46,6 @@
               }
             }
           },
-          "403" : {
-            "description" : "Forbidden"
-          },
-          "429" : {
-            "description" : "Too many requests"
-          },
           "500" : {
             "description" : "Service unavailable",
             "content" : {
@@ -61,6 +55,12 @@
                 }
               }
             }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
           },
           "400" : {
             "description" : "Bad Request",
@@ -72,8 +72,8 @@
               }
             }
           },
-          "401" : {
-            "description" : "Unauthorized"
+          "429" : {
+            "description" : "Too many requests"
           }
         },
         "security" : [ {
@@ -87,18 +87,6 @@
         "summary" : "Get xlsx of last v1 {stakeholder} cache version",
         "operationId" : "xls",
         "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
-            }
-          },
-          "403" : {
-            "description" : "Forbidden"
-          },
-          "429" : {
-            "description" : "Too many requests"
-          },
           "500" : {
             "description" : "Service unavailable",
             "content" : {
@@ -107,6 +95,18 @@
                   "$ref" : "#/components/schemas/ProblemJson"
                 }
               }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
             }
           },
           "400" : {
@@ -119,8 +119,8 @@
               }
             }
           },
-          "401" : {
-            "description" : "Unauthorized"
+          "429" : {
+            "description" : "Too many requests"
           }
         },
         "security" : [ {
@@ -134,14 +134,24 @@
         "summary" : "Get last v1 {stakeholder} cache version",
         "operationId" : "idV1",
         "responses" : {
+          "500" : {
+            "description" : "Service unavailable",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
           "403" : {
             "description" : "Forbidden"
           },
           "404" : {
             "description" : "Not Found"
-          },
-          "429" : {
-            "description" : "Too many requests"
           },
           "200" : {
             "description" : "OK",
@@ -149,16 +159,6 @@
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/CacheVersion"
-                }
-              }
-            }
-          },
-          "500" : {
-            "description" : "Service unavailable",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ProblemJson"
                 }
               }
             }
@@ -173,8 +173,8 @@
               }
             }
           },
-          "401" : {
-            "description" : "Unauthorized"
+          "429" : {
+            "description" : "Too many requests"
           }
         },
         "security" : [ {
