@@ -1,5 +1,6 @@
 package it.gov.pagopa.apiconfig.cache.util;
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import it.gov.pagopa.apiconfig.cache.model.latest.cds.CdsService;
 import it.gov.pagopa.apiconfig.cache.model.latest.cds.CdsSubjectService;
 import it.gov.pagopa.apiconfig.cache.model.latest.configuration.ConfigurationKey;

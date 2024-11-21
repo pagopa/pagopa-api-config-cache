@@ -1,6 +1,7 @@
 package it.gov.pagopa.apiconfig.cache;
 
 import it.gov.pagopa.apiconfig.cache.controller.CacheController;
+import it.gov.pagopa.apiconfig.cache.model.ConfigData;
 import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.Station;
 import it.gov.pagopa.apiconfig.cache.model.latest.psp.Channel;
 import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
@@ -56,7 +57,6 @@ public class TestUtils {
             )));
     return objectObjectHashMap;
   }
-
   public static List<String> pastazioniV2 = Arrays.asList("1", "2", "3", "4");
 
   public static String cacheId = "testCacheId";

@@ -29,6 +29,7 @@ import javax.persistence.EntityManager;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -73,22 +74,21 @@ public class StakeholderCacheControllerTest {
         String cacheVersion = Constants.GZIP_JSON + "-test";
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime romeDateTime = now.withZoneSameInstant(ZoneId.of("Europe/Rome"));
-
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXXXX'['VV']'");
         ConfigDataV1 cd = new ConfigDataV1();
         cd.setVersion("version1");
         ConfigData configData = ConfigData.builder()
                 .xCacheId(version)
-                .xCacheTimestamp(romeDateTime.toString())
+                .xCacheTimestamp(formatter.format(romeDateTime))
                 .xCacheVersion(cacheVersion)
                 .configDataV1(cd)
                 .build();
         when(stakeholderConfigService.getCache(anyString(), anyString(), any())).thenReturn(configData);
-
         mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(header().string(Constants.HEADER_X_CACHE_ID, version))
                 .andExpect(header().string(Constants.HEADER_X_CACHE_VERSION, cacheVersion))
-                .andExpect(header().string(Constants.HEADER_X_CACHE_TIMESTAMP, romeDateTime.toString()))
+                .andExpect(header().string(Constants.HEADER_X_CACHE_TIMESTAMP, formatter.format(romeDateTime)))
         ;
     }
 

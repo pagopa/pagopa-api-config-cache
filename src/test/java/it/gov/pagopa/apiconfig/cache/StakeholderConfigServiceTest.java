@@ -3,7 +3,11 @@ package it.gov.pagopa.apiconfig.cache;
 import it.gov.pagopa.apiconfig.Application;
 import it.gov.pagopa.apiconfig.cache.controller.CacheController;
 import it.gov.pagopa.apiconfig.cache.controller.stakeholders.NodeCacheController;
+import it.gov.pagopa.apiconfig.cache.exception.AppError;
+import it.gov.pagopa.apiconfig.cache.exception.AppException;
 import it.gov.pagopa.apiconfig.cache.model.ConfigData;
+import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.service.CacheEventHubService;
 import it.gov.pagopa.apiconfig.cache.service.CacheConfigService;
@@ -27,6 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -133,24 +138,38 @@ class StakeholderConfigServiceTest {
     stakeholderConfigService.saveOnDB(configData, "v1");
     assertThat(configData).isNotNull();
   }
+  @Test
+  void getVersionId() {
+    String version = "111";
+    when(redisRepository.get(any())).thenReturn(version.getBytes(StandardCharsets.UTF_8));
+    CacheVersion cacheVersion = stakeholderConfigService.getVersionId("test", "v1");
+    assertThat(cacheVersion.getVersion()).isEqualTo(version);
+  }
 
-//  @Test
-//  void getCacheV1Id() throws IOException {
-//    Map<String, Object> configDataV1Map = new HashMap<>();
-//    configDataV1Map.put(Constants.version,"12345");
-//    ConfigDataV1 configDataV11 = new ConfigDataV1();
-//    configDataV11.setVersion("12345");
-//    when(redisRepository.getStringByKeyId(anyString())).thenReturn(TestUtils.cacheId);
-//    when(redisRepository.getBooleanByKeyId(anyString())).thenReturn(true);
-//    when(redisRepository.get(anyString())).thenReturn(configDataV1Map);
-//    CacheVersion cacheV1Id = configService.getCacheV1Id("");
-//    assertThat(cacheV1Id.getVersion().equals(TestUtils.cacheId));
-//    Boolean inProgress = configService.getCacheV1InProgress("");
-//    assertThat(inProgress);
-//
-//    Map<String, Object> configDataV1 = configService.loadFullCache();
-//    assertThat(configDataV1.get(Constants.version).equals(configDataV11.getVersion()));
-//  }
+  @Test
+  void getXLSX() throws IOException {
+    String version = "111";
+    String cacheVersion = Constants.GZIP_JSON + "-test";
+    ZonedDateTime now = ZonedDateTime.now();
+    ZonedDateTime romeDateTime = now.withZoneSameInstant(ZoneId.of("Europe/Rome"));
+    ConfigMapper modelMapper = new ConfigMapper();
+    ConfigDataV1 configDataV1 = stakeholderConfigService.cacheToConfigDataV1(
+            TestUtils.inMemoryCache(
+                    modelMapper, version, cacheVersion, romeDateTime
+            ),
+            new String[]{}
+    );
+    ConfigData configData = ConfigData.builder()
+            .configDataV1(configDataV1)
+            .xCacheId(version)
+            .xCacheTimestamp(romeDateTime.toString())
+            .xCacheVersion(cacheVersion)
+            .build();
+
+    when(redisRepository.get(any())).thenReturn(stakeholderConfigService.compressJsonToGzip(configData));
+
+    assertThat(stakeholderConfigService.getXLSX("test", "v1")).isNotNull();
+  }
 
 //  @Test
 //  void testXls() throws Exception {

@@ -127,6 +127,7 @@ public class StakeholderConfigService {
         try {
             String cacheVersion = getGZIPVersion(schemaVersion);
             ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
             HashMap<String, Object> cloned = objectMapper.convertValue(configData.getConfigDataV1(), HashMap.class);
             cacheRepository.save(Cache.builder()
                     .id(configData.getXCacheId())
@@ -189,7 +190,7 @@ public class StakeholderConfigService {
         return String.format("%s_%s", stakeholder, schemaVersion);
     }
 
-    private ConfigDataV1 cacheToConfigDataV1(Map<String,Object> inMemoryCache, String[] keys) {
+    public ConfigDataV1 cacheToConfigDataV1(Map<String,Object> inMemoryCache, String[] keys) {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -221,7 +222,7 @@ public class StakeholderConfigService {
         jsonParser.close();
         return configData;
     }
-    private static byte[] compressJsonToGzip(Object object) throws IOException {
+    public static byte[] compressJsonToGzip(Object object) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
         // use GZIPOutputStream to compress data

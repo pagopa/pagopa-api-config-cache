@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import javax.persistence.EntityManager;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -69,13 +70,14 @@ class CacheControllerTest {
     String cacheVersion = Constants.GZIP_JSON + "-test";
     ZonedDateTime now = ZonedDateTime.now();
     ZonedDateTime romeDateTime = now.withZoneSameInstant(ZoneId.of("Europe/Rome"));
-    TestUtils.inizializeInMemoryCache(cacheController, modelMapper, version, cacheVersion, romeDateTime);
 
+    TestUtils.inizializeInMemoryCache(cacheController, modelMapper, version, cacheVersion, romeDateTime);
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXXXX'['VV']'");
     mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(header().string(Constants.HEADER_X_CACHE_ID, version))
             .andExpect(header().string(Constants.HEADER_X_CACHE_VERSION, cacheVersion))
-            .andExpect(header().string(Constants.HEADER_X_CACHE_TIMESTAMP, romeDateTime.toString()))
+            .andExpect(header().string(Constants.HEADER_X_CACHE_TIMESTAMP, formatter.format(romeDateTime)))
     ;
   }
 
