@@ -125,7 +125,7 @@ public class StakeholderConfigService {
     public void saveOnDB(ConfigData configData, String schemaVersion) {
         log.info("saving on CACHE table " + configData.getXCacheId());
         try {
-            String cacheVersion = String.format("%s-%s-%s", Constants.GZIP_JSON, schemaVersion, APP_VERSION);
+            String cacheVersion = getGZIPVersion(schemaVersion);
             ObjectMapper objectMapper = new ObjectMapper();
             HashMap<String, Object> cloned = objectMapper.convertValue(configData.getConfigDataV1(), HashMap.class);
             cacheRepository.save(Cache.builder()

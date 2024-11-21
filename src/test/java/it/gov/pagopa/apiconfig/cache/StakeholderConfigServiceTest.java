@@ -30,6 +30,7 @@ import java.time.ZonedDateTime;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.when;
 
 //@SpringBootTest(classes = Application.class)
@@ -119,6 +120,19 @@ class StakeholderConfigServiceTest {
     assertThat(configData).isNotNull();
   }
 
+  @Test
+  void saveOnDB() throws IOException {
+    when(redisRepository.get(any())).thenReturn(null);
+    when(cacheRepository.save(any())).thenReturn(null);
+    String version = "111";
+    String cacheVersion = Constants.GZIP_JSON + "-test";
+    ZonedDateTime now = ZonedDateTime.now();
+    ZonedDateTime romeDateTime = now.withZoneSameInstant(ZoneId.of("Europe/Rome"));
+    TestUtils.inizializeInMemoryCache(cacheController, configMapper, version, cacheVersion, romeDateTime);
+    ConfigData configData = stakeholderConfigService.getCache("test", "v1", NodeCacheController.KEYS);
+    stakeholderConfigService.saveOnDB(configData, "v1");
+    assertThat(configData).isNotNull();
+  }
 
 //  @Test
 //  void getCacheV1Id() throws IOException {

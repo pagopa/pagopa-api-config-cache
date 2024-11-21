@@ -358,7 +358,8 @@ public class CacheConfigService {
       configData.put(Constants.CACHE_VERSION, cacheVersion);
 
       appendObjectToJson(jsonGenerator, Constants.VERSION, id);
-      appendObjectToJson(jsonGenerator, Constants.TIMESTAMP, romeDateTime);
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXXXX'['VV']'");
+      appendObjectToJson(jsonGenerator, Constants.TIMESTAMP, formatter.format(romeDateTime));
       appendObjectToJson(jsonGenerator, Constants.CACHE_VERSION, cacheVersion);
 
       jsonGenerator.writeEndObject();
