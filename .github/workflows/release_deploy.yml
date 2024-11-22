@@ -30,7 +30,7 @@ on:
         required: false
         type: string
         default: ""
-        description: release version to deploy for PagoPA microservice
+        description: release version to deploy for PagoPA microservice (if empty then last)
       pagopa_force:
         required: false
         type: boolean
@@ -40,7 +40,7 @@ on:
         required: false
         type: string
         default: "0.9.17"
-        description: release version to deploy for Nexi microservice
+        description: release version to deploy for Nexi microservice (if empty then last)
       nexi_force:
         required: false
         type: boolean
