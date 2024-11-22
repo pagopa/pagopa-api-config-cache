@@ -2,7 +2,7 @@ microservice-chart: &microservice-chart
   namespace: "apiconfig"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: 0.9.20
+    tag: 0.9.20-1-PAGOPA-2264-fix-chart
   canaryDelivery:
     deployment:
       image:
@@ -142,7 +142,7 @@ postgresql-replica-nexi:
     DB_CONFIG_URL: "jdbc:postgresql://db-postgres-ndp-prf-1.u.db-nodo-pagamenti.com:6432,db-postgres-ndp-prf-2.u.db-nodo-pagamenti.com:6432/ndpspcq"
     #DB_CONFIG_URL: "jdbc:postgresql://db-postgres-ndp-prf-1.u.db-nodo-pagamenti.com:6432/ndpspcq"
     DB_CONFIG_USER: "pp_nodo4_cfg"
-#    DB_CONFIG_USER: "nodo4_cfg"
+    #    DB_CONFIG_USER: "nodo4_cfg"
     DB_CONFIG_DRIVER: "org.postgresql.Driver"
     DATABASE_ID: "prnexi"
     ENV: "prf"
