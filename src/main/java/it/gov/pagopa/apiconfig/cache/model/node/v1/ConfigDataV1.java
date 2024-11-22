@@ -3,6 +3,7 @@ package it.gov.pagopa.apiconfig.cache.model.node.v1;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import it.gov.pagopa.apiconfig.cache.model.node.CacheSchemaVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsCategory;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsService;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.cds.CdsSubject;
@@ -21,7 +22,7 @@ import java.util.Map;
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ConfigDataV1 implements Serializable {
+public class ConfigDataV1 extends CacheSchemaVersion {
 
   @JsonProperty(required = true)
   private String version;

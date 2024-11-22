@@ -1,7 +1,7 @@
 package it.gov.pagopa.apiconfig.cache.model;
 
 
-import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
+import it.gov.pagopa.apiconfig.cache.model.node.CacheSchemaVersion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ConfigData {
 
-    private ConfigDataV1 configDataV1;
+    private CacheSchemaVersion cacheSchemaVersion;
     private String xCacheId;
     private String xCacheTimestamp;
     private String xCacheVersion;

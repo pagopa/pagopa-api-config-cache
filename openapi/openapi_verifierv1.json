@@ -26,21 +26,8 @@
         "summary" : "Get Creditor Institution list with Station v2",
         "operationId" : "cache",
         "responses" : {
-          "401" : {
-            "description" : "Unauthorized"
-          },
-          "403" : {
-            "description" : "Forbidden"
-          },
-          "400" : {
-            "description" : "Bad Request",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ProblemJson"
-                }
-              }
-            }
+          "429" : {
+            "description" : "Too many requests"
           },
           "500" : {
             "description" : "Service unavailable",
@@ -52,8 +39,15 @@
               }
             }
           },
-          "429" : {
-            "description" : "Too many requests"
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemJson"
+                }
+              }
+            }
           },
           "200" : {
             "description" : "OK",
@@ -64,6 +58,12 @@
                 }
               }
             }
+          },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "401" : {
+            "description" : "Unauthorized"
           }
         },
         "security" : [ {

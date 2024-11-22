@@ -1,10 +1,7 @@
 package it.gov.pagopa.apiconfig.cache;
 
-import it.gov.pagopa.apiconfig.Application;
 import it.gov.pagopa.apiconfig.cache.controller.CacheController;
 import it.gov.pagopa.apiconfig.cache.controller.stakeholders.NodeCacheController;
-import it.gov.pagopa.apiconfig.cache.exception.AppError;
-import it.gov.pagopa.apiconfig.cache.exception.AppException;
 import it.gov.pagopa.apiconfig.cache.model.ConfigData;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
@@ -22,20 +19,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.when;
 
 //@SpringBootTest(classes = Application.class)
@@ -110,7 +102,7 @@ class StakeholderConfigServiceTest {
   @Test
   void loadCache() throws IOException {
     when(redisRepository.get(any())).thenReturn(null);
-    ConfigData configData = stakeholderConfigService.loadCache("test");
+    ConfigData configData = stakeholderConfigService.loadCache("test", "v1");
     assertThat(configData).isNull();
   }
   @Test
@@ -160,7 +152,7 @@ class StakeholderConfigServiceTest {
             new String[]{}
     );
     ConfigData configData = ConfigData.builder()
-            .configDataV1(configDataV1)
+            .cacheSchemaVersion(configDataV1)
             .xCacheId(version)
             .xCacheTimestamp(romeDateTime.toString())
             .xCacheVersion(cacheVersion)
@@ -185,23 +177,12 @@ class StakeholderConfigServiceTest {
 //    when(cdiFasceRepository.findAll()).thenReturn(TestUtils.cdiFasciaCostoServizio);
 //    when(cdiInformazioniServizioRepository.findAll()).thenReturn(TestUtils.cdiInformazioniServizio);
 //    when(canaliRepository.findAllFetchingIntermediario()).thenReturn(TestUtils.canali);
-//    when(tipiVersamentoRepository.findAll()).thenReturn(TestUtils.tipiVersamento);
+//    when(tipiVersamentoRepository.findAll()).thenReturn(TestUtils.tipiVersamento);b
 //    when(pspCanaleTipoVersamentoCanaleRepository.findAllFetching())
 //            .thenReturn(TestUtils.pspCanaliTv);
 //    when(ftpServersRepository.findAll()).thenReturn(TestUtils.ftpServers);
 //    when(gdeConfigRepository.findAll()).thenReturn(TestUtils.gdeConfigurations);
-//    when(wfespPluginConfRepository.findAll()).thenReturn(TestUtils.plugins);
-//    when(ibanValidiPerPaRepository.findAllFetchingPas()).thenReturn(TestUtils.ibans);
-//    when(codifichePaRepository.findAllFetchingCodifiche()).thenReturn(TestUtils.encodingsPA);
-//    when(codificheRepository.findAll()).thenReturn(TestUtils.encodings);
-//    when(stazioniRepository.findAllFetchingIntermediario()).thenReturn(TestUtils.stazioni);
-//    when(paStazioniRepository.findAllFetching()).thenReturn(TestUtils.paStazioniPa);
-//    when(cdsServizioRepository.findAllFetching()).thenReturn(TestUtils.cdsServizi);
-//    when(cdsSoggettoServizioRepository.findAllFetchingStations())
-//            .thenReturn(TestUtils.cdsSoggettiServizi);
-//    when(cdsSoggettoRepository.findAll()).thenReturn(TestUtils.cdsSoggetti);
-//    when(cdsCategorieRepository.findAll()).thenReturn(TestUtils.cdsCategorie);
-//    when(informativePaMasterRepository.findAll()).thenReturn(TestUtils.informativePaMaster);
+//    when(wfespPluginConfRepository.findAll()).thenReturn(TestUtils.plugins); njuj7
 //    when(jsonSerializer.serialize(any())).thenReturn("{}".getBytes(StandardCharsets.UTF_8));
 //
 //    byte[] export = new JsonToXls(false).convert(cacheConfigService.newCache());

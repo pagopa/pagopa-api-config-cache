@@ -104,7 +104,7 @@ public abstract class StakeholderController {
 
       return ResponseEntity.ok()
               .headers(responseHeaders)
-              .body(config.getConfigDataV1());
+              .body((ConfigDataV1) config.getCacheSchemaVersion());
   }
 
   @Operation(

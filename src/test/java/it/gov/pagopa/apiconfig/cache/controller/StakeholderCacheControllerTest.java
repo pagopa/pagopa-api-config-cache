@@ -2,7 +2,6 @@ package it.gov.pagopa.apiconfig.cache.controller;
 
 
 import it.gov.pagopa.apiconfig.Application;
-import it.gov.pagopa.apiconfig.cache.TestUtils;
 import it.gov.pagopa.apiconfig.cache.controller.stakeholders.NodeCacheController;
 import it.gov.pagopa.apiconfig.cache.model.ConfigData;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
@@ -81,7 +80,7 @@ public class StakeholderCacheControllerTest {
                 .xCacheId(version)
                 .xCacheTimestamp(formatter.format(romeDateTime))
                 .xCacheVersion(cacheVersion)
-                .configDataV1(cd)
+                .cacheSchemaVersion(cd)
                 .build();
         when(stakeholderConfigService.getCache(anyString(), anyString(), any())).thenReturn(configData);
         mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
