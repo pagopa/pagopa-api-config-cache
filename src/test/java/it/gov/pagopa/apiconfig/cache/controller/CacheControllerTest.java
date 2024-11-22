@@ -116,7 +116,7 @@ class CacheControllerTest {
     String version = "111";
     String cacheVersion = Constants.GZIP_JSON + "-test";
     ZonedDateTime now = ZonedDateTime.now();
-    when(cacheConfigService.newCache()).thenReturn(TestUtils.inMemoryCache(modelMapper, version, cacheVersion, DateTimeUtils.getString(version)));
+    when(cacheConfigService.newCache()).thenReturn(TestUtils.inMemoryCache(modelMapper, version, cacheVersion, DateTimeUtils.getZonedDateTime(now)));
 
     String url = "/cache/refresh";
 
