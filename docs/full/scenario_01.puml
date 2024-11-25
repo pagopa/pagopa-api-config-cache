@@ -1,0 +1,34 @@
+/'
+Scenario 01:
+  Cache retrieval and no cache is present on Redis
+'/
+@startuml
+participant Client
+participant APIM
+participant "API Config\nCache" as Cache
+
+alt on start-up
+    Cache -x Redis: if <b>preload = true</b>, get <b>apicfg_p_full</b>
+end alt
+
+Client -> APIM: <b>/cache</b>
+APIM -> Cache: <b>/cache</b>
+Cache -> APIM: <i>404 CACHE_NOT_INITIALIZED</i>
+
+Client -> APIM: <b>/cache/refresh</b>
+APIM -> Cache: <b>/cache/refresh</b>
+Cache -x Redis: Get cache data with key <b>apicfg_p_full_in_progress</b>
+Cache -> Redis: Save cache data with key <b>apicfg_p_full_in_progress</b>
+Cache -> Cache: Generate cache data
+alt in progress
+Client -> APIM: <b>/cache/refresh</b>
+APIM -> Cache: <b>/cache/refresh</b>
+Cache -> Redis: Get cache data with key <b>apicfg_p_full_in_progress</b>
+Cache --> APIM: <i>503 SERVICE_UNAVAILABLE</i>
+APIM --> Client: <i>503 SERVICE_UNAVAILABLE</i>
+end alt
+Cache -> Redis: Save cache data with key <b>apicfg_p_full</b>
+Cache -> Redis: Remove cache with key <b>apicfg_p_full_in_progress</b>
+Cache --> APIM: Return cache data
+APIM --> Client: Return cache data
+@enduml

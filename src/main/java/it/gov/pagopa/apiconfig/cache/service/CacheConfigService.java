@@ -87,6 +87,7 @@ public class CacheConfigService {
 
   @Autowired private RedisRepository redisRepository;
   @Autowired private ConfigMapper modelMapper;
+  @Autowired private StakeholderConfigService stakeholderConfigService;
 
   @Autowired private ConfigurationKeysRepository configurationKeysRepository;
   @Autowired private IntermediariPaRepository intermediariPaRepository;

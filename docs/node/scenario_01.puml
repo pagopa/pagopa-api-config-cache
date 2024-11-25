@@ -7,6 +7,8 @@ participant Node
 participant APIM
 participant "API Config\nCache" as Cache
 
+/'
+This version is deprecated
 Node -> APIM: <b>/stakeholders/node/cache/schemas/v1</b>
 APIM -> Cache: <b>/stakeholders/node/cache/schemas/v1
 Cache -> Cache: No <b>refresh</b> is required
@@ -16,6 +18,20 @@ note right
 end note
 Cache -> Cache: Generate cache data
 Cache -> Redis: Save cache data with key <b>apicfg_*_node_v1</b>
+
+Cache --> APIM: Return cache data
+APIM --> Node: Return cache data
+'/
+Node -> APIM: <b>/stakeholders/node/cache/schemas/v1</b>
+note over Node, Cache
+  <b>v1</b> is the schema version number
+end note
+APIM -> Cache: <b>/stakeholders/node/cache/schemas/v1
+Cache -x Redis: Get cache data with key <b>apicfg_p_node_v1</b>
+
+Cache -> Cache: Generate cache schema v1 from in-memory cache data
+Cache -> Redis: Save cache data with key <b>apicfg_p_node_v1</b>
+Cache -> Redis: Save cache version with key <b>apicfg_p_node_v1_id</b>
 
 Cache --> APIM: Return cache data
 APIM --> Node: Return cache data

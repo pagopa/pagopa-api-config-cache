@@ -2,10 +2,12 @@
 Scenario 02:
   Node retrieves cache, and it is present on Redis
 '/
+
 @startuml
 participant Node
 participant APIM
 participant "API Config\nCache" as Cache
+/'
 Node -> APIM: /stakeholders/node/cache/schemas/v1
 APIM -> Cache: /stakeholders/node/cache/schemas/v1
 Cache -> Redis: Check <b>apicfg_*_node_v1</b> exists
@@ -13,6 +15,20 @@ note right
   <b>*</b> regards the database version (o or p)
 end note
 Redis --> Cache: Return cache data
+Cache --> APIM: Return cache data
+APIM --> Node: Return cache data
+'/
+Node -> APIM: <b>/stakeholders/node/cache/schemas/v1</b>
+note over Node, Cache
+  <b>v1</b> is the schema version number
+end note
+APIM -> Cache: <b>/stakeholders/node/cache/schemas/v1
+Cache -> Redis: Get cache data with key <b>apicfg_p_node_v1</b>
+Cache -> Cache: Verify if stakeholder cache id is equal to full cache id
+note right Cache
+  if the ids are different no cache is loaded
+  and it is re-generated from in-memory cache data
+end note
 Cache --> APIM: Return cache data
 APIM --> Node: Return cache data
 @enduml

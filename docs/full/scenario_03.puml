@@ -1,0 +1,11 @@
+/'
+Scenario 03:
+  Client retrieves last cache version id (analogue for xlsx)
+'/
+@startuml
+Client -> APIM: <b>/cache/id</b>
+APIM -> Cache: <b>/cache/id</b>
+Cache -> Cache: get version from\nin-memory cache data
+Cache --> APIM: Return cache Id data
+APIM --> Client: Return cache Id data
+@enduml

@@ -92,7 +92,9 @@ public abstract class StakeholderController {
       ConfigData config = stakeholderConfigService.getCache(stakeholder(), "v1", keys());
 
       // save on db according configuration
-      if (saveOnDB()) {
+      // the right workflow use node-cfg-sync to write cache on database
+      // this is a workaround to avoid node-cfg-sync
+      if (saveOnDB() && refresh.orElse(false)) {
           stakeholderConfigService.saveOnDB( config,"v1");
       }
 
