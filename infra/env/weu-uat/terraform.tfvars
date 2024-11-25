@@ -2,6 +2,7 @@ prefix    = "pagopa"
 env       = "uat"
 env_short = "u"
 location_short  = "weu"
+domain  = "apiconfig"
 
 tags = {
   CreatedBy   = "Terraform"

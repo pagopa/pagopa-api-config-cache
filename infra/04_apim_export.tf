@@ -1,17 +1,16 @@
-
-# Postgres
+# PostgreSQL
 
 resource "azurerm_api_management_api_version_set" "api_apiconfig_cache_export_node_api_p" {
-  name                = format("%s-apicfg-cache-export-%s-api", var.env_short, local.postgres)
+  name                = "${var.env_short}-${var.domain}-cache-export-${local.postgres}-api"
   resource_group_name = local.apim.rg
   api_management_name = local.apim.name
-  display_name        = "${local.apiconfig_cache_export_locals.display_name} - Export Node ${local.postgres}"
+  display_name        = "${local.apiconfig_cache_export_locals.display_name} - ${local.postgres}"
   versioning_scheme   = "Segment"
 }
 
 module "apim_api_apiconfig_cache_export_node_api_v1_p" {
   source                = "git::https://github.com/pagopa/terraform-azurerm-v3.git//api_management_api?ref=v8.5.0"
-  name                  = format("%s-apicfg-cache-export-%s-api", local.project, local.postgres)
+  name                = "${var.env_short}-${var.domain}-cache-export-${local.postgres}-api"
   api_management_name   = local.apim.name
   resource_group_name   = local.apim.rg
   product_ids           = [local.apim.product_id, local.technical_support_product_id]
@@ -21,7 +20,7 @@ module "apim_api_apiconfig_cache_export_node_api_v1_p" {
   api_version    = "v1"
 
   description  = local.apiconfig_cache_export_locals.description
-  display_name = "${local.apiconfig_cache_export_locals.display_name} - Node ${local.postgres}"
+  display_name = "${local.apiconfig_cache_export_locals.display_name} - ${local.postgres}"
 
   path        = "${local.apiconfig_cache_export_locals.path_apim}/${local.postgres}"
   protocols   = ["https"]
@@ -82,10 +81,10 @@ module "apim_api_apiconfig_cache_export_node_api_v1_p" {
 
 resource "azurerm_api_management_api_version_set" "api_apiconfig_cache_replica_export_node_api_p" {
   count               = var.env_short == "p" ? 0 : 1
-  name                = format("%s-apicfg-cache-export-replica-node-%s-api", var.env_short, "p")
+  name                = "${var.env_short}-${var.domain}-cache-replica-export-${local.postgres}-api"
   resource_group_name = local.apim.rg
   api_management_name = local.apim.name
-  display_name        = "${local.apiconfig_cache_replica_export_locals.display_name} - Node p"
+  display_name        = "${local.apiconfig_cache_replica_export_locals.display_name} - ${local.postgres}"
   versioning_scheme   = "Segment"
 }
 
@@ -102,7 +101,7 @@ module "apim_api_apiconfig_cache_replica_export_node_api_v1_p" {
   source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//api_management_api?ref=v8.5.0"
   count  = var.env_short == "p" ? 0 : 1
 
-  name                  = format("%s-apicfg-cache-replica-export-%s-api", local.project, "p")
+  name                = "${var.env_short}-${var.domain}-cache-replica-export-${local.postgres}-api"
   api_management_name   = local.apim.name
   resource_group_name   = local.apim.rg
   product_ids           = [local.apim.product_id, local.technical_support_product_id]
@@ -112,20 +111,20 @@ module "apim_api_apiconfig_cache_replica_export_node_api_v1_p" {
   api_version    = "v1"
 
   description  = local.apiconfig_cache_replica_export_locals.description
-  display_name = "${local.apiconfig_cache_replica_export_locals.display_name} - Node p"
+  display_name = "${local.apiconfig_cache_replica_export_locals.display_name} - ${local.postgres}"
 
-  path        = format("%s/%s", local.apiconfig_cache_replica_export_locals.path_apim, "pr")
+  path        = format("%s/%s", local.apiconfig_cache_replica_export_locals.path_apim, "${local.postgres}r")
   protocols   = ["https"]
   service_url = local.apiconfig_cache_replica_export_locals.service_url
 
   content_format = "openapi"
   content_value = templatefile("../openapi/openapi_export.json", {
     host    = local.apim.hostname
-    service = "node-p-replica"
+    service = "node-${local.postgres}-replica"
   })
 
   xml_content = templatefile("./policy/_base_policy.xml", {
-    hostname = format("%s/%s/%s", local.apiconfig_cache_replica_export_locals.hostname, local.apiconfig_cache_replica_export_locals.path, "pr")
+    hostname = format("%s/%s/%s", local.apiconfig_cache_replica_export_locals.hostname, local.apiconfig_cache_replica_export_locals.path, "${local.postgres}r")
   })
 }
 
