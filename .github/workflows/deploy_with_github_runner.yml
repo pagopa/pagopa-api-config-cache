@@ -11,6 +11,28 @@ on:
         required: true
         description: The environment target of the job
         type: string
+      pagopa_release:
+        required: true
+        type: string
+        description: release version to deploy for PagoPA microservice
+      pagopa_force:
+        required: false
+        type: boolean
+        description: force re-deploy PagoPA microservice
+        default: false
+      nexi_release:
+        required: true
+        type: string
+        description: release version to deploy for Nexi microservice
+      nexi_force:
+        required: false
+        type: boolean
+        description: force re-deploy Nexi microservice
+        default: false
+      current_release:
+        required: true
+        type: string
+        description: release version of the current deploy
 
 env:
   APP_NAME: cache
@@ -26,26 +48,33 @@ jobs:
     if: ${{ inputs.target == inputs.environment }}
     outputs:
       environment: ${{ steps.get_env.outputs.environment }}
+      pagopa_rel: ${{ steps.get_releases.outputs.pagopa_rel }}
+      nexi_rel: ${{ steps.get_releases.outputs.nexi_rel }}
     steps:
       - name: Get Environment
         id: get_env
         shell: bash
-        run: |
-          current_env="dev"
-          if [[ "${{ inputs.environment }}" == *"nexi"* ]]; then
-            if [[ "${{ inputs.environment }}" == *"dev"* ]]; then
-              current_env="dev"
-            elif [[ "${{ inputs.environment }}" == *"sit"* ]]; then
-              current_env="dev"
-            else
-              current_env="uat"
-            fi
-          elif [[ "${{ inputs.environment }}" == "prf" ]]; then
-            current_env="uat"
-          else
-            current_env="${{ inputs.environment }}"
-          fi
+        run: |         
+          current_env="${{ inputs.environment }}"
           echo "environment=$current_env" >> $GITHUB_OUTPUT
+
+      - name: Get Releases
+        id: get_releases
+        shell: bash
+        run: |
+          pagopa_version=${{ inputs.current_release }}
+          nexi_version=${{ inputs.current_release }}
+          
+          if [[ "${{ inputs.nexi_release }}" != "" ]]; then            
+            nexi_version=${{ inputs.nexi_release }}
+          fi
+          
+          if [[ "${{ inputs.pagopa_release }}" != "" ]]; then            
+            pagopa_version=${{ inputs.pagopa_release }}
+          fi
+          
+          echo "pagopa_rel=$pagopa_version" >> $GITHUB_OUTPUT
+          echo "nexi_rel=$nexi_version" >> $GITHUB_OUTPUT
 
   create_runner:
     needs: [ setting_env ]
@@ -78,7 +107,7 @@ jobs:
     environment: ${{ needs.setting_env.outputs.environment }}
     steps:
 
-      - name: Deploy DEV for PagoPA (Oracle or Postgres)
+      - name: Deploy DEV
         uses: pagopa/github-actions-template/aks-deploy@5db4c9108164a07d96527978da1c3febec934f22 #v1.11.1
         if: ${{ inputs.environment == 'dev' }}
         with:
@@ -91,9 +120,9 @@ jobs:
           cluster_name: ${{ vars.CLUSTER_NAME }}
           resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
           app_name: ${{ env.APP_NAME }}
-          helm_upgrade_options: ' --debug --set postgresql.enabled=true --set postgresql.forceRedeploy=true --set postgresql-replica.forceRedeploy=false --set postgresql-nexi.forceRedeploy=false --set oracle.enabled=true --set oracle.forceRedeploy=true --set oracledev.enabled=true --set oracledev.forceRedeploy=false --set oracleprod.enabled=true --set oracleprod.forceRedeploy=false'
+          helm_upgrade_options: ' --debug --set postgresql.forceRedeploy=${{ inputs.pagopa_force }} --set postgresql.image.tag=${{ needs.setting_env.outputs.pagopa_rel }} --set postgresql-nexi.forceRedeploy=${{ inputs.nexi_force }} --set postgresql-nexi.image.tag=${{ needs.setting_env.outputs.nexi_rel }}'
 
-      - name: Deploy UAT for PagoPA (Oracle or Postgres)
+      - name: Deploy UAT
         uses: pagopa/github-actions-template/aks-deploy@5db4c9108164a07d96527978da1c3febec934f22 #v1.11.1
         if: ${{ inputs.environment == 'uat' }}
         with:
@@ -106,24 +135,9 @@ jobs:
           cluster_name: ${{ vars.CLUSTER_NAME }}
           resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
           app_name: ${{ env.APP_NAME }}
-          helm_upgrade_options: ' --debug --set postgresql.enabled=true --set oracle.enabled=true'
+          helm_upgrade_options: ' --debug --set postgresql.forceRedeploy=${{ inputs.pagopa_force }} --set postgresql.image.tag=${{ needs.setting_env.outputs.pagopa_rel }} --set postgresql-replica.forceRedeploy=${{ inputs.pagopa_force }} --set postgresql-replica.image.tag=${{ needs.setting_env.outputs.pagopa_rel }} --set postgresql-nexi.forceRedeploy=${{ inputs.nexi_force }} --set postgresql-nexi.image.tag=${{ needs.setting_env.outputs.nexi_rel }} --set postgresql-replica-nexi.forceRedeploy=${{ inputs.nexi_force }} --set postgresql-replica-nexi.image.tag=${{ needs.setting_env.outputs.nexi_rel }}'
 
-      - name: Deploy PRF for PagoPA (Oracle or Postgres)
-        uses: pagopa/github-actions-template/aks-deploy@5db4c9108164a07d96527978da1c3febec934f22 #v1.11.1
-        if: ${{ inputs.environment == 'prf' }}
-        with:
-          branch: ${{ github.ref_name }}
-          client_id: ${{ secrets.CD_CLIENT_ID }}
-          subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
-          tenant_id: ${{ secrets.TENANT_ID }}
-          env: ${{ needs.setting_env.outputs.environment }}
-          namespace: ${{ vars.NAMESPACE }}
-          cluster_name: ${{ vars.CLUSTER_NAME }}
-          resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
-          app_name: ${{ env.APP_NAME }}
-          helm_upgrade_options: ' --debug --set postgresql-replica.enabled=true --set oracledev.enabled=true '
-
-      - name: Deploy PROD for PagoPA (Oracle or Postgres)
+      - name: Deploy PROD
         uses: pagopa/github-actions-template/aks-deploy@5db4c9108164a07d96527978da1c3febec934f22 #v1.11.1
         if: ${{ inputs.environment == 'prod' }}
         with:
@@ -136,22 +150,7 @@ jobs:
           cluster_name: ${{ vars.CLUSTER_NAME }}
           resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
           app_name: ${{ env.APP_NAME }}
-          helm_upgrade_options: ' --debug --set postgresql.enabled=true --set oracle.enabled=true --set postgresql-nexi.enabled=false'
-
-      - name: Deploy for Nexi
-        uses: pagopa/github-actions-template/aks-deploy@main
-        if: ${{ inputs.environment == 'dev_nexi' || inputs.environment == 'sit_nexi' || inputs.environment == 'uat_nexi' || inputs.environment == 'prf_nexi' }}
-        with:
-          branch: ${{ github.ref_name }}
-          client_id: ${{ secrets.CD_CLIENT_ID }}
-          subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
-          tenant_id: ${{ secrets.TENANT_ID }}
-          env: ${{ needs.setting_env.outputs.environment }}
-          namespace: ${{ vars.NAMESPACE }}
-          cluster_name: ${{ vars.CLUSTER_NAME }}
-          resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
-          app_name: ${{ env.APP_NAME }}
-          helm_upgrade_options: ${{ (inputs.environment == 'dev_nexi') && ' --debug --set oracledev.enabled=true --set oracledev.forceRedeploy=true --set oracleprod.enabled=true --set oracleprod.forceRedeploy=false' || (inputs.environment == 'sit_nexi' || inputs.environment == 'uat_nexi') && ' --debug --set postgresql-nexi.enabled=true --set postgresql-nexi.forceRedeploy=true' || inputs.environment == 'prf_nexi' && ' --debug --set postgresql-replica-nexi.enabled=true --set postgresql-replica-nexi.forceRedeploy=true' }}
+          helm_upgrade_options: '--debug --set postgresql.forceRedeploy=${{ inputs.pagopa_force }} --set postgresql.image.tag=${{ needs.setting_env.outputs.pagopa_rel }}'
 
   cleanup_runner:
     name: Cleanup Runner

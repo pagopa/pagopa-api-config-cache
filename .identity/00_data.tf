@@ -57,9 +57,8 @@ data "azurerm_key_vault_secret" "key_vault_slack_webhook_url" {
 }
 
 data "azurerm_key_vault_secret" "key_vault_read_package_token" {
-#  name = "github-token-read-packages-bot"
-  name = "gh-read-pkg-test-francesco"
-  key_vault_id = data.azurerm_key_vault.key_vault.id
+  name = "encrypted-github-token-read-packages-bot"
+  key_vault_id = data.azurerm_key_vault.domain_key_vault.id
 }
 
 data "azurerm_user_assigned_identity" "identity_cd" {
