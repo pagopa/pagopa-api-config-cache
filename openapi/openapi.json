@@ -4,7 +4,7 @@
     "title" : "API-Config Cache ${service}",
     "description" : "Generate cache for various microservices",
     "termsOfService" : "https://www.pagopa.gov.it/",
-    "version" : "0.9.20"
+    "version" : "0.9.20-2-PAGOPA-2264-fix-chart"
   },
   "servers" : [ {
     "url" : "https://{host}/{basePath}",

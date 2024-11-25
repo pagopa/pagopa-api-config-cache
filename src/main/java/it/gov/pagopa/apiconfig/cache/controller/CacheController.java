@@ -211,7 +211,7 @@ public class CacheController {
     }
 
     @Operation(
-            summary = "Get in memory full cache id",
+            summary = "Get in memory latest full cache id",
             security = {@SecurityRequirement(name = "ApiKey")},
             tags = {
                     "Cache",
@@ -345,7 +345,7 @@ public class CacheController {
 
 
     @Operation(
-            summary = "Get xlsx of full cache",
+            summary = "Get xlsx of latest full cache",
             security = {@SecurityRequirement(name = "ApiKey")},
             tags = {
                     "Cache",

@@ -33,10 +33,18 @@ public class OpenApiConfig {
     return new OpenAPI()
             .servers(List.of(new Server().url("https://{host}/{basePath}")
                             .variables(new ServerVariables().addServerVariable("host",
-                                    new ServerVariable()._enum(List.of("api.dev.platform.pagopa.it","api.uat.platform.pagopa.it","api.platform.pagopa.it"))
+                                    new ServerVariable()._enum(
+                                            List.of(
+                                                    "api.dev.platform.pagopa.it",
+                                                    "api.uat.platform.pagopa.it",
+                                                    "api.platform.pagopa.it"))
                                             ._default("api.dev.platform.pagopa.it"))
-                                            .addServerVariable("basePath", new ServerVariable()._enum(List.of("api-config-cache/o/v1", "api-config-cache/p/v1", "api-config-cache/odev/v1"))
-                                                    ._default("api-config-cache/o/v1"))
+                                            .addServerVariable("basePath", new ServerVariable()._enum(
+                                                    List.of(
+                                                            "api-config-cache/o/v1",
+                                                            "api-config-cache/p/v1",
+                                                            "api-config-cache/odev/v1"))
+                                                    ._default("api-config-cache/p/v1"))
                                     )))
         .components(
             new Components()
