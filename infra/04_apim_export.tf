@@ -13,7 +13,7 @@ module "apim_api_apiconfig_cache_export_node_api_v1_p" {
   name                = "${var.env_short}-${var.domain}-cache-export-${local.postgres}-api"
   api_management_name   = local.apim.name
   resource_group_name   = local.apim.rg
-  product_ids           = [local.apim.product_id, local.technical_support_product_id]
+  product_ids           = [local.apim.product_id, local.technical_support_product_id, local.cache_export_product_id]
   subscription_required = local.apiconfig_cache_export_locals.subscription_required
 
   version_set_id = azurerm_api_management_api_version_set.api_apiconfig_cache_export_node_api_p.id
