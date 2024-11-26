@@ -8,9 +8,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.apiconfig.cache.exception.AppError;
 import it.gov.pagopa.apiconfig.cache.exception.AppException;
 import it.gov.pagopa.apiconfig.cache.imported.catalogodati.*;
-import it.gov.pagopa.apiconfig.cache.imported.catalogodati.StCodiceLingua;
-import it.gov.pagopa.apiconfig.cache.imported.catalogodati.StParoleChiave;
-import it.gov.pagopa.apiconfig.cache.imported.catalogodati.StTipoVersamento;
 import it.gov.pagopa.apiconfig.cache.imported.controparti.*;
 import it.gov.pagopa.apiconfig.cache.imported.template.*;
 import it.gov.pagopa.apiconfig.cache.model.FullData;
@@ -27,7 +24,6 @@ import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.cache.util.DateTimeUtils;
-import it.gov.pagopa.apiconfig.cache.util.JsonSerializer;
 import it.gov.pagopa.apiconfig.cache.util.ZipUtils;
 import it.gov.pagopa.apiconfig.starter.entity.*;
 import it.gov.pagopa.apiconfig.starter.repository.*;
@@ -87,7 +83,6 @@ public class CacheConfigService {
 
   @Autowired private RedisRepository redisRepository;
   @Autowired private ConfigMapper modelMapper;
-  @Autowired private StakeholderConfigService stakeholderConfigService;
 
   @Autowired private ConfigurationKeysRepository configurationKeysRepository;
   @Autowired private IntermediariPaRepository intermediariPaRepository;
