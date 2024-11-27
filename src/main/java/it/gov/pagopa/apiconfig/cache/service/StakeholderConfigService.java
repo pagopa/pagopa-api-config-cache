@@ -106,10 +106,15 @@ public class StakeholderConfigService {
         clonedInMemoryCache.put(Constants.VERSION, xCacheId);
         clonedInMemoryCache.put(Constants.CACHE_VERSION, xCacheVersion);
         clonedInMemoryCache.put(Constants.TIMESTAMP, xCacheTimestamp);
-        ConfigDataV1 configDataV1 = cacheToConfigDataV1(clonedInMemoryCache, keys);
+        CacheSchemaVersion cacheSchemaVersion = null;
+        if (schemaVersion.equals("v1")) {
+            cacheSchemaVersion = cacheToConfigDataV1(clonedInMemoryCache, keys);
+        } else {
+            throw new AppException(AppError.CACHE_SCHEMA_NOT_VALID);
+        }
 
         ConfigData configData = ConfigData.builder()
-                .cacheSchemaVersion(configDataV1)
+                .cacheSchemaVersion(cacheSchemaVersion)
                 .xCacheId(xCacheId)
                 .xCacheTimestamp(xCacheTimestamp)
                 .xCacheVersion(xCacheVersion)
@@ -122,7 +127,7 @@ public class StakeholderConfigService {
         byte[] cacheByteArray = compressJsonToGzip(configData);
 
         log.info(String.format("saving on Redis %s %s", actualKey, actualKeyV1));
-        redisRepository.pushToRedisAsync(actualKey, actualKeyV1, cacheByteArray, configDataV1.getVersion().getBytes(StandardCharsets.UTF_8));
+        redisRepository.pushToRedisAsync(actualKey, actualKeyV1, cacheByteArray, cacheSchemaVersion.getVersion().getBytes(StandardCharsets.UTF_8));
 
         return configData;
     }
