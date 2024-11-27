@@ -102,7 +102,7 @@ public class StakeholderCacheControllerTest {
         CacheVersion cacheVersion = CacheVersion.builder()
                 .version("111")
                 .build();
-        when(stakeholderConfigService.getVersionId(anyString(), anyString())).thenReturn(cacheVersion);
+        when(stakeholderConfigService.getVersionId(anyString(), anyString(), any())).thenReturn(cacheVersion);
 
         mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

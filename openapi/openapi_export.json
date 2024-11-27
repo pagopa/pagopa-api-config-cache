@@ -36,6 +36,21 @@
               }
             }
           },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
+            }
+          },
           "500" : {
             "description" : "Service unavailable",
             "content" : {
@@ -45,21 +60,6 @@
                 }
               }
             }
-          },
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
-            }
-          },
-          "401" : {
-            "description" : "Unauthorized"
-          },
-          "403" : {
-            "description" : "Forbidden"
-          },
-          "429" : {
-            "description" : "Too many requests"
           }
         },
         "security" : [ {
@@ -83,6 +83,21 @@
               }
             }
           },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
+            }
+          },
           "500" : {
             "description" : "Service unavailable",
             "content" : {
@@ -92,21 +107,6 @@
                 }
               }
             }
-          },
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
-            }
-          },
-          "401" : {
-            "description" : "Unauthorized"
-          },
-          "403" : {
-            "description" : "Forbidden"
-          },
-          "429" : {
-            "description" : "Too many requests"
           }
         },
         "security" : [ {
@@ -130,6 +130,21 @@
               }
             }
           },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
+            }
+          },
           "500" : {
             "description" : "Service unavailable",
             "content" : {
@@ -139,21 +154,6 @@
                 }
               }
             }
-          },
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
-            }
-          },
-          "401" : {
-            "description" : "Unauthorized"
-          },
-          "403" : {
-            "description" : "Forbidden"
-          },
-          "429" : {
-            "description" : "Too many requests"
           }
         },
         "security" : [ {
@@ -177,6 +177,21 @@
               }
             }
           },
+          "403" : {
+            "description" : "Forbidden"
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
+            }
+          },
           "500" : {
             "description" : "Service unavailable",
             "content" : {
@@ -186,21 +201,6 @@
                 }
               }
             }
-          },
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
-            }
-          },
-          "401" : {
-            "description" : "Unauthorized"
-          },
-          "403" : {
-            "description" : "Forbidden"
-          },
-          "429" : {
-            "description" : "Too many requests"
           }
         },
         "security" : [ {

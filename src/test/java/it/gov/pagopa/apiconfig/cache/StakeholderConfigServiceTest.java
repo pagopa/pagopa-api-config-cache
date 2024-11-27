@@ -124,10 +124,10 @@ class StakeholderConfigServiceTest {
     assertThat(configData).isNotNull();
   }
   @Test
-  void getVersionId() {
+  void getVersionId() throws IOException {
     String version = "111";
     when(redisRepository.get(any())).thenReturn(version.getBytes(StandardCharsets.UTF_8));
-    CacheVersion cacheVersion = stakeholderConfigService.getVersionId("test", "v1");
+    CacheVersion cacheVersion = stakeholderConfigService.getVersionId("test", "v1", NodeCacheController.KEYS);
     assertThat(cacheVersion.getVersion()).isEqualTo(version);
   }
 

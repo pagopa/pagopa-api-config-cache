@@ -158,8 +158,8 @@ public abstract class StakeholderController {
   @GetMapping(
       value = "/v1/id",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<CacheVersion> idV1() {
-    return ResponseEntity.ok().body(stakeholderConfigService.getVersionId(stakeholder(), "v1"));
+  public ResponseEntity<CacheVersion> idV1() throws IOException {
+    return ResponseEntity.ok().body(stakeholderConfigService.getVersionId(stakeholder(), "v1", keys()));
   }
 
     @Operation(
