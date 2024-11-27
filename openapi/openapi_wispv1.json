@@ -20,7 +20,7 @@
     }
   } ],
   "paths" : {
-    "/stakeholders/node/cache/schemas/v1" : {
+    "/stakeholders/wisp/cache/schemas/v1" : {
       "get" : {
         "tags" : [ "Cache" ],
         "summary" : "Get selected key of {stakeholder} cache v1 config",
@@ -81,7 +81,7 @@
         } ]
       }
     },
-    "/stakeholders/node/cache/schemas/v1/xlsx" : {
+    "/stakeholders/wisp/cache/schemas/v1/xlsx" : {
       "get" : {
         "tags" : [ "Cache" ],
         "summary" : "Get xlsx of last v1 {stakeholder} cache version",
@@ -128,7 +128,7 @@
         } ]
       }
     },
-    "/stakeholders/node/cache/schemas/v1/id" : {
+    "/stakeholders/wisp/cache/schemas/v1/id" : {
       "get" : {
         "tags" : [ "Cache" ],
         "summary" : "Get last v1 {stakeholder} cache version",
