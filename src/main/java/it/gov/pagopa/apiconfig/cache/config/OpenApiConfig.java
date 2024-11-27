@@ -1,7 +1,5 @@
 package it.gov.pagopa.apiconfig.cache.config;
 
-import static it.gov.pagopa.apiconfig.cache.util.Constants.HEADER_REQUEST_ID;
-
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Paths;
@@ -11,9 +9,6 @@ import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.security.SecurityScheme;
-
-import java.util.*;
-
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.servers.ServerVariable;
 import io.swagger.v3.oas.models.servers.ServerVariables;
@@ -21,6 +16,14 @@ import org.springdoc.core.customizers.OpenApiCustomiser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+
+import static it.gov.pagopa.apiconfig.cache.util.Constants.HEADER_REQUEST_ID;
 
 @Configuration
 public class OpenApiConfig {
@@ -41,9 +44,8 @@ public class OpenApiConfig {
                                             ._default("api.dev.platform.pagopa.it"))
                                             .addServerVariable("basePath", new ServerVariable()._enum(
                                                     List.of(
-                                                            "api-config-cache/o/v1",
-                                                            "api-config-cache/p/v1",
-                                                            "api-config-cache/odev/v1"))
+                                                            "api-config-cache/p/v1"
+                                                    ))
                                                     ._default("api-config-cache/p/v1"))
                                     )))
         .components(

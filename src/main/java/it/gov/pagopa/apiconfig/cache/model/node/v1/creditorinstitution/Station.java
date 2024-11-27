@@ -3,8 +3,17 @@ package it.gov.pagopa.apiconfig.cache.model.node.v1.creditorinstitution;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import it.gov.pagopa.apiconfig.cache.model.node.v1.common.*;
-import lombok.*;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Connection;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Proxy;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Redirect;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Service;
+import it.gov.pagopa.apiconfig.cache.model.node.v1.common.Timeouts;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.io.Serializable;
 

@@ -1,7 +1,6 @@
 package it.gov.pagopa.apiconfig.cache;
 
 import it.gov.pagopa.apiconfig.cache.controller.CacheController;
-import it.gov.pagopa.apiconfig.cache.model.ConfigData;
 import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.Station;
 import it.gov.pagopa.apiconfig.cache.model.latest.psp.Channel;
 import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;

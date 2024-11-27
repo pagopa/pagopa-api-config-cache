@@ -24,7 +24,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.persistence.EntityManager;
-
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -66,6 +65,7 @@ public class StakeholderCacheControllerTest {
     @CsvSource({
             "/stakeholders/node/cache/schemas/v1",
             "/stakeholders/fdr/cache/schemas/v1",
+            "/stakeholders/wisp/cache/schemas/v1",
             "/stakeholders/standin/cache/schemas/v1"
     })
     void testCache(String url) throws Exception {
@@ -95,6 +95,7 @@ public class StakeholderCacheControllerTest {
     @CsvSource({
             "/stakeholders/node/cache/schemas/v1/id",
             "/stakeholders/fdr/cache/schemas/v1/id",
+            "/stakeholders/wisp/cache/schemas/v1/id",
             "/stakeholders/standin/cache/schemas/v1/id"
     })
     void testId(String url) throws Exception {
@@ -112,6 +113,7 @@ public class StakeholderCacheControllerTest {
     @CsvSource({
             "/stakeholders/node/cache/schemas/v1/xlsx",
             "/stakeholders/fdr/cache/schemas/v1/xlsx",
+            "/stakeholders/wisp/cache/schemas/v1/xlsx",
             "/stakeholders/standin/cache/schemas/v1/xlsx"
     })
     void testXlsx(String url) throws Exception {

@@ -1,13 +1,14 @@
 package it.gov.pagopa.apiconfig.cache.model.node.v1.configuration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.io.Serializable;
-import java.time.ZonedDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.io.Serializable;
+import java.time.ZonedDateTime;
 
 @Getter
 @Setter

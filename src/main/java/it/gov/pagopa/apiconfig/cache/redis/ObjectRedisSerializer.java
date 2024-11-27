@@ -1,14 +1,15 @@
 package it.gov.pagopa.apiconfig.cache.redis;
 
+import lombok.SneakyThrows;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.SerializationException;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-import lombok.SneakyThrows;
-import org.springframework.data.redis.serializer.RedisSerializer;
-import org.springframework.data.redis.serializer.SerializationException;
 
 public class ObjectRedisSerializer<T> implements RedisSerializer<T> {
 
