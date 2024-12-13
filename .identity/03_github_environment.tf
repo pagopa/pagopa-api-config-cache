@@ -85,7 +85,7 @@ resource "github_actions_secret" "secret_bot_token" {
 resource "github_actions_secret" "secret_read_package_token" {
   repository       = local.github.repository
   secret_name      = "READ_PACKAGES_TOKEN"
-  encrypted_value  = data.local_file.encrypted_key_vault_read_packages_token.content
+  encrypted_value  = trimspace(data.local_file.encrypted_key_vault_read_packages_token.content)
 }
 
 ############
