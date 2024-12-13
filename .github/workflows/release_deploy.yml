@@ -116,7 +116,7 @@ jobs:
         uses: pagopa/github-actions-template/maven-release@d91a1fd0b913c9830589be5d86cdb71c90813fae # v1.5.4
         with:
           semver: ${{ needs.setup.outputs.semver }}
-          github_token: ${{ secrets.BOT_TOKEN_GITHUB }}
+          github_token: ${{ secrets.CD_BOT_TOKEN_GITHUB }}
           beta: ${{ inputs.beta }}
           skip_ci: false
 
