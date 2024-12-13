@@ -17,7 +17,13 @@ def public_key(token: str, repo: str) -> str:
         "Authorization": f"token {token}"
     }
     response = requests.get(f'https://api.github.com/repos/pagopa/{repo}/actions/secrets/public-key', headers=headers)
-    return response.json()["key"]
+    try:
+        return response.json()["key"]
+    except:
+        print(token)
+        print(response)
+        print(response.text)
+
 
 
 if len(sys.argv) != 3:
