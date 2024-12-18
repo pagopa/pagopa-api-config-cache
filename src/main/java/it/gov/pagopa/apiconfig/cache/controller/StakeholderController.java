@@ -85,9 +85,7 @@ public abstract class StakeholderController {
   public ResponseEntity<ConfigDataV1> cache(@Deprecated @RequestParam @Parameter(description = "to force the refresh of the cache") Optional<Boolean> refresh) throws IOException {
       if(refresh.orElse(false)) {
           log.warn("Deprecated refresh from stakeholder,change this to call /cache/refresh");
-          // TODO set in progress
           cacheController.refresh();
-          // TODO remove in progress
       }
       ConfigData config = stakeholderConfigService.getCache(stakeholder(), "v1", keys());
 
