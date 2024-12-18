@@ -1,6 +1,6 @@
 package it.gov.pagopa.apiconfig.cache.controller.stakeholders;
 
-import it.gov.pagopa.apiconfig.cache.controller.CacheController;
+import it.gov.pagopa.apiconfig.cache.controller.StakeholderController;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/stakeholders/fdr/cache/schemas")
 @Validated
 @Slf4j
-public class FdrCacheController extends CacheController {
+public class FdrCacheController extends StakeholderController {
 
   public static String[] KEYS = new String[]{
           Constants.VERSION,
@@ -29,9 +29,16 @@ public class FdrCacheController extends CacheController {
           Constants.GDE_CONFIGURATIONS
   };
 
+  public static String STAKEHOLDER = "fdr";
+
   @Override
   protected String[] keys() {
     return FdrCacheController.KEYS;
+  }
+
+  @Override
+  protected String stakeholder() {
+    return FdrCacheController.STAKEHOLDER;
   }
 
 }

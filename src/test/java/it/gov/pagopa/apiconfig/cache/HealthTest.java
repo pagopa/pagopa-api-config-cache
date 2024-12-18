@@ -1,11 +1,7 @@
 package it.gov.pagopa.apiconfig.cache;
 
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.Mockito.when;
-
 import it.gov.pagopa.apiconfig.cache.service.HealthCheckService;
 import it.gov.pagopa.apiconfig.starter.repository.HealthCheckRepository;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,7 +9,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-// @SpringBootTest(classes = Application.class)
+import java.util.Optional;
+
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 class HealthTest {
 
@@ -27,7 +27,7 @@ class HealthTest {
   }
 
   @Test
-  void getCacheV1() throws Exception {
+  void getCacheV1() {
     assertThat(healthCheckService.checkDatabaseConnection());
   }
 }

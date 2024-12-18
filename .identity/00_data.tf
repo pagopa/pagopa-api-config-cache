@@ -36,9 +36,14 @@ data "azurerm_key_vault_secret" "key_vault_sonar" {
   key_vault_id = data.azurerm_key_vault.key_vault.id
 }
 
-data "azurerm_key_vault_secret" "key_vault_bot_token" {
-  name         = "bot-token-github"
-  key_vault_id = data.azurerm_key_vault.key_vault.id
+data "azurerm_key_vault_secret" "key_vault_bot_cd_token" {
+  name         = "pagopa-platform-domain-github-bot-cd-pat"
+  key_vault_id = data.azurerm_key_vault.domain_key_vault.id
+}
+
+data "azurerm_key_vault_secret" "key_vault_read_packages_token" {
+  name         = "pagopa-platform-domain-github-bot-ci-pat"
+  key_vault_id = data.azurerm_key_vault.domain_key_vault.id
 }
 
 data "azurerm_key_vault_secret" "key_vault_cucumber_token" {
@@ -56,13 +61,32 @@ data "azurerm_key_vault_secret" "key_vault_slack_webhook_url" {
   key_vault_id = data.azurerm_key_vault.domain_key_vault.id
 }
 
-data "azurerm_key_vault_secret" "key_vault_read_package_token" {
-#  name = "github-token-read-packages-bot"
-  name = "gh-read-pkg-test-francesco"
-  key_vault_id = data.azurerm_key_vault.key_vault.id
-}
-
 data "azurerm_user_assigned_identity" "identity_cd" {
   name = "${local.product}-${local.domain}-01-github-cd-identity"
   resource_group_name = "${local.product}-identity-rg"
+}
+
+resource "null_resource" "encrypt_key_vault_bot_token" {
+
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      python3 encrypt_github_pat.py $PAT $REPO > private_output.txt
+    EOT
+    working_dir = "${path.module}"
+    environment = {
+      PAT = data.azurerm_key_vault_secret.key_vault_read_packages_token.value
+      REPO = local.github.repository
+    }
+  }
+
+  depends_on = [data.azurerm_key_vault_secret.key_vault_read_packages_token]
+}
+
+
+data "local_file" "encrypted_key_vault_read_packages_token" {
+  filename = "${path.module}/private_output.txt"
 }

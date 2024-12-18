@@ -1,12 +1,14 @@
 package it.gov.pagopa.apiconfig.cache;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.gov.pagopa.apiconfig.cache.controller.stakeholders.FdrCacheController;
 import it.gov.pagopa.apiconfig.cache.controller.HomeController;
+import it.gov.pagopa.apiconfig.cache.controller.stakeholders.FdrCacheController;
+import it.gov.pagopa.apiconfig.cache.controller.stakeholders.NodeCacheController;
 import it.gov.pagopa.apiconfig.cache.controller.stakeholders.VerifierCacheController;
+import it.gov.pagopa.apiconfig.cache.service.CacheConfigService;
 import it.gov.pagopa.apiconfig.cache.service.CacheEventHubService;
-import it.gov.pagopa.apiconfig.cache.service.ConfigService;
 import it.gov.pagopa.apiconfig.cache.service.HealthCheckService;
+import it.gov.pagopa.apiconfig.cache.service.StakeholderConfigService;
 import it.gov.pagopa.apiconfig.cache.service.VerifierService;
 import it.gov.pagopa.apiconfig.cache.util.JsonSerializer;
 import it.gov.pagopa.apiconfig.starter.repository.HealthCheckRepository;
@@ -16,7 +18,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -42,7 +43,10 @@ class OpenApiGenerationTest {
     FdrCacheController fdrCacheController;
 
     @MockBean
-    ConfigService configService;
+    NodeCacheController nodeCacheController;
+
+    @MockBean
+    CacheConfigService cacheConfigService;
 
     @MockBean
     HomeController homeController;
@@ -52,6 +56,9 @@ class OpenApiGenerationTest {
 
     @MockBean
     HealthCheckService healthCheckService;
+
+    @MockBean
+    StakeholderConfigService stakeholderConfigService;
 
     @MockBean
     VerifierService verifierService;
@@ -72,6 +79,7 @@ class OpenApiGenerationTest {
         getSwagger("/v3/api-docs/verifierv1", "openapi_verifierv1.json");
         getSwagger("/v3/api-docs/fdrv1", "openapi_fdrv1.json");
         getSwagger("/v3/api-docs/standinV1", "openapi_standinv1.json");
+        getSwagger("/v3/api-docs/wisp", "openapi_wispv1.json");
         getSwagger("/v3/api-docs/export", "openapi_export.json");
     }
 

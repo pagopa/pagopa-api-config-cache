@@ -11,6 +11,7 @@ locals {
   apim_x_node_product_id = "apim_for_node"
   cfg_x_node_product_id = "cfg-for-node"
   technical_support_product_id = "technical_support_api"
+  cache_export_product_id = "apiconfig-cache-export"
 
   oracle   = "o"
   postgres = "p"

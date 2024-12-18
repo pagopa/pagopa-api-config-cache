@@ -1,0 +1,19 @@
+/'
+Scenario 02:
+  Cache retrieval and it is present on Redis
+'/
+@startuml
+participant Client
+participant APIM
+participant "API Config\nCache" as Cache
+
+alt on start-up
+    Cache -> Redis: if <b>preload = true</b>, get <b>apicfg_p_full</b>
+end alt
+
+Client -> APIM: <b>/cache</b>
+APIM -> Cache: <b>/cache</b>
+Cache --> APIM: Return in-memory cache data
+APIM --> Client: Return cache data
+@enduml
+

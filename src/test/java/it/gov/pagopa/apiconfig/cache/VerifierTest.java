@@ -4,7 +4,6 @@ import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.repository.VerifierRepository;
 import it.gov.pagopa.apiconfig.cache.service.VerifierService;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

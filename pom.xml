@@ -12,7 +12,7 @@
 
   <groupId>it.gov.pagopa.api-config</groupId>
   <artifactId>cache</artifactId>
-  <version>0.9.20</version>
+  <version>0.9.20-10-PAGOPA-2362-schema-v1</version>
   <name>API-Config Cache</name>
   <description>Generate cache for various microservices</description>
 
@@ -114,6 +114,11 @@
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>2.15.2</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

@@ -4,7 +4,7 @@
     "title": "API-Config Cache ${service}",
     "description": "Generate cache for various microservices",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.9.20"
+    "version": "0.9.20-10-PAGOPA-2362-schema-v1"
   },
   "servers": [
     {
@@ -19,11 +19,9 @@
           ]
         },
         "basePath": {
-          "default": "api-config-cache/o/v1",
+          "default": "api-config-cache/p/v1",
           "enum": [
-            "api-config-cache/o/v1",
-            "api-config-cache/p/v1",
-            "api-config-cache/odev/v1"
+            "api-config-cache/p/v1"
           ]
         }
       }
@@ -50,8 +48,8 @@
           }
         ],
         "responses": {
-          "500": {
-            "description": "Service unavailable",
+          "400": {
+            "description": "Bad Request",
             "content": {
               "application/json": {
                 "schema": {
@@ -60,11 +58,11 @@
               }
             }
           },
-          "401": {
-            "description": "Unauthorized"
-          },
           "403": {
             "description": "Forbidden"
+          },
+          "429": {
+            "description": "Too many requests"
           },
           "200": {
             "description": "OK",
@@ -76,6 +74,35 @@
               }
             }
           },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Service unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ]
+      }
+    },
+    "/stakeholders/node/cache/schemas/v1/xlsx": {
+      "get": {
+        "tags": [
+          "Cache"
+        ],
+        "summary": "Get xlsx of last v1 {stakeholder} cache version",
+        "operationId": "xls",
+        "responses": {
           "400": {
             "description": "Bad Request",
             "content": {
@@ -86,8 +113,30 @@
               }
             }
           },
+          "403": {
+            "description": "Forbidden"
+          },
           "429": {
             "description": "Too many requests"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
+            }
+          },
+          "500": {
+            "description": "Service unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -105,8 +154,8 @@
         "summary": "Get last v1 {stakeholder} cache version",
         "operationId": "idV1",
         "responses": {
-          "500": {
-            "description": "Service unavailable",
+          "400": {
+            "description": "Bad Request",
             "content": {
               "application/json": {
                 "schema": {
@@ -114,15 +163,6 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
           },
           "200": {
             "description": "OK",
@@ -134,8 +174,20 @@
               }
             }
           },
-          "400": {
-            "description": "Bad Request",
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "429": {
+            "description": "Too many requests"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Service unavailable",
             "content": {
               "application/json": {
                 "schema": {
@@ -143,9 +195,6 @@
                 }
               }
             }
-          },
-          "429": {
-            "description": "Too many requests"
           }
         },
         "security": [

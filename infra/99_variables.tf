@@ -68,5 +68,4 @@ variable "domain" {
     )
     error_message = "Max length is 12 chars."
   }
-  default = "nodo"
 }

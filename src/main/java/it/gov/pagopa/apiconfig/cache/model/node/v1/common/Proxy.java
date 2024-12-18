@@ -1,16 +1,19 @@
 package it.gov.pagopa.apiconfig.cache.model.node.v1.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import java.io.Serializable;
 
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class Proxy implements Serializable {
   @JsonProperty(value = "proxy_host")
   private String proxyHost;

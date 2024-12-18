@@ -1,22 +1,23 @@
 /'
-Scenario 05:
-  Stakeholder (e.g. API-Config, SelfCare) refreshes cache data
+'Scenario 05:
+'  Stakeholder (e.g. API-Config, SelfCare) refreshes cache data
+'   This scenario is deprecated in favor of /cache/refresh
 '/
 @startuml
-participant Stakeholder
-participant APIM
-participant "API Config\nCache" as Cache
-Stakeholder -> APIM: <b>/stakeholders/node/cache/schemas/v1?refresh=true</b>
-APIM -> Cache: <b>/stakeholders/node/cache/schemas/v1?refresh=true</b>
-Cache -> Cache: Check <b>refresh</b> is required
-Cache -> Redis: Save cache data with key <b>apicfg_*_node_v1_in_progress</b>
-Cache -> Cache: Generate cache data
-Cache -> Redis: Save cache data with key <b>apicfg_*_node_v1</b>
-Cache -> Redis: Save cache version with key <b>apicfg_*_node_v1_id</b>
-Cache -> Redis: Remove cache with key <b>apicfg_*_node_v1_in_progress</b>
-note right
-  <b>*</b> regards the database version (o or p)
-end note
-Cache --> APIM: Return cache data
-APIM --> Stakeholder: Return cache data
+'participant Stakeholder
+'participant APIM
+'participant "API Config\nCache" as Cache
+'Stakeholder -> APIM: <b>/stakeholders/node/cache/schemas/v1?refresh=true</b>
+'APIM -> Cache: <b>/stakeholders/node/cache/schemas/v1?refresh=true</b>
+'Cache -> Cache: Check <b>refresh</b> is required
+'Cache -> Redis: Save cache data with key <b>apicfg_*_node_v1_in_progress</b>
+'Cache -> Cache: Generate cache data
+'Cache -> Redis: Save cache data with key <b>apicfg_*_node_v1</b>
+'Cache -> Redis: Save cache version with key <b>apicfg_*_node_v1_id</b>
+'Cache -> Redis: Remove cache with key <b>apicfg_*_node_v1_in_progress</b>
+'note right
+'  <b>*</b> regards the database version (o or p)
+'end note
+'Cache --> APIM: Return cache data
+'APIM --> Stakeholder: Return cache data
 @enduml

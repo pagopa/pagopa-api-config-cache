@@ -1,15 +1,14 @@
 package it.gov.pagopa.apiconfig.cache.redis;
 
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.Map;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
 @Component
 @Slf4j
@@ -61,7 +60,7 @@ public class RedisRepository {
       log.info("saving {} on redis", key);
       save(key, object, 1440);
       save(keyId, keyobject, 1440);
-      log.info("saved {} on redis,id {}", key, new String(keyobject, StandardCharsets.UTF_8));
+      log.info("saved {} on redis, id {}", key, new String(keyobject, StandardCharsets.UTF_8));
     } catch (Exception e) {
       log.error("could not save on redis", e);
     }

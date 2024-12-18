@@ -1,14 +1,61 @@
 package it.gov.pagopa.apiconfig.cache;
 
+import it.gov.pagopa.apiconfig.cache.controller.CacheController;
+import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.Station;
+import it.gov.pagopa.apiconfig.cache.model.latest.psp.Channel;
+import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
+import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.starter.entity.*;
+import org.modelmapper.TypeToken;
 
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TestUtils {
 
+  public static void inizializeInMemoryCache(CacheController cacheController,
+                                             ConfigMapper modelMapper,
+                                             String version,
+                                             String cacheVersion,
+                                             ZonedDateTime timestamp) {
+    org.springframework.test.util.ReflectionTestUtils.setField(cacheController, "inMemoryCache", inMemoryCache(modelMapper, version, cacheVersion, timestamp));
+  }
+
+  public static HashMap<String, Object> inMemoryCache(ConfigMapper modelMapper,
+                                                      String version,
+                                                      String cacheVersion,
+                                                      ZonedDateTime timestamp) {
+    HashMap<String, Object> objectObjectHashMap = new HashMap<String, Object>();
+
+    objectObjectHashMap.put(Constants.VERSION, version);
+    objectObjectHashMap.put(Constants.CACHE_VERSION, cacheVersion);
+    objectObjectHashMap.put(Constants.TIMESTAMP, timestamp);
+
+    List<Station> stations = modelMapper.modelMapper().map(
+            TestUtils.stazioni,
+            new TypeToken<List<Station>>() {
+            }.getType());
+    objectObjectHashMap.put(Constants.STATIONS, stations.stream()
+            .collect(Collectors.toMap(
+                    Station::getStationCode,
+                    obj -> obj
+            )));
+
+    List<Channel> channels = modelMapper.modelMapper().map(
+            TestUtils.canali,
+            new TypeToken<List<Channel>>() {
+            }.getType());
+    objectObjectHashMap.put(Constants.CHANNELS, channels.stream()
+            .collect(Collectors.toMap(
+                    Channel::getChannelCode,
+                    obj -> obj
+            )));
+    return objectObjectHashMap;
+  }
   public static List<String> pastazioniV2 = Arrays.asList("1", "2", "3", "4");
 
   public static String cacheId = "testCacheId";
