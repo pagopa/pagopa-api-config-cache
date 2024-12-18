@@ -39,7 +39,7 @@ import java.util.Map;
 public class ConfigDataV1 extends CacheSchemaVersion {
 
   @JsonProperty(required = true)
-  private String version;
+  private String version; // TODO should be removed, it is inherited from CacheSchemaVersion
 
   @JsonProperty(required = true)
   private Map<String, CreditorInstitution> creditorInstitutions;
