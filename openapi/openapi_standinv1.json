@@ -4,7 +4,7 @@
     "title": "API-Config Cache ${service}",
     "description": "Generate cache for various microservices",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.9.21"
+    "version": "0.9.21-1-PAGOPA-2705-fix-gde-config-upper-case"
   },
   "servers": [
     {
