@@ -90,6 +90,8 @@ public class ConfigMapper {
         new ConvertCdsServizioCdsCatService();
     Converter<CdsSoggettoServizio, CdsSubjectService> convertCdsSoggettoServizioCdsSubjectService =
         new ConvertCdsSoggettoServizioCdsSubjectService();
+    ConvertGdeConfigToGdeConfiguration convertGdeConfigToGdeConfiguration =
+            new ConvertGdeConfigToGdeConfiguration();
 
     mapper
         .createTypeMap(Pa.class, CreditorInstitution.class)
@@ -138,7 +140,7 @@ public class ConfigMapper {
 
     mapper
         .createTypeMap(GdeConfig.class, GdeConfiguration.class)
-        .setConverter(new ConvertGdeConfigToGdeConfiguration());
+        .setConverter(convertGdeConfigToGdeConfiguration);
 
     return mapper;
   }
