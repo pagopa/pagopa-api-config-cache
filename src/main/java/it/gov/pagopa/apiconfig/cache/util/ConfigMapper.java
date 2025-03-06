@@ -4,7 +4,6 @@ import it.gov.pagopa.apiconfig.cache.model.latest.cds.CdsService;
 import it.gov.pagopa.apiconfig.cache.model.latest.cds.CdsSubjectService;
 import it.gov.pagopa.apiconfig.cache.model.latest.configuration.ConfigurationKey;
 import it.gov.pagopa.apiconfig.cache.model.latest.configuration.FtpServer;
-import it.gov.pagopa.apiconfig.cache.model.latest.configuration.GdeConfiguration;
 import it.gov.pagopa.apiconfig.cache.model.latest.configuration.PaymentType;
 import it.gov.pagopa.apiconfig.cache.model.latest.configuration.Plugin;
 import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.BrokerCreditorInstitution;
@@ -23,7 +22,6 @@ import it.gov.pagopa.apiconfig.cache.util.mapper.entitiesToLatest.ConvertCodific
 import it.gov.pagopa.apiconfig.cache.util.mapper.entitiesToLatest.ConvertCodificheToEncoding;
 import it.gov.pagopa.apiconfig.cache.util.mapper.entitiesToLatest.ConvertConfiguration;
 import it.gov.pagopa.apiconfig.cache.util.mapper.entitiesToLatest.ConvertFtpServersToFtpServer;
-import it.gov.pagopa.apiconfig.cache.util.mapper.entitiesToLatest.ConvertGdeConfigToGdeConfiguration;
 import it.gov.pagopa.apiconfig.cache.util.mapper.entitiesToLatest.ConvertIbanValidiPerPaToIban;
 import it.gov.pagopa.apiconfig.cache.util.mapper.entitiesToLatest.ConvertIntermediariPaToBrokerDetails;
 import it.gov.pagopa.apiconfig.cache.util.mapper.entitiesToLatest.ConvertIntermediariPspToBrokerPspDetails;
@@ -39,7 +37,6 @@ import it.gov.pagopa.apiconfig.starter.entity.Codifiche;
 import it.gov.pagopa.apiconfig.starter.entity.CodifichePa;
 import it.gov.pagopa.apiconfig.starter.entity.ConfigurationKeys;
 import it.gov.pagopa.apiconfig.starter.entity.FtpServers;
-import it.gov.pagopa.apiconfig.starter.entity.GdeConfig;
 import it.gov.pagopa.apiconfig.starter.entity.IbanValidiPerPa;
 import it.gov.pagopa.apiconfig.starter.entity.IntermediariPa;
 import it.gov.pagopa.apiconfig.starter.entity.IntermediariPsp;
@@ -90,8 +87,6 @@ public class ConfigMapper {
         new ConvertCdsServizioCdsCatService();
     Converter<CdsSoggettoServizio, CdsSubjectService> convertCdsSoggettoServizioCdsSubjectService =
         new ConvertCdsSoggettoServizioCdsSubjectService();
-    ConvertGdeConfigToGdeConfiguration convertGdeConfigToGdeConfiguration =
-            new ConvertGdeConfigToGdeConfiguration();
 
     mapper
         .createTypeMap(Pa.class, CreditorInstitution.class)
@@ -137,10 +132,6 @@ public class ConfigMapper {
     mapper
         .createTypeMap(ConfigurationKeys.class, ConfigurationKey.class)
         .setConverter(convertConfiguration);
-
-    mapper
-        .createTypeMap(GdeConfig.class, GdeConfiguration.class)
-        .setConverter(convertGdeConfigToGdeConfiguration);
 
     return mapper;
   }
