@@ -75,7 +75,7 @@ postgresql:
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql"
-    DB_CONFIG_URL: "jdbc:postgresql://nodo-db.u.internal.postgresql.pagopa.it:6432/nodo?sslmode=require&prepareThreshold=0&currentSchema=cfg"
+    DB_CONFIG_URL: "jdbc:postgresql://nodo-db.u.internal.postgresql.pagopa.it:5432/nodo?sslmode=require&prepareThreshold=0&currentSchema=cfg"
     DB_CONFIG_USER: "cfg"
     DB_CONFIG_DRIVER: "org.postgresql.Driver"
     DATABASE_ID: "p"
