@@ -30,7 +30,7 @@ public class FdrCacheController extends StakeholderController {
           Constants.GDE_CONFIGURATIONS
   };
 
-  public static Stakeholder STAKEHOLDER = Stakeholder.FDR;
+  private static final Stakeholder stakeholder = Stakeholder.FDR;
 
   @Override
   protected String[] keys() {
@@ -39,7 +39,7 @@ public class FdrCacheController extends StakeholderController {
 
   @Override
   protected Stakeholder stakeholder() {
-    return FdrCacheController.STAKEHOLDER;
+    return FdrCacheController.stakeholder;
   }
 
 }

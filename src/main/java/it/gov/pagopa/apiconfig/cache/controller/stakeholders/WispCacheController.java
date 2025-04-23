@@ -29,7 +29,7 @@ public class WispCacheController extends StakeholderController {
           Constants.CONFIGURATIONS
   };
 
-  public static Stakeholder STAKEHOLDER = Stakeholder.WISP;
+  private final static Stakeholder stakeholder = Stakeholder.WISP;
 
   @Override
   protected String[] keys() {
@@ -38,7 +38,7 @@ public class WispCacheController extends StakeholderController {
 
   @Override
   protected Stakeholder stakeholder() {
-    return WispCacheController.STAKEHOLDER;
+    return WispCacheController.stakeholder;
   }
 
 }

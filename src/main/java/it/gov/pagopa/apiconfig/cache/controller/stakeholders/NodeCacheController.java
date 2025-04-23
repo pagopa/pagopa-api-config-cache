@@ -47,7 +47,7 @@ public class NodeCacheController extends StakeholderController {
             Constants.METADATA_DICT
   };
 
-  public static Stakeholder STAKEHOLDER = Stakeholder.NODE;
+  private static final Stakeholder stakeholder = Stakeholder.NODE;
 
   @Override
   protected String[] keys() {
@@ -56,7 +56,7 @@ public class NodeCacheController extends StakeholderController {
 
   @Override
   protected Stakeholder stakeholder() {
-    return NodeCacheController.STAKEHOLDER;
+    return NodeCacheController.stakeholder;
   }
 
   @Override
