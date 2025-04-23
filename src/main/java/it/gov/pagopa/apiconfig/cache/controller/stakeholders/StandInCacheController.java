@@ -1,6 +1,7 @@
 package it.gov.pagopa.apiconfig.cache.controller.stakeholders;
 
 import it.gov.pagopa.apiconfig.cache.controller.StakeholderController;
+import it.gov.pagopa.apiconfig.cache.model.Stakeholder;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import oracle.jdbc.driver.Const;
@@ -20,7 +21,7 @@ public class StandInCacheController extends StakeholderController {
           Constants.CREDITOR_INSTITUTION_STATIONS
   };
 
-  public static String STAKEHOLDER = "standin";
+  public static Stakeholder STAKEHOLDER = Stakeholder.STANDIN;
 
   @Override
   protected String[] keys() {
@@ -28,7 +29,7 @@ public class StandInCacheController extends StakeholderController {
   }
 
   @Override
-  protected String stakeholder() {
+  protected Stakeholder stakeholder() {
     return StandInCacheController.STAKEHOLDER;
   }
 

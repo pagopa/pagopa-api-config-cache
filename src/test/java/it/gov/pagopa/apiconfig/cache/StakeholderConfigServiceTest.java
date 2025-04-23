@@ -3,6 +3,7 @@ package it.gov.pagopa.apiconfig.cache;
 import it.gov.pagopa.apiconfig.cache.controller.CacheController;
 import it.gov.pagopa.apiconfig.cache.controller.stakeholders.NodeCacheController;
 import it.gov.pagopa.apiconfig.cache.model.ConfigData;
+import it.gov.pagopa.apiconfig.cache.model.Stakeholder;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
@@ -95,7 +96,7 @@ class StakeholderConfigServiceTest {
   @Test
   void loadCache() throws IOException {
     when(redisRepository.get(any())).thenReturn(null);
-    ConfigData configData = stakeholderConfigService.loadCache("test", "v1");
+    ConfigData configData = stakeholderConfigService.loadCache(Stakeholder.TEST, "v1");
     assertThat(configData).isNull();
   }
   @Test
@@ -106,7 +107,7 @@ class StakeholderConfigServiceTest {
     ZonedDateTime now = ZonedDateTime.now();
     ZonedDateTime romeDateTime = DateTimeUtils.getZonedDateTime(now);
     TestUtils.inizializeInMemoryCache(cacheController, configMapper, version, cacheVersion, romeDateTime);
-    ConfigData configData = stakeholderConfigService.getCache("test", "v1", NodeCacheController.KEYS);
+    ConfigData configData = stakeholderConfigService.getCache(Stakeholder.TEST, "v1", NodeCacheController.KEYS);
     assertThat(configData).isNotNull();
   }
 
@@ -119,7 +120,7 @@ class StakeholderConfigServiceTest {
     ZonedDateTime now = ZonedDateTime.now();
     ZonedDateTime romeDateTime = DateTimeUtils.getZonedDateTime(now);
     TestUtils.inizializeInMemoryCache(cacheController, configMapper, version, cacheVersion, romeDateTime);
-    ConfigData configData = stakeholderConfigService.getCache("test", "v1", NodeCacheController.KEYS);
+    ConfigData configData = stakeholderConfigService.getCache(Stakeholder.TEST, "v1", NodeCacheController.KEYS);
     stakeholderConfigService.saveOnDB(configData, "v1");
     assertThat(configData).isNotNull();
   }
@@ -127,7 +128,7 @@ class StakeholderConfigServiceTest {
   void getVersionId() throws IOException {
     String version = "111";
     when(redisRepository.get(any())).thenReturn(version.getBytes(StandardCharsets.UTF_8));
-    CacheVersion cacheVersion = stakeholderConfigService.getVersionId("test", "v1", NodeCacheController.KEYS);
+    CacheVersion cacheVersion = stakeholderConfigService.getVersionId(Stakeholder.TEST, "v1", NodeCacheController.KEYS);
     assertThat(cacheVersion.getVersion()).isEqualTo(version);
   }
 
@@ -139,6 +140,7 @@ class StakeholderConfigServiceTest {
     ZonedDateTime romeDateTime = DateTimeUtils.getZonedDateTime(now);
     ConfigMapper modelMapper = new ConfigMapper();
     ConfigDataV1 configDataV1 = stakeholderConfigService.cacheToConfigDataV1(
+            Stakeholder.TEST,
             TestUtils.inMemoryCache(
                     modelMapper, version, cacheVersion, romeDateTime
             ),
@@ -153,7 +155,7 @@ class StakeholderConfigServiceTest {
 
     when(redisRepository.get(any())).thenReturn(stakeholderConfigService.compressJsonToGzip(configData));
 
-    assertThat(stakeholderConfigService.getXLSX("test", "v1")).isNotNull();
+    assertThat(stakeholderConfigService.getXLSX(Stakeholder.TEST, "v1")).isNotNull();
   }
 
 }
