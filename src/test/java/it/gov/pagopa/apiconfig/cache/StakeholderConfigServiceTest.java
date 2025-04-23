@@ -112,6 +112,18 @@ class StakeholderConfigServiceTest {
   }
 
   @Test
+  void getCache_standin() throws IOException {
+    when(redisRepository.get(any())).thenReturn(null);
+    String version = "111";
+    String cacheVersion = Constants.GZIP_JSON + "-test";
+    ZonedDateTime now = ZonedDateTime.now();
+    ZonedDateTime romeDateTime = DateTimeUtils.getZonedDateTime(now);
+    TestUtils.inizializeInMemoryCache(cacheController, configMapper, version, cacheVersion, romeDateTime);
+    ConfigData configData = stakeholderConfigService.getCache(Stakeholder.STANDIN, "v1", NodeCacheController.KEYS);
+    assertThat(configData).isNotNull();
+  }
+
+  @Test
   void saveOnDB() throws IOException {
     when(redisRepository.get(any())).thenReturn(null);
     when(cacheRepository.save(any())).thenReturn(null);

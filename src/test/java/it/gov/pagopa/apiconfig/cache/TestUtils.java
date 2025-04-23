@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,11 +26,11 @@ public class TestUtils {
     org.springframework.test.util.ReflectionTestUtils.setField(cacheController, "inMemoryCache", inMemoryCache(modelMapper, version, cacheVersion, timestamp));
   }
 
-  public static HashMap<String, Object> inMemoryCache(ConfigMapper modelMapper,
+  public static LinkedHashMap<String, Object> inMemoryCache(ConfigMapper modelMapper,
                                                       String version,
                                                       String cacheVersion,
                                                       ZonedDateTime timestamp) {
-    HashMap<String, Object> objectObjectHashMap = new HashMap<String, Object>();
+    LinkedHashMap<String, Object> objectObjectHashMap = new LinkedHashMap<>();
 
     objectObjectHashMap.put(Constants.VERSION, version);
     objectObjectHashMap.put(Constants.CACHE_VERSION, cacheVersion);
@@ -42,7 +43,9 @@ public class TestUtils {
     objectObjectHashMap.put(Constants.STATIONS, stations.stream()
             .collect(Collectors.toMap(
                     Station::getStationCode,
-                    obj -> obj
+                    obj -> obj,
+                    (existing, replacement) -> existing,
+                    LinkedHashMap::new
             )));
 
     List<Channel> channels = modelMapper.modelMapper().map(
@@ -52,7 +55,9 @@ public class TestUtils {
     objectObjectHashMap.put(Constants.CHANNELS, channels.stream()
             .collect(Collectors.toMap(
                     Channel::getChannelCode,
-                    obj -> obj
+                    obj -> obj,
+                    (existing, replacement) -> existing,
+                    LinkedHashMap::new
             )));
     return objectObjectHashMap;
   }
