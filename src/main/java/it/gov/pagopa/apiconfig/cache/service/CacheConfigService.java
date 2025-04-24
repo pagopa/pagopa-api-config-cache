@@ -435,8 +435,6 @@ public class CacheConfigService {
       long duration = (endTime - startTime) / 1000000;
       log.info(String.format("%s cache loaded in %s ms", Constants.FULL, duration));
 
-
-
       String actualKey = cacheKeyUtils.getCacheKey(Constants.FULL);
       String actualKeyV1 = cacheKeyUtils.getCacheIdKey(Constants.FULL);
 

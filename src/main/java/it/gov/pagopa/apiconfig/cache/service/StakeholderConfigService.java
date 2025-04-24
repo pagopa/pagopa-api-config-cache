@@ -221,7 +221,7 @@ public class StakeholderConfigService {
 
     private void elaborateStandInCache(Map<String,Object> inMemoryCache) {
         // remove station not configured on forwarder
-        ((LinkedHashMap) inMemoryCache.get(Constants.STATIONS)).entrySet()
+        ((HashMap) inMemoryCache.get(Constants.STATIONS)).entrySet()
                 .removeIf(entry ->  {
                     Station station = ((Map.Entry<String, Station>) entry).getValue();
                     return station.getPofService() == null ||
