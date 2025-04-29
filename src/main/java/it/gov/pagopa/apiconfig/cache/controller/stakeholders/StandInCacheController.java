@@ -1,6 +1,7 @@
 package it.gov.pagopa.apiconfig.cache.controller.stakeholders;
 
 import it.gov.pagopa.apiconfig.cache.controller.StakeholderController;
+import it.gov.pagopa.apiconfig.cache.model.Stakeholder;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -16,9 +17,10 @@ public class StandInCacheController extends StakeholderController {
   public static String[] KEYS = new String[]{
           Constants.VERSION,
           Constants.STATIONS,
+          Constants.CREDITOR_INSTITUTION_STATIONS
   };
 
-  public static String STAKEHOLDER = "standin";
+  private static final Stakeholder stakeholder = Stakeholder.STANDIN;
 
   @Override
   protected String[] keys() {
@@ -26,8 +28,8 @@ public class StandInCacheController extends StakeholderController {
   }
 
   @Override
-  protected String stakeholder() {
-    return StandInCacheController.STAKEHOLDER;
+  protected Stakeholder stakeholder() {
+    return StandInCacheController.stakeholder;
   }
 
 }

@@ -29,7 +29,7 @@ public class TestUtils {
                                                       String version,
                                                       String cacheVersion,
                                                       ZonedDateTime timestamp) {
-    HashMap<String, Object> objectObjectHashMap = new HashMap<String, Object>();
+    HashMap<String, Object> objectObjectHashMap = new HashMap<>();
 
     objectObjectHashMap.put(Constants.VERSION, version);
     objectObjectHashMap.put(Constants.CACHE_VERSION, cacheVersion);

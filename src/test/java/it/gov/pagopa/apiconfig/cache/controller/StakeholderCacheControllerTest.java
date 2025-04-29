@@ -82,7 +82,7 @@ public class StakeholderCacheControllerTest {
                 .xCacheVersion(cacheVersion)
                 .cacheSchemaVersion(cd)
                 .build();
-        when(stakeholderConfigService.getCache(anyString(), anyString(), any())).thenReturn(configData);
+        when(stakeholderConfigService.getCache(any(), anyString(), any())).thenReturn(configData);
         mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(header().string(Constants.HEADER_X_CACHE_ID, version))
@@ -102,7 +102,7 @@ public class StakeholderCacheControllerTest {
         CacheVersion cacheVersion = CacheVersion.builder()
                 .version("111")
                 .build();
-        when(stakeholderConfigService.getVersionId(anyString(), anyString(), any())).thenReturn(cacheVersion);
+        when(stakeholderConfigService.getVersionId(any(), anyString(), any())).thenReturn(cacheVersion);
 
         mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -117,7 +117,7 @@ public class StakeholderCacheControllerTest {
             "/stakeholders/standin/cache/schemas/v1/xlsx"
     })
     void testXlsx(String url) throws Exception {
-        when(stakeholderConfigService.getXLSX(anyString(), anyString())).thenReturn("1".getBytes(StandardCharsets.UTF_8));
+        when(stakeholderConfigService.getXLSX(any(), anyString())).thenReturn("1".getBytes(StandardCharsets.UTF_8));
 
         mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

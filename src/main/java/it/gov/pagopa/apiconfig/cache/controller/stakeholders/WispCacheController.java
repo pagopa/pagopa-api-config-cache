@@ -1,6 +1,7 @@
 package it.gov.pagopa.apiconfig.cache.controller.stakeholders;
 
 import it.gov.pagopa.apiconfig.cache.controller.StakeholderController;
+import it.gov.pagopa.apiconfig.cache.model.Stakeholder;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -28,7 +29,7 @@ public class WispCacheController extends StakeholderController {
           Constants.CONFIGURATIONS
   };
 
-  public static String STAKEHOLDER = "wisp";
+  private static final Stakeholder stakeholder = Stakeholder.WISP;
 
   @Override
   protected String[] keys() {
@@ -36,8 +37,8 @@ public class WispCacheController extends StakeholderController {
   }
 
   @Override
-  protected String stakeholder() {
-    return WispCacheController.STAKEHOLDER;
+  protected Stakeholder stakeholder() {
+    return WispCacheController.stakeholder;
   }
 
 }

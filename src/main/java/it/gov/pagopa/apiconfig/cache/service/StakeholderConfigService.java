@@ -9,6 +9,8 @@ import it.gov.pagopa.apiconfig.cache.controller.CacheController;
 import it.gov.pagopa.apiconfig.cache.exception.AppError;
 import it.gov.pagopa.apiconfig.cache.exception.AppException;
 import it.gov.pagopa.apiconfig.cache.model.ConfigData;
+import it.gov.pagopa.apiconfig.cache.model.Stakeholder;
+import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.Station;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheSchemaVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
@@ -36,12 +38,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.zip.GZIPOutputStream;
 
 @Slf4j
@@ -68,7 +65,7 @@ public class StakeholderConfigService {
 
     @Autowired private CacheKeyUtils cacheKeyUtils;
 
-    public ConfigData loadCache(String stakeholder, String schemaVersion) throws IOException {
+    public ConfigData loadCache(Stakeholder stakeholder, String schemaVersion) throws IOException {
         log.info(String.format("Loading on Redis %s cache", getStakeholderWithSchema(stakeholder, schemaVersion)));
         // verify if the id of full cache and stakeholder cache are the same
         byte[] stakeholderCacheId = redisRepository.get(cacheKeyUtils.getCacheIdKey(getStakeholderWithSchema(stakeholder, schemaVersion)));
@@ -80,7 +77,7 @@ public class StakeholderConfigService {
         return null;
     }
 
-    public ConfigData getCache(String stakeholder, String schemaVersion, String[] keys) throws IOException {
+    public ConfigData getCache(Stakeholder stakeholder, String schemaVersion, String[] keys) throws IOException {
         // retrieve configDataVersion from Redis
         ConfigData configData = loadCache(stakeholder, schemaVersion);
 
@@ -92,7 +89,7 @@ public class StakeholderConfigService {
         return configData;
     }
 
-    private ConfigData generateCacheSchemaFromInMemory(String stakeholder, String schemaVersion, String[] keys) throws IOException {
+    private ConfigData generateCacheSchemaFromInMemory(Stakeholder stakeholder, String schemaVersion, String[] keys) throws IOException {
         // retrieve full cache and generate configDava
         HashMap<String, Object> inMemoryCache = cacheController.getInMemoryCache();
         HashMap<String, Object> clonedInMemoryCache = (HashMap<String, Object>)inMemoryCache.clone();
@@ -108,7 +105,7 @@ public class StakeholderConfigService {
         clonedInMemoryCache.put(Constants.TIMESTAMP, xCacheTimestamp);
         CacheSchemaVersion cacheSchemaVersion = null;
         if (schemaVersion.equals("v1")) {
-            cacheSchemaVersion = cacheToConfigDataV1(clonedInMemoryCache, keys);
+            cacheSchemaVersion = cacheToConfigDataV1(stakeholder, clonedInMemoryCache, keys);
         } else {
             throw new AppException(AppError.CACHE_SCHEMA_NOT_VALID);
         }
@@ -152,7 +149,7 @@ public class StakeholderConfigService {
         }
     }
 
-    public CacheVersion getVersionId(String stakeholder, String schemaVersion, String[] keys) throws IOException {
+    public CacheVersion getVersionId(Stakeholder stakeholder, String schemaVersion, String[] keys) throws IOException {
         byte[] stakeholderCacheId = redisRepository.get(cacheKeyUtils.getCacheIdKey(getStakeholderWithSchema(stakeholder, schemaVersion)));
         byte[] fullCacheId = redisRepository.get(cacheKeyUtils.getCacheIdKey(Constants.FULL));
         // check cache validity and generate schema if necessary
@@ -170,7 +167,7 @@ public class StakeholderConfigService {
         throw new AppException(AppError.CACHE_NOT_INITIALIZED);
     }
 
-    public byte[] getXLSX(String stakeholder, String schemaVersion) {
+    public byte[] getXLSX(Stakeholder stakeholder, String schemaVersion) {
         ConfigData configData = null;
         try {
             configData = getCacheFromRedis(stakeholder, schemaVersion);
@@ -202,20 +199,39 @@ public class StakeholderConfigService {
         throw new AppException(AppError.CACHE_NOT_INITIALIZED);
     }
 
-    private String getStakeholderWithSchema(String stakeholder, String schemaVersion) {
+    private String getStakeholderWithSchema(Stakeholder stakeholder, String schemaVersion) {
         return String.format("%s_%s", stakeholder, schemaVersion);
     }
 
-    public ConfigDataV1 cacheToConfigDataV1(Map<String,Object> inMemoryCache, String[] keys) {
+    public ConfigDataV1 cacheToConfigDataV1(Stakeholder stakeholder, Map<String,Object> inMemoryCache, String[] keys) {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         Set<String> keysSet = new HashSet<>(Arrays.asList(keys));
         inMemoryCache.keySet().removeIf(key -> !keysSet.contains(key));
+        switch (stakeholder) {
+            case STANDIN:
+                elaborateStandInCache(inMemoryCache);
+                break;
+            default:
+                break;
+        }
         return objectMapper.convertValue(inMemoryCache, ConfigDataV1.class);
     }
 
-    private ConfigData getCacheFromRedis(String stakeholder, String schemaVersion) throws IOException {
+    private void elaborateStandInCache(Map<String,Object> inMemoryCache) {
+        // remove station not configured on forwarder
+        ((HashMap) inMemoryCache.get(Constants.STATIONS)).entrySet()
+                .removeIf(entry ->  {
+                    Station station = ((Map.Entry<String, Station>) entry).getValue();
+                    return station.getPofService() == null ||
+                        station.getPofService().getPath() == null ||
+                        !station.getPofService().getPath().contains("pagopa-node-forwarder");
+                });
+    }
+
+
+    private ConfigData getCacheFromRedis(Stakeholder stakeholder, String schemaVersion) throws IOException {
         byte[] bytes = redisRepository.get(cacheKeyUtils.getCacheKey(getStakeholderWithSchema(stakeholder, schemaVersion)));
         return bytes == null ? null : decompressGzipToConfigData(bytes, schemaVersion);
     }

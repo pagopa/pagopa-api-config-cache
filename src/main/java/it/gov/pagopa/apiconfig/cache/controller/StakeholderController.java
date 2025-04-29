@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import it.gov.pagopa.apiconfig.cache.model.ConfigData;
 import it.gov.pagopa.apiconfig.cache.model.ProblemJson;
+import it.gov.pagopa.apiconfig.cache.model.Stakeholder;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.service.StakeholderConfigService;
@@ -29,7 +30,7 @@ import java.util.Optional;
 @RestController
 public abstract class StakeholderController {
   protected abstract String[] keys();
-  protected abstract String stakeholder();
+  protected abstract Stakeholder stakeholder();
   protected boolean saveOnDB() {
       return false;
   };
