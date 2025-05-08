@@ -221,13 +221,15 @@ public class StakeholderConfigService {
 
     private void elaborateStandInCache(Map<String,Object> inMemoryCache) {
         // remove station not configured on forwarder
-        ((HashMap) inMemoryCache.get(Constants.STATIONS)).entrySet()
+        HashMap stations = (HashMap) ((HashMap) inMemoryCache.get(Constants.STATIONS)).clone();
+        stations.entrySet()
                 .removeIf(entry ->  {
                     Station station = ((Map.Entry<String, Station>) entry).getValue();
                     return station.getPofService() == null ||
                         station.getPofService().getPath() == null ||
                         !station.getPofService().getPath().contains("pagopa-node-forwarder");
                 });
+        inMemoryCache.put(Constants.STATIONS, stations);
     }
 
 
