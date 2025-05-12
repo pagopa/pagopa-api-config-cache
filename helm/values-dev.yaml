@@ -22,6 +22,10 @@ microservice-chart: &microservice-chart
   ingress: &ingress
     create: true
     host: "weudev.apiconfig.internal.dev.platform.pagopa.it"
+  serviceAccount:
+    name: "apiconfig-workload-identity"
+  azure:
+    workloadIdentityClientId: <workload-identity-client-id-set-automatically-by-gha>
   resources:
     requests:
       memory: "512Mi"

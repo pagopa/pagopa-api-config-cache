@@ -9,23 +9,23 @@ dependencies:
   ## PAGOPA   ##
   ##############
   - name: microservice-chart
-    version: 3.0.0
+    version: 7.5.0
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
     alias: postgresql # postgres pagopa
     condition: postgresql.enabled
   - name: microservice-chart
-    version: 3.0.0
+    version: 7.5.0
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
     alias: postgresql-replica # postgres pagopa
     condition: postgresql-replica.enabled
   # CRON
   - name: cron-chart
-    version: 2.6.0
+    version: 7.5.0
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
     alias: refresh-p # postgres pagopa
     condition: postgresql.enabled
   - name: cron-chart
-    version: 2.6.0
+    version: 7.5.0
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
     alias: refresh-p-replica # postgres pagopa
     condition: postgresql-replica.enabled
@@ -34,33 +34,33 @@ dependencies:
   ## NEXI     ##
   ##############
   - name: microservice-chart
-    version: 3.0.0
+    version: 7.5.0
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
     alias: oracle # oracle nexi (sit, uat, prod)
     condition: oracle.enabled
   - name: microservice-chart
-    version: 3.0.0
+    version: 7.5.0
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
     alias: oracledev # oracle nexi (dev o prf)
     condition: oracledev.enabled
   - name: microservice-chart
-    version: 3.0.0
+    version: 7.5.0
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
     alias: oracleprod # oracle nexi (prod in dev per test)
     condition: oracleprod.enabled
   # CRON
   - name: cron-chart
-    version: 2.6.0
+    version: 7.5.0
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
     alias: refresh-o # oracle nexi (sit, uat, prod)
     condition: oracle.enabled
   - name: cron-chart
-    version: 2.6.0
+    version: 7.5.0
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
     alias: refresh-odev # oracle nexi (dev o prf)
     condition: oracledev.enabled
   - name: cron-chart
-    version: 2.6.0
+    version: 7.5.0
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
     alias: refresh-oprod # oracle nexi (prod in dev per test)
     condition: oracleprod.enabled
@@ -69,22 +69,22 @@ dependencies:
   ## NEXI     ##
   ##############
   - name: microservice-chart
-    version: 3.0.0
+    version: 7.5.0
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
     alias: postgresql-nexi # postgres nexi
     condition: postgresql-nexi.enabled
   - name: cron-chart
-    version: 2.6.0
+    version: 7.5.0
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
     alias: refresh-p-nexi # postgres nexi
     condition: postgresql-nexi.enabled
   - name: microservice-chart
-    version: 3.0.0
+    version: 7.5.0
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
     alias: postgresql-replica-nexi # postgres prf nexi
     condition: postgresql-replica-nexi.enabled
   - name: cron-chart
-    version: 2.6.0
+    version: 7.5.0
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
     alias: refresh-p-replica-nexi # postgres prf nexi
     condition: postgresql-replica-nexi.enabled
