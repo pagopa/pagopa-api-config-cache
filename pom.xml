@@ -12,7 +12,7 @@
 
   <groupId>it.gov.pagopa.api-config</groupId>
   <artifactId>cache</artifactId>
-  <version>0.9.26-1-PIDM-487-apiconfig-wl-identity-helm-v-7-5-0</version>
+  <version>0.9.26-2-PIDM-487-apiconfig-wl-identity-helm-v-7-5-0</version>
   <name>API-Config Cache</name>
   <description>Generate cache for various microservices</description>
 
