@@ -2,7 +2,7 @@ apiVersion: v2
 name: pagopa-api-cache-chart
 description: Microservice that handles calculation for pagoPA Advanced Fees Management
 type: application
-version: 0.113.0
+version: 0.114.0
 dependencies:
   ##############
   ## POSTGRES ##
@@ -88,4 +88,4 @@ dependencies:
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
     alias: refresh-p-replica-nexi # postgres prf nexi
     condition: postgresql-replica-nexi.enabled
-appVersion: 0.9.26-3-PIDM-487-apiconfig-wl-identity-helm-v-7-5-0
+appVersion: 0.9.26-4-PIDM-487-apiconfig-wl-identity-helm-v-7-5-0
