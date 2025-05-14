@@ -2,7 +2,7 @@ microservice-chart: &microservice-chart
   namespace: "apiconfig"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: 0.9.26
+    tag: 0.9.26-3-PIDM-487-apiconfig-wl-identity-helm-v-7-5-0
   canaryDelivery:
     deployment:
       image:
@@ -22,6 +22,10 @@ microservice-chart: &microservice-chart
   ingress: &ingress
     create: true
     host: "weuprod.apiconfig.internal.platform.pagopa.it"
+  serviceAccount:
+    name: "apiconfig-workload-identity"
+  azure:
+    workloadIdentityClientId: <workload-identity-client-id-set-automatically-by-gha>
   resources:
     requests:
       memory: "512Mi"
@@ -80,7 +84,7 @@ postgresql:
   !!merge <<: *microservice-chart
   ingress:
     !!merge <<: *ingress
-    path: /api-config-cache/p(/|$)(.*)
+    path: /api-config-cache/p/(.*)
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql"

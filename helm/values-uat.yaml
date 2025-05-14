@@ -2,7 +2,7 @@ microservice-chart: &microservice-chart
   namespace: "apiconfig"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: 0.9.26
+    tag: 0.9.26-3-PIDM-487-apiconfig-wl-identity-helm-v-7-5-0
   canaryDelivery:
     deployment:
       image:
@@ -22,6 +22,10 @@ microservice-chart: &microservice-chart
   ingress: &ingress
     create: true
     host: "weuuat.apiconfig.internal.uat.platform.pagopa.it"
+  serviceAccount:
+    name: "apiconfig-workload-identity"
+  azure:
+    workloadIdentityClientId: <workload-identity-client-id-set-automatically-by-gha>
   resources:
     requests:
       memory: "512Mi"
@@ -71,7 +75,7 @@ postgresql:
   !!merge <<: *microservice-chart
   ingress:
     !!merge <<: *ingress
-    path: /api-config-cache/p(/|$)(.*)
+    path: /api-config-cache/p/(.*)
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql"
@@ -92,7 +96,7 @@ postgresql-replica:
   !!merge <<: *microservice-chart
   ingress:
     !!merge <<: *ingress
-    path: /api-config-cache/pr(/|$)(.*)
+    path: /api-config-cache/pr/(.*)
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql-replica"
@@ -113,7 +117,7 @@ postgresql-nexi:
   !!merge <<: *microservice-chart
   ingress:
     !!merge <<: *ingress
-    path: /api-config-cache/nexi/p(/|$)(.*)
+    path: /api-config-cache/nexi/p/(.*)
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql-nexi"
@@ -134,7 +138,7 @@ postgresql-replica-nexi:
   !!merge <<: *microservice-chart
   ingress:
     !!merge <<: *ingress
-    path: /api-config-cache/nexi/pr(/|$)(.*)
+    path: /api-config-cache/nexi/pr/(.*)
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql-replica-nexi"

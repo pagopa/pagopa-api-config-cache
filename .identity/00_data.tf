@@ -61,11 +61,6 @@ data "azurerm_key_vault_secret" "key_vault_slack_webhook_url" {
   key_vault_id = data.azurerm_key_vault.domain_key_vault.id
 }
 
-data "azurerm_user_assigned_identity" "identity_cd" {
-  name = "${local.product}-${local.domain}-01-github-cd-identity"
-  resource_group_name = "${local.product}-identity-rg"
-}
-
 resource "null_resource" "encrypt_key_vault_bot_token" {
 
   triggers = {
@@ -86,7 +81,16 @@ resource "null_resource" "encrypt_key_vault_bot_token" {
   depends_on = [data.azurerm_key_vault_secret.key_vault_read_packages_token]
 }
 
-
 data "local_file" "encrypted_key_vault_read_packages_token" {
   filename = "${path.module}/private_output.txt"
+}
+
+data "azurerm_user_assigned_identity" "workload_identity_clientid" {
+  name                = "apiconfig-workload-identity"
+  resource_group_name = "pagopa-${var.env_short}-${local.location_short}-${var.env}-aks-rg"
+}
+
+data "azurerm_user_assigned_identity" "identity_cd_01" {
+  resource_group_name = "${local.product}-identity-rg"
+  name                = "${local.product}-${local.domain}-job-01-github-cd-identity"
 }
