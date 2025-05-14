@@ -44,17 +44,15 @@ microservice-chart: &microservice-chart
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
     CACHET_TX_NAME: "nodo-dei-pagamenti-cache"
-  secretProvider: &azureSecretProvider
-    create: true
-    envSecrets: &envSecret
-      APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-u-connection-string"
-      REDIS_PWD: "redis-password"
-      REDIS_HOST: "redis-hostname"
-      OTEL_EXPORTER_OTLP_HEADERS: elastic-apm-secret-token
-      CACHE_TX_CONNECTION_STRING: "nodo-dei-pagamenti-cache-tx-connection-string-key"
-    keyvault:
-      name: "pagopa-u-apiconfig-kv"
-      tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+  envSecret: &envSecret
+    APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-u-connection-string"
+    REDIS_PWD: "redis-password"
+    REDIS_HOST: "redis-hostname"
+    OTEL_EXPORTER_OTLP_HEADERS: elastic-apm-secret-token
+    CACHE_TX_CONNECTION_STRING: "nodo-dei-pagamenti-cache-tx-connection-string-key"
+  keyvault:
+    name: "pagopa-u-apiconfig-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
   tmpVolumeMount:
     create: true
   affinity:
@@ -86,11 +84,9 @@ postgresql:
     HEALTHCHECK_QUERY: "select 1"
     SAVE_DB: "false"
     SEND_EVENT: "true"
-  secretProvider:
-    !!merge <<: *azureSecretProvider
-    envSecrets:
-      !!merge <<: *envSecret
-      DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
+  envSecret:
+    !!merge <<: *envSecret
+    DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
 # postgres pagopa - PRF
 postgresql-replica:
   !!merge <<: *microservice-chart
@@ -107,11 +103,9 @@ postgresql-replica:
     HEALTHCHECK_QUERY: "select 1"
     SAVE_DB: "false"
     SEND_EVENT: "false"
-  secretProvider:
-    !!merge <<: *azureSecretProvider
-    envSecrets:
-      !!merge <<: *envSecret
-      DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
+  envSecret:
+    !!merge <<: *envSecret
+    DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
 # postgres nexi - UAT
 postgresql-nexi:
   !!merge <<: *microservice-chart
@@ -128,11 +122,9 @@ postgresql-nexi:
     HEALTHCHECK_QUERY: "select 1"
     SAVE_DB: "true"
     SEND_EVENT: "false"
-  secretProvider:
-    !!merge <<: *azureSecretProvider
-    envSecrets:
-      !!merge <<: *envSecret
-      DB_CONFIG_PASSWORD: "db-postgres-nexi-cfg-password"
+  envSecret:
+    !!merge <<: *envSecret
+    DB_CONFIG_PASSWORD: "db-postgres-nexi-cfg-password"
 # postgres nexi - PRF
 postgresql-replica-nexi:
   !!merge <<: *microservice-chart
@@ -153,11 +145,9 @@ postgresql-replica-nexi:
     HEALTHCHECK_QUERY: "select 1"
     SAVE_DB: "true"
     SEND_EVENT: "false"
-  secretProvider:
-    !!merge <<: *azureSecretProvider
-    envSecrets:
-      !!merge <<: *envSecret
-      DB_CONFIG_PASSWORD: "db-postgres-nexi-cfg-password-prf"
+  envSecret:
+    !!merge <<: *envSecret
+    DB_CONFIG_PASSWORD: "db-postgres-nexi-cfg-password-prf"
 # oracle nexi - UAT
 oracle:
   enabled: false
@@ -232,11 +222,9 @@ refresh-p:
     limits:
       memory: "512Mi"
       cpu: "150m"
-  secretProvider:
-    !!merge <<: *azureSecretProvider
-    envSecrets:
-      !!merge <<: *envSecret
-      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
+  envSecret:
+    !!merge <<: *envSecret
+    API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
   tolerations:
     - key: dedicated
       operator: Equal
@@ -276,11 +264,9 @@ refresh-p-replica:
     limits:
       memory: "512Mi"
       cpu: "150m"
-  secretProvider:
-    !!merge <<: *azureSecretProvider
-    envSecrets:
-      !!merge <<: *envSecret
-      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
+  envSecret:
+    !!merge <<: *envSecret
+    API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
   tolerations:
     - key: dedicated
       operator: Equal
@@ -320,11 +306,9 @@ refresh-p-nexi:
     limits:
       memory: "512Mi"
       cpu: "150m"
-  secretProvider:
-    !!merge <<: *azureSecretProvider
-    envSecrets:
-      !!merge <<: *envSecret
-      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
+  envSecret:
+    !!merge <<: *envSecret
+    API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
   tolerations:
     - key: dedicated
       operator: Equal
@@ -364,11 +348,9 @@ refresh-p-replica-nexi:
     limits:
       memory: "512Mi"
       cpu: "150m"
-  secretProvider:
-    !!merge <<: *azureSecretProvider
-    envSecrets:
-      !!merge <<: *envSecret
-      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
+  envSecret:
+    !!merge <<: *envSecret
+    API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
   tolerations:
     - key: dedicated
       operator: Equal

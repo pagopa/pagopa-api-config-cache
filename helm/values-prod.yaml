@@ -44,17 +44,15 @@ microservice-chart: &microservice-chart
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
     CACHET_TX_NAME: "nodo-dei-pagamenti-cache"
-  secretProvider: &azureSecretProvider
-    create: true
-    envSecrets: &envSecret
-      APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-p-connection-string"
-      REDIS_PWD: "redis-password"
-      REDIS_HOST: "redis-hostname"
-      OTEL_EXPORTER_OTLP_HEADERS: elastic-apm-secret-token
-      CACHE_TX_CONNECTION_STRING: "nodo-dei-pagamenti-cache-tx-connection-string-key"
-    keyvault:
-      name: "pagopa-p-apiconfig-kv"
-      tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+  envSecret: &envSecret
+    APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-p-connection-string"
+    REDIS_PWD: "redis-password"
+    REDIS_HOST: "redis-hostname"
+    OTEL_EXPORTER_OTLP_HEADERS: elastic-apm-secret-token
+    CACHE_TX_CONNECTION_STRING: "nodo-dei-pagamenti-cache-tx-connection-string-key"
+  keyvault:
+    name: "pagopa-p-apiconfig-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
   tmpVolumeMount:
     create: true
   affinity:
@@ -95,11 +93,9 @@ postgresql:
     HEALTHCHECK_QUERY: "select 1"
     SAVE_DB: "false"
     SEND_EVENT: "true"
-  secretProvider:
-    !!merge <<: *azureSecretProvider
-    envSecrets:
-      !!merge <<: *envSecret
-      DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
+  envSecret:
+    !!merge <<: *envSecret
+    DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
 postgresql-replica:
   enabled: false
 # postgres nexi - PROD
@@ -162,11 +158,9 @@ refresh-p:
     limits:
       memory: "512Mi"
       cpu: "150m"
-  secretProvider:
-    !!merge <<: *azureSecretProvider
-    envSecrets:
-      !!merge <<: *envSecret
-      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
+  envSecret:
+    !!merge <<: *envSecret
+    API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
   tolerations:
     - key: dedicated
       operator: Equal
