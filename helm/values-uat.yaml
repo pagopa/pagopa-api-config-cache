@@ -75,7 +75,7 @@ postgresql:
   !!merge <<: *microservice-chart
   ingress:
     !!merge <<: *ingress
-    path: /api-config-cache/p(/|$)(.*)
+    path: /api-config-cache/p/(.*)
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql"
@@ -96,7 +96,7 @@ postgresql-replica:
   !!merge <<: *microservice-chart
   ingress:
     !!merge <<: *ingress
-    path: /api-config-cache/pr(/|$)(.*)
+    path: /api-config-cache/pr/(.*)
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql-replica"
@@ -117,7 +117,7 @@ postgresql-nexi:
   !!merge <<: *microservice-chart
   ingress:
     !!merge <<: *ingress
-    path: /api-config-cache/nexi/p(/|$)(.*)
+    path: /api-config-cache/nexi/p/(.*)
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql-nexi"
@@ -138,7 +138,7 @@ postgresql-replica-nexi:
   !!merge <<: *microservice-chart
   ingress:
     !!merge <<: *ingress
-    path: /api-config-cache/nexi/pr(/|$)(.*)
+    path: /api-config-cache/nexi/pr/(.*)
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql-replica-nexi"
