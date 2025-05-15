@@ -1,9 +1,11 @@
 package it.gov.pagopa.apiconfig.cache.service;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class CacheKeyUtils {
 
@@ -31,6 +33,7 @@ public class CacheKeyUtils {
     }
 
     public String getCacheIdKey(String stakeholder) {
+        log.info("CACHE_ID_KEY " + CACHE_ID_KEY.replace(STAKEHOLDER_PLACEHOLDER, stakeholder) + KEY_SUFFIX);
         return CACHE_ID_KEY.replace(STAKEHOLDER_PLACEHOLDER, stakeholder) + KEY_SUFFIX;
     }
 }
