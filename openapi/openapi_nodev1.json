@@ -4,7 +4,7 @@
     "title": "API-Config Cache ${service}",
     "description": "Generate cache for various microservices",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.9.26-4-PIDM-487-apiconfig-wl-identity-helm-v-7-5-0"
+    "version": "0.9.27"
   },
   "servers": [
     {
