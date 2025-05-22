@@ -111,23 +111,24 @@ postgresql-replica:
 #      DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
 # postgres nexi - SIT
 postgresql-nexi:
-  !!merge <<: *microservice-chart
-  ingress:
-    !!merge <<: *ingress
-    path: /api-config-cache/nexi/(.*)
-  envConfig:
-    !!merge <<: *envConfig
-    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql-nexi"
-    DB_CONFIG_URL: "jdbc:postgresql://db-postgres-ndp.d.db-nodo-pagamenti.com:5444/ndpspct?prepareThreshold=0&currentSchema=NODO4_CFG"
-    DB_CONFIG_USER: "pp_nodo4_cfg"
-    DB_CONFIG_DRIVER: "org.postgresql.Driver"
-    DATABASE_ID: "pnexi"
-    HEALTHCHECK_QUERY: "select 1"
-    SAVE_DB: "true"
-    SEND_EVENT: "false"
-  envSecret:
-    !!merge <<: *envSecret
-    DB_CONFIG_PASSWORD: "db-postgres-nexi-cfg-password"
+  enabled: false
+#  !!merge <<: *microservice-chart
+#  ingress:
+#    !!merge <<: *ingress
+#    path: /api-config-cache/nexi/(.*)
+#  envConfig:
+#    !!merge <<: *envConfig
+#    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql-nexi"
+#    DB_CONFIG_URL: "jdbc:postgresql://db-postgres-ndp.d.db-nodo-pagamenti.com:5444/ndpspct?prepareThreshold=0&currentSchema=NODO4_CFG"
+#    DB_CONFIG_USER: "pp_nodo4_cfg"
+#    DB_CONFIG_DRIVER: "org.postgresql.Driver"
+#    DATABASE_ID: "pnexi"
+#    HEALTHCHECK_QUERY: "select 1"
+#    SAVE_DB: "true"
+#    SEND_EVENT: "false"
+#  envSecret:
+#    !!merge <<: *envSecret
+#    DB_CONFIG_PASSWORD: "db-postgres-nexi-cfg-password"
 # postgres nexi - replica not present in dev environment
 postgresql-replica-nexi:
   enabled: false
@@ -289,46 +290,47 @@ refresh-p-replica:
 #                  - user
 # postgres nexi - SIT
 refresh-p-nexi:
-  namespace: "apiconfig"
-  schedule: "0 0 * * *"
-  timeZone: "Europe/Rome"
-  successfulJobsHistoryLimit: "1"
-  image:
-    repository: "curlimages/curl"
-    tag: "latest"
-    pullPolicy: "Always"
-  command:
-    - "curl"
-    - "-k"
-    - "-m"
-    - "\"300\""
-    - "--header"
-    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
-    - "https://api.dev.platform.pagopa.it/api-config-cache/nexi/p/v1/cache/refresh"
-  resources:
-    requests:
-      memory: "256Mi"
-      cpu: "100m"
-    limits:
-      memory: "512Mi"
-      cpu: "150m"
-  envSecret:
-    !!merge <<: *envSecret
-    API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
-  tolerations:
-    - key: dedicated
-      operator: Equal
-      value: "apiconfig"
-      effect: NoSchedule
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: node_type
-                operator: In
-                values:
-                  - user
+  enabled: false
+#  namespace: "apiconfig"
+#  schedule: "0 0 * * *"
+#  timeZone: "Europe/Rome"
+#  successfulJobsHistoryLimit: "1"
+#  image:
+#    repository: "curlimages/curl"
+#    tag: "latest"
+#    pullPolicy: "Always"
+#  command:
+#    - "curl"
+#    - "-k"
+#    - "-m"
+#    - "\"300\""
+#    - "--header"
+#    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
+#    - "https://api.dev.platform.pagopa.it/api-config-cache/nexi/p/v1/cache/refresh"
+#  resources:
+#    requests:
+#      memory: "256Mi"
+#      cpu: "100m"
+#    limits:
+#      memory: "512Mi"
+#      cpu: "150m"
+#  envSecret:
+#    !!merge <<: *envSecret
+#    API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
+#  tolerations:
+#    - key: dedicated
+#      operator: Equal
+#      value: "apiconfig"
+#      effect: NoSchedule
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#          - matchExpressions:
+#              - key: node_type
+#                operator: In
+#                values:
+#                  - user
 # oracle nexi - SIT
 refresh-o:
   enabled: false
