@@ -222,9 +222,15 @@ refresh-p:
     limits:
       memory: "512Mi"
       cpu: "150m"
-  envSecret:
+  envSecrets:
     !!merge <<: *envSecret
     API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
+  keyvault:
+    name: "pagopa-u-apiconfig-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+  serviceAccount:
+    create: true
+    name: "apiconfig-workload-identity"
   tolerations:
     - key: dedicated
       operator: Equal
@@ -264,9 +270,15 @@ refresh-p-replica:
     limits:
       memory: "512Mi"
       cpu: "150m"
-  envSecret:
+  envSecrets:
     !!merge <<: *envSecret
     API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
+  keyvault:
+    name: "pagopa-u-apiconfig-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+  serviceAccount:
+    create: true
+    name: "apiconfig-workload-identity"
   tolerations:
     - key: dedicated
       operator: Equal
@@ -306,9 +318,15 @@ refresh-p-nexi:
     limits:
       memory: "512Mi"
       cpu: "150m"
-  envSecret:
+  envSecrets:
     !!merge <<: *envSecret
     API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
+  keyvault:
+    name: "pagopa-u-apiconfig-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+  serviceAccount:
+    create: true
+    name: "apiconfig-workload-identity"
   tolerations:
     - key: dedicated
       operator: Equal
@@ -348,9 +366,15 @@ refresh-p-replica-nexi:
     limits:
       memory: "512Mi"
       cpu: "150m"
-  envSecret:
+  envSecrets:
     !!merge <<: *envSecret
     API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
+  keyvault:
+    name: "pagopa-u-apiconfig-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+  serviceAccount:
+    create: true
+    name: "apiconfig-workload-identity"
   tolerations:
     - key: dedicated
       operator: Equal
