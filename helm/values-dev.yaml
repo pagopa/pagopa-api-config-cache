@@ -230,7 +230,7 @@ refresh-p:
     !!merge <<: *envSecret
     API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
   keyvault:
-    name: "pagopa-u-apiconfig-kv"
+    name: "pagopa-d-apiconfig-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
   serviceAccount:
     name: "apiconfig-workload-identity"
