@@ -165,7 +165,6 @@ refresh-p:
     name: "pagopa-u-apiconfig-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
   serviceAccount:
-    create: true
     name: "apiconfig-workload-identity"
   tolerations:
     - key: dedicated
