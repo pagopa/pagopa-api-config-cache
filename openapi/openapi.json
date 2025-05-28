@@ -4,7 +4,7 @@
     "title": "API-Config Cache ${service}",
     "description": "Generate cache for various microservices",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.9.29"
+    "version": "0.9.29-1-workload-cron-job"
   },
   "servers": [
     {
