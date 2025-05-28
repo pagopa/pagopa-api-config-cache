@@ -2,7 +2,7 @@ microservice-chart: &microservice-chart
   namespace: "apiconfig"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: 0.9.29
+    tag: 0.9.29-3-workload-cron-job
   canaryDelivery:
     deployment:
       image:
@@ -13,12 +13,12 @@ microservice-chart: &microservice-chart
     httpGet:
       path: /actuator/health/liveness
       port: 8080
-    initialDelaySeconds: 60
+    initialDelaySeconds: 90
   readinessProbe:
     httpGet:
       path: /actuator/health/readiness
       port: 8080
-    initialDelaySeconds: 60
+    initialDelaySeconds: 90
   ingress: &ingress
     create: true
     host: "weudev.apiconfig.internal.dev.platform.pagopa.it"
@@ -226,9 +226,14 @@ refresh-p:
     limits:
       memory: "512Mi"
       cpu: "150m"
-  envSecret:
+  envSecrets:
     !!merge <<: *envSecret
     API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
+  keyvault:
+    name: "pagopa-u-apiconfig-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+  serviceAccount:
+    name: "apiconfig-workload-identity"
   tolerations:
     - key: dedicated
       operator: Equal

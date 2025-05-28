@@ -2,7 +2,7 @@ apiVersion: v2
 name: pagopa-api-cache-chart
 description: Microservice that handles calculation for pagoPA Advanced Fees Management
 type: application
-version: 0.114.0
+version: 0.117.0
 dependencies:
   ##############
   ## POSTGRES ##
@@ -20,12 +20,12 @@ dependencies:
     condition: postgresql-replica.enabled
   # CRON
   - name: cron-chart
-    version: 2.6.0
+    version: 3.0.0
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
     alias: refresh-p # postgres pagopa
     condition: postgresql.enabled
   - name: cron-chart
-    version: 2.6.0
+    version: 3.0.0
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
     alias: refresh-p-replica # postgres pagopa
     condition: postgresql-replica.enabled
@@ -50,17 +50,17 @@ dependencies:
     condition: oracleprod.enabled
   # CRON
   - name: cron-chart
-    version: 2.6.0
+    version: 3.0.0
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
     alias: refresh-o # oracle nexi (sit, uat, prod)
     condition: oracle.enabled
   - name: cron-chart
-    version: 2.6.0
+    version: 3.0.0
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
     alias: refresh-odev # oracle nexi (dev o prf)
     condition: oracledev.enabled
   - name: cron-chart
-    version: 2.6.0
+    version: 3.0.0
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
     alias: refresh-oprod # oracle nexi (prod in dev per test)
     condition: oracleprod.enabled
@@ -74,18 +74,18 @@ dependencies:
     alias: postgresql-nexi # postgres nexi
     condition: postgresql-nexi.enabled
   - name: cron-chart
-    version: 2.6.0
+    version: 3.0.0
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
     alias: refresh-p-nexi # postgres nexi
     condition: postgresql-nexi.enabled
   - name: microservice-chart
-    version: 7.5.0
+    version: 3.0.0
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
     alias: postgresql-replica-nexi # postgres prf nexi
     condition: postgresql-replica-nexi.enabled
   - name: cron-chart
-    version: 2.6.0
+    version: 3.0.0
     repository: "https://pagopa.github.io/aks-cron-chart-blueprint"
     alias: refresh-p-replica-nexi # postgres prf nexi
     condition: postgresql-replica-nexi.enabled
-appVersion: 0.9.29
+appVersion: 0.9.29-3-workload-cron-job
