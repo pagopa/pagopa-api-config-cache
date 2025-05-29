@@ -2,7 +2,7 @@ apiVersion: v2
 name: pagopa-api-cache-chart
 description: Microservice that handles calculation for pagoPA Advanced Fees Management
 type: application
-version: 0.118.0
+version: 0.120.0
 dependencies:
   ##############
   ## POSTGRES ##
