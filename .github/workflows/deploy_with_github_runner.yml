@@ -20,15 +20,6 @@ on:
         type: boolean
         description: force re-deploy PagoPA microservice
         default: false
-      nexi_release:
-        required: true
-        type: string
-        description: release version to deploy for Nexi microservice
-      nexi_force:
-        required: false
-        type: boolean
-        description: force re-deploy Nexi microservice
-        default: false
       current_release:
         required: true
         type: string
@@ -53,7 +44,6 @@ jobs:
     outputs:
       environment: ${{ steps.get_env.outputs.environment }}
       pagopa_rel: ${{ steps.get_releases.outputs.pagopa_rel }}
-      nexi_rel: ${{ steps.get_releases.outputs.nexi_rel }}
     steps:
       - name: Get Environment
         id: get_env
@@ -67,18 +57,12 @@ jobs:
         shell: bash
         run: |
           pagopa_version=${{ inputs.current_release }}
-          nexi_version=${{ inputs.current_release }}
-          
-          if [[ "${{ inputs.nexi_release }}" != "" ]]; then            
-            nexi_version=${{ inputs.nexi_release }}
-          fi
           
           if [[ "${{ inputs.pagopa_release }}" != "" ]]; then            
             pagopa_version=${{ inputs.pagopa_release }}
           fi
           
           echo "pagopa_rel=$pagopa_version" >> $GITHUB_OUTPUT
-          echo "nexi_rel=$nexi_version" >> $GITHUB_OUTPUT
 
   deploy:
     needs: [ setting_env ]
@@ -105,19 +89,10 @@ jobs:
             --set microservice-chart.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
             --set refresh-p.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
             --set refresh-p-replica.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-o.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-odev.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-oprod.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-p-nexi.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-p-replica-nexi.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
             --set postgresql.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
             --set postgresql-replica.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
-            --set postgresql-nexi.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
-            --set postgresql-replica-nexi.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
             --set postgresql.forceRedeploy=${{ inputs.pagopa_force }} 
-            --set postgresql.image.tag=${{ needs.setting_env.outputs.pagopa_rel }} 
-            --set postgresql-nexi.forceRedeploy=${{ inputs.nexi_force }} 
-            --set postgresql-nexi.image.tag=${{ needs.setting_env.outputs.nexi_rel }}'
+            --set postgresql.image.tag=${{ needs.setting_env.outputs.pagopa_rel }}
           timeout: '15m0s'
 
       - name: Deploy UAT
@@ -137,23 +112,12 @@ jobs:
             --set microservice-chart.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
             --set refresh-p.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
             --set refresh-p-replica.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-o.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-odev.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-oprod.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-p-nexi.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-p-replica-nexi.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
             --set postgresql.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
             --set postgresql-replica.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
-            --set postgresql-nexi.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
-            --set postgresql-replica-nexi.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
             --set postgresql.forceRedeploy=${{ inputs.pagopa_force }} 
             --set postgresql.image.tag=${{ needs.setting_env.outputs.pagopa_rel }} 
             --set postgresql-replica.forceRedeploy=${{ inputs.pagopa_force }} 
-            --set postgresql-replica.image.tag=${{ needs.setting_env.outputs.pagopa_rel }} 
-            --set postgresql-nexi.forceRedeploy=${{ inputs.nexi_force }} 
-            --set postgresql-nexi.image.tag=${{ needs.setting_env.outputs.nexi_rel }} 
-            --set postgresql-replica-nexi.forceRedeploy=${{ inputs.nexi_force }} 
-            --set postgresql-replica-nexi.image.tag=${{ needs.setting_env.outputs.nexi_rel }}'
+            --set postgresql-replica.image.tag=${{ needs.setting_env.outputs.pagopa_rel }}
           timeout: '15m0s'
 
       - name: Deploy PROD
@@ -173,16 +137,9 @@ jobs:
             --set microservice-chart.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
             --set refresh-p.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
             --set refresh-p-replica.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-o.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-odev.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-oprod.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-p-nexi.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-p-replica-nexi.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
             --set microservice-chart.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
             --set postgresql.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
             --set postgresql-replica.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
-            --set postgresql-nexi.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
-            --set postgresql-replica-nexi.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
             --set postgresql.forceRedeploy=${{ inputs.pagopa_force }} 
             --set postgresql.image.tag=${{ needs.setting_env.outputs.pagopa_rel }}'
           timeout: '15m0s'
