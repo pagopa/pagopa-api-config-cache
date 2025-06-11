@@ -37,14 +37,8 @@ import it.gov.pagopa.apiconfig.cache.model.latest.configuration.GdeConfiguration
 import it.gov.pagopa.apiconfig.cache.model.latest.configuration.MetadataDict;
 import it.gov.pagopa.apiconfig.cache.model.latest.configuration.PaymentType;
 import it.gov.pagopa.apiconfig.cache.model.latest.configuration.Plugin;
-import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.BrokerCreditorInstitution;
-import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.CreditorInstitution;
-import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.CreditorInstitutionEncoding;
-import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.CreditorInstitutionInformation;
-import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.Encoding;
+import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.*;
 import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.Iban;
-import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.Station;
-import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.StationCreditorInstitution;
 import it.gov.pagopa.apiconfig.cache.model.latest.psp.BrokerPsp;
 import it.gov.pagopa.apiconfig.cache.model.latest.psp.Channel;
 import it.gov.pagopa.apiconfig.cache.model.latest.psp.PaymentServiceProvider;
@@ -63,35 +57,7 @@ import it.gov.pagopa.apiconfig.starter.entity.InformativePaFasce;
 import it.gov.pagopa.apiconfig.starter.entity.InformativePaMaster;
 import it.gov.pagopa.apiconfig.starter.entity.Pa;
 import it.gov.pagopa.apiconfig.starter.entity.Psp;
-import it.gov.pagopa.apiconfig.starter.repository.CanaliViewRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdiDetailRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdiFasciaCostoServizioRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdiInformazioniServizioRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdiMasterValidRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdiPreferenceRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdsCategorieRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdsServizioRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdsSoggettoRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdsSoggettoServizioRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CodifichePaRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CodificheRepository;
-import it.gov.pagopa.apiconfig.starter.repository.ConfigurationKeysRepository;
-import it.gov.pagopa.apiconfig.starter.repository.DizionarioMetadatiRepository;
-import it.gov.pagopa.apiconfig.starter.repository.FtpServersRepository;
-import it.gov.pagopa.apiconfig.starter.repository.GdeConfigRepository;
-import it.gov.pagopa.apiconfig.starter.repository.IbanValidiPerPaRepository;
-import it.gov.pagopa.apiconfig.starter.repository.InformativePaDetailRepository;
-import it.gov.pagopa.apiconfig.starter.repository.InformativePaFasceRepository;
-import it.gov.pagopa.apiconfig.starter.repository.InformativePaMasterRepository;
-import it.gov.pagopa.apiconfig.starter.repository.IntermediariPaRepository;
-import it.gov.pagopa.apiconfig.starter.repository.IntermediariPspRepository;
-import it.gov.pagopa.apiconfig.starter.repository.PaRepository;
-import it.gov.pagopa.apiconfig.starter.repository.PaStazionePaRepository;
-import it.gov.pagopa.apiconfig.starter.repository.PspCanaleTipoVersamentoCanaleRepository;
-import it.gov.pagopa.apiconfig.starter.repository.PspRepository;
-import it.gov.pagopa.apiconfig.starter.repository.StazioniRepository;
-import it.gov.pagopa.apiconfig.starter.repository.TipiVersamentoRepository;
-import it.gov.pagopa.apiconfig.starter.repository.WfespPluginConfRepository;
+import it.gov.pagopa.apiconfig.starter.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.modelmapper.TypeToken;
@@ -170,6 +136,7 @@ public class CacheConfigService {
   @Autowired private IbanValidiPerPaRepository ibanValidiPerPaRepository;
   @Autowired private StazioniRepository stazioniRepository;
   @Autowired private PaStazionePaRepository paStazioniRepository;
+  @Autowired private StationMaintenanceRepository stationMaintenanceRepository;
   @Autowired private PaRepository paRepository;
   @Autowired private CanaliViewRepository canaliViewRepository;
   @Autowired private PspCanaleTipoVersamentoCanaleRepository pspCanaleTipoVersamentoCanaleRepository;
@@ -380,6 +347,12 @@ public class CacheConfigService {
         paspa.forEach(k -> paspamap.put(k.getIdentifier(), k));
         configData.put(Constants.CREDITOR_INSTITUTION_STATIONS,paspamap);
       appendMapToJson(jsonGenerator,Constants.CREDITOR_INSTITUTION_STATIONS,paspamap);
+
+      List<MaintenanceStation> maintenanceStations = findAllStationMaintenance();
+      HashMap<String, Object> maintenanceStationsMap = new HashMap<>();
+      maintenanceStations.forEach(k -> paspamap.put(k.getIdentifier(), k));
+      configData.put(Constants.MAINTENANCE_STATIONS, maintenanceStationsMap);
+      appendMapToJson(jsonGenerator,Constants.MAINTENANCE_STATIONS, maintenanceStationsMap);
 
         List<Station> stazioni = findAllStazioni();
         HashMap<String, Object> stazionimap = new HashMap<>();
@@ -618,8 +591,25 @@ public class CacheConfigService {
                     s.getQuartoModello(),
                     s.getBroadcast(),
                     s.getFkStazione().getVersionePrimitive(),
-                    s.getPagamentoSpontaneo()))
+                    s.getPagamentoSpontaneo(),
+                    s.getAca(),
+                    s.getStandin()))
         .collect(Collectors.toList());
+  }
+
+  public List<MaintenanceStation> findAllStationMaintenance() {
+    log.info("loading StationMaintenance");
+    return stationMaintenanceRepository
+            .findAll()
+            .stream()
+            .map(
+                    s ->
+                            new MaintenanceStation(
+                                    s.getStation().getIdStazione(),
+                                    s.getStartDateTime(),
+                                    s.getEndDateTime(),
+                                    s.getStandIn()))
+            .collect(Collectors.toList());
   }
 
   public List<CreditorInstitution> getCreditorInstitutions() {
