@@ -38,17 +38,6 @@ on:
         type: boolean
         description: force re-deploy PagoPA microservice
         default: false
-      nexi_release:
-        required: false
-        type: string
-        default: "0.9.17"
-        description: release version to deploy for Nexi microservice (if empty then last)
-      nexi_force:
-        required: false
-        type: boolean
-        description: force re-deploy Nexi microservice
-        default: false
-
 
 permissions:
   packages: write
@@ -174,8 +163,6 @@ jobs:
       target: ${{ needs.setup.outputs.environment }}
       pagopa_release: ${{ inputs.pagopa_release }}
       pagopa_force: ${{ inputs.pagopa_force }}
-      nexi_release: ${{ inputs.nexi_release }}
-      nexi_force: ${{ inputs.nexi_force }}
       current_release: ${{ needs.release.outputs.version }}
     secrets: inherit
 
