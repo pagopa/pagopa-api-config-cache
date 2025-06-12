@@ -63,10 +63,6 @@ public class StationCreditorInstitution implements Serializable {
         + "_"
         + applicationCode
         + "_"
-        + segregationCode
-        + "_"
-        + aca
-        + "_"
-        + standin;
+        + segregationCode;
   }
 }
