@@ -99,7 +99,7 @@ class CacheConfigServiceTest {
     ReflectionTestUtils.setField(cacheConfigService, "modelMapper", modelMapper);
 
     Map<String, Object> allData = cacheConfigService.newCache();
-    assertThat(allData).hasSize(28);
+    assertThat(allData).hasSize(29);
   }
 
   @Test
