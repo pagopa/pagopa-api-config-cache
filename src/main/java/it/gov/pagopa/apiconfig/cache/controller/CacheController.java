@@ -115,6 +115,7 @@ public class CacheController {
                 Constants.CREDITOR_INSTITUTION_BROKERS,
                 Constants.STATIONS,
                 Constants.CREDITOR_INSTITUTION_STATIONS,
+                Constants.MAINTENANCE_STATIONS,
                 Constants.ENCODINGS,
                 Constants.CREDITOR_INSTITUTION_ENCODINGS,
                 Constants.IBANS,
