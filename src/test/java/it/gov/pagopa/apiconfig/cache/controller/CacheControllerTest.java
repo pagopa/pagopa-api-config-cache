@@ -75,8 +75,7 @@ class CacheControllerTest {
             .andExpect(status().isOk())
             .andExpect(header().string(Constants.HEADER_X_CACHE_ID, version))
             .andExpect(header().string(Constants.HEADER_X_CACHE_VERSION, cacheVersion))
-            .andExpect(header().string(Constants.HEADER_X_CACHE_TIMESTAMP, DateTimeUtils.getString(now)))
-    ;
+            .andExpect(header().string(Constants.HEADER_X_CACHE_TIMESTAMP, DateTimeUtils.getString(now)));
   }
 
   @Test
