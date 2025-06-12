@@ -350,7 +350,7 @@ public class CacheConfigService {
 
       List<MaintenanceStation> maintenanceStations = findAllStationMaintenance();
       HashMap<String, Object> maintenanceStationsMap = new HashMap<>();
-      maintenanceStations.forEach(k -> paspamap.put(k.getIdentifier(), k));
+      maintenanceStations.forEach(k -> maintenanceStationsMap.put(k.getStationCode(), k));
       configData.put(Constants.MAINTENANCE_STATIONS, maintenanceStationsMap);
       appendMapToJson(jsonGenerator,Constants.MAINTENANCE_STATIONS, maintenanceStationsMap);
 
