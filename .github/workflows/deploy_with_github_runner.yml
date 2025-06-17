@@ -79,5 +79,5 @@ jobs:
           client_id: "${{ secrets.CLIENT_ID }}"
           tenant_id: "${{ secrets.TENANT_ID }}"
           subscription_id: "${{ secrets.SUBSCRIPTION_ID }}"
-          tf_environment: "weu-${{ needs.setting_env.outputs.environment }}"
+          tf_environment: "weu-${{ inputs.environment }}"
           dir: "infra"
