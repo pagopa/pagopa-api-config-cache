@@ -34,7 +34,7 @@ jobs:
         uses: pagopa/github-actions-template/aks-deploy@main
         with:
           branch: ${{ inputs.branch }}
-          client_id: ${{ secrets.CD_CLIENT_ID }}
+          client_id: ${{ secrets.CLIENT_ID }}
           subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
           tenant_id: ${{ secrets.TENANT_ID }}
           env: ${{ inputs.environment }}
