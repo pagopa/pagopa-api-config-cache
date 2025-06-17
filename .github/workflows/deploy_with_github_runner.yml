@@ -88,9 +88,7 @@ jobs:
           helm_upgrade_options: ' --debug 
             --set microservice-chart.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
             --set refresh-p.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-p-replica.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set postgresql.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
-            --set postgresql-replica.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
+            --set postgresql.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}  
             --set postgresql.forceRedeploy=${{ inputs.pagopa_force }} 
             --set postgresql.image.tag=${{ needs.setting_env.outputs.pagopa_rel }}
           timeout: '15m0s'
@@ -111,13 +109,9 @@ jobs:
           helm_upgrade_options: ' --debug 
             --set microservice-chart.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
             --set refresh-p.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-p-replica.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
             --set postgresql.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
-            --set postgresql-replica.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
             --set postgresql.forceRedeploy=${{ inputs.pagopa_force }} 
-            --set postgresql.image.tag=${{ needs.setting_env.outputs.pagopa_rel }} 
-            --set postgresql-replica.forceRedeploy=${{ inputs.pagopa_force }} 
-            --set postgresql-replica.image.tag=${{ needs.setting_env.outputs.pagopa_rel }}
+            --set postgresql.image.tag=${{ needs.setting_env.outputs.pagopa_rel }}
           timeout: '15m0s'
 
       - name: Deploy PROD
@@ -136,10 +130,8 @@ jobs:
           helm_upgrade_options: '--debug 
             --set microservice-chart.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
             --set refresh-p.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-p-replica.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
             --set microservice-chart.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
             --set postgresql.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
-            --set postgresql-replica.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
             --set postgresql.forceRedeploy=${{ inputs.pagopa_force }} 
             --set postgresql.image.tag=${{ needs.setting_env.outputs.pagopa_rel }}'
           timeout: '15m0s'
