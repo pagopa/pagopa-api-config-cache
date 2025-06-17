@@ -25,9 +25,13 @@ permissions:
   contents: read
 
 jobs:
+  test:
+    name: Test deployment
+    environment: ${{ inputs.environment }}
+    steps:
+      run: echo "This is a test job to ensure the workflow is valid -> ${{ inputs.environment }}"
   deploy:
     runs-on: [ self-hosted-job, "${{ inputs.environment }}" ]
-    if: ${{ inputs.target == inputs.environment }}
     name: Deploy on AKS
     environment: ${{ inputs.environment }}
     steps:

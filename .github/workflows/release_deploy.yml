@@ -169,6 +169,7 @@ jobs:
             GH_TOKEN=${{ secrets.READ_PACKAGES_TOKEN }}
 
 
+
   deploy_aks:
     name: Deploy on AKS
     needs: [ setup, release, image ]
