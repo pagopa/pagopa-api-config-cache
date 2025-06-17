@@ -47,7 +47,7 @@ jobs:
             --set microservice-chart.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
             --set refresh-p.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
             --set postgresql.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} '
-          timeout: '15m0s'
+          timeout: '10m0s'
 
   update_openapi:
     needs: [ deploy ]
