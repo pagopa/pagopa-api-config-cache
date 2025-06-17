@@ -32,7 +32,7 @@ on:
       force_deploy:
         required: false
         type: boolean
-        description: force re-deploy PagoPA microservice
+        description: force re-deploy microservice
         default: false 
       beta:
         required: false
@@ -150,7 +150,7 @@ jobs:
     uses: ./.github/workflows/deploy_with_github_runner.yml
     with:
       environment: ${{ needs.setup.outputs.environment }}
-      force_deploy: ${{ inputs.pagopa_force }}
+      force_deploy: ${{ inputs.force_deploy }}
     secrets: inherit
 
   notify:
