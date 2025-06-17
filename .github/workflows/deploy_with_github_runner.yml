@@ -7,32 +7,11 @@ on:
         required: true
         description: The name of the environment where to deploy
         type: string
-      target:
-        required: true
-        description: The environment target of the job
-        type: string
-      pagopa_release:
-        required: true
-        type: string
-        description: release version to deploy for PagoPA microservice
-      pagopa_force:
+      force_deploy:
         required: false
         type: boolean
-        description: force re-deploy PagoPA microservice
+        description: force re-deploy microservice
         default: false
-      nexi_release:
-        required: true
-        type: string
-        description: release version to deploy for Nexi microservice
-      nexi_force:
-        required: false
-        type: boolean
-        description: force re-deploy Nexi microservice
-        default: false
-      current_release:
-        required: true
-        type: string
-        description: release version of the current deploy
       branch:
         required: false
         default: ${{ github.ref_name }}
@@ -46,153 +25,35 @@ permissions:
   contents: read
 
 jobs:
-  setting_env:
-    name: Setting Environment
-    runs-on: ubuntu-22.04
-    if: ${{ inputs.target == inputs.environment }}
-    outputs:
-      environment: ${{ steps.get_env.outputs.environment }}
-      pagopa_rel: ${{ steps.get_releases.outputs.pagopa_rel }}
-      nexi_rel: ${{ steps.get_releases.outputs.nexi_rel }}
-    steps:
-      - name: Get Environment
-        id: get_env
-        shell: bash
-        run: |         
-          current_env="${{ inputs.environment }}"
-          echo "environment=$current_env" >> $GITHUB_OUTPUT
-
-      - name: Get Releases
-        id: get_releases
-        shell: bash
-        run: |
-          pagopa_version=${{ inputs.current_release }}
-          nexi_version=${{ inputs.current_release }}
-          
-          if [[ "${{ inputs.nexi_release }}" != "" ]]; then            
-            nexi_version=${{ inputs.nexi_release }}
-          fi
-          
-          if [[ "${{ inputs.pagopa_release }}" != "" ]]; then            
-            pagopa_version=${{ inputs.pagopa_release }}
-          fi
-          
-          echo "pagopa_rel=$pagopa_version" >> $GITHUB_OUTPUT
-          echo "nexi_rel=$nexi_version" >> $GITHUB_OUTPUT
-
   deploy:
-    needs: [ setting_env ]
     runs-on: [ self-hosted-job, "${{ inputs.environment }}" ]
-    if: ${{ inputs.target == inputs.environment }}
     name: Deploy on AKS
-    environment: ${{ needs.setting_env.outputs.environment }}
+    environment: ${{ inputs.environment }}
     steps:
-
-      - name: Deploy DEV
-        uses: pagopa/github-actions-template/aks-deploy@5db4c9108164a07d96527978da1c3febec934f22 #v1.11.1
-        if: ${{ inputs.environment == 'dev' }}
+      - name: Deploy
+        uses: pagopa/github-actions-template/aks-deploy@main
         with:
           branch: ${{ inputs.branch }}
           client_id: ${{ secrets.CLIENT_ID }}
           subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
           tenant_id: ${{ secrets.TENANT_ID }}
-          env: ${{ needs.setting_env.outputs.environment }}
+          env: ${{ inputs.environment }}
           namespace: ${{ vars.NAMESPACE }}
           cluster_name: ${{ vars.CLUSTER_NAME }}
           resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
           app_name: ${{ env.APP_NAME }}
           helm_upgrade_options: ' --debug 
+            --set postgresql.forceRedeploy=${{ inputs.force_deploy }}
             --set microservice-chart.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
             --set refresh-p.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-p-replica.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-o.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-odev.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-oprod.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-p-nexi.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-p-replica-nexi.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set postgresql.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
-            --set postgresql-replica.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
-            --set postgresql-nexi.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
-            --set postgresql-replica-nexi.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
-            --set postgresql.forceRedeploy=${{ inputs.pagopa_force }} 
-            --set postgresql.image.tag=${{ needs.setting_env.outputs.pagopa_rel }} 
-            --set postgresql-nexi.forceRedeploy=${{ inputs.nexi_force }} 
-            --set postgresql-nexi.image.tag=${{ needs.setting_env.outputs.nexi_rel }}'
-          timeout: '15m0s'
-
-      - name: Deploy UAT
-        uses: pagopa/github-actions-template/aks-deploy@5db4c9108164a07d96527978da1c3febec934f22 #v1.11.1
-        if: ${{ inputs.environment == 'uat' }}
-        with:
-          branch: ${{ inputs.branch }}
-          client_id: ${{ secrets.CLIENT_ID }}
-          subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
-          tenant_id: ${{ secrets.TENANT_ID }}
-          env: ${{ needs.setting_env.outputs.environment }}
-          namespace: ${{ vars.NAMESPACE }}
-          cluster_name: ${{ vars.CLUSTER_NAME }}
-          resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
-          app_name: ${{ env.APP_NAME }}
-          helm_upgrade_options: ' --debug 
-            --set microservice-chart.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
-            --set refresh-p.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-p-replica.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-o.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-odev.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-oprod.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-p-nexi.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-p-replica-nexi.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set postgresql.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
-            --set postgresql-replica.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
-            --set postgresql-nexi.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
-            --set postgresql-replica-nexi.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
-            --set postgresql.forceRedeploy=${{ inputs.pagopa_force }} 
-            --set postgresql.image.tag=${{ needs.setting_env.outputs.pagopa_rel }} 
-            --set postgresql-replica.forceRedeploy=${{ inputs.pagopa_force }} 
-            --set postgresql-replica.image.tag=${{ needs.setting_env.outputs.pagopa_rel }} 
-            --set postgresql-nexi.forceRedeploy=${{ inputs.nexi_force }} 
-            --set postgresql-nexi.image.tag=${{ needs.setting_env.outputs.nexi_rel }} 
-            --set postgresql-replica-nexi.forceRedeploy=${{ inputs.nexi_force }} 
-            --set postgresql-replica-nexi.image.tag=${{ needs.setting_env.outputs.nexi_rel }}'
-          timeout: '15m0s'
-
-      - name: Deploy PROD
-        uses: pagopa/github-actions-template/aks-deploy@5db4c9108164a07d96527978da1c3febec934f22 #v1.11.1
-        if: ${{ inputs.environment == 'prod' }}
-        with:
-          branch: ${{ inputs.branch }}
-          client_id: ${{ secrets.CLIENT_ID }}
-          subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
-          tenant_id: ${{ secrets.TENANT_ID }}
-          env: ${{ needs.setting_env.outputs.environment }}
-          namespace: ${{ vars.NAMESPACE }}
-          cluster_name: ${{ vars.CLUSTER_NAME }}
-          resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
-          app_name: ${{ env.APP_NAME }}
-          helm_upgrade_options: '--debug 
-            --set microservice-chart.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
-            --set refresh-p.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-p-replica.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-o.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-odev.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-oprod.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-p-nexi.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set refresh-p-replica-nexi.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set microservice-chart.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
-            --set postgresql.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
-            --set postgresql-replica.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
-            --set postgresql-nexi.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
-            --set postgresql-replica-nexi.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
-            --set postgresql.forceRedeploy=${{ inputs.pagopa_force }} 
-            --set postgresql.image.tag=${{ needs.setting_env.outputs.pagopa_rel }}'
-          timeout: '15m0s'
+            --set postgresql.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} '
+          timeout: '5m0s'
 
   update_openapi:
-    needs: [ setting_env, deploy ]
+    needs: [ deploy ]
     runs-on: ubuntu-latest
     name: Update OpenAPI
-    if: ${{ inputs.target == inputs.environment }}
-    environment: ${{ needs.setting_env.outputs.environment }}
+    environment: ${{ inputs.environment }}
     steps:
       - name: Checkout
         id: checkout
@@ -218,5 +79,5 @@ jobs:
           client_id: "${{ secrets.CLIENT_ID }}"
           tenant_id: "${{ secrets.TENANT_ID }}"
           subscription_id: "${{ secrets.SUBSCRIPTION_ID }}"
-          tf_environment: "weu-${{ needs.setting_env.outputs.environment }}"
+          tf_environment: "weu-${{ inputs.environment }}"
           dir: "infra"
