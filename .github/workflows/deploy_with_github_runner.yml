@@ -46,8 +46,7 @@ jobs:
             --set postgresql.forceRedeploy=${{ inputs.force_deploy }}
             --set microservice-chart.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
             --set refresh-p.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
-            --set postgresql.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}  
-            --set postgresql.forceRedeploy=${{ inputs.pagopa_force }} 
+            --set postgresql.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
             --set postgresql.image.tag=${{ needs.setting_env.outputs.pagopa_rel }}'
           timeout: '15m0s'
 
