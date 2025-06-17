@@ -2,6 +2,8 @@ name: Release And Deploy
 
 # Controls when the workflow will run
 on:
+  merge_group:
+    branches: [ main ]
   pull_request:
     branches:
       - main
@@ -18,26 +20,31 @@ on:
           - dev
           - uat
           - prod
+      version:
+        required: false
+        type: choice
+        description: Select the version
+        options:
+          - patch
+          - skip_or_promote
+          - new_release
+          - breaking_change
+      force_deploy:
+        required: false
+        type: boolean
+        description: force re-deploy PagoPA microservice
+        default: false 
       beta:
         required: false
         type: boolean
         description: deploy beta version on AKS
         default: false
-      skip_release:
-        required: false
-        type: boolean
-        description: skip the release. Only deploy
-        default: false
-      pagopa_release:
-        required: false
+
+  workflow_call:
+    inputs:
+      environment:
+        required: true
         type: string
-        default: ""
-        description: release version to deploy for PagoPA microservice (if empty then last)
-      pagopa_force:
-        required: false
-        type: boolean
-        description: force re-deploy PagoPA microservice
-        default: false
 
 permissions:
   packages: write
@@ -65,19 +72,29 @@ jobs:
       # Set Semvar
       - run: echo "SEMVER=patch" >> $GITHUB_ENV
 
-      - if: ${{ (github.event.pull_request.merged && contains(github.event.pull_request.labels.*.name, 'breaking-change')) }}
-        run: echo "SEMVER=major" >> $GITHUB_ENV
+      - if: ${{ (github.event.pull_request.merged && contains(github.event.pull_request.labels.*.name, 'skip')) }}
+        run: echo "SEMVER=skip" >> $GITHUB_ENV
 
-      - if: ${{ inputs.environment == 'uat' }}
+      - if: ${{ (github.event.pull_request.merged && contains(github.event.pull_request.labels.*.name, 'patch')) }}
+        run: echo "SEMVER=patch" >> $GITHUB_ENV
+
+      - if: ${{ (github.event.pull_request.merged && contains(github.event.pull_request.labels.*.name, 'minor')) }}
         run: echo "SEMVER=minor" >> $GITHUB_ENV
 
-      - if: ${{ inputs.environment == 'prod' }}
-        run: echo "SEMVER=skip" >> $GITHUB_ENV
+      - if: ${{ (github.event.pull_request.merged && contains(github.event.pull_request.labels.*.name, 'major')) }}
+        run: echo "SEMVER=major" >> $GITHUB_ENV
+
+      # force semver if dev, !=main or skip release
+      - if: ${{ inputs.version == 'new_release' }}
+        run: echo "SEMVER=minor" >> $GITHUB_ENV
+
+      - if: ${{ inputs.version == 'breaking_change' }}
+        run: echo "SEMVER=major" >> $GITHUB_ENV
 
       - if: ${{ github.ref_name != 'main' }}
         run: echo "SEMVER=buildNumber" >> $GITHUB_ENV
 
-      - if: ${{ inputs.skip_release }}
+      - if: ${{ inputs.version == 'skip_or_promote' }}
         run: echo "SEMVER=skip" >> $GITHUB_ENV
 
       - id: get_semver
@@ -94,22 +111,24 @@ jobs:
         name: Set Output
         run: echo "environment=${{env.ENVIRONMENT}}" >> $GITHUB_OUTPUT
 
-
   release:
     name: Create a New Release
     runs-on: ubuntu-latest
-    needs: [setup]
+    needs: [ setup ]
+    if: ${{ needs.setup.outputs.semver != 'skip' }}
     outputs:
       version: ${{ steps.release.outputs.version }}
     steps:
       - name: Make Release
         id: release
-        uses: pagopa/github-actions-template/maven-release@d91a1fd0b913c9830589be5d86cdb71c90813fae # v1.5.4
+        uses: pagopa/github-actions-template/maven-release@4a4c25ce28feeec9e619b3132b5327f52023d441 # v1.14.2
         with:
           semver: ${{ needs.setup.outputs.semver }}
           github_token: ${{ secrets.CD_BOT_TOKEN_GITHUB }}
           beta: ${{ inputs.beta }}
-          skip_ci: false
+          skip_ci: true
+          prerelease: ${{  github.ref_name != 'main' }}
+          only_tag: false
 
   image:
     needs: [ setup, release ]
@@ -117,38 +136,12 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ needs.setup.outputs.semver != 'skip' }}
     steps:
-      - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b #v4.1.4
+      - name: Build and Push
+        id: semver
+        uses: pagopa/github-actions-template/ghcr-build-push@d91a1fd0b913c9830589be5d86cdb71c90813fae # v1.5.4
         with:
-          ref: ${{ github.ref_name }}
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@e92390c5fb421da1463c202d546fed0ec5c39f20 #v3.1.0
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81 #v5.5.1
-        with:
-          images: ghcr.io/${{ github.repository }}
-          tags: |
-            latest
-            ${{ needs.release.outputs.version }}
-            type=ref,event=branch
-            type=sha
-
-      - name: Build and push
-        uses: docker/build-push-action@2cdde995de11925a030ce8070c3d77a52ffcf1c0 #v5.3.0
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          secrets: |
-            GH_TOKEN=${{ secrets.READ_PACKAGES_TOKEN }}
-
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ needs.release.outputs.version }}
 
   deploy_aks:
     name: Deploy on AKS
@@ -161,14 +154,14 @@ jobs:
     secrets: inherit
 
   notify:
+    name: Notify
     needs: [ setup, release, deploy_aks ]
     runs-on: ubuntu-latest
-    name: Notify
     if: always()
     steps:
       - name: Report Status
         if: ${{ needs.setup.outputs.environment == 'prod' }}
-        uses: ravsamhq/notify-slack-action@be814b201e233b2dc673608aa46e5447c8ab13f2 #v2.5.0
+        uses: ravsamhq/notify-slack-action@be814b201e233b2dc673608aa46e5447c8ab13f2 # v2
         with:
           status: ${{ needs.deploy_aks.result }}
           token: ${{ secrets.GITHUB_TOKEN }}
