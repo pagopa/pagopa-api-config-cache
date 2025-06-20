@@ -1,41 +1,15 @@
 package it.gov.pagopa.apiconfig.cache;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.apiconfig.cache.exception.AppException;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.service.CacheConfigService;
+import it.gov.pagopa.apiconfig.cache.service.CacheEventHubService;
 import it.gov.pagopa.apiconfig.cache.service.CacheKeyUtils;
 import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
 import it.gov.pagopa.apiconfig.cache.util.ZipUtils;
-import it.gov.pagopa.apiconfig.starter.repository.CanaliViewRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdiDetailRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdiFasciaCostoServizioRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdiInformazioniServizioRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdiMasterValidRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdiPreferenceRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdsCategorieRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdsServizioRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdsSoggettoRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CdsSoggettoServizioRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CodifichePaRepository;
-import it.gov.pagopa.apiconfig.starter.repository.CodificheRepository;
-import it.gov.pagopa.apiconfig.starter.repository.ConfigurationKeysRepository;
-import it.gov.pagopa.apiconfig.starter.repository.DizionarioMetadatiRepository;
-import it.gov.pagopa.apiconfig.starter.repository.FtpServersRepository;
-import it.gov.pagopa.apiconfig.starter.repository.GdeConfigRepository;
-import it.gov.pagopa.apiconfig.starter.repository.IbanValidiPerPaRepository;
-import it.gov.pagopa.apiconfig.starter.repository.InformativePaDetailRepository;
-import it.gov.pagopa.apiconfig.starter.repository.InformativePaFasceRepository;
-import it.gov.pagopa.apiconfig.starter.repository.InformativePaMasterRepository;
-import it.gov.pagopa.apiconfig.starter.repository.IntermediariPaRepository;
-import it.gov.pagopa.apiconfig.starter.repository.IntermediariPspRepository;
-import it.gov.pagopa.apiconfig.starter.repository.PaRepository;
-import it.gov.pagopa.apiconfig.starter.repository.PaStazionePaRepository;
-import it.gov.pagopa.apiconfig.starter.repository.PspCanaleTipoVersamentoCanaleRepository;
-import it.gov.pagopa.apiconfig.starter.repository.PspRepository;
-import it.gov.pagopa.apiconfig.starter.repository.StazioniRepository;
-import it.gov.pagopa.apiconfig.starter.repository.TipiVersamentoRepository;
-import it.gov.pagopa.apiconfig.starter.repository.WfespPluginConfRepository;
+import it.gov.pagopa.apiconfig.starter.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,12 +22,16 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.ZonedDateTime;
 import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 // @SpringBootTest(classes = Application.class)
 @ExtendWith({MockitoExtension.class})
@@ -78,6 +56,7 @@ class CacheConfigServiceTest {
   @Mock private IbanValidiPerPaRepository ibanValidiPerPaRepository;
   @Mock private StazioniRepository stazioniRepository;
   @Mock private PaStazionePaRepository paStazioniRepository;
+  @Mock private StationMaintenanceRepository stationMaintenanceRepository;
   @Mock private PaRepository paRepository;
   @Mock private CanaliViewRepository canaliViewRepository;
   @Mock private PspCanaleTipoVersamentoCanaleRepository pspCanaleTipoVersamentoCanaleRepository;
@@ -90,6 +69,7 @@ class CacheConfigServiceTest {
   @Mock private InformativePaMasterRepository informativePaMasterRepository;
   @Mock private InformativePaDetailRepository informativePaDetailRepository;
   @Mock private InformativePaFasceRepository informativePaFasceRepository;
+  @Mock private CacheEventHubService eventHubService;
 
   @InjectMocks private CacheConfigService cacheConfigService;
 
@@ -126,7 +106,18 @@ class CacheConfigServiceTest {
     ReflectionTestUtils.setField(cacheConfigService, "modelMapper", modelMapper);
 
     Map<String, Object> allData = cacheConfigService.newCache();
-    assertThat(allData).hasSize(28);
+    assertThat(allData).hasSize(29);
+  }
+
+  @Test
+  void newCacheException() {
+    doThrow(new RuntimeException()).when(intermediariPaRepository).findAll();
+
+    ReflectionTestUtils.setField(cacheConfigService, "cacheKeyUtils", cacheKeyUtils);
+    ReflectionTestUtils.setField(cacheConfigService, "objectMapper", new ObjectMapper().findAndRegisterModules());
+    ReflectionTestUtils.setField(cacheConfigService, "modelMapper", modelMapper);
+
+    assertThrows(RuntimeException.class, () -> cacheConfigService.newCache());
   }
 
   @Test
@@ -157,5 +148,28 @@ class CacheConfigServiceTest {
     assertThrows(AppException.class, () -> cacheConfigService.getCacheId());
   }
 
+  @Test
+  void testSendEvent_publishEventCalled() throws JsonProcessingException {
+    ReflectionTestUtils.setField(cacheConfigService, "SEND_EVENT", true);
+    doNothing().when(eventHubService).publishEvent(anyString(), any(ZonedDateTime.class), anyString());
 
+    ZonedDateTime now = ZonedDateTime.now();
+    cacheConfigService.sendEvent("ID-1", now);
+
+    verify(eventHubService, times(1))
+            .publishEvent(eq("ID-1"), eq(now), anyString());
+  }
+
+  @Test
+  void testSendEvent_publishEventThrowsJsonProcessingException() throws JsonProcessingException {
+    ReflectionTestUtils.setField(cacheConfigService, "SEND_EVENT", true);
+    doThrow(JsonProcessingException.class).when(eventHubService).publishEvent(anyString(), any(ZonedDateTime.class), anyString());
+
+    ZonedDateTime now = ZonedDateTime.now();
+    AppException thrown = assertThrows(AppException.class, () -> {
+      cacheConfigService.sendEvent("ID-1", now);
+    });
+
+    assertInstanceOf(JsonProcessingException.class, thrown.getCause());
+  }
 }
