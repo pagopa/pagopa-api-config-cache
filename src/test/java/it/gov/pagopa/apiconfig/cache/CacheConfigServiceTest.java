@@ -1,9 +1,11 @@
 package it.gov.pagopa.apiconfig.cache;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.apiconfig.cache.exception.AppException;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.service.CacheConfigService;
+import it.gov.pagopa.apiconfig.cache.service.CacheEventHubService;
 import it.gov.pagopa.apiconfig.cache.service.CacheKeyUtils;
 import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
 import it.gov.pagopa.apiconfig.cache.util.ZipUtils;
@@ -20,12 +22,16 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.ZonedDateTime;
 import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 // @SpringBootTest(classes = Application.class)
 @ExtendWith({MockitoExtension.class})
@@ -63,6 +69,7 @@ class CacheConfigServiceTest {
   @Mock private InformativePaMasterRepository informativePaMasterRepository;
   @Mock private InformativePaDetailRepository informativePaDetailRepository;
   @Mock private InformativePaFasceRepository informativePaFasceRepository;
+  @Mock private CacheEventHubService eventHubService;
 
   @InjectMocks private CacheConfigService cacheConfigService;
 
@@ -103,6 +110,17 @@ class CacheConfigServiceTest {
   }
 
   @Test
+  void newCacheException() {
+    doThrow(new RuntimeException()).when(intermediariPaRepository).findAll();
+
+    ReflectionTestUtils.setField(cacheConfigService, "cacheKeyUtils", cacheKeyUtils);
+    ReflectionTestUtils.setField(cacheConfigService, "objectMapper", new ObjectMapper().findAndRegisterModules());
+    ReflectionTestUtils.setField(cacheConfigService, "modelMapper", modelMapper);
+
+    assertThrows(RuntimeException.class, () -> cacheConfigService.newCache());
+  }
+
+  @Test
   void getCacheInProgress() {
     ReflectionTestUtils.setField(cacheConfigService, "cacheKeyUtils", cacheKeyUtils);
     ReflectionTestUtils.setField(cacheConfigService, "objectMapper", new ObjectMapper().findAndRegisterModules());
@@ -130,5 +148,28 @@ class CacheConfigServiceTest {
     assertThrows(AppException.class, () -> cacheConfigService.getCacheId());
   }
 
+  @Test
+  void testSendEvent_publishEventCalled() throws JsonProcessingException {
+    ReflectionTestUtils.setField(cacheConfigService, "SEND_EVENT", true);
+    doNothing().when(eventHubService).publishEvent(anyString(), any(ZonedDateTime.class), anyString());
 
+    ZonedDateTime now = ZonedDateTime.now();
+    cacheConfigService.sendEvent("ID-1", now);
+
+    verify(eventHubService, times(1))
+            .publishEvent(eq("ID-1"), eq(now), anyString());
+  }
+
+  @Test
+  void testSendEvent_publishEventThrowsJsonProcessingException() throws JsonProcessingException {
+    ReflectionTestUtils.setField(cacheConfigService, "SEND_EVENT", true);
+    doThrow(JsonProcessingException.class).when(eventHubService).publishEvent(anyString(), any(ZonedDateTime.class), anyString());
+
+    ZonedDateTime now = ZonedDateTime.now();
+    AppException thrown = assertThrows(AppException.class, () -> {
+      cacheConfigService.sendEvent("ID-1", now);
+    });
+
+    assertInstanceOf(JsonProcessingException.class, thrown.getCause());
+  }
 }

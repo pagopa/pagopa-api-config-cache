@@ -163,8 +163,7 @@ public class CacheConfigService {
     try {
       ctListaInformativePSPJaxbContext = JAXBContext.newInstance(CtListaInformativePSP.class);
       tplInformativaPSPJaxbContext = JAXBContext.newInstance(TplInformativaPSP.class);
-      ctListaInformativeControparteJaxbContext =
-          JAXBContext.newInstance(CtListaInformativeControparte.class);
+      ctListaInformativeControparteJaxbContext = JAXBContext.newInstance(CtListaInformativeControparte.class);
     } catch (JAXBException e) {
       throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
     }
@@ -212,7 +211,7 @@ public class CacheConfigService {
     return configData;
   }
 
-  public HashMap<String, Object> newCache() throws IOException {
+  public HashMap<String, Object> newCache() {
 
     setCacheInProgress();
 
@@ -228,124 +227,124 @@ public class CacheConfigService {
       JsonGenerator jsonGenerator = jsonFactory.createGenerator(outwriter);
       jsonGenerator.writeStartObject();
 
-        List<BrokerCreditorInstitution> intpa = getBrokerDetails();
-        HashMap<String, Object> intpamap = new HashMap<>();
-        intpa.forEach(k -> intpamap.put(k.getBrokerCode(), k));
-        configData.put(Constants.CREDITOR_INSTITUTION_BROKERS,intpamap);
+      List<BrokerCreditorInstitution> intpa = getBrokerDetails();
+      HashMap<String, Object> intpamap = new HashMap<>();
+      intpa.forEach(k -> intpamap.put(k.getBrokerCode(), k));
+      configData.put(Constants.CREDITOR_INSTITUTION_BROKERS,intpamap);
       appendMapToJson(jsonGenerator,Constants.CREDITOR_INSTITUTION_BROKERS,intpamap);
 
-        List<BrokerPsp> intpsp = getBrokerPspDetails();
-        HashMap<String, Object> intpspmap = new HashMap<>();
-        intpsp.forEach(k -> intpspmap.put(k.getBrokerPspCode(), k));
-        configData.put(Constants.PSP_BROKERS,intpspmap);
+      List<BrokerPsp> intpsp = getBrokerPspDetails();
+      HashMap<String, Object> intpspmap = new HashMap<>();
+      intpsp.forEach(k -> intpspmap.put(k.getBrokerPspCode(), k));
+      configData.put(Constants.PSP_BROKERS,intpspmap);
       appendMapToJson(jsonGenerator,Constants.PSP_BROKERS,intpspmap);
 
-        List<CdsCategory> cdscats = getCdsCategories();
-        HashMap<String, Object> cdscatsMap = new HashMap<>();
-        cdscats.forEach(k -> cdscatsMap.put(k.getDescription(), k));
-        configData.put(Constants.CDS_CATEGORIES,cdscatsMap);
+      List<CdsCategory> cdscats = getCdsCategories();
+      HashMap<String, Object> cdscatsMap = new HashMap<>();
+      cdscats.forEach(k -> cdscatsMap.put(k.getDescription(), k));
+      configData.put(Constants.CDS_CATEGORIES,cdscatsMap);
       appendMapToJson(jsonGenerator,Constants.CDS_CATEGORIES,cdscatsMap);
 
-        List<CdsService> cdsServices = getCdsServices();
-        HashMap<String, Object> cdsServicesMap = new HashMap<>();
-        cdsServices.forEach(k -> cdsServicesMap.put(k.getIdentifier(), k));
-        configData.put(Constants.CDS_SERVICES,cdsServicesMap);
+      List<CdsService> cdsServices = getCdsServices();
+      HashMap<String, Object> cdsServicesMap = new HashMap<>();
+      cdsServices.forEach(k -> cdsServicesMap.put(k.getIdentifier(), k));
+      configData.put(Constants.CDS_SERVICES,cdsServicesMap);
       appendMapToJson(jsonGenerator,Constants.CDS_SERVICES,cdsServicesMap);
 
-        List<CdsSubject> cdsSubjects = getCdsSubjects();
-        HashMap<String, Object> cdsSubjectsMap = new HashMap<>();
-        cdsSubjects.forEach(k -> cdsSubjectsMap.put(k.getCreditorInstitutionCode(), k));
-        configData.put(Constants.CDS_SUBJECTS,cdsSubjectsMap);
+      List<CdsSubject> cdsSubjects = getCdsSubjects();
+      HashMap<String, Object> cdsSubjectsMap = new HashMap<>();
+      cdsSubjects.forEach(k -> cdsSubjectsMap.put(k.getCreditorInstitutionCode(), k));
+      configData.put(Constants.CDS_SUBJECTS,cdsSubjectsMap);
       appendMapToJson(jsonGenerator,Constants.CDS_SUBJECTS,cdsSubjectsMap);
 
-        List<CdsSubjectService> cdsSubjectServices = getCdsSubjectServices();
-        HashMap<String, Object> cdsSubjectServicesMap = new HashMap<>();
-        cdsSubjectServices.forEach(k -> cdsSubjectServicesMap.put(k.getSubjectServiceId(), k));
-        configData.put(Constants.CDS_SUBJECT_SERVICES,cdsSubjectServicesMap);
+      List<CdsSubjectService> cdsSubjectServices = getCdsSubjectServices();
+      HashMap<String, Object> cdsSubjectServicesMap = new HashMap<>();
+      cdsSubjectServices.forEach(k -> cdsSubjectServicesMap.put(k.getSubjectServiceId(), k));
+      configData.put(Constants.CDS_SUBJECT_SERVICES,cdsSubjectServicesMap);
       appendMapToJson(jsonGenerator,Constants.CDS_SUBJECT_SERVICES,cdsSubjectServicesMap);
 
-        List<GdeConfiguration> gde = getGdeConfiguration();
-        HashMap<String, Object> gdeMap = new HashMap<>();
-        gde.forEach(k -> gdeMap.put(k.getIdentifier(), k));
-        configData.put(Constants.GDE_CONFIGURATIONS,gdeMap);
+      List<GdeConfiguration> gde = getGdeConfiguration();
+      HashMap<String, Object> gdeMap = new HashMap<>();
+      gde.forEach(k -> gdeMap.put(k.getIdentifier(), k));
+      configData.put(Constants.GDE_CONFIGURATIONS,gdeMap);
       appendMapToJson(jsonGenerator,Constants.GDE_CONFIGURATIONS,gdeMap);
 
-        List<MetadataDict> meta = getMetadataDict();
-        HashMap<String, Object> metaMap = new HashMap<>();
-        meta.forEach(k -> metaMap.put(k.getKey(), k));
-        configData.put(Constants.METADATA_DICT,metaMap);
+      List<MetadataDict> meta = getMetadataDict();
+      HashMap<String, Object> metaMap = new HashMap<>();
+      meta.forEach(k -> metaMap.put(k.getKey(), k));
+      configData.put(Constants.METADATA_DICT,metaMap);
       appendMapToJson(jsonGenerator,Constants.METADATA_DICT,metaMap);
 
-        List<ConfigurationKey> configurationKeyList = getConfigurationKeys();
-        HashMap<String, Object> configMap = new HashMap<>();
-        configurationKeyList.forEach(k -> configMap.put(k.getIdentifier(), k));
-        configData.put(Constants.CONFIGURATIONS,configMap);
+      List<ConfigurationKey> configurationKeyList = getConfigurationKeys();
+      HashMap<String, Object> configMap = new HashMap<>();
+      configurationKeyList.forEach(k -> configMap.put(k.getIdentifier(), k));
+      configData.put(Constants.CONFIGURATIONS,configMap);
       appendMapToJson(jsonGenerator,Constants.CONFIGURATIONS,configMap);
 
-        List<FtpServer> ftpservers = getFtpServers();
-        HashMap<String, Object> ftpserversMap = new HashMap<>();
-        ftpservers.forEach(k -> ftpserversMap.put(k.getId().toString(), k));
-        configData.put(Constants.FTP_SERVERS,ftpserversMap);
+      List<FtpServer> ftpservers = getFtpServers();
+      HashMap<String, Object> ftpserversMap = new HashMap<>();
+      ftpservers.forEach(k -> ftpserversMap.put(k.getId().toString(), k));
+      configData.put(Constants.FTP_SERVERS,ftpserversMap);
       appendMapToJson(jsonGenerator,Constants.FTP_SERVERS,ftpserversMap);
 
-        HashMap<String, Object> codiciLingua = new HashMap<>();
-        codiciLingua.put("IT", "IT");
-        codiciLingua.put("DE", "DE");
-        configData.put(Constants.LANGUAGES,codiciLingua);
+      HashMap<String, Object> codiciLingua = new HashMap<>();
+      codiciLingua.put("IT", "IT");
+      codiciLingua.put("DE", "DE");
+      configData.put(Constants.LANGUAGES,codiciLingua);
       appendMapToJson(jsonGenerator,Constants.LANGUAGES,codiciLingua);
 
-        List<Plugin> plugins = getWfespPluginConfigurations();
-        HashMap<String, Object> pluginsMap = new HashMap<>();
-        plugins.forEach(k -> pluginsMap.put(k.getIdServPlugin(), k));
-        configData.put(Constants.PLUGINS,pluginsMap);
+      List<Plugin> plugins = getWfespPluginConfigurations();
+      HashMap<String, Object> pluginsMap = new HashMap<>();
+      plugins.forEach(k -> pluginsMap.put(k.getIdServPlugin(), k));
+      configData.put(Constants.PLUGINS,pluginsMap);
       appendMapToJson(jsonGenerator,Constants.PLUGINS,pluginsMap);
 
-        List<PaymentServiceProvider> psps = getAllPaymentServiceProviders();
-        HashMap<String, Object> pspMap = new HashMap<>();
-        psps.forEach(k -> pspMap.put(k.getPspCode(), k));
-        configData.put(Constants.PSPS,pspMap);
+      List<PaymentServiceProvider> psps = getAllPaymentServiceProviders();
+      HashMap<String, Object> pspMap = new HashMap<>();
+      psps.forEach(k -> pspMap.put(k.getPspCode(), k));
+      configData.put(Constants.PSPS,pspMap);
       appendMapToJson(jsonGenerator,Constants.PSPS,pspMap);
 
-        List<Channel> canali = getAllCanali();
-        HashMap<String, Object> canalimap = new HashMap<>();
-        canali.forEach(k -> canalimap.put(k.getChannelCode(), k));
-        configData.put(Constants.CHANNELS,canalimap);
+      List<Channel> canali = getAllCanali();
+      HashMap<String, Object> canalimap = new HashMap<>();
+      canali.forEach(k -> canalimap.put(k.getChannelCode(), k));
+      configData.put(Constants.CHANNELS,canalimap);
       appendMapToJson(jsonGenerator,Constants.CHANNELS,canalimap);
 
-        List<PaymentType> tipiv = getPaymentTypes();
-        HashMap<String, Object> tipivMap = new HashMap<>();
-        tipiv.forEach(k -> tipivMap.put(k.getPaymentTypeCode(), k));
-        configData.put(Constants.PAYMENT_TYPES,tipivMap);
+      List<PaymentType> tipiv = getPaymentTypes();
+      HashMap<String, Object> tipivMap = new HashMap<>();
+      tipiv.forEach(k -> tipivMap.put(k.getPaymentTypeCode(), k));
+      configData.put(Constants.PAYMENT_TYPES,tipivMap);
       appendMapToJson(jsonGenerator,Constants.PAYMENT_TYPES,tipivMap);
 
-        List<PspChannelPaymentType> pspChannels = getPaymentServiceProvidersChannels();
-        HashMap<String, Object> pspChannelsMap = new HashMap<>();
-        pspChannels.forEach(k -> pspChannelsMap.put(k.getIdentifier(), k));
-        configData.put(Constants.PSP_CHANNEL_PAYMENT_TYPES,pspChannelsMap);
+      List<PspChannelPaymentType> pspChannels = getPaymentServiceProvidersChannels();
+      HashMap<String, Object> pspChannelsMap = new HashMap<>();
+      pspChannels.forEach(k -> pspChannelsMap.put(k.getIdentifier(), k));
+      configData.put(Constants.PSP_CHANNEL_PAYMENT_TYPES,pspChannelsMap);
       appendMapToJson(jsonGenerator,Constants.PSP_CHANNEL_PAYMENT_TYPES,pspChannelsMap);
 
-        List<CreditorInstitution> pas = getCreditorInstitutions();
-        HashMap<String, Object> pamap = new HashMap<>();
-        pas.forEach(k -> pamap.put(k.getCreditorInstitutionCode(), k));
-        configData.put(Constants.CREDITOR_INSTITUTIONS,pamap);
+      List<CreditorInstitution> pas = getCreditorInstitutions();
+      HashMap<String, Object> pamap = new HashMap<>();
+      pas.forEach(k -> pamap.put(k.getCreditorInstitutionCode(), k));
+      configData.put(Constants.CREDITOR_INSTITUTIONS,pamap);
       appendMapToJson(jsonGenerator,Constants.CREDITOR_INSTITUTIONS,pamap);
 
-        List<Encoding> encodings = getEncodings();
-        HashMap<String, Object> encodingsMap = new HashMap<>();
-        encodings.forEach(k -> encodingsMap.put(k.getCodeType(), k));
-        configData.put(Constants.ENCODINGS,encodingsMap);
+      List<Encoding> encodings = getEncodings();
+      HashMap<String, Object> encodingsMap = new HashMap<>();
+      encodings.forEach(k -> encodingsMap.put(k.getCodeType(), k));
+      configData.put(Constants.ENCODINGS,encodingsMap);
       appendMapToJson(jsonGenerator,Constants.ENCODINGS,encodingsMap);
 
-        List<CreditorInstitutionEncoding> ciencodings = getCreditorInstitutionEncodings();
-        HashMap<String, Object> ciencodingsMap = new HashMap<>();
-        ciencodings.forEach(k -> ciencodingsMap.put(k.getIdentifier(), k));
-        configData.put(Constants.CREDITOR_INSTITUTION_ENCODINGS,ciencodingsMap);
+      List<CreditorInstitutionEncoding> ciencodings = getCreditorInstitutionEncodings();
+      HashMap<String, Object> ciencodingsMap = new HashMap<>();
+      ciencodings.forEach(k -> ciencodingsMap.put(k.getIdentifier(), k));
+      configData.put(Constants.CREDITOR_INSTITUTION_ENCODINGS,ciencodingsMap);
       appendMapToJson(jsonGenerator,Constants.CREDITOR_INSTITUTION_ENCODINGS,ciencodingsMap);
 
-        List<StationCreditorInstitution> paspa = findAllPaStazioniPa();
-        HashMap<String, Object> paspamap = new HashMap<>();
-        paspa.forEach(k -> paspamap.put(k.getIdentifier(), k));
-        configData.put(Constants.CREDITOR_INSTITUTION_STATIONS,paspamap);
+      List<StationCreditorInstitution> paspa = findAllPaStazioniPa();
+      HashMap<String, Object> paspamap = new HashMap<>();
+      paspa.forEach(k -> paspamap.put(k.getIdentifier(), k));
+      configData.put(Constants.CREDITOR_INSTITUTION_STATIONS,paspamap);
       appendMapToJson(jsonGenerator,Constants.CREDITOR_INSTITUTION_STATIONS,paspamap);
 
       List<MaintenanceStation> maintenanceStations = findAllStationMaintenance();
@@ -354,37 +353,37 @@ public class CacheConfigService {
       configData.put(Constants.MAINTENANCE_STATIONS, maintenanceStationsMap);
       appendMapToJson(jsonGenerator,Constants.MAINTENANCE_STATIONS, maintenanceStationsMap);
 
-        List<Station> stazioni = findAllStazioni();
-        HashMap<String, Object> stazionimap = new HashMap<>();
-        stazioni.forEach(k -> stazionimap.put(k.getStationCode(), k));
-        configData.put(Constants.STATIONS,stazionimap);
+      List<Station> stazioni = findAllStazioni();
+      HashMap<String, Object> stazionimap = new HashMap<>();
+      stazioni.forEach(k -> stazionimap.put(k.getStationCode(), k));
+      configData.put(Constants.STATIONS,stazionimap);
       appendMapToJson(jsonGenerator,Constants.STATIONS,stazionimap);
 
-        List<Iban> ibans = getCurrentIbans();
-        HashMap<String, Object> ibansMap = new HashMap<>();
-        ibans.forEach(k -> ibansMap.put(k.getIdentifier(), k));
-        configData.put(Constants.IBANS,ibansMap);
+      List<Iban> ibans = getCurrentIbans();
+      HashMap<String, Object> ibansMap = new HashMap<>();
+      ibans.forEach(k -> ibansMap.put(k.getIdentifier(), k));
+      configData.put(Constants.IBANS,ibansMap);
       appendMapToJson(jsonGenerator,Constants.IBANS,ibansMap);
 
-        Pair<List<PspInformation>, List<PspInformation>> informativePspAndTemplates =
-            getInformativePspAndTemplates();
+      Pair<List<PspInformation>, List<PspInformation>> informativePspAndTemplates =
+          getInformativePspAndTemplates();
 
-          List<PspInformation> infopsps = informativePspAndTemplates.getLeft();
-          HashMap<String, Object> infopspsMap = new HashMap<>();
-          infopsps.forEach(k -> infopspsMap.put(k.getPsp(), k));
-        configData.put(Constants.PSP_INFORMATIONS,infopspsMap);
+      List<PspInformation> infopsps = informativePspAndTemplates.getLeft();
+      HashMap<String, Object> infopspsMap = new HashMap<>();
+      infopsps.forEach(k -> infopspsMap.put(k.getPsp(), k));
+      configData.put(Constants.PSP_INFORMATIONS,infopspsMap);
       appendMapToJson(jsonGenerator,Constants.PSP_INFORMATIONS,infopspsMap);
 
-          List<PspInformation> infopspTemplates = informativePspAndTemplates.getRight();
-          HashMap<String, Object> infopspTemplatesMap = new HashMap<>();
-          infopspTemplates.forEach(k -> infopspTemplatesMap.put(k.getPsp(), k));
-        configData.put(Constants.PSP_INFORMATION_TEMPLATES,infopspTemplatesMap);
+      List<PspInformation> infopspTemplates = informativePspAndTemplates.getRight();
+      HashMap<String, Object> infopspTemplatesMap = new HashMap<>();
+      infopspTemplates.forEach(k -> infopspTemplatesMap.put(k.getPsp(), k));
+      configData.put(Constants.PSP_INFORMATION_TEMPLATES,infopspTemplatesMap);
       appendMapToJson(jsonGenerator,Constants.PSP_INFORMATION_TEMPLATES,infopspTemplatesMap);
 
-        List<CreditorInstitutionInformation> infopas = getInformativePa();
-        HashMap<String, Object> infopasMap = new HashMap<>();
-        infopas.forEach(k -> infopasMap.put(k.getPa(), k));
-        configData.put(Constants.CREDITOR_INSTITUTION_INFORMATIONS,infopasMap);
+      List<CreditorInstitutionInformation> infopas = getInformativePa();
+      HashMap<String, Object> infopasMap = new HashMap<>();
+      infopas.forEach(k -> infopasMap.put(k.getPa(), k));
+      configData.put(Constants.CREDITOR_INSTITUTION_INFORMATIONS,infopasMap);
       appendMapToJson(jsonGenerator,Constants.CREDITOR_INSTITUTION_INFORMATIONS,infopasMap);
 
       ZonedDateTime now = ZonedDateTime.now();
