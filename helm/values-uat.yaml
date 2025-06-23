@@ -2,7 +2,7 @@ microservice-chart: &microservice-chart
   namespace: "apiconfig"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: 0.9.32
+    tag: 0.9.32-1-disalble-deployment
   canaryDelivery:
     deployment:
       image:
@@ -89,65 +89,68 @@ postgresql:
     DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
 # postgres pagopa - PRF
 postgresql-replica:
-  !!merge <<: *microservice-chart
-  ingress:
-    !!merge <<: *ingress
-    path: /api-config-cache/pr/(.*)
-  envConfig:
-    !!merge <<: *envConfig
-    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql-replica"
-    DB_CONFIG_URL: "jdbc:postgresql://nodo-perf-db.u.internal.postgresql.pagopa.it:6432/nodo-replica?sslmode=require&prepareThreshold=0&currentSchema=cfg"
-    DB_CONFIG_USER: "cfg"
-    DB_CONFIG_DRIVER: "org.postgresql.Driver"
-    DATABASE_ID: "pr"
-    HEALTHCHECK_QUERY: "select 1"
-    SAVE_DB: "false"
-    SEND_EVENT: "false"
-  envSecret:
-    !!merge <<: *envSecret
-    DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
+  enabled: false
+#  !!merge <<: *microservice-chart
+#  ingress:
+#    !!merge <<: *ingress
+#    path: /api-config-cache/pr/(.*)
+#  envConfig:
+#    !!merge <<: *envConfig
+#    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql-replica"
+#    DB_CONFIG_URL: "jdbc:postgresql://nodo-perf-db.u.internal.postgresql.pagopa.it:6432/nodo-replica?sslmode=require&prepareThreshold=0&currentSchema=cfg"
+#    DB_CONFIG_USER: "cfg"
+#    DB_CONFIG_DRIVER: "org.postgresql.Driver"
+#    DATABASE_ID: "pr"
+#    HEALTHCHECK_QUERY: "select 1"
+#    SAVE_DB: "false"
+#    SEND_EVENT: "false"
+#  envSecret:
+#    !!merge <<: *envSecret
+#    DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
 # postgres nexi - UAT
 postgresql-nexi:
-  !!merge <<: *microservice-chart
-  ingress:
-    !!merge <<: *ingress
-    path: /api-config-cache/nexi/p/(.*)
-  envConfig:
-    !!merge <<: *envConfig
-    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql-nexi"
-    DB_CONFIG_URL: "jdbc:postgresql://db-postgres-ndp.u.db-nodo-pagamenti.com:5445/ndpspca?prepareThreshold=0&currentSchema=NODO4_CFG"
-    DB_CONFIG_USER: "pp_nodo4_cfg"
-    DB_CONFIG_DRIVER: "org.postgresql.Driver"
-    DATABASE_ID: "pnexi"
-    HEALTHCHECK_QUERY: "select 1"
-    SAVE_DB: "true"
-    SEND_EVENT: "false"
-  envSecret:
-    !!merge <<: *envSecret
-    DB_CONFIG_PASSWORD: "db-postgres-nexi-cfg-password"
+  enabled: false
+#  !!merge <<: *microservice-chart
+#  ingress:
+#    !!merge <<: *ingress
+#    path: /api-config-cache/nexi/p/(.*)
+#  envConfig:
+#    !!merge <<: *envConfig
+#    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql-nexi"
+#    DB_CONFIG_URL: "jdbc:postgresql://db-postgres-ndp.u.db-nodo-pagamenti.com:5445/ndpspca?prepareThreshold=0&currentSchema=NODO4_CFG"
+#    DB_CONFIG_USER: "pp_nodo4_cfg"
+#    DB_CONFIG_DRIVER: "org.postgresql.Driver"
+#    DATABASE_ID: "pnexi"
+#    HEALTHCHECK_QUERY: "select 1"
+#    SAVE_DB: "true"
+#    SEND_EVENT: "false"
+#  envSecret:
+#    !!merge <<: *envSecret
+#    DB_CONFIG_PASSWORD: "db-postgres-nexi-cfg-password"
 # postgres nexi - PRF
 postgresql-replica-nexi:
-  !!merge <<: *microservice-chart
-  ingress:
-    !!merge <<: *ingress
-    path: /api-config-cache/nexi/pr/(.*)
-  envConfig:
-    !!merge <<: *envConfig
-    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql-replica-nexi"
-    #DB_CONFIG_URL: "jdbc:postgresql://db-postgres-ndp-prf.u.db-nodo-pagamenti.com:5444/ndpspcq?prepareThreshold=0&currentSchema=NODO4_CFG" # OK!
-    DB_CONFIG_URL: "jdbc:postgresql://db-postgres-ndp-prf-1.u.db-nodo-pagamenti.com:6432,db-postgres-ndp-prf-2.u.db-nodo-pagamenti.com:6432/ndpspcq"
-    #DB_CONFIG_URL: "jdbc:postgresql://db-postgres-ndp-prf-1.u.db-nodo-pagamenti.com:6432/ndpspcq"
-    DB_CONFIG_USER: "pp_nodo4_cfg"
-    #    DB_CONFIG_USER: "nodo4_cfg"
-    DB_CONFIG_DRIVER: "org.postgresql.Driver"
-    DATABASE_ID: "prnexi"
-    ENV: "prf"
-    HEALTHCHECK_QUERY: "select 1"
-    SAVE_DB: "true"
-    SEND_EVENT: "false"
-  envSecret:
-    !!merge <<: *envSecret
-    DB_CONFIG_PASSWORD: "db-postgres-nexi-cfg-password-prf"
+  enabled: false
+#  !!merge <<: *microservice-chart
+#  ingress:
+#    !!merge <<: *ingress
+#    path: /api-config-cache/nexi/pr/(.*)
+#  envConfig:
+#    !!merge <<: *envConfig
+#    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql-replica-nexi"
+#    #DB_CONFIG_URL: "jdbc:postgresql://db-postgres-ndp-prf.u.db-nodo-pagamenti.com:5444/ndpspcq?prepareThreshold=0&currentSchema=NODO4_CFG" # OK!
+#    DB_CONFIG_URL: "jdbc:postgresql://db-postgres-ndp-prf-1.u.db-nodo-pagamenti.com:6432,db-postgres-ndp-prf-2.u.db-nodo-pagamenti.com:6432/ndpspcq"
+#    #DB_CONFIG_URL: "jdbc:postgresql://db-postgres-ndp-prf-1.u.db-nodo-pagamenti.com:6432/ndpspcq"
+#    DB_CONFIG_USER: "pp_nodo4_cfg"
+#    #    DB_CONFIG_USER: "nodo4_cfg"
+#    DB_CONFIG_DRIVER: "org.postgresql.Driver"
+#    DATABASE_ID: "prnexi"
+#    ENV: "prf"
+#    HEALTHCHECK_QUERY: "select 1"
+#    SAVE_DB: "true"
+#    SEND_EVENT: "false"
+#  envSecret:
+#    !!merge <<: *envSecret
+#    DB_CONFIG_PASSWORD: "db-postgres-nexi-cfg-password-prf"
 # oracle nexi - UAT
 oracle:
   enabled: false
@@ -246,98 +249,100 @@ refresh-p:
                   - user
 # postgres pagopa - IT
 refresh-p-replica:
-  namespace: "apiconfig"
-  schedule: "0 0 * * *"
-  timeZone: "Europe/Rome"
-  successfulJobsHistoryLimit: "1"
-  image:
-    repository: "curlimages/curl"
-    tag: "latest"
-    pullPolicy: "Always"
-  command:
-    - "curl"
-    - "-k"
-    - "-m"
-    - "\"300\""
-    - "--header"
-    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
-    - "https://api.uat.platform.pagopa.it/api-config-cache/pr/v1/cache/refresh"
-  resources:
-    requests:
-      memory: "256Mi"
-      cpu: "100m"
-    limits:
-      memory: "512Mi"
-      cpu: "150m"
-  envSecrets:
-    !!merge <<: *envSecret
-    API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
-  keyvault:
-    name: "pagopa-u-apiconfig-kv"
-    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-  serviceAccount:
-    name: "apiconfig-workload-identity"
-  tolerations:
-    - key: dedicated
-      operator: Equal
-      value: "apiconfig"
-      effect: NoSchedule
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: node_type
-                operator: In
-                values:
-                  - user
+  enabled: false
+#  namespace: "apiconfig"
+#  schedule: "0 0 * * *"
+#  timeZone: "Europe/Rome"
+#  successfulJobsHistoryLimit: "1"
+#  image:
+#    repository: "curlimages/curl"
+#    tag: "latest"
+#    pullPolicy: "Always"
+#  command:
+#    - "curl"
+#    - "-k"
+#    - "-m"
+#    - "\"300\""
+#    - "--header"
+#    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
+#    - "https://api.uat.platform.pagopa.it/api-config-cache/pr/v1/cache/refresh"
+#  resources:
+#    requests:
+#      memory: "256Mi"
+#      cpu: "100m"
+#    limits:
+#      memory: "512Mi"
+#      cpu: "150m"
+#  envSecrets:
+#    !!merge <<: *envSecret
+#    API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
+#  keyvault:
+#    name: "pagopa-u-apiconfig-kv"
+#    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+#  serviceAccount:
+#    name: "apiconfig-workload-identity"
+#  tolerations:
+#    - key: dedicated
+#      operator: Equal
+#      value: "apiconfig"
+#      effect: NoSchedule
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#          - matchExpressions:
+#              - key: node_type
+#                operator: In
+#                values:
+#                  - user
 # postgres nexi - UAT
 refresh-p-nexi:
-  namespace: "apiconfig"
-  schedule: "0 0 * * *"
-  timeZone: "Europe/Rome"
-  successfulJobsHistoryLimit: "1"
-  image:
-    repository: "curlimages/curl"
-    tag: "latest"
-    pullPolicy: "Always"
-  command:
-    - "curl"
-    - "-k"
-    - "-m"
-    - "\"300\""
-    - "--header"
-    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
-    - "https://api.uat.platform.pagopa.it/api-config-cache/nexi/p/v1/cache/refresh"
-  resources:
-    requests:
-      memory: "256Mi"
-      cpu: "100m"
-    limits:
-      memory: "512Mi"
-      cpu: "150m"
-  envSecrets:
-    !!merge <<: *envSecret
-    API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
-  keyvault:
-    name: "pagopa-u-apiconfig-kv"
-    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-  serviceAccount:
-    name: "apiconfig-workload-identity"
-  tolerations:
-    - key: dedicated
-      operator: Equal
-      value: "apiconfig"
-      effect: NoSchedule
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: node_type
-                operator: In
-                values:
-                  - user
+  enabled: false
+#  namespace: "apiconfig"
+#  schedule: "0 0 * * *"
+#  timeZone: "Europe/Rome"
+#  successfulJobsHistoryLimit: "1"
+#  image:
+#    repository: "curlimages/curl"
+#    tag: "latest"
+#    pullPolicy: "Always"
+#  command:
+#    - "curl"
+#    - "-k"
+#    - "-m"
+#    - "\"300\""
+#    - "--header"
+#    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
+#    - "https://api.uat.platform.pagopa.it/api-config-cache/nexi/p/v1/cache/refresh"
+#  resources:
+#    requests:
+#      memory: "256Mi"
+#      cpu: "100m"
+#    limits:
+#      memory: "512Mi"
+#      cpu: "150m"
+#  envSecrets:
+#    !!merge <<: *envSecret
+#    API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
+#  keyvault:
+#    name: "pagopa-u-apiconfig-kv"
+#    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+#  serviceAccount:
+#    name: "apiconfig-workload-identity"
+#  tolerations:
+#    - key: dedicated
+#      operator: Equal
+#      value: "apiconfig"
+#      effect: NoSchedule
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#          - matchExpressions:
+#              - key: node_type
+#                operator: In
+#                values:
+#                  - user
 # postgres nexi - PRF
 refresh-p-replica-nexi:
   namespace: "apiconfig"
