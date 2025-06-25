@@ -26,11 +26,20 @@
         "summary" : "Get xlsx of last v1 {stakeholder} cache version",
         "operationId" : "xls",
         "responses" : {
+          "403" : {
+            "description" : "Forbidden"
+          },
           "401" : {
             "description" : "Unauthorized"
           },
-          "403" : {
-            "description" : "Forbidden"
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
+            }
           },
           "400" : {
             "description" : "Bad Request",
@@ -51,15 +60,6 @@
                 }
               }
             }
-          },
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
-            }
-          },
-          "429" : {
-            "description" : "Too many requests"
           }
         },
         "security" : [ {
@@ -73,11 +73,20 @@
         "summary" : "Get xlsx of last v1 {stakeholder} cache version",
         "operationId" : "xls_1",
         "responses" : {
+          "403" : {
+            "description" : "Forbidden"
+          },
           "401" : {
             "description" : "Unauthorized"
           },
-          "403" : {
-            "description" : "Forbidden"
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
+            }
           },
           "400" : {
             "description" : "Bad Request",
@@ -98,15 +107,6 @@
                 }
               }
             }
-          },
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
-            }
-          },
-          "429" : {
-            "description" : "Too many requests"
           }
         },
         "security" : [ {
@@ -120,11 +120,20 @@
         "summary" : "Get xlsx of last v1 {stakeholder} cache version",
         "operationId" : "xls_2",
         "responses" : {
+          "403" : {
+            "description" : "Forbidden"
+          },
           "401" : {
             "description" : "Unauthorized"
           },
-          "403" : {
-            "description" : "Forbidden"
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
+            }
           },
           "400" : {
             "description" : "Bad Request",
@@ -145,15 +154,6 @@
                 }
               }
             }
-          },
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
-            }
-          },
-          "429" : {
-            "description" : "Too many requests"
           }
         },
         "security" : [ {
@@ -167,11 +167,20 @@
         "summary" : "Get xlsx of latest full cache",
         "operationId" : "xls_3",
         "responses" : {
+          "403" : {
+            "description" : "Forbidden"
+          },
           "401" : {
             "description" : "Unauthorized"
           },
-          "403" : {
-            "description" : "Forbidden"
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
+            }
           },
           "400" : {
             "description" : "Bad Request",
@@ -192,15 +201,6 @@
                 }
               }
             }
-          },
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : { }
-            }
-          },
-          "429" : {
-            "description" : "Too many requests"
           }
         },
         "security" : [ {

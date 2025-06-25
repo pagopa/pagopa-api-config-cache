@@ -7,11 +7,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/internal")
 public class InternalController {
 
-    @GetMapping("/cache")
-    public ResponseEntity test() {
-        return ResponseEntity.ok().build();
-    }
-
     @GetMapping("/cache/{key}")
     public ResponseEntity getCache(
             @PathVariable("key") String key
