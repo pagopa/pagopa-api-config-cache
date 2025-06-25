@@ -1,0 +1,17 @@
+<policies>
+  <inbound>
+    <base />
+    <set-variable name="key" value="@(context.Request.MatchedParameters["key"])" />
+    <set-variable name="value" value="@(context.Request.MatchedParameters["value"])" />
+    <cache-store-value key="@((string)context.Variables["key"])" value="@((string)context.Variables["value"])" duration="86400" caching-type="internal" />
+  </inbound>
+  <backend>
+    <base />
+  </backend>
+  <outbound>
+    <base />
+  </outbound>
+  <on-error>
+    <base />
+  </on-error>
+</policies>
