@@ -187,6 +187,7 @@ public class CacheConfigService {
     configData.put(Constants.CREDITOR_INSTITUTION_BROKERS, fulldata.getCreditorInstitutionBrokers());
     configData.put(Constants.STATIONS, fulldata.getStations());
     configData.put(Constants.CREDITOR_INSTITUTION_STATIONS, fulldata.getCreditorInstitutionStations());
+    configData.put(Constants.MAINTENANCE_STATIONS, fulldata.getMaintenanceStations());
     configData.put(Constants.ENCODINGS, fulldata.getEncodings());
     configData.put(Constants.CREDITOR_INSTITUTION_ENCODINGS, fulldata.getCreditorInstitutionEncodings());
     configData.put(Constants.IBANS, fulldata.getIbans());

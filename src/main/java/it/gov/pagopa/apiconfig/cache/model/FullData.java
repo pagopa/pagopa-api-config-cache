@@ -12,14 +12,7 @@ import it.gov.pagopa.apiconfig.cache.model.latest.configuration.GdeConfiguration
 import it.gov.pagopa.apiconfig.cache.model.latest.configuration.MetadataDict;
 import it.gov.pagopa.apiconfig.cache.model.latest.configuration.PaymentType;
 import it.gov.pagopa.apiconfig.cache.model.latest.configuration.Plugin;
-import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.BrokerCreditorInstitution;
-import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.CreditorInstitution;
-import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.CreditorInstitutionEncoding;
-import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.CreditorInstitutionInformation;
-import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.Encoding;
-import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.Iban;
-import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.Station;
-import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.StationCreditorInstitution;
+import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.*;
 import it.gov.pagopa.apiconfig.cache.model.latest.psp.BrokerPsp;
 import it.gov.pagopa.apiconfig.cache.model.latest.psp.Channel;
 import it.gov.pagopa.apiconfig.cache.model.latest.psp.PaymentServiceProvider;
@@ -57,6 +50,9 @@ public class FullData implements Serializable {
 
     @JsonProperty(required = true)
     private Map<String, StationCreditorInstitution> creditorInstitutionStations;
+
+    @JsonProperty(required = true)
+    private Map<String, MaintenanceStation> maintenanceStations;
 
     @JsonProperty(required = true)
     private Map<String, Encoding> encodings;
