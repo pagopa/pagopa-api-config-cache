@@ -2,7 +2,7 @@ microservice-chart: &microservice-chart
   namespace: "apiconfig"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: 0.9.32-2-PAGOPA-3110
+    tag: 0.9.33
   canaryDelivery:
     deployment:
       image:
