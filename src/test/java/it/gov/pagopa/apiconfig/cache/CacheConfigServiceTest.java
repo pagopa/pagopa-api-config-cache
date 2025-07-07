@@ -2,6 +2,7 @@ package it.gov.pagopa.apiconfig.cache;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.gov.pagopa.apiconfig.cache.exception.AppError;
 import it.gov.pagopa.apiconfig.cache.exception.AppException;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.service.CacheConfigService;
@@ -15,11 +16,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.test.util.ReflectionTestUtils;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -28,7 +33,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.Assert.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -96,6 +101,18 @@ class CacheConfigServiceTest {
     service.postConstruct(); // manually invoke
 
     assertDoesNotThrow(service::postConstruct, "postConstruct() should execute without exception");
+  }
+
+  @Test
+  void testPostConstructExceptionWithStaticMock() {
+    try (MockedStatic<JAXBContext> contextMock = Mockito.mockStatic(JAXBContext.class)) {
+      contextMock.when(() -> JAXBContext.newInstance(any(Class.class)))
+              .thenThrow(new JAXBException("Forced"));
+
+      CacheConfigService service = new CacheConfigService();
+      AppException ex = assertThrows(AppException.class, service::postConstruct);
+      assertEquals(AppError.INTERNAL_SERVER_ERROR.title, ex.getTitle());
+    }
   }
 
   @Test
