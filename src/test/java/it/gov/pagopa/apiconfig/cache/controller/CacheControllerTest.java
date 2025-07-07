@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import javax.persistence.EntityManager;
 import java.time.ZonedDateTime;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -75,7 +76,10 @@ class CacheControllerTest {
             .andExpect(status().isOk())
             .andExpect(header().string(Constants.HEADER_X_CACHE_ID, version))
             .andExpect(header().string(Constants.HEADER_X_CACHE_VERSION, cacheVersion))
-            .andExpect(header().string(Constants.HEADER_X_CACHE_TIMESTAMP, DateTimeUtils.getString(now)));
+            .andExpect(result -> {
+              ZonedDateTime timestamp = ZonedDateTime.parse(result.getResponse().getHeader(Constants.HEADER_X_CACHE_TIMESTAMP));
+              assertEquals(timestamp.toInstant(), now.toInstant());
+            });
   }
 
   @Test
