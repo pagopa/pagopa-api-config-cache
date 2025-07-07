@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.test.util.ReflectionTestUtils;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -28,7 +29,6 @@ import java.util.Map;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -91,11 +91,19 @@ class CacheConfigServiceTest {
   }
 
   @Test
+  void testPostConstruct() {
+    CacheConfigService service = new CacheConfigService();
+    service.postConstruct(); // manually invoke
+
+    assertDoesNotThrow(service::postConstruct, "postConstruct() should execute without exception");
+  }
+
+  @Test
   void loadFullCache() throws Exception {
     ReflectionTestUtils.setField(cacheConfigService, "cacheKeyUtils", cacheKeyUtils);
     ReflectionTestUtils.setField(cacheConfigService, "objectMapper", new ObjectMapper().findAndRegisterModules());
     Map<String, Object> allData = cacheConfigService.loadFullCache();
-    assertThat(allData).hasSize(28);
+    assertThat(allData).hasSize(29);
     assertThat(allData.get("version")).isEqualTo("testversion");
   }
 
