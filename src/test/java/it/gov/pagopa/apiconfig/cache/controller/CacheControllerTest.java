@@ -10,6 +10,7 @@ import it.gov.pagopa.apiconfig.cache.service.VerifierService;
 import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.cache.util.DateTimeUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -23,6 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import javax.persistence.EntityManager;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -77,8 +79,16 @@ class CacheControllerTest {
             .andExpect(header().string(Constants.HEADER_X_CACHE_ID, version))
             .andExpect(header().string(Constants.HEADER_X_CACHE_VERSION, cacheVersion))
             .andExpect(result -> {
-              ZonedDateTime timestamp = ZonedDateTime.parse(result.getResponse().getHeader(Constants.HEADER_X_CACHE_TIMESTAMP));
-              assertEquals(timestamp.toInstant(), now.toInstant());
+              String timestampHeader = result.getResponse().getHeader(Constants.HEADER_X_CACHE_TIMESTAMP);
+                Assertions.assertNotNull(timestampHeader);
+                ZonedDateTime actual = ZonedDateTime.parse(timestampHeader);
+
+              // Truncate both to microseconds or milliseconds to normalize
+              assertEquals(
+                      now.truncatedTo(ChronoUnit.MICROS),
+                      actual.truncatedTo(ChronoUnit.MICROS),
+                      "X-CACHE-TIMESTAMP does not match"
+              );
             });
   }
 
