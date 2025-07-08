@@ -26,6 +26,7 @@ public class Constants {
   public static final String CREDITOR_INSTITUTION_BROKERS = "creditorInstitutionBrokers";
   public static final String STATIONS = "stations";
   public static final String CREDITOR_INSTITUTION_STATIONS = "creditorInstitutionStations";
+  public static final String MAINTENANCE_STATIONS = "maintenanceStations";
   public static final String ENCODINGS = "encodings";
   public static final String CREDITOR_INSTITUTION_ENCODINGS = "creditorInstitutionEncodings";
   public static final String IBANS = "ibans";

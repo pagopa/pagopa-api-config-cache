@@ -47,6 +47,12 @@ public class StationCreditorInstitution implements Serializable {
   @JsonProperty(value = "spontaneous_payment", required = true)
   private Boolean spontaneousPayment;
 
+  @JsonProperty(value = "aca", required = true)
+  private Boolean aca;
+
+  @JsonProperty(value = "standin", required = true)
+  private Boolean standin;
+
   @JsonIgnore
   public String getIdentifier() {
     return stationCode

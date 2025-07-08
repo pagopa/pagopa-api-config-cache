@@ -39,6 +39,7 @@ helm/Chart.lock
 /docker/secrets
 .cache
 /docker/.env
+.env
 
 .terraform
 /.identity/private_output.txt
