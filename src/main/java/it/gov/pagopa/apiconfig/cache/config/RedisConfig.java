@@ -13,6 +13,8 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import java.time.Duration;
+
 @Configuration
 public class RedisConfig {
 
@@ -24,6 +26,8 @@ public class RedisConfig {
 
   @Value("${spring.redis.pwd}")
   private String redisPwd;
+  @Value("${spring.redis.commandTimeout}")
+  private Duration redisCommandTimeout;
 
   @Bean
   public ObjectMapper objectMapper() {
@@ -38,7 +42,7 @@ public class RedisConfig {
         new RedisStandaloneConfiguration(redisHost, redisPort);
     redisConfiguration.setPassword(redisPwd);
     LettuceClientConfiguration lettuceConfig =
-        LettuceClientConfiguration.builder().useSsl().build();
+        LettuceClientConfiguration.builder().commandTimeout(redisCommandTimeout).useSsl().build();
     return new LettuceConnectionFactory(redisConfiguration, lettuceConfig);
   }
 
