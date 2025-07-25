@@ -14,6 +14,7 @@ import it.gov.pagopa.apiconfig.cache.service.StakeholderConfigService;
 import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.cache.util.DateTimeUtils;
+import it.gov.pagopa.apiconfig.cache.util.FileDeleter;
 import it.gov.pagopa.apiconfig.cache.util.JsonSerializer;
 import it.gov.pagopa.apiconfig.starter.repository.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,16 +22,26 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.ZonedDateTime;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -169,5 +180,68 @@ class StakeholderConfigServiceTest {
 
     assertThat(stakeholderConfigService.getXLSX(Stakeholder.TEST, "v1")).isNotNull();
   }
+  
+  @Test
+  void testCompressJsonToGzipFile() throws IOException {
+	  String version = "111";
+	  String cacheVersion = Constants.GZIP_JSON + "-test";
+	  ZonedDateTime now = ZonedDateTime.now();
+	  ZonedDateTime romeDateTime = DateTimeUtils.getZonedDateTime(now);
+	  ConfigMapper modelMapper = new ConfigMapper();
+	  ConfigDataV1 configDataV1 = stakeholderConfigService.cacheToConfigDataV1(
+			  Stakeholder.TEST,
+			  TestUtils.inMemoryCache(
+					  modelMapper, version, cacheVersion, romeDateTime
+					  ),
+			  new String[]{}
+			  );
+	  ConfigData configData = ConfigData.builder()
+			  .cacheSchemaVersion(configDataV1)
+			  .xCacheId(version)
+			  .xCacheTimestamp(romeDateTime.toString())
+			  .xCacheVersion(cacheVersion)
+			  .build();
+
+	  byte[] compressed = StakeholderConfigService.compressJsonToGzipFile(configData);
+
+	  assertThat(compressed).isNotNull().isNotEmpty();
+  }
+  
+  @Test
+  void testCompressJsonToGzipFile_DeleteFails() throws IOException {
+      String version = "111";
+      String cacheVersion = Constants.GZIP_JSON + "-test";
+      ZonedDateTime now = ZonedDateTime.now();
+      ZonedDateTime romeDateTime = DateTimeUtils.getZonedDateTime(now);
+      ConfigMapper modelMapper = new ConfigMapper();
+
+      ConfigDataV1 configDataV1 = stakeholderConfigService.cacheToConfigDataV1(
+          Stakeholder.TEST,
+          TestUtils.inMemoryCache(modelMapper, version, cacheVersion, romeDateTime),
+          new String[]{}
+      );
+
+      ConfigData configData = ConfigData.builder()
+          .cacheSchemaVersion(configDataV1)
+          .xCacheId(version)
+          .xCacheTimestamp(romeDateTime.toString())
+          .xCacheVersion(cacheVersion)
+          .build();
+
+      FileDeleter failingDeleter = mock(FileDeleter.class);
+      doThrow(new IOException("Simulated delete failure")).when(failingDeleter).delete(any(Path.class));
+
+      assertDoesNotThrow(() -> {
+          byte[] result = StakeholderConfigService.compressJsonToGzipFile(configData, failingDeleter);
+          assertThat(result).isNotEmpty();
+      });
+
+      verify(failingDeleter).delete(any(Path.class));
+  }
+
+
+
+
+
 
 }
