@@ -232,7 +232,7 @@ class StakeholderConfigServiceTest {
       doThrow(new IOException("Simulated delete failure")).when(failingDeleter).delete(any(Path.class));
 
       assertDoesNotThrow(() -> {
-          byte[] result = StakeholderConfigService.compressJsonToGzipFile(configData);
+          byte[] result = StakeholderConfigService.compressJsonToGzipFile(configData, failingDeleter);
           assertThat(result).isNotEmpty();
       });
 
