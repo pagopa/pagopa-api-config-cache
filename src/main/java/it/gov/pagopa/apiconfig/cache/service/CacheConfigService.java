@@ -1168,7 +1168,12 @@ public class CacheConfigService {
 	    Map<Long, List<InformativePaMaster>> masterByPa = allMasters.stream()
 	        .collect(Collectors.groupingBy(m -> m.getFkPa().getObjId()));
 
-	    Map<Long, List<InformativePaFasce>> fasceByPa = allFasce.stream()
+	    Map<Long, List<InformativePaFasce>> fasceByDetail = 
+	    	    allFasce.stream()
+	    	            .filter(f -> f.getFkInformativaPaDetail() != null)
+	    	            .collect(Collectors.groupingBy(f -> f.getFkInformativaPaDetail().getId()));
+	    
+	    /*Map<Long, List<InformativePaFasce>> fasceByPa = allFasce.stream()
 	    	    .filter(f -> f.getFkInformativaPaDetail() != null &&
 	    	                 f.getFkInformativaPaDetail().getFkInformativaPaMaster() != null &&
 	    	                 f.getFkInformativaPaDetail().getFkInformativaPaMaster().getFkPa() != null)
@@ -1176,7 +1181,7 @@ public class CacheConfigService {
 	    	        f.getFkInformativaPaDetail()
 	    	         .getFkInformativaPaMaster()
 	    	         .getFkPa()
-	    	         .getObjId()));
+	    	         .getObjId()));*/
 
 	    List<CreditorInstitutionInformation> informativePaSingleCache = new ArrayList<>();
 	    CtListaInformativeControparte informativaPaFull = new CtListaInformativeControparte();
@@ -1212,7 +1217,9 @@ public class CacheConfigService {
 	            }
 
 	            List<InformativePaDetail> infodetails = master.getDetails();
-	            List<InformativePaFasce> fasce = fasceByPa.getOrDefault(pa.getObjId(), Collections.emptyList());
+	            List<InformativePaFasce> fasce = infodetails.stream()
+	            	    .flatMap(detail -> fasceByDetail.getOrDefault(detail.getId(), Collections.emptyList()).stream())
+	            	    .collect(Collectors.toList());
 
 	            List<CtErogazione> disponibilita = infodetails.stream()
 	                .filter(InformativePaDetail::getFlagDisponibilita)
