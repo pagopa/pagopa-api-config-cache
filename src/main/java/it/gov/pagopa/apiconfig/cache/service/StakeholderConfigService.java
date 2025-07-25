@@ -140,10 +140,10 @@ public class StakeholderConfigService {
         String actualKeyV1 = cacheKeyUtils.getCacheIdKey(getStakeholderWithSchema(stakeholder, schemaVersion));
 
         // AS-IS: all in RAM
-        byte[] cacheByteArray = compressJsonToGzip(configData);
+        //byte[] cacheByteArray = compressJsonToGzip(configData);
         
         // TO-BE: on temporary file
-        //byte[] cacheByteArray = compressJsonToGzipFile(configData);
+        byte[] cacheByteArray = compressJsonToGzipFile(configData);
         
 
         log.info(String.format("saving on Redis %s %s", actualKey, actualKeyV1));
