@@ -2,7 +2,7 @@ microservice-chart: &microservice-chart
   namespace: "apiconfig"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: 0.9.35-1-PIDM-822-out-of-memory-error
+    tag: 0.9.35-2-PIDM-822-out-of-memory-error
   canaryDelivery:
     deployment:
       image:

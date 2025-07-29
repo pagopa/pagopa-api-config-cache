@@ -12,7 +12,7 @@
 
   <groupId>it.gov.pagopa.api-config</groupId>
   <artifactId>cache</artifactId>
-  <version>0.9.35-1-PIDM-822-out-of-memory-error</version>
+  <version>0.9.35-2-PIDM-822-out-of-memory-error</version>
   <name>API-Config Cache</name>
   <description>Generate cache for various microservices</description>
 
