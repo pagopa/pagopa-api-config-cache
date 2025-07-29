@@ -1155,218 +1155,103 @@ public class CacheConfigService {
   }
   
   public List<CreditorInstitutionInformation> getInformativePa() {
-	    log.info("loading InformativePa");
-	    List<IbanValidiPerPa> allIbans = ibanValidiPerPaRepository.findAllFetchingPas();
-	    List<InformativePaMaster> allMasters = informativePaMasterRepository.findAll();
-	    List<InformativePaFasce> allFasce = informativePaFasceRepository.findAll();
-	    List<Pa> pas = paRepository.findAll();
+	  log.info("loading InformativePa");
+	  List<IbanValidiPerPa> allIbans = ibanValidiPerPaRepository.findAllFetchingPas();
+	  List<InformativePaMaster> allMasters = informativePaMasterRepository.findAll();
+	  List<InformativePaFasce> allFasce = informativePaFasceRepository.findAll();
+	  List<Pa> pas = paRepository.findAll();
 
-	    // TO-BE: uso della mappa invece del filtro
-	    Map<Long, List<IbanValidiPerPa>> ibanByPa = allIbans.stream()
-	        .collect(Collectors.groupingBy(IbanValidiPerPa::getFkPa));
+	  Map<Long, List<IbanValidiPerPa>> ibanByPa = allIbans.stream()
+			  .collect(Collectors.groupingBy(IbanValidiPerPa::getFkPa));
 
-	    Map<Long, List<InformativePaMaster>> masterByPa = allMasters.stream()
-	        .collect(Collectors.groupingBy(m -> m.getFkPa().getObjId()));
+	  Map<Long, List<InformativePaMaster>> masterByPa = allMasters.stream()
+			  .collect(Collectors.groupingBy(m -> m.getFkPa().getObjId()));
 
-	    Map<Long, List<InformativePaFasce>> fasceByDetail = 
-	    	    allFasce.stream()
-	    	            .filter(f -> f.getFkInformativaPaDetail() != null)
-	    	            .collect(Collectors.groupingBy(f -> f.getFkInformativaPaDetail().getId()));
-	    
-	    /*Map<Long, List<InformativePaFasce>> fasceByPa = allFasce.stream()
-	    	    .filter(f -> f.getFkInformativaPaDetail() != null &&
-	    	                 f.getFkInformativaPaDetail().getFkInformativaPaMaster() != null &&
-	    	                 f.getFkInformativaPaDetail().getFkInformativaPaMaster().getFkPa() != null)
-	    	    .collect(Collectors.groupingBy(f ->
-	    	        f.getFkInformativaPaDetail()
-	    	         .getFkInformativaPaMaster()
-	    	         .getFkPa()
-	    	         .getObjId()));*/
+	  Map<Long, List<InformativePaFasce>> fasceByDetail = 
+			  allFasce.stream()
+			  .filter(f -> f.getFkInformativaPaDetail() != null)
+			  .collect(Collectors.groupingBy(f -> f.getFkInformativaPaDetail().getId()));
 
-	    List<CreditorInstitutionInformation> informativePaSingleCache = new ArrayList<>();
-	    CtListaInformativeControparte informativaPaFull = new CtListaInformativeControparte();
-	    AtomicLong count = new AtomicLong(0L);
-	    int max = pas.size();
+	  List<CreditorInstitutionInformation> informativePaSingleCache = new ArrayList<>();
+	  CtListaInformativeControparte informativaPaFull = new CtListaInformativeControparte();
+	  AtomicLong count = new AtomicLong(0L);
+	  int max = pas.size();
 
-	    pas.forEach(pa -> {
-	        if (count.incrementAndGet() % 100 == 0) {
-	            log.info("Processed " + count.get() + " of " + max);
-	        }
-	        log.debug("Processing pa:" + pa.getIdDominio());
+	  pas.forEach(pa -> {
+		  if (count.incrementAndGet() % 100 == 0) {
+			  log.info("Processed " + count.get() + " of " + max);
+		  }
+		  log.debug("Processing pa:" + pa.getIdDominio());
 
-	        CtListaInformativeControparte ctListaInformativeControparte = new CtListaInformativeControparte();
-	        CtInformativaControparte ctInformativaControparte = new CtInformativaControparte();
-	        ctInformativaControparte.setIdentificativoDominio(pa.getIdDominio());
-	        ctInformativaControparte.setRagioneSociale(pa.getRagioneSociale());
-	        ctInformativaControparte.setContactCenterEnteCreditore("contactCenterEnteCreditore");
-	        ctInformativaControparte.setPagamentiPressoPSP(Boolean.TRUE.equals(pa.getPagamentoPressoPsp()) ? 1 : 0);
+		  CtListaInformativeControparte ctListaInformativeControparte = new CtListaInformativeControparte();
+		  CtInformativaControparte ctInformativaControparte = new CtInformativaControparte();
+		  ctInformativaControparte.setIdentificativoDominio(pa.getIdDominio());
+		  ctInformativaControparte.setRagioneSociale(pa.getRagioneSociale());
+		  ctInformativaControparte.setContactCenterEnteCreditore("contactCenterEnteCreditore");
+		  ctInformativaControparte.setPagamentiPressoPSP(Boolean.TRUE.equals(pa.getPagamentoPressoPsp()) ? 1 : 0);
 
-	        // TO-BE: uso della mappa invece del filtro
-	        List<IbanValidiPerPa> ibans = ibanByPa.getOrDefault(pa.getObjId(), Collections.emptyList());
-	        List<CtContoAccredito> contiaccredito = manageContiAccredito(ibans);
-	        ctInformativaControparte.getInformativaContoAccredito().addAll(contiaccredito);
+		  List<IbanValidiPerPa> ibans = ibanByPa.getOrDefault(pa.getObjId(), Collections.emptyList());
+		  List<CtContoAccredito> contiaccredito = manageContiAccredito(ibans);
+		  ctInformativaControparte.getInformativaContoAccredito().addAll(contiaccredito);
 
-	        List<InformativePaMaster> masters = masterByPa.getOrDefault(pa.getObjId(), Collections.emptyList());
-	        InformativePaMaster master = masters.isEmpty() ? null : masters.get(0);
+		  List<InformativePaMaster> masters = masterByPa.getOrDefault(pa.getObjId(), Collections.emptyList());
+		  InformativePaMaster master = masters.isEmpty() ? null : masters.get(0);
 
-	        if (master != null) {
-	            try {
-	                ctInformativaControparte.setDataInizioValidita(tsToXmlGC(master.getDataInizioValidita()));
-	            } catch (DatatypeConfigurationException e) {
-	                throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
-	            }
+		  if (master != null) {
+			  try {
+				  ctInformativaControparte.setDataInizioValidita(tsToXmlGC(master.getDataInizioValidita()));
+			  } catch (DatatypeConfigurationException e) {
+				  throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
+			  }
 
-	            List<InformativePaDetail> infodetails = master.getDetails();
-	            List<InformativePaFasce> fasce = infodetails.stream()
-	            	    .flatMap(detail -> fasceByDetail.getOrDefault(detail.getId(), Collections.emptyList()).stream())
-	            	    .collect(Collectors.toList());
+			  List<InformativePaDetail> infodetails = master.getDetails();
+			  List<InformativePaFasce> fasce = infodetails.stream()
+					  .flatMap(detail -> fasceByDetail.getOrDefault(detail.getId(), Collections.emptyList()).stream())
+					  .collect(Collectors.toList());
 
-	            List<CtErogazione> disponibilita = infodetails.stream()
-	                .filter(InformativePaDetail::getFlagDisponibilita)
-	                .map(d -> infoDetailToCtErogazione(fasce, d))
-	                .collect(Collectors.toList());
+			  List<CtErogazione> disponibilita = infodetails.stream()
+					  .filter(InformativePaDetail::getFlagDisponibilita)
+					  .map(d -> infoDetailToCtErogazione(fasce, d))
+					  .collect(Collectors.toList());
 
-	            List<CtErogazione> indisponibilita = infodetails.stream()
-	                .filter(d -> !d.getFlagDisponibilita())
-	                .map(d -> infoDetailToCtErogazione(fasce, d))
-	                .collect(Collectors.toList());
+			  List<CtErogazione> indisponibilita = infodetails.stream()
+					  .filter(d -> !d.getFlagDisponibilita())
+					  .map(d -> infoDetailToCtErogazione(fasce, d))
+					  .collect(Collectors.toList());
 
-	            CtErogazioneServizio ctErogazioneServizio = new CtErogazioneServizio();
-	            ctErogazioneServizio.getDisponibilita().addAll(disponibilita);
-	            ctErogazioneServizio.getIndisponibilita().addAll(indisponibilita);
-	            ctInformativaControparte.setErogazioneServizio(ctErogazioneServizio);
-	            ctListaInformativeControparte.getInformativaControparte().add(ctInformativaControparte);
+			  CtErogazioneServizio ctErogazioneServizio = new CtErogazioneServizio();
+			  ctErogazioneServizio.getDisponibilita().addAll(disponibilita);
+			  ctErogazioneServizio.getIndisponibilita().addAll(indisponibilita);
+			  ctInformativaControparte.setErogazioneServizio(ctErogazioneServizio);
+			  ctListaInformativeControparte.getInformativaControparte().add(ctInformativaControparte);
 
-	        } else if (!contiaccredito.isEmpty()) {
-	            ctInformativaControparte.setDataInizioValidita(contiaccredito.get(0).getDataAttivazioneIban());
-	            ctListaInformativeControparte.getInformativaControparte().add(ctInformativaControparte);
-	        }
+		  } else if (!contiaccredito.isEmpty()) {
+			  ctInformativaControparte.setDataInizioValidita(contiaccredito.get(0).getDataAttivazioneIban());
+			  ctListaInformativeControparte.getInformativaControparte().add(ctInformativaControparte);
+		  }
 
-	        CreditorInstitutionInformation cii = CreditorInstitutionInformation.builder()
-	            .pa(pa.getIdDominio())
-	            .informativa(toXml(ctListaInformativeControparte))
-	            .build();
-	        informativePaSingleCache.add(cii);
+		  CreditorInstitutionInformation cii = CreditorInstitutionInformation.builder()
+				  .pa(pa.getIdDominio())
+				  .informativa(toXml(ctListaInformativeControparte))
+				  .build();
+		  informativePaSingleCache.add(cii);
 
-	        if (Boolean.TRUE.equals(pa.getEnabled())) {
-	            informativaPaFull.getInformativaControparte()
-	                .addAll(ctListaInformativeControparte.getInformativaControparte());
-	        }
-	        log.debug("Processed pa:" + pa.getIdDominio());
-	    });
+		  if (Boolean.TRUE.equals(pa.getEnabled())) {
+			  informativaPaFull.getInformativaControparte()
+			  .addAll(ctListaInformativeControparte.getInformativaControparte());
+		  }
+		  log.debug("Processed pa:" + pa.getIdDominio());
+	  });
 
-	    log.debug("creating cache info full");
-	    CreditorInstitutionInformation informativaPAFull = CreditorInstitutionInformation.builder()
-	        .pa(Constants.FULL_INFORMATION)
-	        .informativa(toXml(informativaPaFull))
-	        .build();
+	  log.debug("creating cache info full");
+	  CreditorInstitutionInformation informativaPAFull = CreditorInstitutionInformation.builder()
+			  .pa(Constants.FULL_INFORMATION)
+			  .informativa(toXml(informativaPaFull))
+			  .build();
 
-	    informativePaSingleCache.add(informativaPAFull);
-	    return informativePaSingleCache;
-	}
-
-  public List<CreditorInstitutionInformation> getInformativePaOLD() {
-    log.info("loading InformativePa");
-    List<IbanValidiPerPa> allIbans = ibanValidiPerPaRepository.findAllFetchingPas();
-    List<InformativePaMaster> allMasters = informativePaMasterRepository.findAll();
-    List<InformativePaFasce> allFasce = informativePaFasceRepository.findAll();
-    List<Pa> pas = paRepository.findAll();
-
-    List<CreditorInstitutionInformation> informativePaSingleCache = new ArrayList<>();
-    CtListaInformativeControparte informativaPaFull = new CtListaInformativeControparte();
-    AtomicLong count = new AtomicLong(0l);
-    int max = pas.size();
-    pas.forEach(
-        pa -> {
-          if (count.incrementAndGet() % 100 == 0) {
-            log.info("Processed " + count.get() + " of " + max);
-          }
-          log.debug("Processing pa:" + pa.getIdDominio());
-          CtListaInformativeControparte ctListaInformativeControparte =
-              new CtListaInformativeControparte();
-
-          CtInformativaControparte ctInformativaControparte = new CtInformativaControparte();
-          ctInformativaControparte.setIdentificativoDominio(pa.getIdDominio());
-          ctInformativaControparte.setRagioneSociale(pa.getRagioneSociale());
-          ctInformativaControparte.setContactCenterEnteCreditore("contactCenterEnteCreditore");
-          ctInformativaControparte.setPagamentiPressoPSP(
-              Boolean.TRUE.equals(pa.getPagamentoPressoPsp()) ? 1 : 0);
-
-          List<IbanValidiPerPa> ibans =
-              allIbans
-                  .stream()
-                  .filter(i -> i.getFkPa().equals(pa.getObjId()))
-                  .collect(Collectors.toList());
-          List<CtContoAccredito> contiaccredito = manageContiAccredito(ibans);
-          ctInformativaControparte.getInformativaContoAccredito().addAll(contiaccredito);
-
-          List<InformativePaMaster> masters =
-              allMasters
-                  .stream()
-                  .filter(m -> m.getFkPa().getObjId().equals(pa.getObjId()))
-                  .collect(Collectors.toList());
-          InformativePaMaster master = null;
-          if (!masters.isEmpty()) {
-            master = masters.get(0);
-          }
-          if (master != null) {
-            try {
-              ctInformativaControparte.setDataInizioValidita(
-                  tsToXmlGC(master.getDataInizioValidita()));
-            } catch (DatatypeConfigurationException e) {
-              throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
-            }
-            List<InformativePaDetail> infodetails = master.getDetails();
-
-            List<CtErogazione> disponibilita =
-                infodetails
-                    .stream()
-                    .filter(d -> d.getFlagDisponibilita())
-                    .map(d -> infoDetailToCtErogazione(allFasce, d))
-                    .collect(Collectors.toList());
-            List<CtErogazione> indisponibilita =
-                infodetails
-                    .stream()
-                    .filter(d -> !d.getFlagDisponibilita())
-                    .map(d -> infoDetailToCtErogazione(allFasce, d))
-                    .collect(Collectors.toList());
-            CtErogazioneServizio ctErogazioneServizio = new CtErogazioneServizio();
-            ctErogazioneServizio.getDisponibilita().addAll(disponibilita);
-            ctErogazioneServizio.getIndisponibilita().addAll(indisponibilita);
-            ctInformativaControparte.setErogazioneServizio(ctErogazioneServizio);
-            ctListaInformativeControparte.getInformativaControparte().add(ctInformativaControparte);
-          } else if (!contiaccredito.isEmpty()) {
-            ctInformativaControparte.setDataInizioValidita(
-                contiaccredito.get(0).getDataAttivazioneIban());
-            ctListaInformativeControparte.getInformativaControparte().add(ctInformativaControparte);
-          }
-
-          CreditorInstitutionInformation cii =
-              CreditorInstitutionInformation.builder()
-                  .pa(pa.getIdDominio())
-                  .informativa(toXml(ctListaInformativeControparte))
-                  .build();
-          informativePaSingleCache.add(cii);
-          if (pa.getEnabled()) {
-            informativaPaFull
-                .getInformativaControparte()
-                .addAll(ctListaInformativeControparte.getInformativaControparte());
-          }
-          log.debug("Processed pa:" + pa.getIdDominio());
-        });
-
-    log.debug("creating cache info full");
-
-    CreditorInstitutionInformation informativaPAFull =
-        CreditorInstitutionInformation.builder()
-            .pa(Constants.FULL_INFORMATION)
-            .informativa(toXml(informativaPaFull))
-            .build();
-
-    informativePaSingleCache.add(informativaPAFull);
-    return informativePaSingleCache;
+	  informativePaSingleCache.add(informativaPAFull);
+	  return informativePaSingleCache;
   }
-
   
   private CtErogazione infoDetailToCtErogazione(List<InformativePaFasce> allFasce, InformativePaDetail det) {
     List<CtFasciaOraria> fasce = new ArrayList<>();

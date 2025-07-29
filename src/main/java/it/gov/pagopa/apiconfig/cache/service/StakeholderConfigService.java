@@ -34,9 +34,7 @@ import org.springframework.util.ReflectionUtils;
 
 import javax.transaction.Transactional;
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -99,10 +97,8 @@ public class StakeholderConfigService {
     private ConfigData generateCacheSchemaFromInMemory(Stakeholder stakeholder, String schemaVersion, String[] keys) throws IOException {
         // retrieve full cache and generate configDava
         HashMap<String, Object> inMemoryCache = cacheController.getInMemoryCache();
-        // AS-IS: full cache clone
-        //HashMap<String, Object> clonedInMemoryCache = (HashMap<String, Object>)inMemoryCache.clone();
 
-        // TO-BE: extraction of only the requested keys
+        // extraction of the requested keys
         Set<String> keysSet = new HashSet<>(Arrays.asList(keys));
         HashMap<String, Object> clonedInMemoryCache = new HashMap<>();
         for (String key : keysSet) {
@@ -138,11 +134,8 @@ public class StakeholderConfigService {
         // save cache on redis
         String actualKey = cacheKeyUtils.getCacheKey(getStakeholderWithSchema(stakeholder, schemaVersion));
         String actualKeyV1 = cacheKeyUtils.getCacheIdKey(getStakeholderWithSchema(stakeholder, schemaVersion));
-
-        // AS-IS: all in RAM
-        //byte[] cacheByteArray = compressJsonToGzip(configData);
         
-        // TO-BE: on temporary file
+        // create temporary file
         byte[] cacheByteArray = compressJsonToGzipFile(configData);
         
 
@@ -230,9 +223,7 @@ public class StakeholderConfigService {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        // TO-BE: this operation is no longer necessary, because we filter first
-        //Set<String> keysSet = new HashSet<>(Arrays.asList(keys));
-        //inMemoryCache.keySet().removeIf(key -> !keysSet.contains(key));
+        
         switch (stakeholder) {
             case STANDIN:
                 elaborateStandInCache(inMemoryCache);
