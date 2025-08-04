@@ -22,5 +22,7 @@ COPY --chown=spring:spring  --from=builder application/ ./
 
 EXPOSE 8080
 
+ENV JAVA_OPTS="-XX:+UnlockExperimentalVMOptions  -XX:InitiatingHeapOccupancyPercent=20 -XX:+UseContainerSupport -XX:+UseG1GC --XX:ParallelGCThreads=8 -XX:MaxGCPauseMillis=100 -XX:MinHeapFreeRatio=30 -XX:MaxHeapFreeRatio=30 -Xms512m -Xmx3800m"
+
 # this mode is required in order to inject the JAVA_OPTS from environment
 #ENTRYPOINT ["java","--enable-preview","org.springframework.boot.loader.JarLauncher"]
