@@ -4,7 +4,7 @@
     "title": "API-Config Cache ${service}",
     "description": "Generate cache for various microservices",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.9.35-2-PIDM-822-out-of-memory-error"
+    "version": "0.9.35-3-PIDM-822-release"
   },
   "servers": [
     {
