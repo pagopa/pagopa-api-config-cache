@@ -13,12 +13,12 @@ microservice-chart: &microservice-chart
     httpGet:
       path: /actuator/health/liveness
       port: 8080
-    initialDelaySeconds: 90
+    initialDelaySeconds: 30
   readinessProbe:
     httpGet:
       path: /actuator/health/readiness
       port: 8080
-    initialDelaySeconds: 90
+    initialDelaySeconds: 30
   ingress: &ingress
     create: true
     host: "weudev.apiconfig.internal.dev.platform.pagopa.it"
@@ -38,6 +38,8 @@ microservice-chart: &microservice-chart
     TZ: "Europe/Rome"
     AZURE_INSIGHTS_ENABLED: "true"
     REDIS_PORT: "6380"
+    REDIS_COMMAND_TIMEOUT: "30s"
+    REDIS_SOCKET_TIMEOUT: "10s"
     OTEL_SERVICE_NAME: "pagopa-api-config-cache"
     OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=azure-dev"
     OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"

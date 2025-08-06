@@ -59,7 +59,7 @@ public class CacheController {
             try {
                 inMemoryCache = cacheConfigService.loadFullCache();
             } catch (Exception e){
-                log.warn("could not load single keys cache from redis");
+                log.warn("Could not load single keys cache from redis: " + e.getMessage());
             }
         }
     }
