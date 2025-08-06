@@ -29,10 +29,10 @@ microservice-chart: &microservice-chart
   resources:
     requests:
       memory: "512Mi"
-      cpu: "0.5"
+      cpu: "0.25"
     limits:
-      memory: "6G"
-      cpu: "2.5"
+      memory: "2G"
+      cpu: "1"
   envConfig: &envConfig
     ENV: "dev"
     TZ: "Europe/Rome"
@@ -46,7 +46,7 @@ microservice-chart: &microservice-chart
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
     CACHET_TX_NAME: "nodo-dei-pagamenti-cache"
-    JAVA_OPTS: "-XX:+PrintFlagsFinal -XX:+UnlockExperimentalVMOptions -XX:InitiatingHeapOccupancyPercent=20 -XX:+UseContainerSupport -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:MaxGCPauseMillis=100 -XX:MinHeapFreeRatio=30 -XX:MaxHeapFreeRatio=30 -Xms512m -Xmx3800m"
+    JAVA_OPTS: "-XX:+PrintFlagsFinal -XX:+UnlockExperimentalVMOptions -XX:InitiatingHeapOccupancyPercent=20 -XX:+UseContainerSupport -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:MaxGCPauseMillis=100 -XX:MinHeapFreeRatio=30 -XX:MaxHeapFreeRatio=30 -Xms384m -Xmx1536m"
   envSecret: &envSecret
     APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-d-connection-string"
     REDIS_PWD: "redis-password"

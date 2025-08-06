@@ -13,12 +13,12 @@ microservice-chart: &microservice-chart
     httpGet:
       path: /actuator/health/liveness
       port: 8080
-    initialDelaySeconds: 90
+    initialDelaySeconds: 60
   readinessProbe:
     httpGet:
       path: /actuator/health/readiness
       port: 8080
-    initialDelaySeconds: 90
+    initialDelaySeconds: 60
   ingress: &ingress
     create: true
     host: "weuuat.apiconfig.internal.uat.platform.pagopa.it"
@@ -31,19 +31,22 @@ microservice-chart: &microservice-chart
       memory: "512Mi"
       cpu: "0.25"
     limits:
-      memory: "2G"
+      memory: "6G"
       cpu: "1"
   envConfig: &envConfig
     ENV: "uat"
     TZ: "Europe/Rome"
     AZURE_INSIGHTS_ENABLED: "true"
     REDIS_PORT: "6380"
+    REDIS_COMMAND_TIMEOUT: "30s"
+    REDIS_SOCKET_TIMEOUT: "10s"
     OTEL_SERVICE_NAME: "pagopa-api-config-cache"
     OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=azure-uat"
     OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
     CACHET_TX_NAME: "nodo-dei-pagamenti-cache"
+    JAVA_OPTS: "-XX:+PrintFlagsFinal -XX:+UnlockExperimentalVMOptions -XX:InitiatingHeapOccupancyPercent=20 -XX:+UseContainerSupport -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:MaxGCPauseMillis=100 -XX:MinHeapFreeRatio=30 -XX:MaxHeapFreeRatio=30 -Xms512m -Xmx3800m"
   envSecret: &envSecret
     APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-u-connection-string"
     REDIS_PWD: "redis-password"
