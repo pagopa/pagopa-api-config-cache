@@ -297,7 +297,8 @@ public class StakeholderConfigService {
     	ObjectMapper objectMapper = new ObjectMapper();
     	objectMapper.registerModule(new JavaTimeModule());
 
-    	Path tempPath = Files.createTempFile("cache", ".gz");
+        // add a random prefix to the temporary file name
+        Path tempPath = Files.createTempFile("cache_" + Calendar.getInstance().getTimeInMillis(), ".gz");
 
     	try (OutputStream fos = Files.newOutputStream(tempPath);
     			GZIPOutputStream gzipOut = new GZIPOutputStream(fos)) {
