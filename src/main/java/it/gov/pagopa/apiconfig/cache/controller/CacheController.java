@@ -59,7 +59,7 @@ public class CacheController {
             try {
                 inMemoryCache = cacheConfigService.loadFullCache();
             } catch (Exception e){
-                log.warn("could not load single keys cache from redis");
+                log.warn("Could not load single keys cache from redis: " + e.getMessage());
             }
         }
     }
@@ -187,7 +187,7 @@ public class CacheController {
     public ResponseEntity<Map<String,Object>> get(@RequestParam(required = false) List<String> keys) throws IOException {
 
         if (inMemoryCache == null) {
-            throw new AppException(AppError.CACHE_NOT_INITIALIZED);
+            throw new AppException(AppError.CACHE_NOT_INITIALIZED, "FULL");
         }
 
         HttpHeaders responseHeaders = new HttpHeaders();

@@ -31,7 +31,31 @@ jobs:
     environment: ${{ inputs.environment }}
     steps:
       - name: Deploy
-        uses: pagopa/github-actions-template/aks-deploy@main
+        # from https://github.com/pagopa/github-actions-template/commit/main
+        uses: pagopa/github-actions-template/aks-deploy@525266fb788f4da438e5919fcf660fe8637271ed
+        if: ${{ contains(inputs.environment, 'uat') }}
+        with:
+          branch: ${{ inputs.branch }}
+          client_id: ${{ secrets.CLIENT_ID }}
+          subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
+          tenant_id: ${{ secrets.TENANT_ID }}
+          env: ${{ inputs.environment }}
+          namespace: ${{ vars.NAMESPACE }}
+          cluster_name: ${{ vars.CLUSTER_NAME }}
+          resource_group: ${{ vars.CLUSTER_RESOURCE_GROUP }}
+          app_name: ${{ env.APP_NAME }}
+          helm_upgrade_options: ' --debug 
+            --set postgresql.forceRedeploy=${{ inputs.force_deploy }}
+            --set microservice-chart.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
+            --set refresh-p.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
+            --set refresh-p-replica.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
+            --set postgresql.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
+            --set postgresql-replica.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} '
+          timeout: '5m0s'
+      - name: Deploy
+        if: ${{ !contains(inputs.environment, 'uat') }}
+        # from https://github.com/pagopa/github-actions-template/commit/main
+        uses: pagopa/github-actions-template/aks-deploy@525266fb788f4da438e5919fcf660fe8637271ed
         with:
           branch: ${{ inputs.branch }}
           client_id: ${{ secrets.CLIENT_ID }}

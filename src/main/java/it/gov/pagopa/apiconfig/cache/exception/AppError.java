@@ -10,7 +10,7 @@ public enum AppError {
   CACHE_SCHEMA_NOT_VALID(
           HttpStatus.INTERNAL_SERVER_ERROR, "Cache schema error", "Cache schema not valid"),
   CACHE_ID_NOT_FOUND(HttpStatus.NOT_FOUND, "Cache id not found", "No Cache id found with key %s"),
-  CACHE_NOT_INITIALIZED(HttpStatus.NOT_FOUND, "Cache not initialized", "Call refresh first"),
+  CACHE_NOT_INITIALIZED(HttpStatus.NOT_FOUND, "Cache not initialized", "Call refresh first - Stakeholder: %s"),
   CACHE_NOT_READABLE(HttpStatus.INTERNAL_SERVER_ERROR, "Cache not readable", "Call refresh first");
 
   public final HttpStatus httpStatus;

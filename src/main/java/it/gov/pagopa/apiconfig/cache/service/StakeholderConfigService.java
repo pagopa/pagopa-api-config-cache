@@ -18,6 +18,8 @@ import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.util.CacheSchemaVersionDeserializer;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.cache.util.DateTimeUtils;
+import it.gov.pagopa.apiconfig.cache.util.DefaultFileDeleter;
+import it.gov.pagopa.apiconfig.cache.util.FileDeleter;
 import it.gov.pagopa.apiconfig.cache.util.JsonSerializer;
 import it.gov.pagopa.apiconfig.cache.util.JsonToXls;
 import it.gov.pagopa.apiconfig.cache.util.ZipUtils;
@@ -32,11 +34,14 @@ import org.springframework.util.ReflectionUtils;
 
 import javax.transaction.Transactional;
 import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.zip.GZIPOutputStream;
@@ -92,10 +97,19 @@ public class StakeholderConfigService {
     private ConfigData generateCacheSchemaFromInMemory(Stakeholder stakeholder, String schemaVersion, String[] keys) throws IOException {
         // retrieve full cache and generate configDava
         HashMap<String, Object> inMemoryCache = cacheController.getInMemoryCache();
-        HashMap<String, Object> clonedInMemoryCache = (HashMap<String, Object>)inMemoryCache.clone();
 
-        String xCacheId = (String)clonedInMemoryCache.getOrDefault(Constants.VERSION, Constants.NA);
-        ZonedDateTime utcDateTime = (ZonedDateTime) clonedInMemoryCache.get(Constants.TIMESTAMP);
+        // extraction of the requested keys
+        Set<String> keysSet = new HashSet<>(Arrays.asList(keys));
+        HashMap<String, Object> clonedInMemoryCache = new HashMap<>();
+        for (String key : keysSet) {
+            Object value = inMemoryCache.get(key);
+            if (value != null) {
+                clonedInMemoryCache.put(key, value);
+            }
+        }
+
+        String xCacheId = (String)inMemoryCache.getOrDefault(Constants.VERSION, Constants.NA);
+        ZonedDateTime utcDateTime = (ZonedDateTime) inMemoryCache.get(Constants.TIMESTAMP);
         String xCacheTimestamp = DateTimeUtils.getString(utcDateTime);
         String xCacheVersion = getGZIPVersion(schemaVersion);
 
@@ -120,8 +134,10 @@ public class StakeholderConfigService {
         // save cache on redis
         String actualKey = cacheKeyUtils.getCacheKey(getStakeholderWithSchema(stakeholder, schemaVersion));
         String actualKeyV1 = cacheKeyUtils.getCacheIdKey(getStakeholderWithSchema(stakeholder, schemaVersion));
-
-        byte[] cacheByteArray = compressJsonToGzip(configData);
+        
+        // create temporary file
+        byte[] cacheByteArray = compressJsonToGzipFile(configData);
+        
 
         log.info(String.format("saving on Redis %s %s", actualKey, actualKeyV1));
         redisRepository.pushToRedisAsync(actualKey, actualKeyV1, cacheByteArray, cacheSchemaVersion.getVersion().getBytes(StandardCharsets.UTF_8));
@@ -164,7 +180,7 @@ public class StakeholderConfigService {
                     .build();
         }
 
-        throw new AppException(AppError.CACHE_NOT_INITIALIZED);
+        throw new AppException(AppError.CACHE_NOT_INITIALIZED, stakeholder.toString());
     }
 
     public byte[] getXLSX(Stakeholder stakeholder, String schemaVersion) {
@@ -196,7 +212,7 @@ public class StakeholderConfigService {
             return new JsonToXls(xlsMaskPasswords).convert(inMemoryCacheFormat);
         }
 
-        throw new AppException(AppError.CACHE_NOT_INITIALIZED);
+        throw new AppException(AppError.CACHE_NOT_INITIALIZED, stakeholder.toString());
     }
 
     private String getStakeholderWithSchema(Stakeholder stakeholder, String schemaVersion) {
@@ -207,8 +223,7 @@ public class StakeholderConfigService {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        Set<String> keysSet = new HashSet<>(Arrays.asList(keys));
-        inMemoryCache.keySet().removeIf(key -> !keysSet.contains(key));
+        
         switch (stakeholder) {
             case STANDIN:
                 elaborateStandInCache(inMemoryCache);
@@ -258,6 +273,7 @@ public class StakeholderConfigService {
         jsonParser.close();
         return configData;
     }
+    
     public static byte[] compressJsonToGzip(Object object) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
@@ -270,6 +286,38 @@ public class StakeholderConfigService {
         }
 
         return byteArrayOutputStream.toByteArray();
+    }
+    
+    // Overload method to preserve backward compatibility
+    public static byte[] compressJsonToGzipFile(Object object) throws IOException {
+        return compressJsonToGzipFile(object, new DefaultFileDeleter());
+    }
+    
+    public static byte[] compressJsonToGzipFile(Object object, FileDeleter deleter) throws IOException {
+    	ObjectMapper objectMapper = new ObjectMapper();
+    	objectMapper.registerModule(new JavaTimeModule());
+
+        // add a random prefix to the temporary file name
+        Path tempPath = Files.createTempFile("cache_" + Calendar.getInstance().getTimeInMillis(), ".gz");
+
+    	try (OutputStream fos = Files.newOutputStream(tempPath);
+    			GZIPOutputStream gzipOut = new GZIPOutputStream(fos)) {
+    		objectMapper.writeValue(gzipOut, object);
+    	}
+
+    	byte[] compressed = Files.readAllBytes(tempPath);
+
+    	// Delete the temporary file
+    	try {
+    		 deleter.delete(tempPath);
+    	} catch (IOException e) {
+    		log.warn("Unable to delete temporary file: " + tempPath, e);
+    		// The exception is not raised because the compression was successful.
+    		// Fallback: schedule deletion on JVM shutdown
+    		tempPath.toFile().deleteOnExit();
+    	}
+
+    	return compressed;
     }
 
     private static Class getCacheSchemaVersionClass(String schemaVersion) {

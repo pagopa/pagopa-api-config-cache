@@ -2,7 +2,7 @@ microservice-chart: &microservice-chart
   namespace: "apiconfig"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: 0.9.35
+    tag: 0.9.35-8-PIDM-822-release
   canaryDelivery:
     deployment:
       image:
@@ -13,12 +13,12 @@ microservice-chart: &microservice-chart
     httpGet:
       path: /actuator/health/liveness
       port: 8080
-    initialDelaySeconds: 90
+    initialDelaySeconds: 60
   readinessProbe:
     httpGet:
       path: /actuator/health/readiness
       port: 8080
-    initialDelaySeconds: 90
+    initialDelaySeconds: 60
   ingress: &ingress
     create: true
     host: "weudev.apiconfig.internal.dev.platform.pagopa.it"
@@ -31,19 +31,22 @@ microservice-chart: &microservice-chart
       memory: "512Mi"
       cpu: "0.5"
     limits:
-      memory: "6G"
-      cpu: "2.5"
+      memory: "2G"
+      cpu: "1"
   envConfig: &envConfig
     ENV: "dev"
     TZ: "Europe/Rome"
     AZURE_INSIGHTS_ENABLED: "true"
     REDIS_PORT: "6380"
+    REDIS_COMMAND_TIMEOUT: "30s"
+    REDIS_SOCKET_TIMEOUT: "30s"
     OTEL_SERVICE_NAME: "pagopa-api-config-cache"
     OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=azure-dev"
     OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
     CACHET_TX_NAME: "nodo-dei-pagamenti-cache"
+    JAVA_OPTS: "-XX:+UnlockExperimentalVMOptions -XX:InitiatingHeapOccupancyPercent=20 -XX:+UseContainerSupport -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:MaxGCPauseMillis=100 -XX:MinHeapFreeRatio=30 -XX:MaxHeapFreeRatio=30 -Xms384m -Xmx1536m"
   envSecret: &envSecret
     APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-d-connection-string"
     REDIS_PWD: "redis-password"
