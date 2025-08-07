@@ -39,7 +39,7 @@ microservice-chart: &microservice-chart
     AZURE_INSIGHTS_ENABLED: "true"
     REDIS_PORT: "6380"
     REDIS_COMMAND_TIMEOUT: "30s"
-    REDIS_SOCKET_TIMEOUT: "10s"
+    REDIS_SOCKET_TIMEOUT: "30s"
     OTEL_SERVICE_NAME: "pagopa-api-config-cache"
     OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=azure-dev"
     OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
