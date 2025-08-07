@@ -180,7 +180,7 @@ public class StakeholderConfigService {
                     .build();
         }
 
-        throw new AppException(AppError.CACHE_NOT_INITIALIZED);
+        throw new AppException(AppError.CACHE_NOT_INITIALIZED, stakeholder.toString());
     }
 
     public byte[] getXLSX(Stakeholder stakeholder, String schemaVersion) {
@@ -212,7 +212,7 @@ public class StakeholderConfigService {
             return new JsonToXls(xlsMaskPasswords).convert(inMemoryCacheFormat);
         }
 
-        throw new AppException(AppError.CACHE_NOT_INITIALIZED);
+        throw new AppException(AppError.CACHE_NOT_INITIALIZED, stakeholder.toString());
     }
 
     private String getStakeholderWithSchema(Stakeholder stakeholder, String schemaVersion) {

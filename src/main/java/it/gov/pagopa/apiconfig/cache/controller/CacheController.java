@@ -187,7 +187,7 @@ public class CacheController {
     public ResponseEntity<Map<String,Object>> get(@RequestParam(required = false) List<String> keys) throws IOException {
 
         if (inMemoryCache == null) {
-            throw new AppException(AppError.CACHE_NOT_INITIALIZED);
+            throw new AppException(AppError.CACHE_NOT_INITIALIZED, "FULL");
         }
 
         HttpHeaders responseHeaders = new HttpHeaders();
