@@ -29,7 +29,7 @@ microservice-chart: &microservice-chart
   resources:
     requests:
       memory: "512Mi"
-      cpu: "0.25"
+      cpu: "0.5"
     limits:
       memory: "6G"
       cpu: "1"
@@ -39,14 +39,14 @@ microservice-chart: &microservice-chart
     AZURE_INSIGHTS_ENABLED: "true"
     REDIS_PORT: "6380"
     REDIS_COMMAND_TIMEOUT: "30s"
-    REDIS_SOCKET_TIMEOUT: "10s"
+    REDIS_SOCKET_TIMEOUT: "30s"
     OTEL_SERVICE_NAME: "pagopa-api-config-cache"
     OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=azure-uat"
     OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
     CACHET_TX_NAME: "nodo-dei-pagamenti-cache"
-    JAVA_OPTS: "-XX:+PrintFlagsFinal -XX:+UnlockExperimentalVMOptions -XX:InitiatingHeapOccupancyPercent=20 -XX:+UseContainerSupport -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:MaxGCPauseMillis=100 -XX:MinHeapFreeRatio=30 -XX:MaxHeapFreeRatio=30 -Xms512m -Xmx3800m"
+    JAVA_OPTS: "-XX:+UnlockExperimentalVMOptions -XX:InitiatingHeapOccupancyPercent=20 -XX:+UseContainerSupport -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:MaxGCPauseMillis=100 -XX:MinHeapFreeRatio=30 -XX:MaxHeapFreeRatio=30 -Xms512m -Xmx3800m"
   envSecret: &envSecret
     APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-u-connection-string"
     REDIS_PWD: "redis-password"
