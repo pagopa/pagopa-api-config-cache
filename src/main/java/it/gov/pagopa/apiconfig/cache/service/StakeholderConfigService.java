@@ -96,7 +96,7 @@ public class StakeholderConfigService {
             // Removing lock on cache schema generation, permitting next schema cache generation
             removeCacheSchemaGenerationInProgress("all");
         } else {
-            log.info(String.format("ConfigData not generated in memory for stakeholder [%s]. Is configData null? [%s] Is operation locked? [%s]", stakeholder, configData == null, canGenerateCacheSchema));
+            log.info(String.format("ConfigData not generated in memory for stakeholder [%s]. Is configData null? [%s] Is generation permitted? [%s]", stakeholder, configData == null, canGenerateCacheSchema));
         }
 
         return configData;
