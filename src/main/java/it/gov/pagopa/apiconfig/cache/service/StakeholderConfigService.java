@@ -90,7 +90,7 @@ public class StakeholderConfigService {
         if (configData == null && canGenerateCacheSchema) {
 
             // retrieve full cache and generate configData
-            log.info(String.format("ConfigData will be generated in memory for stakeholder [%s].", stakeholder));
+            log.info(String.format("ConfigData will be generated in memory for stakeholder [%s]. Generation is not permitted for other stakeholders.", stakeholder));
             configData = generateCacheSchemaFromInMemory(stakeholder, schemaVersion, keys);
 
             // Removing lock on cache schema generation, permitting next schema cache generation
