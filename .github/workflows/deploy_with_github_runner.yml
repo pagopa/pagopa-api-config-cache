@@ -31,7 +31,8 @@ jobs:
     environment: ${{ inputs.environment }}
     steps:
       - name: Deploy
-        uses: pagopa/github-actions-template/aks-deploy@main
+        # from https://github.com/pagopa/github-actions-template/commit/main
+        uses: pagopa/github-actions-template/aks-deploy@525266fb788f4da438e5919fcf660fe8637271ed
         if: ${{ contains(inputs.environment, 'uat') }}
         with:
           branch: ${{ inputs.branch }}
@@ -53,7 +54,8 @@ jobs:
           timeout: '5m0s'
       - name: Deploy
         if: ${{ !contains(inputs.environment, 'uat') }}
-        uses: pagopa/github-actions-template/aks-deploy@main
+        # from https://github.com/pagopa/github-actions-template/commit/main
+        uses: pagopa/github-actions-template/aks-deploy@525266fb788f4da438e5919fcf660fe8637271ed
         with:
           branch: ${{ inputs.branch }}
           client_id: ${{ secrets.CLIENT_ID }}
