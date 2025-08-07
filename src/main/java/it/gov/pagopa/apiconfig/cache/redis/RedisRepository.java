@@ -30,6 +30,14 @@ public class RedisRepository {
     redisTemplateObj.opsForValue().set(key, value, Duration.ofMinutes(ttl));
   }
 
+  /**
+   * Returns true if the value does not exists and is stored, false if already present.
+   *
+   * @param key
+   * @param value
+   * @param ttl
+   * @return
+   */
   public Boolean saveIfAbsent(String key, byte[] value, long ttl) {
       return redisTemplateObj.opsForValue().setIfAbsent(key, value, Duration.ofMinutes(ttl));
   }

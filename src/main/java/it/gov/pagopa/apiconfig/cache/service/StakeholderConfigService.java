@@ -86,13 +86,16 @@ public class StakeholderConfigService {
         // retrieve configDataVersion from Redis
         ConfigData configData = loadCache(stakeholder, schemaVersion);
 
-        if (configData == null && canGenerateCacheSchema("all")) {
+        boolean canGenerateCacheSchema = canGenerateCacheSchema("all");
+        if (configData == null && canGenerateCacheSchema) {
 
             // retrieve full cache and generate configDava
             configData = generateCacheSchemaFromInMemory(stakeholder, schemaVersion, keys);
 
             // Removing lock on cache schema generation, permitting next schema cache generation
             removeCacheSchemaGenerationInProgress("all");
+        } else {
+            log.info(String.format("ConfigData not generated in memory. Is configData null? [%s] Is operation locked? [%s]", configData == null, canGenerateCacheSchema));
         }
 
         return configData;
