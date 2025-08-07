@@ -92,24 +92,25 @@ postgresql:
     DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
 # postgres pagopa - PRF
 postgresql-replica:
-  enabled: false
-#  !!merge <<: *microservice-chart
-#  ingress:
-#    !!merge <<: *ingress
-#    path: /api-config-cache/pr/(.*)
-#  envConfig:
-#    !!merge <<: *envConfig
-#    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql-replica"
-#    DB_CONFIG_URL: "jdbc:postgresql://nodo-perf-db.u.internal.postgresql.pagopa.it:6432/nodo-replica?sslmode=require&prepareThreshold=0&currentSchema=cfg"
-#    DB_CONFIG_USER: "cfg"
-#    DB_CONFIG_DRIVER: "org.postgresql.Driver"
-#    DATABASE_ID: "pr"
-#    HEALTHCHECK_QUERY: "select 1"
-#    SAVE_DB: "false"
-#    SEND_EVENT: "false"
-#  envSecret:
-#    !!merge <<: *envSecret
-#    DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
+  enabled: true
+  !!merge <<: *microservice-chart
+  ingress:
+    !!merge <<: *ingress
+    path: /api-config-cache/pr/(.*)
+  envConfig:
+    !!merge <<: *envConfig
+    AZURE_INSIGHTS_ENABLED: "false"
+    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql-replica"
+    DB_CONFIG_URL: "jdbc:postgresql://nodo-perf-db.u.internal.postgresql.pagopa.it:6432/nodo-replica?sslmode=require&prepareThreshold=0&currentSchema=cfg"
+    DB_CONFIG_USER: "cfg"
+    DB_CONFIG_DRIVER: "org.postgresql.Driver"
+    DATABASE_ID: "pr"
+    HEALTHCHECK_QUERY: "select 1"
+    SAVE_DB: "false"
+    SEND_EVENT: "false"
+  envSecret:
+    !!merge <<: *envSecret
+    DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
 # postgres nexi - UAT
 postgresql-nexi:
   enabled: false
