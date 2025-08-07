@@ -30,6 +30,10 @@ public class RedisRepository {
     redisTemplateObj.opsForValue().set(key, value, Duration.ofMinutes(ttl));
   }
 
+  public Boolean saveIfAbsent(String key, byte[] value, long ttl) {
+      return redisTemplateObj.opsForValue().setIfAbsent(key, value, Duration.ofMinutes(ttl));
+  }
+
 //  public Map<String, Object> getCache(String key) {
 //    return redisTemplate.opsForValue().get(key);
 //  }
