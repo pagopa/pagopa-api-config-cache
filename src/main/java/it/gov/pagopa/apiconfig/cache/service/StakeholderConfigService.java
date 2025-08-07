@@ -89,13 +89,14 @@ public class StakeholderConfigService {
         boolean canGenerateCacheSchema = canGenerateCacheSchema("all");
         if (configData == null && canGenerateCacheSchema) {
 
-            // retrieve full cache and generate configDava
+            // retrieve full cache and generate configData
+            log.info(String.format("ConfigData will be generated in memory for stakeholder [%s].", stakeholder));
             configData = generateCacheSchemaFromInMemory(stakeholder, schemaVersion, keys);
 
             // Removing lock on cache schema generation, permitting next schema cache generation
             removeCacheSchemaGenerationInProgress("all");
         } else {
-            log.info(String.format("ConfigData not generated in memory. Is configData null? [%s] Is operation locked? [%s]", configData == null, canGenerateCacheSchema));
+            log.info(String.format("ConfigData not generated in memory for stakeholder [%s]. Is configData null? [%s] Is operation locked? [%s]", stakeholder, configData == null, canGenerateCacheSchema));
         }
 
         return configData;
