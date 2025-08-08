@@ -4,7 +4,7 @@
     "title": "API-Config Cache ${service}",
     "description": "Generate cache for various microservices",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.9.36-4-logging-aspect"
+    "version": "0.9.36-5-logging-aspect"
   },
   "servers": [
     {
