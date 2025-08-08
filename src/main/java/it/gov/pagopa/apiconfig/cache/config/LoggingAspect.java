@@ -88,7 +88,8 @@ public class LoggingAspect {
   @Before(value = "restController()")
   public void logApiInvocation(JoinPoint joinPoint) {
     log.info(
-        "Invoking API operation {} - args: {}",
+        "Invoking API operation {} {} - args: {}",
+        joinPoint.getTarget().getClass().getSimpleName(),
         joinPoint.getSignature().getName(),
         joinPoint.getArgs());
   }
@@ -96,12 +97,12 @@ public class LoggingAspect {
   @AfterReturning(value = "restController()", returning = "result")
   public void returnApiInvocation(JoinPoint joinPoint, Object result) {
     log.info(
-        "Successful API operation {} - result: {}", joinPoint.getSignature().getName(), result.getClass());
+        "Successful API operation {} {} - result: {}", joinPoint.getTarget().getClass().getSimpleName(), joinPoint.getSignature().getName(), result.getClass().getSimpleName());
   }
 
   @AfterReturning(value = "errorHandler()", returning = "result")
   public void trowingApiInvocation(JoinPoint joinPoint, Object result) {
-    log.info("Failed API operation {} - error: {}", joinPoint.getSignature().getName(), result);
+    log.info("Failed API operation {} {} - error: {}", joinPoint.getTarget().getClass().getSimpleName(), joinPoint.getSignature().getName(), result);
   }
 
   @Around(value = "repository() || service()")
@@ -119,7 +120,7 @@ public class LoggingAspect {
   @Around(value = "repository() || service()")
   public Object logTrace(ProceedingJoinPoint joinPoint) throws Throwable {
     log.debug(
-        "Call method {} - args: {}", joinPoint.getSignature().toShortString(), joinPoint.getArgs());
+        "Call method {} {} - args: {}", joinPoint.getTarget().getClass().getSimpleName(), joinPoint.getSignature().toShortString(), joinPoint.getArgs());
     Object result = joinPoint.proceed();
     log.debug("Return method {} - result: {}", joinPoint.getSignature().toShortString(), result);
     return result;

@@ -2,7 +2,7 @@ microservice-chart: &microservice-chart
   namespace: "apiconfig"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: 0.9.36
+    tag: 0.9.36-8-logging-aspect
   canaryDelivery:
     deployment:
       image:
@@ -31,7 +31,7 @@ microservice-chart: &microservice-chart
       memory: "512Mi"
       cpu: "0.5"
     limits:
-      memory: "4G"
+      memory: "6G"
       cpu: "1"
   envConfig: &envConfig
     ENV: "prod"
@@ -46,11 +46,12 @@ microservice-chart: &microservice-chart
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
     CACHET_TX_NAME: "nodo-dei-pagamenti-cache"
-    JAVA_OPTS: "-XX:+UnlockExperimentalVMOptions -XX:InitiatingHeapOccupancyPercent=20 -XX:+UseContainerSupport -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:MaxGCPauseMillis=100 -XX:MinHeapFreeRatio=30 -XX:MaxHeapFreeRatio=30 -Xms512m -Xmx3000m"
+    JAVA_OPTS: "-XX:+UnlockExperimentalVMOptions -XX:InitiatingHeapOccupancyPercent=20 -XX:+UseContainerSupport -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:MaxGCPauseMillis=100 -XX:MinHeapFreeRatio=30 -XX:MaxHeapFreeRatio=30 -Xms512m -Xmx3600m"
     HIKARI_CONNECTION_TIMEOUT: "60000"
     HIKARI_MAX_LIFETIME: "1800000"
     HIKARI_KEEPLIVE_TIME: "30000"
     HIKARI_MAXIMUM_POOL_SIZE: "20"
+    CACHE_SCHEMA_LOCK_ALL_STAKEHOLDER: "true"
   envSecret: &envSecret
     APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-p-connection-string"
     REDIS_PWD: "redis-password"

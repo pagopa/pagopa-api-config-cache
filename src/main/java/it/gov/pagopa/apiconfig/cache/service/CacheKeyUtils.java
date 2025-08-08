@@ -20,7 +20,10 @@ public class CacheKeyUtils {
     @Value("apicfg_${spring.database.id}_{{stakeholder}}_id")
     private String CACHE_ID_KEY;
 
-    private String STAKEHOLDER_PLACEHOLDER = "{{stakeholder}}";
+    private final String STAKEHOLDER_PLACEHOLDER = "{{stakeholder}}";
+
+    @Value("apicfg_${spring.database.id}_{{stakeholder}}_schema_caching_in_progress")
+    private String CACHE_GENERATION_LOCK_KEY;
 
     public String getCacheKeyInProgress(String stakeholder) {
         return CACHE_KEY_IN_PROGRESS.replace(STAKEHOLDER_PLACEHOLDER, stakeholder) + KEY_SUFFIX;
@@ -32,5 +35,9 @@ public class CacheKeyUtils {
 
     public String getCacheIdKey(String stakeholder) {
         return CACHE_ID_KEY.replace(STAKEHOLDER_PLACEHOLDER, stakeholder) + KEY_SUFFIX;
+    }
+
+    public String getCacheGenerationLockKey(String stakeholder) {
+        return CACHE_GENERATION_LOCK_KEY.replace(STAKEHOLDER_PLACEHOLDER, stakeholder) + KEY_SUFFIX;
     }
 }

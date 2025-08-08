@@ -2,7 +2,7 @@ microservice-chart: &microservice-chart
   namespace: "apiconfig"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: 0.9.36
+    tag: 0.9.36-8-logging-aspect
   canaryDelivery:
     deployment:
       image:
@@ -51,6 +51,7 @@ microservice-chart: &microservice-chart
     HIKARI_MAX_LIFETIME: "1800000"
     HIKARI_KEEPLIVE_TIME: "30000"
     HIKARI_MAXIMUM_POOL_SIZE: "20"
+    CACHE_SCHEMA_LOCK_ALL_STAKEHOLDER: "true"
   envSecret: &envSecret
     APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-u-connection-string"
     REDIS_PWD: "redis-password"
