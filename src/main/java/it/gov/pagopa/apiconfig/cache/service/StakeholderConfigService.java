@@ -151,7 +151,7 @@ public class StakeholderConfigService {
 
 
             log.info(String.format("saving on Redis %s %s", actualKey, actualKeyV1));
-            redisRepository.pushToRedisAsync(actualKey, actualKeyV1, cacheByteArray, cacheSchemaVersion.getVersion().getBytes(StandardCharsets.UTF_8));
+            redisRepository.pushToRedisSync(actualKey, actualKeyV1, cacheByteArray, cacheSchemaVersion.getVersion().getBytes(StandardCharsets.UTF_8));
 
             // Removing lock on cache schema generation, permitting next schema cache generation
             removeCacheSchemaGenerationInProgress(lockedStakeholders);

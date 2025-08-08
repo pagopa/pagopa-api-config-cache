@@ -78,6 +78,17 @@ public class RedisRepository {
     }
   }
 
+  public void pushToRedisSync(String key, String keyId, byte[] object, byte[] keyobject) {
+    try {
+      log.info("saving {} on redis", key);
+      save(key, object, 1440);
+      save(keyId, keyobject, 1440);
+      log.info("saved {} on redis, id {}", key, new String(keyobject, StandardCharsets.UTF_8));
+    } catch (Exception e) {
+      log.error("could not save on redis", e);
+    }
+  }
+
   @Async
   public void pushToRedisAsync(String key, byte[] object) {
     try {
