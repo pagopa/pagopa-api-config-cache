@@ -90,76 +90,76 @@ public class StakeholderConfigService {
         ConfigData configData = loadCache(stakeholder, schemaVersion);
 
         if (configData == null) {
-
-            String lockedStakeholders = cacheSchemaLockAllStakeholders ? "all" : stakeholder.toString();
-            boolean isLocked = saveCacheSchemaGenerationInProgress(lockedStakeholders, stakeholder.toString());
-            if (isLocked) {
-
-                // retrieve full cache and generate configData
-                log.info(String.format("ConfigData will be generated in memory for stakeholder [%s]. Generation is not permitted for other stakeholders.", stakeholder));
-                configData = generateCacheSchemaFromInMemory(stakeholder, schemaVersion, keys);
-
-                // Removing lock on cache schema generation, permitting next schema cache generation
-                removeCacheSchemaGenerationInProgress(lockedStakeholders);
-                log.info(String.format("ConfigData generated in memory for stakeholder [%s]. Generation has been unlocked for other stakeholders.", stakeholder));
-
-            } else {
-                log.debug(String.format("ConfigData not generated in memory for stakeholder [%s]. Generation is locked by another process.", stakeholder));
-                throw new AppException(AppError.CACHE_SCHEMA_NOT_INITIALIZED, stakeholder);
-            }
+            configData = generateCacheSchemaFromInMemory(stakeholder, schemaVersion, keys);
         }
 
         return configData;
     }
 
     private ConfigData generateCacheSchemaFromInMemory(Stakeholder stakeholder, String schemaVersion, String[] keys) throws IOException {
-        // retrieve full cache and generate configDava
-        HashMap<String, Object> inMemoryCache = cacheController.getInMemoryCache();
 
-        // extraction of the requested keys
-        Set<String> keysSet = new HashSet<>(Arrays.asList(keys));
-        HashMap<String, Object> clonedInMemoryCache = new HashMap<>();
-        for (String key : keysSet) {
-            Object value = inMemoryCache.get(key);
-            if (value != null) {
-                clonedInMemoryCache.put(key, value);
+        String lockedStakeholders = cacheSchemaLockAllStakeholders ? "all" : stakeholder.toString();
+        boolean isLocked = saveCacheSchemaGenerationInProgress(lockedStakeholders, stakeholder.toString());
+        if (isLocked) {
+
+            // retrieve full cache and generate configData
+            log.info(String.format("ConfigData will be generated in memory for stakeholder [%s]. Generation is not permitted for other stakeholders.", stakeholder));
+
+            // retrieve full cache and generate configDava
+            HashMap<String, Object> inMemoryCache = cacheController.getInMemoryCache();
+
+            // extraction of the requested keys
+            Set<String> keysSet = new HashSet<>(Arrays.asList(keys));
+            HashMap<String, Object> clonedInMemoryCache = new HashMap<>();
+            for (String key : keysSet) {
+                Object value = inMemoryCache.get(key);
+                if (value != null) {
+                    clonedInMemoryCache.put(key, value);
+                }
             }
-        }
 
-        String xCacheId = (String)inMemoryCache.getOrDefault(Constants.VERSION, Constants.NA);
-        ZonedDateTime utcDateTime = (ZonedDateTime) inMemoryCache.get(Constants.TIMESTAMP);
-        String xCacheTimestamp = DateTimeUtils.getString(utcDateTime);
-        String xCacheVersion = getGZIPVersion(schemaVersion);
+            String xCacheId = (String)inMemoryCache.getOrDefault(Constants.VERSION, Constants.NA);
+            ZonedDateTime utcDateTime = (ZonedDateTime) inMemoryCache.get(Constants.TIMESTAMP);
+            String xCacheTimestamp = DateTimeUtils.getString(utcDateTime);
+            String xCacheVersion = getGZIPVersion(schemaVersion);
 
-        // generate v1 cache version
-        clonedInMemoryCache.put(Constants.VERSION, xCacheId);
-        clonedInMemoryCache.put(Constants.CACHE_VERSION, xCacheVersion);
-        clonedInMemoryCache.put(Constants.TIMESTAMP, xCacheTimestamp);
-        CacheSchemaVersion cacheSchemaVersion = null;
-        if (schemaVersion.equals("v1")) {
-            cacheSchemaVersion = cacheToConfigDataV1(stakeholder, clonedInMemoryCache, keys);
+            // generate v1 cache version
+            clonedInMemoryCache.put(Constants.VERSION, xCacheId);
+            clonedInMemoryCache.put(Constants.CACHE_VERSION, xCacheVersion);
+            clonedInMemoryCache.put(Constants.TIMESTAMP, xCacheTimestamp);
+            CacheSchemaVersion cacheSchemaVersion = null;
+            if (schemaVersion.equals("v1")) {
+                cacheSchemaVersion = cacheToConfigDataV1(stakeholder, clonedInMemoryCache, keys);
+            } else {
+                throw new AppException(AppError.CACHE_SCHEMA_NOT_VALID);
+            }
+
+            ConfigData configData = ConfigData.builder()
+                    .cacheSchemaVersion(cacheSchemaVersion)
+                    .xCacheId(xCacheId)
+                    .xCacheTimestamp(xCacheTimestamp)
+                    .xCacheVersion(xCacheVersion)
+                    .build();
+
+            // save cache on redis
+            String actualKey = cacheKeyUtils.getCacheKey(getStakeholderWithSchema(stakeholder, schemaVersion));
+            String actualKeyV1 = cacheKeyUtils.getCacheIdKey(getStakeholderWithSchema(stakeholder, schemaVersion));
+
+            // create temporary file
+            byte[] cacheByteArray = compressJsonToGzipFile(configData);
+
+
+            log.info(String.format("saving on Redis %s %s", actualKey, actualKeyV1));
+            redisRepository.pushToRedisAsync(actualKey, actualKeyV1, cacheByteArray, cacheSchemaVersion.getVersion().getBytes(StandardCharsets.UTF_8));
+
+            // Removing lock on cache schema generation, permitting next schema cache generation
+            removeCacheSchemaGenerationInProgress(lockedStakeholders);
+            log.info(String.format("ConfigData generated in memory for stakeholder [%s]. Generation has been unlocked for other stakeholders.", stakeholder));
+
         } else {
-            throw new AppException(AppError.CACHE_SCHEMA_NOT_VALID);
+            log.debug(String.format("ConfigData not generated in memory for stakeholder [%s]. Generation is locked by another process.", stakeholder));
+            throw new AppException(AppError.CACHE_SCHEMA_NOT_INITIALIZED, stakeholder);
         }
-
-        ConfigData configData = ConfigData.builder()
-                .cacheSchemaVersion(cacheSchemaVersion)
-                .xCacheId(xCacheId)
-                .xCacheTimestamp(xCacheTimestamp)
-                .xCacheVersion(xCacheVersion)
-                .build();
-
-        // save cache on redis
-        String actualKey = cacheKeyUtils.getCacheKey(getStakeholderWithSchema(stakeholder, schemaVersion));
-        String actualKeyV1 = cacheKeyUtils.getCacheIdKey(getStakeholderWithSchema(stakeholder, schemaVersion));
-        
-        // create temporary file
-        byte[] cacheByteArray = compressJsonToGzipFile(configData);
-        
-
-        log.info(String.format("saving on Redis %s %s", actualKey, actualKeyV1));
-        redisRepository.pushToRedisAsync(actualKey, actualKeyV1, cacheByteArray, cacheSchemaVersion.getVersion().getBytes(StandardCharsets.UTF_8));
-
         return configData;
     }
 
