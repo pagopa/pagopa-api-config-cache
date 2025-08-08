@@ -60,6 +60,9 @@ public class StakeholderConfigService {
     @Value("${in_progress.ttl}")
     private long IN_PROGRESS_TTL;
 
+    @Value("${cache-schema.lock-all-stakeholders}")
+    private boolean cacheSchemaLockAllStakeholders;
+
     @Autowired private CacheController cacheController;
 
     @Autowired private RedisRepository redisRepository;
@@ -86,17 +89,23 @@ public class StakeholderConfigService {
         // retrieve configDataVersion from Redis
         ConfigData configData = loadCache(stakeholder, schemaVersion);
 
-        boolean canGenerateCacheSchema = canGenerateCacheSchema("all");
-        if (configData == null && canGenerateCacheSchema) {
+        if (configData == null) {
 
-            // retrieve full cache and generate configData
-            log.info(String.format("ConfigData will be generated in memory for stakeholder [%s]. Generation is not permitted for other stakeholders.", stakeholder));
-            configData = generateCacheSchemaFromInMemory(stakeholder, schemaVersion, keys);
+            String lockedStakeholders = cacheSchemaLockAllStakeholders ? "all" : stakeholder.toString();
+            boolean isLocked = saveCacheSchemaGenerationInProgress(lockedStakeholders, stakeholder.toString());
+            if (isLocked) {
 
-            // Removing lock on cache schema generation, permitting next schema cache generation
-            removeCacheSchemaGenerationInProgress("all");
-        } else {
-            log.info(String.format("ConfigData not generated in memory for stakeholder [%s]. Is configData null? [%s] Is generation permitted? [%s]", stakeholder, configData == null, canGenerateCacheSchema));
+                // retrieve full cache and generate configData
+                log.info(String.format("ConfigData will be generated in memory for stakeholder [%s]. Generation is not permitted for other stakeholders.", stakeholder));
+                configData = generateCacheSchemaFromInMemory(stakeholder, schemaVersion, keys);
+
+                // Removing lock on cache schema generation, permitting next schema cache generation
+                removeCacheSchemaGenerationInProgress(lockedStakeholders);
+
+            } else {
+                log.debug(String.format("ConfigData not generated in memory for stakeholder [%s]. Generation is locked by another process.", stakeholder));
+                throw new AppException(AppError.CACHE_SCHEMA_NOT_INITIALIZED, stakeholder);
+            }
         }
 
         return configData;
@@ -337,8 +346,8 @@ public class StakeholderConfigService {
         }
     }
 
-    private boolean canGenerateCacheSchema(String stakeholder) {
-        return redisRepository.saveIfAbsent(cacheKeyUtils.getCacheGenerationLockKey(stakeholder), "1".getBytes(StandardCharsets.UTF_8), 1);
+    private boolean saveCacheSchemaGenerationInProgress(String stakeholder, String lockValue) {
+        return redisRepository.saveIfAbsent(cacheKeyUtils.getCacheGenerationLockKey(stakeholder), lockValue.getBytes(StandardCharsets.UTF_8), 1);
     }
 
     private void removeCacheSchemaGenerationInProgress(String stakeholder) {
