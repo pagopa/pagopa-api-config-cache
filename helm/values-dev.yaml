@@ -47,6 +47,7 @@ microservice-chart: &microservice-chart
     OTEL_TRACES_SAMPLER: "always_on"
     CACHET_TX_NAME: "nodo-dei-pagamenti-cache"
     JAVA_OPTS: "-XX:+UnlockExperimentalVMOptions -XX:InitiatingHeapOccupancyPercent=20 -XX:+UseContainerSupport -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:MaxGCPauseMillis=100 -XX:MinHeapFreeRatio=30 -XX:MaxHeapFreeRatio=30 -Xms384m -Xmx1536m"
+    CACHE_SCHEMA_LOCK_ALL_STAKEHOLDERS: "true"
   envSecret: &envSecret
     APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-d-connection-string"
     REDIS_PWD: "redis-password"
