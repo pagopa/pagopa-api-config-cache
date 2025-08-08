@@ -12,7 +12,7 @@
 
   <groupId>it.gov.pagopa.api-config</groupId>
   <artifactId>cache</artifactId>
-  <version>0.9.36-7-logging-aspect</version>
+  <version>0.9.36-8-logging-aspect</version>
   <name>API-Config Cache</name>
   <description>Generate cache for various microservices</description>
 
