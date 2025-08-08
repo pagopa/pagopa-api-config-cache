@@ -40,7 +40,7 @@ helm/Chart.lock
 .cache
 /docker/.env
 .env
-.run
+/.run/
 
 .terraform
 /.identity/private_output.txt
