@@ -101,6 +101,7 @@ public class StakeholderConfigService {
 
                 // Removing lock on cache schema generation, permitting next schema cache generation
                 removeCacheSchemaGenerationInProgress(lockedStakeholders);
+                log.info(String.format("ConfigData generated in memory for stakeholder [%s]. Generation has been unlocked for other stakeholders.", stakeholder));
 
             } else {
                 log.debug(String.format("ConfigData not generated in memory for stakeholder [%s]. Generation is locked by another process.", stakeholder));
