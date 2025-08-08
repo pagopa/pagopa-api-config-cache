@@ -69,34 +69,34 @@ public class RedisRepository {
   @Async
   public void pushToRedisAsync(String key, String keyId, byte[] object, byte[] keyobject) {
     try {
-      log.info("saving {} on redis", key);
+      log.info("async saving {} on redis", key);
       save(key, object, 1440);
       save(keyId, keyobject, 1440);
-      log.info("saved {} on redis, id {}", key, new String(keyobject, StandardCharsets.UTF_8));
+      log.info("async saved {} on redis, id {}", key, new String(keyobject, StandardCharsets.UTF_8));
     } catch (Exception e) {
-      log.error("could not save on redis", e);
+      log.error("could not async-save on redis", e);
     }
   }
 
   public void pushToRedisSync(String key, String keyId, byte[] object, byte[] keyobject) {
     try {
-      log.info("saving {} on redis", key);
+      log.info("sync saving {} on redis", key);
       save(key, object, 1440);
       save(keyId, keyobject, 1440);
-      log.info("saved {} on redis, id {}", key, new String(keyobject, StandardCharsets.UTF_8));
+      log.info("sync saved {} on redis, id {}", key, new String(keyobject, StandardCharsets.UTF_8));
     } catch (Exception e) {
-      log.error("could not save on redis", e);
+      log.error("could not sync save on redis", e);
     }
   }
 
   @Async
   public void pushToRedisAsync(String key, byte[] object) {
     try {
-      log.info("saving {} on redis", key);
+      log.info("async saving {} on redis", key);
       save(key, object, 1440);
-      log.info("saved {} on redis", key);
+      log.info("async saved {} on redis", key);
     } catch (Exception e) {
-      log.error("could not save " + key + "on redis", e);
+      log.error("could not async-save " + key + "on redis", e);
     }
   }
 
