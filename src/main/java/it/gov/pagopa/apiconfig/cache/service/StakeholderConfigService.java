@@ -98,6 +98,7 @@ public class StakeholderConfigService {
 
     private ConfigData generateCacheSchemaFromInMemory(Stakeholder stakeholder, String schemaVersion, String[] keys) throws IOException {
 
+        ConfigData configData;
         String lockedStakeholders = cacheSchemaLockAllStakeholders ? "all" : stakeholder.toString();
         boolean isLocked = saveCacheSchemaGenerationInProgress(lockedStakeholders, stakeholder.toString());
         if (isLocked) {
@@ -134,7 +135,7 @@ public class StakeholderConfigService {
                 throw new AppException(AppError.CACHE_SCHEMA_NOT_VALID);
             }
 
-            ConfigData configData = ConfigData.builder()
+            configData = ConfigData.builder()
                     .cacheSchemaVersion(cacheSchemaVersion)
                     .xCacheId(xCacheId)
                     .xCacheTimestamp(xCacheTimestamp)
