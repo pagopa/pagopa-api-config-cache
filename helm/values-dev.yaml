@@ -10,15 +10,19 @@ microservice-chart: &microservice-chart
         tag: 0.8.0
     create: false
   livenessProbe:
-    httpGet:
-      path: /actuator/health/liveness
+    handlerType: tcpSocket
+    tcpSocket:
       port: 8080
     initialDelaySeconds: 60
+    periodSeconds: 60
+    failureThreshold: 5
   readinessProbe:
-    httpGet:
-      path: /actuator/health/readiness
+    handlerType: tcpSocket
+    tcpSocket:
       port: 8080
     initialDelaySeconds: 60
+    periodSeconds: 60
+    failureThreshold: 5
   ingress: &ingress
     create: true
     host: "weudev.apiconfig.internal.dev.platform.pagopa.it"
