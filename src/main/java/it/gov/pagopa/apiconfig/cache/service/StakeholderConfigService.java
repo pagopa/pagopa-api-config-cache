@@ -60,8 +60,8 @@ public class StakeholderConfigService {
     @Value("${in_progress.ttl}")
     private long IN_PROGRESS_TTL;
 
-    @Value("${cache-schema.lock-all-stakeholders}")
-    private boolean cacheSchemaLockAllStakeholders;
+    @Value("${cache-schema.lock-all-stakeholder}")
+    private boolean cacheSchemaLockAllStakeholder;
 
     @Autowired private CacheController cacheController;
 
@@ -99,7 +99,7 @@ public class StakeholderConfigService {
     private ConfigData generateCacheSchemaFromInMemory(Stakeholder stakeholder, String schemaVersion, String[] keys) throws IOException {
 
         ConfigData configData;
-        String lockedStakeholders = cacheSchemaLockAllStakeholders ? "all" : stakeholder.toString();
+        String lockedStakeholders = cacheSchemaLockAllStakeholder ? "all" : stakeholder.toString();
         boolean isLocked = saveCacheSchemaGenerationInProgress(lockedStakeholders, stakeholder.toString());
         if (isLocked) {
 

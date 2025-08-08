@@ -51,7 +51,7 @@ microservice-chart: &microservice-chart
     HIKARI_MAX_LIFETIME: "1800000"
     HIKARI_KEEPLIVE_TIME: "30000"
     HIKARI_MAXIMUM_POOL_SIZE: "20"
-    CACHE_SCHEMA_LOCK_ALL_STAKEHOLDERS: "true"
+    CACHE_SCHEMA_LOCK_ALL_STAKEHOLDER: "true"
   envSecret: &envSecret
     APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-p-connection-string"
     REDIS_PWD: "redis-password"
