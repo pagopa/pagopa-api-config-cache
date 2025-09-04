@@ -106,7 +106,7 @@ public class StakeholderConfigService {
             // retrieve full cache and generate configData
             log.info(String.format("ConfigData will be generated in memory for stakeholder [%s]. Generation is not permitted for other stakeholders.", stakeholder));
 
-            // retrieve full cache and generate configDava
+            // retrieve full cache and generate configData
             HashMap<String, Object> inMemoryCache = cacheController.getInMemoryCache();
 
             // extraction of the requested keys
@@ -198,8 +198,21 @@ public class StakeholderConfigService {
                     .version(cacheVersion)
                     .build();
         }
+        else {
+            try {
+                ConfigData configData = getCache(stakeholder, schemaVersion, keys);
 
-        throw new AppException(AppError.CACHE_NOT_INITIALIZED, stakeholder.toString());
+                return CacheVersion.builder()
+                        .version(configData.getCacheSchemaVersion().getVersion())
+                        .build();
+            }
+            catch (AppException e) {
+                throw e;
+            }
+            catch (Exception e) {
+                throw new AppException(AppError.CACHE_NOT_INITIALIZED, stakeholder.toString());
+            }
+        }
     }
 
     public byte[] getXLSX(Stakeholder stakeholder, String schemaVersion) {
