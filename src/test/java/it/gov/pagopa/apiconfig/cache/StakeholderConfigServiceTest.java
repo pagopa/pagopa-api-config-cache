@@ -35,8 +35,7 @@ import java.time.ZonedDateTime;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -99,6 +98,7 @@ class StakeholderConfigServiceTest {
     ReflectionTestUtils.setField(cacheKeyUtils, "CACHE_KEY_IN_PROGRESS", "apicfg_test_{{stakeholder}}_in_progress");
     ReflectionTestUtils.setField(cacheKeyUtils, "CACHE_KEY", "apicfg_test_{{stakeholder}}");
     ReflectionTestUtils.setField(cacheKeyUtils, "CACHE_ID_KEY", "apicfg_test_{{stakeholder}}_id");
+    ReflectionTestUtils.setField(cacheKeyUtils, "CACHE_GENERATION_LOCK_KEY", "apicfg_test_{{stakeholder}}_lock");
     org.springframework.test.util.ReflectionTestUtils.setField(stakeholderConfigService, "cacheKeyUtils", cacheKeyUtils);
     org.springframework.test.util.ReflectionTestUtils.setField(cacheController, "cacheConfigService", cacheConfigService);
     org.springframework.test.util.ReflectionTestUtils.setField(stakeholderConfigService, "cacheController", cacheController);
@@ -118,6 +118,7 @@ class StakeholderConfigServiceTest {
     ZonedDateTime now = ZonedDateTime.now();
     ZonedDateTime romeDateTime = DateTimeUtils.getZonedDateTime(now);
     TestUtils.inizializeInMemoryCache(cacheController, configMapper, version, cacheVersion, romeDateTime);
+    when(redisRepository.saveIfAbsent(anyString(), any(), anyLong())).thenReturn(true);
     ConfigData configData = stakeholderConfigService.getCache(Stakeholder.TEST, "v1", NodeCacheController.KEYS);
     assertThat(configData).isNotNull();
   }
@@ -130,6 +131,7 @@ class StakeholderConfigServiceTest {
     ZonedDateTime now = ZonedDateTime.now();
     ZonedDateTime romeDateTime = DateTimeUtils.getZonedDateTime(now);
     TestUtils.inizializeInMemoryCache(cacheController, configMapper, version, cacheVersion, romeDateTime);
+    when(redisRepository.saveIfAbsent(anyString(), any(), anyLong())).thenReturn(true);
     ConfigData configData = stakeholderConfigService.getCache(Stakeholder.STANDIN, "v1", NodeCacheController.KEYS);
     assertThat(configData).isNotNull();
   }
@@ -143,6 +145,7 @@ class StakeholderConfigServiceTest {
     ZonedDateTime now = ZonedDateTime.now();
     ZonedDateTime romeDateTime = DateTimeUtils.getZonedDateTime(now);
     TestUtils.inizializeInMemoryCache(cacheController, configMapper, version, cacheVersion, romeDateTime);
+    when(redisRepository.saveIfAbsent(anyString(), any(), anyLong())).thenReturn(true);
     ConfigData configData = stakeholderConfigService.getCache(Stakeholder.TEST, "v1", NodeCacheController.KEYS);
     stakeholderConfigService.saveOnDB(configData, "v1");
     assertThat(configData).isNotNull();
