@@ -150,13 +150,28 @@ class StakeholderConfigServiceTest {
     stakeholderConfigService.saveOnDB(configData, "v1");
     assertThat(configData).isNotNull();
   }
+
   @Test
   void getVersionId() throws IOException {
-    String version = "111";
-    when(redisRepository.get(any())).thenReturn(version.getBytes(StandardCharsets.UTF_8));
-    CacheVersion cacheVersion = stakeholderConfigService.getVersionId(Stakeholder.TEST, "v1", NodeCacheController.KEYS);
-    assertThat(cacheVersion.getVersion()).isEqualTo(version);
+      String version = "111";
+      when(redisRepository.get(any())).thenReturn(version.getBytes(StandardCharsets.UTF_8));
+      CacheVersion cacheVersion = stakeholderConfigService.getVersionId(Stakeholder.TEST, "v1", NodeCacheController.KEYS);
+      assertThat(cacheVersion.getVersion()).isEqualTo(version);
   }
+
+  @Test
+  void getVersionId_regenerate() throws IOException {
+      String version = "111";
+      String cacheVersion = Constants.GZIP_JSON + "-test";
+      ZonedDateTime now = ZonedDateTime.now();
+      ZonedDateTime romeDateTime = DateTimeUtils.getZonedDateTime(now);
+      TestUtils.inizializeInMemoryCache(cacheController, configMapper, version, cacheVersion, romeDateTime);
+      when(redisRepository.get(any())).thenReturn(null);
+      when(redisRepository.saveIfAbsent(anyString(), any(), anyLong())).thenReturn(true);
+      CacheVersion generatedCache = stakeholderConfigService.getVersionId(Stakeholder.TEST, "v1", NodeCacheController.KEYS);
+      assertThat(generatedCache.getVersion()).isEqualTo(version);
+  }
+
 
   @Test
   void getXLSX() throws IOException {
