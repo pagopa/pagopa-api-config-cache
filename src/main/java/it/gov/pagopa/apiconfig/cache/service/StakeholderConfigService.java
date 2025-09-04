@@ -324,7 +324,8 @@ public class StakeholderConfigService {
     public static byte[] compressJsonToGzipFile(Object object) throws IOException {
         return compressJsonToGzipFile(object, new DefaultFileDeleter());
     }
-    
+
+    @SuppressWarnings("java:S5443")
     public static byte[] compressJsonToGzipFile(Object object, FileDeleter deleter) throws IOException {
     	ObjectMapper objectMapper = new ObjectMapper();
     	objectMapper.registerModule(new JavaTimeModule());
