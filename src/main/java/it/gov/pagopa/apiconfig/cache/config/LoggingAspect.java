@@ -95,8 +95,8 @@ public class LoggingAspect {
 
   @AfterReturning(value = "restController()", returning = "result")
   public void returnApiInvocation(JoinPoint joinPoint, Object result) {
-    log.info(
-        "Successful API operation {} - result: {}", joinPoint.getSignature().getName(), result.getClass());
+//    log.info(
+//        "Successful API operation {} - result: {}", joinPoint.getSignature().getName(), result.getClass());
   }
 
   @AfterReturning(value = "errorHandler()", returning = "result")

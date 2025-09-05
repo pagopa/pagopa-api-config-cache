@@ -1,5 +1,8 @@
 package it.gov.pagopa.apiconfig.cache.model.latest.common;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Optional;
