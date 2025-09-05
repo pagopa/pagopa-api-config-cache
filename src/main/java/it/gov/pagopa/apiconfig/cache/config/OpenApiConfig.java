@@ -59,7 +59,7 @@ public class OpenApiConfig {
                         .in(SecurityScheme.In.HEADER)))
         .info(
             new Info()
-                .title(appName+" ${service}")
+                .title(String.format("%s v%s - %s", appName, appVersion, "${service}"))
                 .version(appVersion)
                 .description(appDescription)
                 .termsOfService("https://www.pagopa.gov.it/"));
