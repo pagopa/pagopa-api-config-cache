@@ -40,7 +40,7 @@ module "apim_api_apiconfig_cache_node_api_v1_p" {
 
 
 resource "azurerm_api_management_api_version_set" "api_apiconfig_cache_replica_node_api_p" {
-  count               = var.env_short == "p" ? 0 : 1
+  count               = var.env_short == "u" ? 1 : 0
   name                  = "${var.env_short}-${var.domain}-cache-replica-node-${local.postgres}-api"
   resource_group_name = local.apim.rg
   api_management_name = local.apim.name
@@ -50,7 +50,7 @@ resource "azurerm_api_management_api_version_set" "api_apiconfig_cache_replica_n
 
 module "apim_api_apiconfig_cache_replica_node_api_v1_p" {
   source = "git::https://github.com/pagopa/terraform-azurerm-v3.git//api_management_api?ref=v8.5.0"
-  count  = var.env_short == "p" ? 0 : 1
+  count  = var.env_short == "u" ? 1 : 0
 
   name                  = "${var.env_short}-${var.domain}-cache-replica-node-${local.postgres}-api"
   api_management_name   = local.apim.name
