@@ -12,7 +12,7 @@
 
   <groupId>it.gov.pagopa.api-config</groupId>
   <artifactId>cache</artifactId>
-  <version>0.9.39</version>
+  <version>0.9.40</version>
   <name>API-Config Cache</name>
   <description>Generate cache for various microservices</description>
 
