@@ -4,7 +4,7 @@
     "title": "API-Config Cache ${service}",
     "description": "Generate cache for various microservices",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.9.38"
+    "version": "0.9.38-1-cache-id"
   },
   "servers": [
     {
@@ -42,12 +42,15 @@
           "403": {
             "description": "Forbidden"
           },
-          "200": {
-            "description": "OK",
+          "429": {
+            "description": "Too many requests"
+          },
+          "400": {
+            "description": "Bad Request",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/ProblemJson"
                 }
               }
             }
@@ -62,15 +65,12 @@
               }
             }
           },
-          "429": {
-            "description": "Too many requests"
-          },
-          "400": {
-            "description": "Bad Request",
+          "200": {
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
+                  "type": "string"
                 }
               }
             }

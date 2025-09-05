@@ -4,7 +4,7 @@
     "title": "API-Config Cache ${service}",
     "description": "Generate cache for various microservices",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.9.38"
+    "version": "0.9.38-1-cache-id"
   },
   "servers": [
     {
@@ -42,6 +42,19 @@
           "403": {
             "description": "Forbidden"
           },
+          "429": {
+            "description": "Too many requests"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Service unavailable",
             "content": {
@@ -52,23 +65,10 @@
               }
             }
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "200": {
             "description": "OK",
             "content": {
               "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
             }
           }
         },
@@ -93,6 +93,19 @@
           "403": {
             "description": "Forbidden"
           },
+          "429": {
+            "description": "Too many requests"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Service unavailable",
             "content": {
@@ -103,23 +116,10 @@
               }
             }
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "200": {
             "description": "OK",
             "content": {
               "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
             }
           }
         },
@@ -144,6 +144,19 @@
           "403": {
             "description": "Forbidden"
           },
+          "429": {
+            "description": "Too many requests"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Service unavailable",
             "content": {
@@ -154,23 +167,10 @@
               }
             }
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "200": {
             "description": "OK",
             "content": {
               "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
             }
           }
         },
@@ -195,6 +195,19 @@
           "403": {
             "description": "Forbidden"
           },
+          "429": {
+            "description": "Too many requests"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Service unavailable",
             "content": {
@@ -205,23 +218,10 @@
               }
             }
           },
-          "429": {
-            "description": "Too many requests"
-          },
           "200": {
             "description": "OK",
             "content": {
               "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
             }
           }
         },
