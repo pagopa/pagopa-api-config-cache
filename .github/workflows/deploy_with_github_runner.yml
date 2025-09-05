@@ -95,8 +95,8 @@ jobs:
         # from https://github.com/hashicorp/setup-terraform/commits/main
         uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd #v3.1.2
         with:
-#          terraform_version: "${{ env.TERRAFORM_VERSION }}"
           terraform_version: "1.10.4"
+          #terraform_version: "${{ env.TERRAFORM_VERSION }}"
 
       - name: Apply terraform.sh
         uses: pagopa/eng-github-actions-iac-template/azure/terraform-sh-apply-azure-action@159289e1e23d0783533d1dd83e1b7cf0a5a565d9 #v1.24.0
