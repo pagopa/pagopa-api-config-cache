@@ -98,7 +98,7 @@ jobs:
           terraform_version: "${{ env.TERRAFORM_VERSION }}"
 
       - name: Apply terraform.sh
-        uses: pagopa/eng-github-actions-iac-template/azure/terraform-sh-apply-azure-action@ae723dfbdc457ffa6b4acd99f2444fc08c1efb85 #v1.11.0
+        uses: pagopa/eng-github-actions-iac-template/azure/terraform-sh-apply-azure-action@159289e1e23d0783533d1dd83e1b7cf0a5a565d9 #v1.24.0
         with:
           client_id: "${{ secrets.CLIENT_ID }}"
           tenant_id: "${{ secrets.TENANT_ID }}"
