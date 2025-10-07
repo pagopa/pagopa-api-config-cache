@@ -10,6 +10,14 @@ basecache: &basecache
       path: /actuator/health/readiness
       port: 8080
     initialDelaySeconds: 30
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  deployment:
+    create: true
+    replicas: 1 # default
   ingress: &ingress
     create: true
     host: "weuuat.apiconfig.internal.uat.platform.pagopa.it"
