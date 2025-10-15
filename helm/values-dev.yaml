@@ -23,14 +23,14 @@ microservice-chart: &microservice-chart
     initialDelaySeconds: 60
     periodSeconds: 60
     failureThreshold: 5
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0
-      maxSurge: 1
   deployment:
     create: true
     replicas: 1 # default
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 0
+        maxSurge: 1
   ingress: &ingress
     create: true
     host: "weudev.apiconfig.internal.dev.platform.pagopa.it"
