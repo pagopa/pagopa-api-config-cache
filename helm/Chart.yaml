@@ -9,12 +9,12 @@ dependencies:
   ## PAGOPA   ##
   ##############
   - name: microservice-chart
-    version: 7.5.0
+    version: 8.0.2
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
     alias: postgresql # postgres pagopa
     condition: postgresql.enabled
   - name: microservice-chart
-    version: 7.5.0
+    version: 8.0.2
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
     alias: postgresql-replica # postgres pagopa
     condition: postgresql-replica.enabled
@@ -34,17 +34,17 @@ dependencies:
   ## NEXI     ##
   ##############
   - name: microservice-chart
-    version: 7.5.0
+    version: 8.0.2
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
     alias: oracle # oracle nexi (sit, uat, prod)
     condition: oracle.enabled
   - name: microservice-chart
-    version: 7.5.0
+    version: 8.0.2
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
     alias: oracledev # oracle nexi (dev o prf)
     condition: oracledev.enabled
   - name: microservice-chart
-    version: 7.5.0
+    version: 8.0.2
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
     alias: oracleprod # oracle nexi (prod in dev per test)
     condition: oracleprod.enabled
@@ -69,7 +69,7 @@ dependencies:
   ## NEXI     ##
   ##############
   - name: microservice-chart
-    version: 7.5.0
+    version: 8.0.2
     repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
     alias: postgresql-nexi # postgres nexi
     condition: postgresql-nexi.enabled
