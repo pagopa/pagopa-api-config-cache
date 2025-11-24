@@ -71,6 +71,7 @@ jobs:
             --set postgresql.forceRedeploy=${{ inputs.force_deploy }}
             --set microservice-chart.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
             --set refresh-p.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}}
+            --set cache-purging.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} 
             --set postgresql.azure.workloadIdentityClientId=${{vars.WORKLOAD_IDENTITY_ID}} '
           timeout: '5m0s'
 
