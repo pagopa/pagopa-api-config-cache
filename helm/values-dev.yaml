@@ -2,7 +2,7 @@ microservice-chart: &microservice-chart
   namespace: "apiconfig"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: 0.9.42
+    tag: 0.9.42-1-PAGOPA-3402
   canaryDelivery:
     deployment:
       image:
@@ -112,13 +112,7 @@ cache-purging:
     pullPolicy: "Always"
   command:
     - "psql"
-  args:
-    [
-      "-h", "$(DB_CONFIG_HOST)",
-      "-U", "$(DB_CONFIG_USER)",
-      "-d", "$(DB_CONFIG_NAME)",
-      "-c", "CALL cache_pruning($(MIN_RECORDS_IN_TABLE), $(START_DATE), $(TTL_DAYS));"
-    ]
+  args: ["-h", "$(DB_CONFIG_HOST)", "-U", "$(DB_CONFIG_USER)", "-d", "$(DB_CONFIG_NAME)", "-c", "CALL cache_pruning($(MIN_RECORDS_IN_TABLE), $(START_DATE), $(TTL_DAYS));"]
   resources:
     requests:
       memory: "64Mi"
