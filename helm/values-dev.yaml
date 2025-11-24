@@ -99,6 +99,63 @@ postgresql:
   envSecret:
     !!merge <<: *envSecret
     DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
+# Cron for purging data from cfg.cache table
+cache-purging:
+  enabled: true
+  namespace: "apiconfig"
+  schedule: "0 0 * * *"
+  timeZone: "Europe/Rome"
+  successfulJobsHistoryLimit: "1"
+  image:
+    repository: "andrea-deri/psql"
+    tag: "1.0.0"
+    pullPolicy: "Always"
+  command:
+    - "psql"
+  args:
+    [
+      "-h", "$(DB_CONFIG_HOST)",
+      "-U", "$(DB_CONFIG_USER)",
+      "-d", "$(DB_CONFIG_NAME)",
+      "-c", "CALL cache_pruning($(MIN_RECORDS_IN_TABLE), $(START_DATE), $(TTL_DAYS));"
+    ]
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "100m"
+    limits:
+      memory: "128Mi"
+      cpu: "150m"
+  envConfig:
+    !!merge <<: *envConfig
+    DB_CONFIG_HOST: "nodo-db.d.internal.postgresql.pagopa.it"
+    DB_CONFIG_NAME: "5432"
+    DB_CONFIG_USER: "cfg"
+    MIN_RECORDS_IN_TABLE: "40000"
+    START_DATE: "NULL"
+    TTL_DAYS: "7"
+  envSecrets:
+    !!merge <<: *envSecret
+    PGPASSWORD: "postgresql-db-cfg-password"
+  keyvault:
+    name: "pagopa-d-apiconfig-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+  serviceAccount:
+    name: "apiconfig-workload-identity"
+  tolerations:
+    - key: dedicated
+      operator: Equal
+      value: "apiconfig"
+      effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node_type
+                operator: In
+                values:
+                  - user
 # postgres pagopa - IT
 postgresql-replica:
   enabled: false
