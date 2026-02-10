@@ -109,7 +109,7 @@ postgresql:
     DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
 # postgres pagopa - PRF
 postgresql-replica:
-  enabled: true
+  enabled: false
   !!merge <<: *microservice-chart
   ingress:
     !!merge <<: *ingress
