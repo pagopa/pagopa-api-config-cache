@@ -40,11 +40,11 @@ microservice-chart: &microservice-chart
     workloadIdentityClientId: <workload-identity-client-id-set-automatically-by-gha>
   resources:
     requests:
-      memory: "512Mi"
-      cpu: "0.5"
-    limits:
-      memory: "6G"
+      memory: "8G"
       cpu: "1"
+    limits:
+      memory: "8G"
+      cpu: "2"
   envConfig: &envConfig
     ENV: "prod"
     TZ: "Europe/Rome"
@@ -58,8 +58,8 @@ microservice-chart: &microservice-chart
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
     CACHET_TX_NAME: "nodo-dei-pagamenti-cache"
-    JAVA_OPTS: "-XX:+UseContainerSupport -XX:+UseG1GC -Xms5000m -Xmx5000m -XX:MaxGCPauseMillis=200 -XX:ConcGCThreads=2"
-    JAVA_TOOL_OPTIONS: "-XX:+UseContainerSupport -XX:+UseG1GC -Xms5000m -Xmx5000m -XX:MaxGCPauseMillis=200 -XX:ConcGCThreads=2"
+    JAVA_OPTS: "-XX:+UseContainerSupport -XX:+UseG1GC -Xms6000m -Xmx6000m -XX:MaxGCPauseMillis=200 -XX:ConcGCThreads=2"
+    JAVA_TOOL_OPTIONS: "-XX:+UseContainerSupport -XX:+UseG1GC -Xms6000m -Xmx6000m -XX:MaxGCPauseMillis=200 -XX:ConcGCThreads=2"
     HIKARI_CONNECTION_TIMEOUT: "30000"
     HIKARI_MAX_LIFETIME: "1800000"
     HIKARI_KEEPLIVE_TIME: "120000"
@@ -174,11 +174,11 @@ refresh-p:
     - "https://api.platform.pagopa.it/api-config-cache/p/v1/cache/refresh"
   resources:
     requests:
-      memory: "6656Mi"
-      cpu: "1"
+      memory: "512Mi"
+      cpu: "0.5"
     limits:
-      memory: "6656Mi"
-      cpu: "2"
+      memory: "6G"
+      cpu: "1"
   envSecrets:
     !!merge <<: *envSecret
     API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
