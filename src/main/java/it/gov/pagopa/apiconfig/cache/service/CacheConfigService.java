@@ -49,7 +49,6 @@ import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.cache.util.DateTimeUtils;
-import it.gov.pagopa.apiconfig.cache.util.ZipUtils;
 import it.gov.pagopa.apiconfig.starter.entity.CdiMasterValid;
 import it.gov.pagopa.apiconfig.starter.entity.IbanValidiPerPa;
 import it.gov.pagopa.apiconfig.starter.entity.InformativePaDetail;
@@ -75,6 +74,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -95,6 +95,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 @Slf4j
@@ -174,11 +175,12 @@ public class CacheConfigService {
     log.info("Loading full cache");
 
     byte[] bytes = redisRepository.get(cacheKeyUtils.getCacheKey(Constants.FULL));
-    byte[] unzipped = ZipUtils.unzip(bytes);
     JsonFactory jsonFactory = new JsonFactory();
-    JsonParser jsonParser = jsonFactory.createParser(unzipped);
-    FullData fulldata = objectMapper.readValue(jsonParser, FullData.class);
-    jsonParser.close();
+    FullData fulldata;
+    try (GZIPInputStream gzipIn = new GZIPInputStream(new ByteArrayInputStream(bytes));
+         JsonParser jsonParser = jsonFactory.createParser(gzipIn)) {
+      fulldata = objectMapper.readValue(jsonParser, FullData.class);
+    }
 
     HashMap<String, Object> configData = new HashMap<>();
     configData.put(Constants.VERSION, fulldata.getVersion());

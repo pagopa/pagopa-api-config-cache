@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
@@ -16,11 +15,10 @@ public class JsonSerializer {
   @Autowired private ObjectMapper objectMapper;
 
   public byte[] serialize(Map<String,Object> value) throws IOException {
-    String stringed = objectMapper.writeValueAsString(value);
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    GZIPOutputStream gzipOut = new GZIPOutputStream(baos);
-    gzipOut.write(stringed.getBytes(StandardCharsets.UTF_8));
-    gzipOut.close();
+    try (GZIPOutputStream gzipOut = new GZIPOutputStream(baos)) {
+      objectMapper.writeValue(gzipOut, value);
+    }
     return baos.toByteArray();
   }
 }

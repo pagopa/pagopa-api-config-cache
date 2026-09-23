@@ -22,7 +22,6 @@ import it.gov.pagopa.apiconfig.cache.util.DefaultFileDeleter;
 import it.gov.pagopa.apiconfig.cache.util.FileDeleter;
 import it.gov.pagopa.apiconfig.cache.util.JsonSerializer;
 import it.gov.pagopa.apiconfig.cache.util.JsonToXls;
-import it.gov.pagopa.apiconfig.cache.util.ZipUtils;
 import it.gov.pagopa.apiconfig.starter.entity.Cache;
 import it.gov.pagopa.apiconfig.starter.repository.CacheRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
 import javax.transaction.Transactional;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.IOException;
@@ -44,6 +44,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 @Slf4j
@@ -294,16 +295,15 @@ public class StakeholderConfigService {
     }
 
     private static ConfigData decompressGzipToConfigData(byte[] gzipBytes, String schemaVersion) throws IOException {
-        byte[] unzipped = ZipUtils.unzip(gzipBytes);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         SimpleModule module = new SimpleModule();
         module.addDeserializer(CacheSchemaVersion.class, new CacheSchemaVersionDeserializer(getCacheSchemaVersionClass(schemaVersion)));
         objectMapper.registerModule(module);
-        JsonParser jsonParser = objectMapper.getFactory().createParser(unzipped);
-        ConfigData configData = objectMapper.readValue(jsonParser, ConfigData.class);
-        jsonParser.close();
-        return configData;
+        try (GZIPInputStream gzipIn = new GZIPInputStream(new ByteArrayInputStream(gzipBytes));
+             JsonParser jsonParser = objectMapper.getFactory().createParser(gzipIn)) {
+            return objectMapper.readValue(jsonParser, ConfigData.class);
+        }
     }
     
     public static byte[] compressJsonToGzip(Object object) throws IOException {
