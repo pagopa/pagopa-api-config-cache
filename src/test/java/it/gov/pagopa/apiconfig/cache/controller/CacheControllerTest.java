@@ -10,6 +10,8 @@ import it.gov.pagopa.apiconfig.cache.service.VerifierService;
 import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.cache.util.DateTimeUtils;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -126,7 +128,18 @@ class CacheControllerTest {
     String version = "111";
     String cacheVersion = Constants.GZIP_JSON + "-test";
     ZonedDateTime now = ZonedDateTime.now();
-    when(cacheConfigService.newCache()).thenReturn(TestUtils.inMemoryCache(modelMapper, version, cacheVersion, DateTimeUtils.getZonedDateTime(now)));
+
+    when(cacheConfigService.newCache()).thenReturn(
+        CacheConfigService.CacheMetadata.builder()
+            .id(version)
+            .version(version)
+            .timestamp(now)
+            .cacheVersion(cacheVersion)
+            .build()
+    );
+
+    when(cacheConfigService.loadAndDecompressFromRedis())
+        .thenReturn(TestUtils.inMemoryCache(modelMapper, version, cacheVersion, now));
 
     String url = "/cache/refresh";
 
@@ -134,7 +147,7 @@ class CacheControllerTest {
             .andExpect(status().isOk())
             .andExpect(header().string(Constants.HEADER_X_CACHE_ID, version))
             .andExpect(header().string(Constants.HEADER_X_CACHE_VERSION, cacheVersion))
-            .andExpect(header().string(Constants.HEADER_X_CACHE_TIMESTAMP, DateTimeUtils.getString(now)))
+            .andExpect(header().string(Constants.HEADER_X_CACHE_TIMESTAMP, DateTimeFormatter.ISO_DATE_TIME.format(now)))
     ;
   }
 
@@ -145,8 +158,14 @@ class CacheControllerTest {
     String version = "111";
     String cacheVersion = Constants.GZIP_JSON + "-test";
     ZonedDateTime now = ZonedDateTime.now();
-    when(cacheConfigService.newCache()).thenReturn(TestUtils.inMemoryCache(modelMapper, version, cacheVersion, DateTimeUtils.getZonedDateTime(now)));
-
+    when(cacheConfigService.newCache()).thenReturn(
+        CacheConfigService.CacheMetadata.builder()
+            .id(version)
+            .version(version)
+            .timestamp(now)
+            .cacheVersion(cacheVersion)
+            .build()
+    );
     String url = "/cache/refresh";
 
     mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
