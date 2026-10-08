@@ -58,6 +58,13 @@ import it.gov.pagopa.apiconfig.starter.entity.InformativePaMaster;
 import it.gov.pagopa.apiconfig.starter.entity.Pa;
 import it.gov.pagopa.apiconfig.starter.entity.Psp;
 import it.gov.pagopa.apiconfig.starter.repository.*;
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
+import java.util.zip.GZIPInputStream;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.modelmapper.TypeToken;
@@ -101,6 +108,17 @@ import java.util.zip.GZIPOutputStream;
 @Service
 @Transactional
 public class CacheConfigService {
+
+  @Data
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class CacheMetadata {
+    private String version;
+    private String id;
+    private ZonedDateTime timestamp;
+    private String cacheVersion;
+  }
 
   @Value("${info.application.version}")
   private String APP_VERSION;
@@ -173,239 +191,123 @@ public class CacheConfigService {
   public HashMap<String, Object> loadFullCache() throws IOException {
     log.info("Loading full cache");
 
-    byte[] bytes = redisRepository.get(cacheKeyUtils.getCacheKey(Constants.FULL));
-    byte[] unzipped = ZipUtils.unzip(bytes);
-    JsonFactory jsonFactory = new JsonFactory();
-    JsonParser jsonParser = jsonFactory.createParser(unzipped);
-    FullData fulldata = objectMapper.readValue(jsonParser, FullData.class);
-    jsonParser.close();
-
-    HashMap<String, Object> configData = new HashMap<>();
-    configData.put(Constants.VERSION, fulldata.getVersion());
-    configData.put(Constants.TIMESTAMP, fulldata.getTimestamp());
-    configData.put(Constants.CACHE_VERSION, fulldata.getCacheVersion());
-    configData.put(Constants.CREDITOR_INSTITUTIONS, fulldata.getCreditorInstitutions());
-    configData.put(Constants.CREDITOR_INSTITUTION_BROKERS, fulldata.getCreditorInstitutionBrokers());
-    configData.put(Constants.STATIONS, fulldata.getStations());
-    configData.put(Constants.CREDITOR_INSTITUTION_STATIONS, fulldata.getCreditorInstitutionStations());
-    configData.put(Constants.MAINTENANCE_STATIONS, fulldata.getMaintenanceStations());
-    configData.put(Constants.ENCODINGS, fulldata.getEncodings());
-    configData.put(Constants.CREDITOR_INSTITUTION_ENCODINGS, fulldata.getCreditorInstitutionEncodings());
-    configData.put(Constants.IBANS, fulldata.getIbans());
-    configData.put(Constants.CREDITOR_INSTITUTION_INFORMATIONS, fulldata.getCreditorInstitutionInformations());
-    configData.put(Constants.PSPS, fulldata.getPsps());
-    configData.put(Constants.PSP_BROKERS, fulldata.getPspBrokers());
-    configData.put(Constants.PAYMENT_TYPES, fulldata.getPaymentTypes());
-    configData.put(Constants.PSP_CHANNEL_PAYMENT_TYPES, fulldata.getPspChannelPaymentTypes());
-    configData.put(Constants.PLUGINS, fulldata.getPlugins());
-    configData.put(Constants.PSP_INFORMATION_TEMPLATES, fulldata.getPspInformationTemplates());
-    configData.put(Constants.PSP_INFORMATIONS, fulldata.getPspInformations());
-    configData.put(Constants.CHANNELS, fulldata.getChannels());
-    configData.put(Constants.CDS_SERVICES, fulldata.getCdsServices());
-    configData.put(Constants.CDS_SUBJECTS, fulldata.getCdsSubjects());
-    configData.put(Constants.CDS_SUBJECT_SERVICES, fulldata.getCdsSubjectServices());
-    configData.put(Constants.CDS_CATEGORIES, fulldata.getCdsCategories());
-    configData.put(Constants.CONFIGURATIONS, fulldata.getConfigurations());
-    configData.put(Constants.FTP_SERVERS, fulldata.getFtpServers());
-    configData.put(Constants.LANGUAGES, fulldata.getLanguages());
-    configData.put(Constants.GDE_CONFIGURATIONS, fulldata.getGdeConfigurations());
-    configData.put(Constants.METADATA_DICT, fulldata.getMetadataDict());
-    return configData;
+    return loadAndDecompressFromRedis();
   }
 
-  public HashMap<String, Object> newCache() {
-
+  public CacheMetadata  newCache() {
     setCacheInProgress();
 
-    HashMap<String, Object> configData = new HashMap<>();
     try {
-
       long startTime = System.nanoTime();
 
       JsonFactory jsonFactory = new JsonFactory();
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       GZIPOutputStream gzipOut = new GZIPOutputStream(baos);
-      OutputStreamWriter outwriter = new OutputStreamWriter(gzipOut);
+      OutputStreamWriter outwriter = new OutputStreamWriter(gzipOut, StandardCharsets.UTF_8);
       JsonGenerator jsonGenerator = jsonFactory.createGenerator(outwriter);
       jsonGenerator.writeStartObject();
 
-      List<BrokerCreditorInstitution> intpa = getBrokerDetails();
-      HashMap<String, Object> intpamap = new HashMap<>();
-      intpa.forEach(k -> intpamap.put(k.getBrokerCode(), k));
-      configData.put(Constants.CREDITOR_INSTITUTION_BROKERS,intpamap);
-      appendMapToJson(jsonGenerator,Constants.CREDITOR_INSTITUTION_BROKERS,intpamap);
+      //Brokers
+      writeBrokerDetailsToJson(jsonGenerator);
 
-      List<BrokerPsp> intpsp = getBrokerPspDetails();
-      HashMap<String, Object> intpspmap = new HashMap<>();
-      intpsp.forEach(k -> intpspmap.put(k.getBrokerPspCode(), k));
-      configData.put(Constants.PSP_BROKERS,intpspmap);
-      appendMapToJson(jsonGenerator,Constants.PSP_BROKERS,intpspmap);
+      //Broker PSP
+      writeBrokerPspDetailsToJson(jsonGenerator);
 
-      List<CdsCategory> cdscats = getCdsCategories();
-      HashMap<String, Object> cdscatsMap = new HashMap<>();
-      cdscats.forEach(k -> cdscatsMap.put(k.getDescription(), k));
-      configData.put(Constants.CDS_CATEGORIES,cdscatsMap);
-      appendMapToJson(jsonGenerator,Constants.CDS_CATEGORIES,cdscatsMap);
+      //CDS Categories
+      writeCdsCategoryToJson(jsonGenerator);
 
-      List<CdsService> cdsServices = getCdsServices();
-      HashMap<String, Object> cdsServicesMap = new HashMap<>();
-      cdsServices.forEach(k -> cdsServicesMap.put(k.getIdentifier(), k));
-      configData.put(Constants.CDS_SERVICES,cdsServicesMap);
-      appendMapToJson(jsonGenerator,Constants.CDS_SERVICES,cdsServicesMap);
+      //CDS Services
+      writeCdsServiceToJson(jsonGenerator);
 
-      List<CdsSubject> cdsSubjects = getCdsSubjects();
-      HashMap<String, Object> cdsSubjectsMap = new HashMap<>();
-      cdsSubjects.forEach(k -> cdsSubjectsMap.put(k.getCreditorInstitutionCode(), k));
-      configData.put(Constants.CDS_SUBJECTS,cdsSubjectsMap);
-      appendMapToJson(jsonGenerator,Constants.CDS_SUBJECTS,cdsSubjectsMap);
+      //CDS Subjects
+      writeCdsSubjectsToJson(jsonGenerator);
 
-      List<CdsSubjectService> cdsSubjectServices = getCdsSubjectServices();
-      HashMap<String, Object> cdsSubjectServicesMap = new HashMap<>();
-      cdsSubjectServices.forEach(k -> cdsSubjectServicesMap.put(k.getSubjectServiceId(), k));
-      configData.put(Constants.CDS_SUBJECT_SERVICES,cdsSubjectServicesMap);
-      appendMapToJson(jsonGenerator,Constants.CDS_SUBJECT_SERVICES,cdsSubjectServicesMap);
+      //CDS Subject Services
+      writeCdsSubjectServicesToJson(jsonGenerator);
 
-      List<GdeConfiguration> gde = getGdeConfiguration();
-      HashMap<String, Object> gdeMap = new HashMap<>();
-      gde.forEach(k -> gdeMap.put(k.getIdentifier(), k));
-      configData.put(Constants.GDE_CONFIGURATIONS,gdeMap);
-      appendMapToJson(jsonGenerator,Constants.GDE_CONFIGURATIONS,gdeMap);
+      //GDE Configuration
+      writeGdeConfigurationToJson(jsonGenerator);
 
-      List<MetadataDict> meta = getMetadataDict();
-      HashMap<String, Object> metaMap = new HashMap<>();
-      meta.forEach(k -> metaMap.put(k.getKey(), k));
-      configData.put(Constants.METADATA_DICT,metaMap);
-      appendMapToJson(jsonGenerator,Constants.METADATA_DICT,metaMap);
+      //Metadata Dict
+      writeMetadataDictToJson(jsonGenerator);
 
-      List<ConfigurationKey> configurationKeyList = getConfigurationKeys();
-      HashMap<String, Object> configMap = new HashMap<>();
-      configurationKeyList.forEach(k -> configMap.put(k.getIdentifier(), k));
-      configData.put(Constants.CONFIGURATIONS,configMap);
-      appendMapToJson(jsonGenerator,Constants.CONFIGURATIONS,configMap);
+      //Configuration Keys
+      writeConfigurationKeysToJson(jsonGenerator);
 
-      List<FtpServer> ftpservers = getFtpServers();
-      HashMap<String, Object> ftpserversMap = new HashMap<>();
-      ftpservers.forEach(k -> ftpserversMap.put(k.getId().toString(), k));
-      configData.put(Constants.FTP_SERVERS,ftpserversMap);
-      appendMapToJson(jsonGenerator,Constants.FTP_SERVERS,ftpserversMap);
+      //FTP Servers
+      writeFtpServersToJson(jsonGenerator);
 
-      HashMap<String, Object> codiciLingua = new HashMap<>();
-      codiciLingua.put("IT", "IT");
-      codiciLingua.put("DE", "DE");
-      configData.put(Constants.LANGUAGES,codiciLingua);
-      appendMapToJson(jsonGenerator,Constants.LANGUAGES,codiciLingua);
+      //Languages
+      writeLanguagesToJson(jsonGenerator);
 
-      List<Plugin> plugins = getWfespPluginConfigurations();
-      HashMap<String, Object> pluginsMap = new HashMap<>();
-      plugins.forEach(k -> pluginsMap.put(k.getIdServPlugin(), k));
-      configData.put(Constants.PLUGINS,pluginsMap);
-      appendMapToJson(jsonGenerator,Constants.PLUGINS,pluginsMap);
+      // Plugins
+      writePluginsToJson(jsonGenerator);
 
-      List<PaymentServiceProvider> psps = getAllPaymentServiceProviders();
-      HashMap<String, Object> pspMap = new HashMap<>();
-      psps.forEach(k -> pspMap.put(k.getPspCode(), k));
-      configData.put(Constants.PSPS,pspMap);
-      appendMapToJson(jsonGenerator,Constants.PSPS,pspMap);
+      //PSPs
+      writePaymentServiceProvidersToJson(jsonGenerator);
 
-      List<Channel> canali = getAllCanali();
-      HashMap<String, Object> canalimap = new HashMap<>();
-      canali.forEach(k -> canalimap.put(k.getChannelCode(), k));
-      configData.put(Constants.CHANNELS,canalimap);
-      appendMapToJson(jsonGenerator,Constants.CHANNELS,canalimap);
+      //Channels
+      writeChannelsToJson(jsonGenerator);
 
-      List<PaymentType> tipiv = getPaymentTypes();
-      HashMap<String, Object> tipivMap = new HashMap<>();
-      tipiv.forEach(k -> tipivMap.put(k.getPaymentTypeCode(), k));
-      configData.put(Constants.PAYMENT_TYPES,tipivMap);
-      appendMapToJson(jsonGenerator,Constants.PAYMENT_TYPES,tipivMap);
+      //Payment Types
+      writePaymentTypesToJson(jsonGenerator);
 
-      List<PspChannelPaymentType> pspChannels = getPaymentServiceProvidersChannels();
-      HashMap<String, Object> pspChannelsMap = new HashMap<>();
-      pspChannels.forEach(k -> pspChannelsMap.put(k.getIdentifier(), k));
-      configData.put(Constants.PSP_CHANNEL_PAYMENT_TYPES,pspChannelsMap);
-      appendMapToJson(jsonGenerator,Constants.PSP_CHANNEL_PAYMENT_TYPES,pspChannelsMap);
+      //PSP Channel Payment Types
+      writePspChannelPaymentTypesToJson(jsonGenerator);
 
-      List<CreditorInstitution> pas = getCreditorInstitutions();
-      HashMap<String, Object> pamap = new HashMap<>();
-      pas.forEach(k -> pamap.put(k.getCreditorInstitutionCode(), k));
-      configData.put(Constants.CREDITOR_INSTITUTIONS,pamap);
-      appendMapToJson(jsonGenerator,Constants.CREDITOR_INSTITUTIONS,pamap);
+      //Creditor Institutions
+      writeCreditorInstitutionsToJson(jsonGenerator);
 
-      List<Encoding> encodings = getEncodings();
-      HashMap<String, Object> encodingsMap = new HashMap<>();
-      encodings.forEach(k -> encodingsMap.put(k.getCodeType(), k));
-      configData.put(Constants.ENCODINGS,encodingsMap);
-      appendMapToJson(jsonGenerator,Constants.ENCODINGS,encodingsMap);
+      //Encodings
+      writeEncodingsToJson(jsonGenerator);
 
-      List<CreditorInstitutionEncoding> ciencodings = getCreditorInstitutionEncodings();
-      HashMap<String, Object> ciencodingsMap = new HashMap<>();
-      ciencodings.forEach(k -> ciencodingsMap.put(k.getIdentifier(), k));
-      configData.put(Constants.CREDITOR_INSTITUTION_ENCODINGS,ciencodingsMap);
-      appendMapToJson(jsonGenerator,Constants.CREDITOR_INSTITUTION_ENCODINGS,ciencodingsMap);
+      //Creditor Institution Encodings
+      writeCreditorInstitutionEncodingsToJson(jsonGenerator);
 
-      List<StationCreditorInstitution> paspa = findAllPaStazioniPa();
-      HashMap<String, Object> paspamap = new HashMap<>();
-      paspa.forEach(k -> paspamap.put(k.getIdentifier(), k));
-      configData.put(Constants.CREDITOR_INSTITUTION_STATIONS,paspamap);
-      appendMapToJson(jsonGenerator,Constants.CREDITOR_INSTITUTION_STATIONS,paspamap);
+      //Station Creditor Institutions
+      writeStationCreditorInstitutionsToJson(jsonGenerator);
 
-      List<MaintenanceStation> maintenanceStations = findAllStationMaintenance();
-      HashMap<String, Object> maintenanceStationsMap = new HashMap<>();
-      maintenanceStations.forEach(k -> maintenanceStationsMap.put(k.getStationCode(), k));
-      configData.put(Constants.MAINTENANCE_STATIONS, maintenanceStationsMap);
-      appendMapToJson(jsonGenerator,Constants.MAINTENANCE_STATIONS, maintenanceStationsMap);
+      //Maintenance Stations
+      writeMaintenanceStationsToJson(jsonGenerator);
 
-      List<Station> stazioni = findAllStazioni();
-      HashMap<String, Object> stazionimap = new HashMap<>();
-      stazioni.forEach(k -> stazionimap.put(k.getStationCode(), k));
-      configData.put(Constants.STATIONS,stazionimap);
-      appendMapToJson(jsonGenerator,Constants.STATIONS,stazionimap);
+      //Stations
+      writeStationsToJson(jsonGenerator);
 
-      List<Iban> ibans = getCurrentIbans();
-      HashMap<String, Object> ibansMap = new HashMap<>();
-      ibans.forEach(k -> ibansMap.put(k.getIdentifier(), k));
-      configData.put(Constants.IBANS,ibansMap);
-      appendMapToJson(jsonGenerator,Constants.IBANS,ibansMap);
+      //IBANs
+      writeIbansToJson(jsonGenerator);
 
-      Pair<List<PspInformation>, List<PspInformation>> informativePspAndTemplates =
-          getInformativePspAndTemplates();
+      //PSP Informations
+      writePspInformationsToJson(jsonGenerator);
 
-      List<PspInformation> infopsps = informativePspAndTemplates.getLeft();
-      HashMap<String, Object> infopspsMap = new HashMap<>();
-      infopsps.forEach(k -> infopspsMap.put(k.getPsp(), k));
-      configData.put(Constants.PSP_INFORMATIONS,infopspsMap);
-      appendMapToJson(jsonGenerator,Constants.PSP_INFORMATIONS,infopspsMap);
+      //PSP Information Templates
+      writePspInformationTemplatesToJson(jsonGenerator);
 
-      List<PspInformation> infopspTemplates = informativePspAndTemplates.getRight();
-      HashMap<String, Object> infopspTemplatesMap = new HashMap<>();
-      infopspTemplates.forEach(k -> infopspTemplatesMap.put(k.getPsp(), k));
-      configData.put(Constants.PSP_INFORMATION_TEMPLATES,infopspTemplatesMap);
-      appendMapToJson(jsonGenerator,Constants.PSP_INFORMATION_TEMPLATES,infopspTemplatesMap);
+      //Creditor Institution Informations
+      writeCreditorInstitutionInformationsToJson(jsonGenerator);
 
-      List<CreditorInstitutionInformation> infopas = getInformativePa();
-      HashMap<String, Object> infopasMap = new HashMap<>();
-      infopas.forEach(k -> infopasMap.put(k.getPa(), k));
-      configData.put(Constants.CREDITOR_INSTITUTION_INFORMATIONS,infopasMap);
-      appendMapToJson(jsonGenerator,Constants.CREDITOR_INSTITUTION_INFORMATIONS,infopasMap);
-
+      // Metadata finale
       ZonedDateTime now = ZonedDateTime.now();
-      ZonedDateTime romeDateTime = DateTimeUtils.getZonedDateTime(now);
-      long endTime = System.nanoTime();
-      String id = "" + endTime;
+      String id = "" + System.nanoTime();
       String cacheVersion = getVersion();
-      configData.put(Constants.VERSION, id);
-      configData.put(Constants.TIMESTAMP, romeDateTime);
-      configData.put(Constants.CACHE_VERSION, cacheVersion);
 
-      appendObjectToJson(jsonGenerator, Constants.VERSION, id);
-      appendObjectToJson(jsonGenerator, Constants.TIMESTAMP, DateTimeUtils.getString(now));
-      appendObjectToJson(jsonGenerator, Constants.CACHE_VERSION, cacheVersion);
+      jsonGenerator.writeFieldName(Constants.VERSION);
+      objectMapper.writeValue(jsonGenerator, id);
 
-      jsonGenerator.writeEndObject();
-      jsonGenerator.close();
+      jsonGenerator.writeFieldName(Constants.TIMESTAMP);
+      objectMapper.writeValue(jsonGenerator, DateTimeUtils.getString(now));
+
+      jsonGenerator.writeFieldName(Constants.CACHE_VERSION);
+      objectMapper.writeValue(jsonGenerator, cacheVersion);
 
       byte[] cacheByteArray = baos.toByteArray();
 
+      jsonGenerator.writeEndObject();
+      jsonGenerator.flush();
+      jsonGenerator.close();
+      outwriter.close();
+      gzipOut.close();
+
+      long endTime = System.nanoTime();
       long duration = (endTime - startTime) / 1000000;
       log.info(String.format("%s cache loaded in %s ms", Constants.FULL, duration));
 
@@ -413,15 +315,403 @@ public class CacheConfigService {
       String actualKeyV1 = cacheKeyUtils.getCacheIdKey(Constants.FULL);
 
       log.info(String.format("Saving on Redis %s %s %s", actualKey, actualKeyV1, id));
-      redisRepository.pushToRedisAsync(actualKey, actualKeyV1, cacheByteArray, id.getBytes(StandardCharsets.UTF_8));
+      redisRepository.pushToRedisAsync(actualKey, actualKeyV1, cacheByteArray,
+          id.getBytes(StandardCharsets.UTF_8));
+
+      return CacheMetadata.builder()
+          .version(id)
+          .id(id)
+          .timestamp(now)
+          .cacheVersion(cacheVersion)
+          .build();
+
     } catch (Exception e) {
       log.error("[ALERT] problem to generate cache", e);
       removeCacheInProgress();
       throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
+    } finally {
+      removeCacheInProgress();
     }
-    removeCacheInProgress();
-    return configData;
   }
+
+  public HashMap<String, Object> loadAndDecompressFromRedis() throws IOException {
+    log.info("Loading and decompressing cache from Redis (one-time)");
+
+    byte[] bytes = redisRepository.get(cacheKeyUtils.getCacheKey(Constants.FULL));
+
+    if (bytes == null) {
+      throw new AppException(AppError.CACHE_NOT_INITIALIZED, "FULL");
+    }
+
+    ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+    GZIPInputStream gzipIn = new GZIPInputStream(bais);
+    InputStreamReader reader = new InputStreamReader(gzipIn, StandardCharsets.UTF_8);
+    JsonFactory jsonFactory = new JsonFactory();
+    JsonParser jsonParser = jsonFactory.createParser(reader);
+    try {
+      FullData fulldata = objectMapper.readValue(jsonParser, FullData.class);
+      jsonParser.close();
+      reader.close();
+      gzipIn.close();
+
+      HashMap<String, Object> configData = new HashMap<>();
+      configData.put(Constants.VERSION, fulldata.getVersion());
+      configData.put(Constants.TIMESTAMP, fulldata.getTimestamp());
+      configData.put(Constants.CACHE_VERSION, fulldata.getCacheVersion());
+      configData.put(Constants.CREDITOR_INSTITUTIONS, fulldata.getCreditorInstitutions());
+      configData.put(Constants.CREDITOR_INSTITUTION_BROKERS, fulldata.getCreditorInstitutionBrokers());
+      configData.put(Constants.STATIONS, fulldata.getStations());
+      configData.put(Constants.CREDITOR_INSTITUTION_STATIONS, fulldata.getCreditorInstitutionStations());
+      configData.put(Constants.MAINTENANCE_STATIONS, fulldata.getMaintenanceStations());
+      configData.put(Constants.ENCODINGS, fulldata.getEncodings());
+      configData.put(Constants.CREDITOR_INSTITUTION_ENCODINGS, fulldata.getCreditorInstitutionEncodings());
+      configData.put(Constants.IBANS, fulldata.getIbans());
+      configData.put(Constants.CREDITOR_INSTITUTION_INFORMATIONS, fulldata.getCreditorInstitutionInformations());
+      configData.put(Constants.PSPS, fulldata.getPsps());
+      configData.put(Constants.PSP_BROKERS, fulldata.getPspBrokers());
+      configData.put(Constants.PAYMENT_TYPES, fulldata.getPaymentTypes());
+      configData.put(Constants.PSP_CHANNEL_PAYMENT_TYPES, fulldata.getPspChannelPaymentTypes());
+      configData.put(Constants.PLUGINS, fulldata.getPlugins());
+      configData.put(Constants.PSP_INFORMATION_TEMPLATES, fulldata.getPspInformationTemplates());
+      configData.put(Constants.PSP_INFORMATIONS, fulldata.getPspInformations());
+      configData.put(Constants.CHANNELS, fulldata.getChannels());
+      configData.put(Constants.CDS_SERVICES, fulldata.getCdsServices());
+      configData.put(Constants.CDS_SUBJECTS, fulldata.getCdsSubjects());
+      configData.put(Constants.CDS_SUBJECT_SERVICES, fulldata.getCdsSubjectServices());
+      configData.put(Constants.CDS_CATEGORIES, fulldata.getCdsCategories());
+      configData.put(Constants.CONFIGURATIONS, fulldata.getConfigurations());
+      configData.put(Constants.FTP_SERVERS, fulldata.getFtpServers());
+      configData.put(Constants.LANGUAGES, fulldata.getLanguages());
+      configData.put(Constants.GDE_CONFIGURATIONS, fulldata.getGdeConfigurations());
+      configData.put(Constants.METADATA_DICT, fulldata.getMetadataDict());
+
+      log.info("Cache decompressed successfully from Redis");
+      return configData;
+    } finally {
+      jsonParser.close();
+      reader.close();
+      gzipIn.close();
+    }
+  }
+
+
+  private void writeBrokerDetailsToJson(JsonGenerator jsonGenerator) throws IOException {
+    List<BrokerCreditorInstitution> intpa = getBrokerDetails();
+    jsonGenerator.writeFieldName(Constants.CREDITOR_INSTITUTION_BROKERS);
+    jsonGenerator.writeStartObject();
+    for (BrokerCreditorInstitution broker : intpa) {
+      jsonGenerator.writeFieldName(broker.getBrokerCode());
+      objectMapper.writeValue(jsonGenerator, broker);
+    }
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: CREDITOR_INSTITUTION_BROKERS - " + intpa.size() + " items");
+  }
+
+  private void writeBrokerPspDetailsToJson(JsonGenerator jsonGenerator) throws IOException {
+    List<BrokerPsp> intpsp = getBrokerPspDetails();
+    jsonGenerator.writeFieldName(Constants.PSP_BROKERS);
+    jsonGenerator.writeStartObject();
+    for (BrokerPsp broker : intpsp) {
+      jsonGenerator.writeFieldName(broker.getBrokerPspCode());
+      objectMapper.writeValue(jsonGenerator, broker);
+    }
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: PSP_BROKERS - " + intpsp.size() + " items");
+  }
+
+  private void writeCdsCategoryToJson(JsonGenerator jsonGenerator) throws IOException {
+    List<CdsCategory> cdscats = getCdsCategories();
+    jsonGenerator.writeFieldName(Constants.CDS_CATEGORIES);
+    jsonGenerator.writeStartObject();
+    for (CdsCategory cat : cdscats) {
+      jsonGenerator.writeFieldName(cat.getDescription());
+      objectMapper.writeValue(jsonGenerator, cat);
+    }
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: CDS_CATEGORIES - " + cdscats.size() + " items");
+  }
+
+  private void writeCdsServiceToJson(JsonGenerator jsonGenerator) throws IOException {
+    List<CdsService> cdsServices = getCdsServices();
+    jsonGenerator.writeFieldName(Constants.CDS_SERVICES);
+    jsonGenerator.writeStartObject();
+    for (CdsService service : cdsServices) {
+      jsonGenerator.writeFieldName(service.getIdentifier());
+      objectMapper.writeValue(jsonGenerator, service);
+    }
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: CDS_SERVICES - " + cdsServices.size() + " items");
+  }
+
+  private void writeCdsSubjectsToJson(JsonGenerator jsonGenerator) throws IOException {
+    List<CdsSubject> cdsSubjects = getCdsSubjects();
+    jsonGenerator.writeFieldName(Constants.CDS_SUBJECTS);
+    jsonGenerator.writeStartObject();
+    for (CdsSubject subject : cdsSubjects) {
+      jsonGenerator.writeFieldName(subject.getCreditorInstitutionCode());
+      objectMapper.writeValue(jsonGenerator, subject);
+    }
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: CDS_SUBJECTS - " + cdsSubjects.size() + " items");
+  }
+
+  private void writeCdsSubjectServicesToJson(JsonGenerator jsonGenerator) throws IOException {
+    List<CdsSubjectService> cdsSubjectServices = getCdsSubjectServices();
+    jsonGenerator.writeFieldName(Constants.CDS_SUBJECT_SERVICES);
+    jsonGenerator.writeStartObject();
+    for (CdsSubjectService service : cdsSubjectServices) {
+      jsonGenerator.writeFieldName(service.getSubjectServiceId());
+      objectMapper.writeValue(jsonGenerator, service);
+    }
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: CDS_SUBJECT_SERVICES - " + cdsSubjectServices.size() + " items");
+  }
+
+  private void writeGdeConfigurationToJson(JsonGenerator jsonGenerator) throws IOException {
+    List<GdeConfiguration> gde = getGdeConfiguration();
+    jsonGenerator.writeFieldName(Constants.GDE_CONFIGURATIONS);
+    jsonGenerator.writeStartObject();
+    for (GdeConfiguration config : gde) {
+      jsonGenerator.writeFieldName(config.getIdentifier());
+      objectMapper.writeValue(jsonGenerator, config);
+    }
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: GDE_CONFIGURATIONS - " + gde.size() + " items");
+  }
+
+  private void writeMetadataDictToJson(JsonGenerator jsonGenerator) throws IOException {
+    List<MetadataDict> meta = getMetadataDict();
+    jsonGenerator.writeFieldName(Constants.METADATA_DICT);
+    jsonGenerator.writeStartObject();
+    for (MetadataDict m : meta) {
+      jsonGenerator.writeFieldName(m.getKey());
+      objectMapper.writeValue(jsonGenerator, m);
+    }
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: METADATA_DICT - " + meta.size() + " items");
+  }
+
+  private void writeConfigurationKeysToJson(JsonGenerator jsonGenerator) throws IOException {
+    List<ConfigurationKey> configurationKeyList = getConfigurationKeys();
+    jsonGenerator.writeFieldName(Constants.CONFIGURATIONS);
+    jsonGenerator.writeStartObject();
+    for (ConfigurationKey config : configurationKeyList) {
+      jsonGenerator.writeFieldName(config.getIdentifier());
+      objectMapper.writeValue(jsonGenerator, config);
+    }
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: CONFIGURATIONS - " + configurationKeyList.size() + " items");
+  }
+
+  private void writeFtpServersToJson(JsonGenerator jsonGenerator) throws IOException {
+    List<FtpServer> ftpservers = getFtpServers();
+    jsonGenerator.writeFieldName(Constants.FTP_SERVERS);
+    jsonGenerator.writeStartObject();
+    for (FtpServer server : ftpservers) {
+      jsonGenerator.writeFieldName(server.getId().toString());
+      objectMapper.writeValue(jsonGenerator, server);
+    }
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: FTP_SERVERS - " + ftpservers.size() + " items");
+  }
+
+  private void writeLanguagesToJson(JsonGenerator jsonGenerator) throws IOException {
+    jsonGenerator.writeFieldName(Constants.LANGUAGES);
+    jsonGenerator.writeStartObject();
+    jsonGenerator.writeFieldName("IT");
+    jsonGenerator.writeString("IT");
+    jsonGenerator.writeFieldName("DE");
+    jsonGenerator.writeString("DE");
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: LANGUAGES");
+  }
+
+  private void writePluginsToJson(JsonGenerator jsonGenerator) throws IOException {
+    List<Plugin> plugins = getWfespPluginConfigurations();
+    jsonGenerator.writeFieldName(Constants.PLUGINS);
+    jsonGenerator.writeStartObject();
+    for (Plugin plugin : plugins) {
+      jsonGenerator.writeFieldName(plugin.getIdServPlugin());
+      objectMapper.writeValue(jsonGenerator, plugin);
+    }
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: PLUGINS - " + plugins.size() + " items");
+  }
+
+  private void writePaymentServiceProvidersToJson(JsonGenerator jsonGenerator) throws IOException {
+    List<PaymentServiceProvider> psps = getAllPaymentServiceProviders();
+    jsonGenerator.writeFieldName(Constants.PSPS);
+    jsonGenerator.writeStartObject();
+    for (PaymentServiceProvider psp : psps) {
+      jsonGenerator.writeFieldName(psp.getPspCode());
+      objectMapper.writeValue(jsonGenerator, psp);
+    }
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: PSPS - " + psps.size() + " items");
+  }
+
+  private void writeChannelsToJson(JsonGenerator jsonGenerator) throws IOException {
+    List<Channel> canali = getAllCanali();
+    jsonGenerator.writeFieldName(Constants.CHANNELS);
+    jsonGenerator.writeStartObject();
+    for (Channel channel : canali) {
+      jsonGenerator.writeFieldName(channel.getChannelCode());
+      objectMapper.writeValue(jsonGenerator, channel);
+    }
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: CHANNELS - " + canali.size() + " items");
+  }
+
+  private void writePaymentTypesToJson(JsonGenerator jsonGenerator) throws IOException {
+    List<PaymentType> tipiv = getPaymentTypes();
+    jsonGenerator.writeFieldName(Constants.PAYMENT_TYPES);
+    jsonGenerator.writeStartObject();
+    for (PaymentType type : tipiv) {
+      jsonGenerator.writeFieldName(type.getPaymentTypeCode());
+      objectMapper.writeValue(jsonGenerator, type);
+    }
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: PAYMENT_TYPES - " + tipiv.size() + " items");
+  }
+
+  private void writePspChannelPaymentTypesToJson(JsonGenerator jsonGenerator) throws IOException {
+    List<PspChannelPaymentType> pspChannels = getPaymentServiceProvidersChannels();
+    jsonGenerator.writeFieldName(Constants.PSP_CHANNEL_PAYMENT_TYPES);
+    jsonGenerator.writeStartObject();
+    for (PspChannelPaymentType channel : pspChannels) {
+      jsonGenerator.writeFieldName(channel.getIdentifier());
+      objectMapper.writeValue(jsonGenerator, channel);
+    }
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: PSP_CHANNEL_PAYMENT_TYPES - " + pspChannels.size() + " items");
+  }
+
+  private void writeCreditorInstitutionsToJson(JsonGenerator jsonGenerator) throws IOException {
+    List<CreditorInstitution> pas = getCreditorInstitutions();
+    jsonGenerator.writeFieldName(Constants.CREDITOR_INSTITUTIONS);
+    jsonGenerator.writeStartObject();
+    for (CreditorInstitution pa : pas) {
+      jsonGenerator.writeFieldName(pa.getCreditorInstitutionCode());
+      objectMapper.writeValue(jsonGenerator, pa);
+    }
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: CREDITOR_INSTITUTIONS - " + pas.size() + " items");
+  }
+
+  private void writeEncodingsToJson(JsonGenerator jsonGenerator) throws IOException {
+    List<Encoding> encodings = getEncodings();
+    jsonGenerator.writeFieldName(Constants.ENCODINGS);
+    jsonGenerator.writeStartObject();
+    for (Encoding encoding : encodings) {
+      jsonGenerator.writeFieldName(encoding.getCodeType());
+      objectMapper.writeValue(jsonGenerator, encoding);
+    }
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: ENCODINGS - " + encodings.size() + " items");
+  }
+
+  private void writeCreditorInstitutionEncodingsToJson(JsonGenerator jsonGenerator) throws IOException {
+    List<CreditorInstitutionEncoding> ciencodings = getCreditorInstitutionEncodings();
+    jsonGenerator.writeFieldName(Constants.CREDITOR_INSTITUTION_ENCODINGS);
+    jsonGenerator.writeStartObject();
+    for (CreditorInstitutionEncoding encoding : ciencodings) {
+      jsonGenerator.writeFieldName(encoding.getIdentifier());
+      objectMapper.writeValue(jsonGenerator, encoding);
+    }
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: CREDITOR_INSTITUTION_ENCODINGS - " + ciencodings.size() + " items");
+  }
+
+  private void writeStationCreditorInstitutionsToJson(JsonGenerator jsonGenerator) throws IOException {
+    List<StationCreditorInstitution> paspa = findAllPaStazioniPa();
+    jsonGenerator.writeFieldName(Constants.CREDITOR_INSTITUTION_STATIONS);
+    jsonGenerator.writeStartObject();
+    for (StationCreditorInstitution station : paspa) {
+      jsonGenerator.writeFieldName(station.getIdentifier());
+      objectMapper.writeValue(jsonGenerator, station);
+    }
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: CREDITOR_INSTITUTION_STATIONS - " + paspa.size() + " items");
+  }
+
+  private void writeMaintenanceStationsToJson(JsonGenerator jsonGenerator) throws IOException {
+    List<MaintenanceStation> maintenanceStations = findAllStationMaintenance();
+    jsonGenerator.writeFieldName(Constants.MAINTENANCE_STATIONS);
+    jsonGenerator.writeStartObject();
+    for (MaintenanceStation station : maintenanceStations) {
+      jsonGenerator.writeFieldName(station.getStationCode());
+      objectMapper.writeValue(jsonGenerator, station);
+    }
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: MAINTENANCE_STATIONS - " + maintenanceStations.size() + " items");
+  }
+
+  private void writeStationsToJson(JsonGenerator jsonGenerator) throws IOException {
+    List<Station> stazioni = findAllStazioni();
+    jsonGenerator.writeFieldName(Constants.STATIONS);
+    jsonGenerator.writeStartObject();
+    for (Station station : stazioni) {
+      jsonGenerator.writeFieldName(station.getStationCode());
+      objectMapper.writeValue(jsonGenerator, station);
+    }
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: STATIONS - " + stazioni.size() + " items");
+  }
+
+  private void writeIbansToJson(JsonGenerator jsonGenerator) throws IOException {
+    List<Iban> ibans = getCurrentIbans();
+    jsonGenerator.writeFieldName(Constants.IBANS);
+    jsonGenerator.writeStartObject();
+    for (Iban iban : ibans) {
+      jsonGenerator.writeFieldName(iban.getIdentifier());
+      objectMapper.writeValue(jsonGenerator, iban);
+    }
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: IBANS - " + ibans.size() + " items");
+  }
+
+  private void writePspInformationsToJson(JsonGenerator jsonGenerator) throws IOException {
+    Pair<List<PspInformation>, List<PspInformation>> informativePspAndTemplates =
+        getInformativePspAndTemplates();
+    List<PspInformation> infopsps = informativePspAndTemplates.getLeft();
+
+    jsonGenerator.writeFieldName(Constants.PSP_INFORMATIONS);
+    jsonGenerator.writeStartObject();
+    for (PspInformation info : infopsps) {
+      jsonGenerator.writeFieldName(info.getPsp());
+      objectMapper.writeValue(jsonGenerator, info);
+    }
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: PSP_INFORMATIONS - " + infopsps.size() + " items");
+  }
+
+  private void writePspInformationTemplatesToJson(JsonGenerator jsonGenerator) throws IOException {
+    Pair<List<PspInformation>, List<PspInformation>> informativePspAndTemplates =
+        getInformativePspAndTemplates();
+    List<PspInformation> infopspTemplates = informativePspAndTemplates.getRight();
+
+    jsonGenerator.writeFieldName(Constants.PSP_INFORMATION_TEMPLATES);
+    jsonGenerator.writeStartObject();
+    for (PspInformation template : infopspTemplates) {
+      jsonGenerator.writeFieldName(template.getPsp());
+      objectMapper.writeValue(jsonGenerator, template);
+    }
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: PSP_INFORMATION_TEMPLATES - " + infopspTemplates.size() + " items");
+  }
+
+  private void writeCreditorInstitutionInformationsToJson(JsonGenerator jsonGenerator) throws IOException {
+    List<CreditorInstitutionInformation> infopas = getInformativePa();
+    jsonGenerator.writeFieldName(Constants.CREDITOR_INSTITUTION_INFORMATIONS);
+    jsonGenerator.writeStartObject();
+    for (CreditorInstitutionInformation info : infopas) {
+      jsonGenerator.writeFieldName(info.getPa());
+      objectMapper.writeValue(jsonGenerator, info);
+    }
+    jsonGenerator.writeEndObject();
+    log.debug("Batch written: CREDITOR_INSTITUTION_INFORMATIONS - " + infopas.size() + " items");
+  }
+
 
   public void sendEvent(String id, ZonedDateTime now) {
     if(SEND_EVENT){
@@ -1153,7 +1443,7 @@ public class CacheConfigService {
             })
         .collect(Collectors.toList());
   }
-  
+
   public List<CreditorInstitutionInformation> getInformativePa() {
 	  log.info("loading InformativePa");
 	  List<IbanValidiPerPa> allIbans = ibanValidiPerPaRepository.findAllFetchingPas();
@@ -1167,7 +1457,7 @@ public class CacheConfigService {
 	  Map<Long, List<InformativePaMaster>> masterByPa = allMasters.stream()
 			  .collect(Collectors.groupingBy(m -> m.getFkPa().getObjId()));
 
-	  Map<Long, List<InformativePaFasce>> fasceByDetail = 
+	  Map<Long, List<InformativePaFasce>> fasceByDetail =
 			  allFasce.stream()
 			  .filter(f -> f.getFkInformativaPaDetail() != null)
 			  .collect(Collectors.groupingBy(f -> f.getFkInformativaPaDetail().getId()));
@@ -1252,7 +1542,7 @@ public class CacheConfigService {
 	  informativePaSingleCache.add(informativaPAFull);
 	  return informativePaSingleCache;
   }
-  
+
   private CtErogazione infoDetailToCtErogazione(List<InformativePaFasce> allFasce, InformativePaDetail det) {
     List<CtFasciaOraria> fasce = new ArrayList<>();
     try {

@@ -57,9 +57,15 @@ public class CacheController {
     public void preloadKeysFromRedis() {
         if(preload){
             try {
-                inMemoryCache = cacheConfigService.loadFullCache();
+                inMemoryCache = cacheConfigService.loadAndDecompressFromRedis();
             } catch (Exception e){
                 log.warn("Could not load single keys cache from redis: " + e.getMessage());
+                try {
+                    docache();
+                    log.info("Cache generated and saved to Redis on startup");
+                } catch (Exception ex) {
+                    log.error("[ALERT] Failed to generate cache on startup", ex);
+                }
             }
         }
     }
@@ -336,12 +342,13 @@ public class CacheController {
     }
 
     private void docache() throws IOException {
-        inMemoryCache = cacheConfigService.newCache();
+        log.info("Executing cache refresh...");
 
-        cacheConfigService.sendEvent(
-            (String)inMemoryCache.get(Constants.VERSION),
-            (ZonedDateTime)inMemoryCache.get(Constants.TIMESTAMP)
-        );
+        CacheConfigService.CacheMetadata metadata = cacheConfigService.newCache();
+        inMemoryCache = cacheConfigService.loadAndDecompressFromRedis();
+        cacheConfigService.sendEvent(metadata.getId(), metadata.getTimestamp());
+
+        log.info("Cache refresh completed successfully");
     }
 
 
