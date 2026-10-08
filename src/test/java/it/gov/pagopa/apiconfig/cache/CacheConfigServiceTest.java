@@ -126,12 +126,23 @@ class CacheConfigServiceTest {
 
   @Test
   void newCache() throws Exception {
-    ReflectionTestUtils.setField(cacheConfigService, "cacheKeyUtils", cacheKeyUtils);
-    ReflectionTestUtils.setField(cacheConfigService, "objectMapper", new ObjectMapper().findAndRegisterModules());
-    ReflectionTestUtils.setField(cacheConfigService, "modelMapper", modelMapper);
+    ReflectionTestUtils.setField(
+        cacheConfigService, "cacheKeyUtils", cacheKeyUtils);
+    ReflectionTestUtils.setField(
+        cacheConfigService,
+        "objectMapper",
+        new ObjectMapper().findAndRegisterModules());
+    ReflectionTestUtils.setField(
+        cacheConfigService, "modelMapper", modelMapper);
 
-    Map<String, Object> allData = cacheConfigService.newCache();
-    assertThat(allData).hasSize(29);
+    CacheConfigService.CacheMetadata metadata =
+        cacheConfigService.newCache();
+
+    assertThat(metadata).isNotNull();
+    assertThat(metadata.getId()).isNotBlank();
+    assertThat(metadata.getVersion()).isEqualTo(metadata.getId());
+    assertThat(metadata.getTimestamp()).isNotNull();
+    assertThat(metadata.getCacheVersion()).isNotBlank();
   }
 
   @Test
