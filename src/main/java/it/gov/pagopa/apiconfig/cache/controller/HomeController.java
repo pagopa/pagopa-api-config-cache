@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import it.gov.pagopa.apiconfig.cache.model.AppInfo;
 import it.gov.pagopa.apiconfig.cache.model.ProblemJson;
 import it.gov.pagopa.apiconfig.cache.service.HealthCheckService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,25 +19,28 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
-import java.time.LocalDateTime;
-
 @RestController
 @Validated
 public class HomeController {
 
-  @Value("${server.servlet.context-path}")
-  String basePath;
+  private final String basePath;
+  private final String name;
+  private final String version;
+  private final String environment;
+  private final HealthCheckService healthCheckService;
 
-  @Value("${info.application.name}")
-  private String name;
-
-  @Value("${info.application.version}")
-  private String version;
-
-  @Value("${info.properties.environment}")
-  private String environment;
-
-  @Autowired private HealthCheckService healthCheckService;
+  public HomeController(
+      @Value("${server.servlet.context-path}") String basePath,
+      @Value("${info.application.name}") String name,
+      @Value("${info.application.version}") String version,
+      @Value("${info.properties.environment}") String environment,
+      HealthCheckService healthCheckService) {
+    this.basePath = basePath;
+    this.name = name;
+    this.version = version;
+    this.environment = environment;
+    this.healthCheckService = healthCheckService;
+  }
 
   /**
    * @return redirect to Swagger page documentation
@@ -46,10 +48,11 @@ public class HomeController {
   @Hidden
   @GetMapping("")
   public RedirectView home() {
+    String path = basePath;
     if (!basePath.endsWith("/")) {
-      basePath += "/";
+      path += "/";
     }
-    return new RedirectView(basePath + "swagger-ui.html");
+    return new RedirectView(path + "swagger-ui.html");
   }
 
   /**
@@ -102,7 +105,7 @@ public class HomeController {
 
     AppInfo info =
         AppInfo.builder()
-            .name(name + " " + LocalDateTime.now())
+            .name(name)
             .version(version)
             .environment(environment)
             .dbConnection(healthCheckService.checkDatabaseConnection() ? "up" : "down")

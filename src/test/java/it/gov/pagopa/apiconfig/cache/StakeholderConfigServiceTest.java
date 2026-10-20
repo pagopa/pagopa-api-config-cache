@@ -22,29 +22,27 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class StakeholderConfigServiceTest {
+
+  public static final String[] KEYS = {Constants.CHANNELS, Constants.STATIONS};
 
   @Mock private CacheRepository cacheRepository;
   @Mock private RedisRepository redisRepository;
@@ -91,7 +89,7 @@ class StakeholderConfigServiceTest {
   @BeforeEach
   void setUp() {
     cacheKeyUtils = new CacheKeyUtils();
-    cacheController = new CacheController();
+    cacheController = new CacheController(cacheConfigService, false, true);
 
     // Set @Value fields manually
     ReflectionTestUtils.setField(cacheKeyUtils, "KEY_SUFFIX", "_test");
@@ -100,7 +98,6 @@ class StakeholderConfigServiceTest {
     ReflectionTestUtils.setField(cacheKeyUtils, "CACHE_ID_KEY", "apicfg_test_{{stakeholder}}_id");
     ReflectionTestUtils.setField(cacheKeyUtils, "CACHE_GENERATION_LOCK_KEY", "apicfg_test_{{stakeholder}}_lock");
     org.springframework.test.util.ReflectionTestUtils.setField(stakeholderConfigService, "cacheKeyUtils", cacheKeyUtils);
-    org.springframework.test.util.ReflectionTestUtils.setField(cacheController, "cacheConfigService", cacheConfigService);
     org.springframework.test.util.ReflectionTestUtils.setField(stakeholderConfigService, "cacheController", cacheController);
   }
 
@@ -119,7 +116,7 @@ class StakeholderConfigServiceTest {
     ZonedDateTime romeDateTime = DateTimeUtils.getZonedDateTime(now);
     TestUtils.inizializeInMemoryCache(cacheController, configMapper, version, cacheVersion, romeDateTime);
     when(redisRepository.saveIfAbsent(anyString(), any(), anyLong())).thenReturn(true);
-    ConfigData configData = stakeholderConfigService.getCache(Stakeholder.TEST, "v1", NodeCacheController.KEYS);
+    ConfigData configData = stakeholderConfigService.getCache(Stakeholder.TEST, "v1", KEYS);
     assertThat(configData).isNotNull();
   }
 
@@ -132,22 +129,7 @@ class StakeholderConfigServiceTest {
     ZonedDateTime romeDateTime = DateTimeUtils.getZonedDateTime(now);
     TestUtils.inizializeInMemoryCache(cacheController, configMapper, version, cacheVersion, romeDateTime);
     when(redisRepository.saveIfAbsent(anyString(), any(), anyLong())).thenReturn(true);
-    ConfigData configData = stakeholderConfigService.getCache(Stakeholder.STANDIN, "v1", NodeCacheController.KEYS);
-    assertThat(configData).isNotNull();
-  }
-
-  @Test
-  void saveOnDB() throws IOException {
-    when(redisRepository.get(any())).thenReturn(null);
-    when(cacheRepository.save(any())).thenReturn(null);
-    String version = "111";
-    String cacheVersion = Constants.GZIP_JSON + "-test";
-    ZonedDateTime now = ZonedDateTime.now();
-    ZonedDateTime romeDateTime = DateTimeUtils.getZonedDateTime(now);
-    TestUtils.inizializeInMemoryCache(cacheController, configMapper, version, cacheVersion, romeDateTime);
-    when(redisRepository.saveIfAbsent(anyString(), any(), anyLong())).thenReturn(true);
-    ConfigData configData = stakeholderConfigService.getCache(Stakeholder.TEST, "v1", NodeCacheController.KEYS);
-    stakeholderConfigService.saveOnDB(configData, "v1");
+    ConfigData configData = stakeholderConfigService.getCache(Stakeholder.STANDIN, "v1", KEYS);
     assertThat(configData).isNotNull();
   }
 
@@ -155,7 +137,7 @@ class StakeholderConfigServiceTest {
   void getVersionId() throws IOException {
       String version = "111";
       when(redisRepository.get(any())).thenReturn(version.getBytes(StandardCharsets.UTF_8));
-      CacheVersion cacheVersion = stakeholderConfigService.getVersionId(Stakeholder.TEST, "v1", NodeCacheController.KEYS);
+      CacheVersion cacheVersion = stakeholderConfigService.getVersionId(Stakeholder.TEST, "v1", KEYS);
       assertThat(cacheVersion.getVersion()).isEqualTo(version);
   }
 
@@ -168,7 +150,7 @@ class StakeholderConfigServiceTest {
       TestUtils.inizializeInMemoryCache(cacheController, configMapper, version, cacheVersion, romeDateTime);
       when(redisRepository.get(any())).thenReturn(null);
       when(redisRepository.saveIfAbsent(anyString(), any(), anyLong())).thenReturn(true);
-      CacheVersion generatedCache = stakeholderConfigService.getVersionId(Stakeholder.TEST, "v1", NodeCacheController.KEYS);
+      CacheVersion generatedCache = stakeholderConfigService.getVersionId(Stakeholder.TEST, "v1", KEYS);
       assertThat(generatedCache.getVersion()).isEqualTo(version);
   }
 

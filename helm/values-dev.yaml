@@ -102,7 +102,6 @@ postgresql:
     DB_CONFIG_DRIVER: "org.postgresql.Driver"
     DATABASE_ID: "p"
     HEALTHCHECK_QUERY: "select 1"
-    SAVE_DB: "false"
     SEND_EVENT: "true"
   envSecret:
     !!merge <<: *envSecret

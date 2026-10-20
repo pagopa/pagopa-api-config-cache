@@ -20,11 +20,8 @@ import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.cache.util.DateTimeUtils;
 import it.gov.pagopa.apiconfig.cache.util.DefaultFileDeleter;
 import it.gov.pagopa.apiconfig.cache.util.FileDeleter;
-import it.gov.pagopa.apiconfig.cache.util.JsonSerializer;
 import it.gov.pagopa.apiconfig.cache.util.JsonToXls;
 import it.gov.pagopa.apiconfig.cache.util.ZipUtils;
-import it.gov.pagopa.apiconfig.starter.entity.Cache;
-import it.gov.pagopa.apiconfig.starter.repository.CacheRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,10 +64,6 @@ public class StakeholderConfigService {
 
     @Autowired private RedisRepository redisRepository;
 
-    @Autowired private CacheRepository cacheRepository;
-
-    @Autowired private JsonSerializer jsonSerializer;
-
     @Autowired private CacheKeyUtils cacheKeyUtils;
 
     public ConfigData loadCache(Stakeholder stakeholder, String schemaVersion) throws IOException {
@@ -107,7 +100,7 @@ public class StakeholderConfigService {
             log.info(String.format("ConfigData will be generated in memory for stakeholder [%s]. Generation is not permitted for other stakeholders.", stakeholder));
 
             // retrieve full cache and generate configData
-            HashMap<String, Object> inMemoryCache = cacheController.getInMemoryCache();
+            Map<String, Object> inMemoryCache = cacheController.getInMemoryCache();
 
             // extraction of the requested keys
             Set<String> keysSet = new HashSet<>(Arrays.asList(keys));
@@ -162,26 +155,6 @@ public class StakeholderConfigService {
             throw new AppException(AppError.CACHE_SCHEMA_NOT_INITIALIZED, stakeholder);
         }
         return configData;
-    }
-
-    public void saveOnDB(ConfigData configData, String schemaVersion) {
-        log.info("saving on CACHE table " + configData.getXCacheId());
-        try {
-            String cacheVersion = getGZIPVersion(schemaVersion);
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.registerModule(new JavaTimeModule());
-            HashMap<String, Object> cloned = objectMapper.convertValue(configData.getCacheSchemaVersion(), HashMap.class);
-            cacheRepository.save(Cache.builder()
-                    .id(configData.getXCacheId())
-                    .cache(jsonSerializer.serialize(cloned))
-                    .time(ZonedDateTime.parse(configData.getXCacheTimestamp()))
-                    .version(cacheVersion)
-                    .build());
-
-            log.info("saved on CACHE table " + configData.getXCacheId());
-        } catch (Exception e) {
-            log.error("[ALERT] could not save on db", e);
-        }
     }
 
     public CacheVersion getVersionId(Stakeholder stakeholder, String schemaVersion, String[] keys) throws IOException {
