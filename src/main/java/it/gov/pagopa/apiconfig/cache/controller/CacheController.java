@@ -345,7 +345,7 @@ public class CacheController {
         log.info("Executing cache refresh...");
 
         CacheConfigService.CacheMetadata metadata = cacheConfigService.newCache();
-        inMemoryCache = cacheConfigService.loadAndDecompressFromRedis();
+        inMemoryCache = cacheConfigService.decompressToMap(metadata.getData());
         cacheConfigService.sendEvent(metadata.getId(), metadata.getTimestamp());
 
         log.info("Cache refresh completed successfully");

@@ -58,6 +58,7 @@ import it.gov.pagopa.apiconfig.starter.entity.InformativePaMaster;
 import it.gov.pagopa.apiconfig.starter.entity.Pa;
 import it.gov.pagopa.apiconfig.starter.entity.Psp;
 import it.gov.pagopa.apiconfig.starter.repository.*;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.util.zip.GZIPInputStream;
@@ -118,6 +119,7 @@ public class CacheConfigService {
     private String id;
     private ZonedDateTime timestamp;
     private String cacheVersion;
+    private byte[] data;
   }
 
   @Value("${info.application.version}")
@@ -194,165 +196,174 @@ public class CacheConfigService {
     return loadAndDecompressFromRedis();
   }
 
-  public CacheMetadata  newCache() {
+  public CacheMetadata newCache() {
     setCacheInProgress();
 
+    long startTime = System.nanoTime();
+
     try {
-      long startTime = System.nanoTime();
-
-      JsonFactory jsonFactory = new JsonFactory();
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      GZIPOutputStream gzipOut = new GZIPOutputStream(baos);
-      OutputStreamWriter outwriter = new OutputStreamWriter(gzipOut, StandardCharsets.UTF_8);
-      JsonGenerator jsonGenerator = jsonFactory.createGenerator(outwriter);
-      jsonGenerator.writeStartObject();
-
-      //Brokers
-      writeBrokerDetailsToJson(jsonGenerator);
-
-      //Broker PSP
-      writeBrokerPspDetailsToJson(jsonGenerator);
-
-      //CDS Categories
-      writeCdsCategoryToJson(jsonGenerator);
-
-      //CDS Services
-      writeCdsServiceToJson(jsonGenerator);
-
-      //CDS Subjects
-      writeCdsSubjectsToJson(jsonGenerator);
-
-      //CDS Subject Services
-      writeCdsSubjectServicesToJson(jsonGenerator);
-
-      //GDE Configuration
-      writeGdeConfigurationToJson(jsonGenerator);
-
-      //Metadata Dict
-      writeMetadataDictToJson(jsonGenerator);
-
-      //Configuration Keys
-      writeConfigurationKeysToJson(jsonGenerator);
-
-      //FTP Servers
-      writeFtpServersToJson(jsonGenerator);
-
-      //Languages
-      writeLanguagesToJson(jsonGenerator);
-
-      // Plugins
-      writePluginsToJson(jsonGenerator);
-
-      //PSPs
-      writePaymentServiceProvidersToJson(jsonGenerator);
-
-      //Channels
-      writeChannelsToJson(jsonGenerator);
-
-      //Payment Types
-      writePaymentTypesToJson(jsonGenerator);
-
-      //PSP Channel Payment Types
-      writePspChannelPaymentTypesToJson(jsonGenerator);
-
-      //Creditor Institutions
-      writeCreditorInstitutionsToJson(jsonGenerator);
-
-      //Encodings
-      writeEncodingsToJson(jsonGenerator);
-
-      //Creditor Institution Encodings
-      writeCreditorInstitutionEncodingsToJson(jsonGenerator);
-
-      //Station Creditor Institutions
-      writeStationCreditorInstitutionsToJson(jsonGenerator);
-
-      //Maintenance Stations
-      writeMaintenanceStationsToJson(jsonGenerator);
-
-      //Stations
-      writeStationsToJson(jsonGenerator);
-
-      //IBANs
-      writeIbansToJson(jsonGenerator);
-
-      //PSP Informations
-      writePspInformationsToJson(jsonGenerator);
-
-      //PSP Information Templates
-      writePspInformationTemplatesToJson(jsonGenerator);
-
-      //Creditor Institution Informations
-      writeCreditorInstitutionInformationsToJson(jsonGenerator);
-
-      // Metadata finale
       ZonedDateTime now = ZonedDateTime.now();
-      String id = "" + System.nanoTime();
+      String id = String.valueOf(System.nanoTime());
       String cacheVersion = getVersion();
 
-      jsonGenerator.writeFieldName(Constants.VERSION);
-      objectMapper.writeValue(jsonGenerator, id);
+      byte[] cacheByteArray;
 
-      jsonGenerator.writeFieldName(Constants.TIMESTAMP);
-      objectMapper.writeValue(jsonGenerator, DateTimeUtils.getString(now));
+      JsonFactory jsonFactory = new JsonFactory();
 
-      jsonGenerator.writeFieldName(Constants.CACHE_VERSION);
-      objectMapper.writeValue(jsonGenerator, cacheVersion);
+      try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
 
-      byte[] cacheByteArray = baos.toByteArray();
+        try (GZIPOutputStream gzipOut = new GZIPOutputStream(baos);
+            OutputStreamWriter writer =
+                new OutputStreamWriter(gzipOut, StandardCharsets.UTF_8);
+            JsonGenerator jsonGenerator =
+                jsonFactory.createGenerator(writer)) {
 
-      jsonGenerator.writeEndObject();
-      jsonGenerator.flush();
-      jsonGenerator.close();
-      outwriter.close();
-      gzipOut.close();
+          jsonGenerator.writeStartObject();
 
-      long endTime = System.nanoTime();
-      long duration = (endTime - startTime) / 1000000;
-      log.info(String.format("%s cache loaded in %s ms", Constants.FULL, duration));
+          // Brokers
+          writeBrokerDetailsToJson(jsonGenerator);
+
+          // Broker PSP
+          writeBrokerPspDetailsToJson(jsonGenerator);
+
+          // CDS Categories
+          writeCdsCategoryToJson(jsonGenerator);
+
+          // CDS Services
+          writeCdsServiceToJson(jsonGenerator);
+
+          // CDS Subjects
+          writeCdsSubjectsToJson(jsonGenerator);
+
+          // CDS Subject Services
+          writeCdsSubjectServicesToJson(jsonGenerator);
+
+          // GDE Configuration
+          writeGdeConfigurationToJson(jsonGenerator);
+
+          // Metadata Dict
+          writeMetadataDictToJson(jsonGenerator);
+
+          // Configuration Keys
+          writeConfigurationKeysToJson(jsonGenerator);
+
+          // FTP Servers
+          writeFtpServersToJson(jsonGenerator);
+
+          // Languages
+          writeLanguagesToJson(jsonGenerator);
+
+          // Plugins
+          writePluginsToJson(jsonGenerator);
+
+          // PSPs
+          writePaymentServiceProvidersToJson(jsonGenerator);
+
+          // Channels
+          writeChannelsToJson(jsonGenerator);
+
+          // Payment Types
+          writePaymentTypesToJson(jsonGenerator);
+
+          // PSP Channel Payment Types
+          writePspChannelPaymentTypesToJson(jsonGenerator);
+
+          // Creditor Institutions
+          writeCreditorInstitutionsToJson(jsonGenerator);
+
+          // Encodings
+          writeEncodingsToJson(jsonGenerator);
+
+          // Creditor Institution Encodings
+          writeCreditorInstitutionEncodingsToJson(jsonGenerator);
+
+          // Station Creditor Institutions
+          writeStationCreditorInstitutionsToJson(jsonGenerator);
+
+          // Maintenance Stations
+          writeMaintenanceStationsToJson(jsonGenerator);
+
+          // Stations
+          writeStationsToJson(jsonGenerator);
+
+          // IBANs
+          writeIbansToJson(jsonGenerator);
+
+          // PSP Informations
+          writePspInformationsToJson(jsonGenerator);
+
+          // PSP Information Templates
+          //writePspInformationTemplatesToJson(jsonGenerator);
+
+          // Creditor Institution Informations
+          writeCreditorInstitutionInformationsToJson(jsonGenerator);
+
+          // Metadata finale
+          jsonGenerator.writeStringField(Constants.VERSION, id);
+          jsonGenerator.writeStringField(
+              Constants.TIMESTAMP,
+              DateTimeUtils.getString(now)
+          );
+          jsonGenerator.writeStringField(
+              Constants.CACHE_VERSION,
+              cacheVersion
+          );
+
+          jsonGenerator.writeEndObject();
+        }
+
+        cacheByteArray = baos.toByteArray();
+      }
+
+      long duration = (System.nanoTime() - startTime) / 1_000_000;
+
+      log.info(
+          "{} cache loaded in {} ms",
+          Constants.FULL,
+          duration
+      );
 
       String actualKey = cacheKeyUtils.getCacheKey(Constants.FULL);
       String actualKeyV1 = cacheKeyUtils.getCacheIdKey(Constants.FULL);
 
-      log.info(String.format("Saving on Redis %s %s %s", actualKey, actualKeyV1, id));
-      redisRepository.pushToRedisAsync(actualKey, actualKeyV1, cacheByteArray,
-          id.getBytes(StandardCharsets.UTF_8));
+      log.info(
+          "Saving on Redis {} {} {}",
+          actualKey,
+          actualKeyV1,
+          id
+      );
+
+      redisRepository.pushToRedisAsync(
+          actualKey,
+          actualKeyV1,
+          cacheByteArray,
+          id.getBytes(StandardCharsets.UTF_8)
+      );
 
       return CacheMetadata.builder()
           .version(id)
           .id(id)
           .timestamp(now)
           .cacheVersion(cacheVersion)
+          .data(cacheByteArray)
           .build();
 
     } catch (Exception e) {
       log.error("[ALERT] problem to generate cache", e);
-      removeCacheInProgress();
       throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
+
     } finally {
       removeCacheInProgress();
     }
   }
 
-  public HashMap<String, Object> loadAndDecompressFromRedis() throws IOException {
-    log.info("Loading and decompressing cache from Redis (one-time)");
+  public HashMap<String, Object> decompressToMap(byte[] bytes) throws IOException {
+    try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+        GZIPInputStream gzipIn = new GZIPInputStream(bais);
+        InputStreamReader reader = new InputStreamReader(gzipIn, StandardCharsets.UTF_8);
+        JsonParser jsonParser = new JsonFactory().createParser(reader)) {
 
-    byte[] bytes = redisRepository.get(cacheKeyUtils.getCacheKey(Constants.FULL));
-
-    if (bytes == null) {
-      throw new AppException(AppError.CACHE_NOT_INITIALIZED, "FULL");
-    }
-
-    ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-    GZIPInputStream gzipIn = new GZIPInputStream(bais);
-    InputStreamReader reader = new InputStreamReader(gzipIn, StandardCharsets.UTF_8);
-    JsonFactory jsonFactory = new JsonFactory();
-    JsonParser jsonParser = jsonFactory.createParser(reader);
-    try {
       FullData fulldata = objectMapper.readValue(jsonParser, FullData.class);
-      jsonParser.close();
-      reader.close();
-      gzipIn.close();
 
       HashMap<String, Object> configData = new HashMap<>();
       configData.put(Constants.VERSION, fulldata.getVersion());
@@ -385,13 +396,21 @@ public class CacheConfigService {
       configData.put(Constants.GDE_CONFIGURATIONS, fulldata.getGdeConfigurations());
       configData.put(Constants.METADATA_DICT, fulldata.getMetadataDict());
 
-      log.info("Cache decompressed successfully from Redis");
+      log.info("Cache decompressed successfully");
       return configData;
-    } finally {
-      jsonParser.close();
-      reader.close();
-      gzipIn.close();
     }
+  }
+
+  public HashMap<String, Object> loadAndDecompressFromRedis() throws IOException {
+    log.info("Loading and decompressing cache from Redis (one-time)" +cacheKeyUtils.getCacheKey(Constants.FULL));
+    //redisRepository.remove(cacheKeyUtils.getCacheKey(Constants.FULL));
+    byte[] bytes = redisRepository.get(cacheKeyUtils.getCacheKey(Constants.FULL));
+
+    if (bytes == null) {
+      throw new AppException(AppError.CACHE_NOT_INITIALIZED, "FULL");
+    }
+
+    return decompressToMap(bytes);
   }
 
 
@@ -673,6 +692,7 @@ public class CacheConfigService {
   private void writePspInformationsToJson(JsonGenerator jsonGenerator) throws IOException {
     Pair<List<PspInformation>, List<PspInformation>> informativePspAndTemplates =
         getInformativePspAndTemplates();
+    /* BECA=USE
     List<PspInformation> infopsps = informativePspAndTemplates.getLeft();
 
     jsonGenerator.writeFieldName(Constants.PSP_INFORMATIONS);
@@ -683,11 +703,8 @@ public class CacheConfigService {
     }
     jsonGenerator.writeEndObject();
     log.debug("Batch written: PSP_INFORMATIONS - " + infopsps.size() + " items");
-  }
+    */
 
-  private void writePspInformationTemplatesToJson(JsonGenerator jsonGenerator) throws IOException {
-    Pair<List<PspInformation>, List<PspInformation>> informativePspAndTemplates =
-        getInformativePspAndTemplates();
     List<PspInformation> infopspTemplates = informativePspAndTemplates.getRight();
 
     jsonGenerator.writeFieldName(Constants.PSP_INFORMATION_TEMPLATES);
@@ -699,6 +716,8 @@ public class CacheConfigService {
     jsonGenerator.writeEndObject();
     log.debug("Batch written: PSP_INFORMATION_TEMPLATES - " + infopspTemplates.size() + " items");
   }
+
+
 
   private void writeCreditorInstitutionInformationsToJson(JsonGenerator jsonGenerator) throws IOException {
     List<CreditorInstitutionInformation> infopas = getInformativePa();
