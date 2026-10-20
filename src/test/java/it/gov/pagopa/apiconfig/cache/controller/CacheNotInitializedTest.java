@@ -55,8 +55,14 @@ class CacheNotInitializedTest {
     ZonedDateTime romeDateTime = now.withZoneSameInstant(ZoneId.of("Europe/Rome"));
 
     when(cacheConfigService.getCacheId()).thenReturn(new CacheVersion(version));
-    when(cacheConfigService.newCache()).thenReturn(TestUtils.inMemoryCache(modelMapper, version, cacheVersion, romeDateTime));
+    when(cacheConfigService.newCache()).thenReturn(CacheConfigService.CacheMetadata.builder()
+        .id(version)
+        .version(version)
+        .timestamp(romeDateTime)
+        .cacheVersion(cacheVersion)
+        .build());
     when(cacheConfigService.loadFullCache()).thenReturn(TestUtils.inMemoryCache(modelMapper, version, cacheVersion, romeDateTime));
+    when(cacheConfigService.loadAndDecompressFromRedis()).thenReturn(TestUtils.inMemoryCache(modelMapper, version, cacheVersion, romeDateTime));
     when(verifierService.getPaV2()).thenReturn(Arrays.asList("1", "2"));
     when(healthCheckService.checkDatabaseConnection()).thenReturn(true);
   }
