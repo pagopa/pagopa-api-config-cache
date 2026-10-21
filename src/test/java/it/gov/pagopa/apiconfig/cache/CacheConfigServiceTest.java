@@ -2,7 +2,7 @@ package it.gov.pagopa.apiconfig.cache;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.gov.pagopa.apiconfig.cache.exception.AppError;
+import it.gov.pagopa.apiconfig.cache.config.MarshalerConfig;
 import it.gov.pagopa.apiconfig.cache.exception.AppException;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.service.CacheConfigService;
@@ -13,18 +13,11 @@ import it.gov.pagopa.apiconfig.cache.util.ZipUtils;
 import it.gov.pagopa.apiconfig.starter.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.test.util.ReflectionTestUtils;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -38,98 +31,56 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-// @SpringBootTest(classes = Application.class)
-@ExtendWith({MockitoExtension.class})
+@SpringBootTest(classes = {CacheConfigService.class, ConfigMapper.class, MarshalerConfig.class, CacheKeyUtils.class, ObjectMapper.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
 class CacheConfigServiceTest {
 
-  @Mock private RedisRepository redisRepository;
-  @Mock private ConfigurationKeysRepository configurationKeysRepository;
-  @Mock private IntermediariPaRepository intermediariPaRepository;
-  @Mock private IntermediariPspRepository intermediariPspRepository;
-  @Mock private CdsCategorieRepository cdsCategorieRepository;
-  @Mock private CdsSoggettoRepository cdsSoggettoRepository;
-  @Mock private CdsServizioRepository cdsServizioRepository;
-  @Mock private CdsSoggettoServizioRepository cdsSoggettoServizioRepository;
-  @Mock private GdeConfigRepository gdeConfigRepository;
-  @Mock private DizionarioMetadatiRepository dizionarioMetadatiRepository;
-  @Mock private FtpServersRepository ftpServersRepository;
-  @Mock private TipiVersamentoRepository tipiVersamentoRepository;
-  @Mock private WfespPluginConfRepository wfespPluginConfRepository;
-  @Mock private CodifichePaRepository codifichePaRepository;
-  @Mock private CodificheRepository codificheRepository;
-  @Mock private IbanValidiPerPaRepository ibanValidiPerPaRepository;
-  @Mock private StazioniRepository stazioniRepository;
-  @Mock private PaStazionePaRepository paStazioniRepository;
-  @Mock private StationMaintenanceRepository stationMaintenanceRepository;
-  @Mock private PaRepository paRepository;
-  @Mock private CanaliViewRepository canaliViewRepository;
-  @Mock private PspCanaleTipoVersamentoCanaleRepository pspCanaleTipoVersamentoCanaleRepository;
-  @Mock private PspRepository pspRepository;
-  @Mock private CdiMasterValidRepository cdiMasterValidRepository;
-  @Mock private CdiDetailRepository cdiDetailRepository;
-  @Mock private CdiPreferenceRepository cdiPreferenceRepository;
-  @Mock private CdiInformazioniServizioRepository cdiInformazioniServizioRepository;
-  @Mock private CdiFasciaCostoServizioRepository cdiFasceRepository;
-  @Mock private InformativePaMasterRepository informativePaMasterRepository;
-  @Mock private InformativePaDetailRepository informativePaDetailRepository;
-  @Mock private InformativePaFasceRepository informativePaFasceRepository;
-  @Mock private CacheEventHubService eventHubService;
+  @MockBean private RedisRepository redisRepository;
+  @MockBean private ConfigurationKeysRepository configurationKeysRepository;
+  @MockBean private IntermediariPaRepository intermediariPaRepository;
+  @MockBean private IntermediariPspRepository intermediariPspRepository;
+  @MockBean private CdsCategorieRepository cdsCategorieRepository;
+  @MockBean private CdsSoggettoRepository cdsSoggettoRepository;
+  @MockBean private CdsServizioRepository cdsServizioRepository;
+  @MockBean private CdsSoggettoServizioRepository cdsSoggettoServizioRepository;
+  @MockBean private GdeConfigRepository gdeConfigRepository;
+  @MockBean private DizionarioMetadatiRepository dizionarioMetadatiRepository;
+  @MockBean private FtpServersRepository ftpServersRepository;
+  @MockBean private TipiVersamentoRepository tipiVersamentoRepository;
+  @MockBean private WfespPluginConfRepository wfespPluginConfRepository;
+  @MockBean private CodifichePaRepository codifichePaRepository;
+  @MockBean private CodificheRepository codificheRepository;
+  @MockBean private IbanValidiPerPaRepository ibanValidiPerPaRepository;
+  @MockBean private StazioniRepository stazioniRepository;
+  @MockBean private PaStazionePaRepository paStazioniRepository;
+  @MockBean private StationMaintenanceRepository stationMaintenanceRepository;
+  @MockBean private PaRepository paRepository;
+  @MockBean private CanaliViewRepository canaliViewRepository;
+  @MockBean private PspCanaleTipoVersamentoCanaleRepository pspCanaleTipoVersamentoCanaleRepository;
+  @MockBean private PspRepository pspRepository;
+  @MockBean private CdiMasterValidRepository cdiMasterValidRepository;
+  @MockBean private CdiPreferenceRepository cdiPreferenceRepository;
+  @MockBean private InformativePaMasterRepository informativePaMasterRepository;
+  @MockBean private InformativePaFasceRepository informativePaFasceRepository;
+  @MockBean private CacheEventHubService eventHubService;
 
-  @InjectMocks private CacheConfigService cacheConfigService;
-
-  private ConfigMapper modelMapper;
-
-  private CacheKeyUtils cacheKeyUtils;
+  @Autowired
+  private CacheConfigService cacheConfigService;
 
   @BeforeEach
   void setUp() throws IOException {
-    modelMapper = new ConfigMapper();
-    cacheKeyUtils = new CacheKeyUtils();
-
-    // Set @Value fields manually
-    ReflectionTestUtils.setField(cacheKeyUtils, "KEY_SUFFIX", "_test");
-    ReflectionTestUtils.setField(cacheKeyUtils, "CACHE_KEY_IN_PROGRESS", "apicfg_test_{{stakeholder}}_in_progress");
-    ReflectionTestUtils.setField(cacheKeyUtils, "CACHE_KEY", "apicfg_test_{{stakeholder}}");
-    ReflectionTestUtils.setField(cacheKeyUtils, "CACHE_ID_KEY", "apicfg_test_{{stakeholder}}_id");
     when(redisRepository.get(any())).thenReturn(ZipUtils.zip("{\"version\": \"testversion\"}".getBytes(StandardCharsets.UTF_8)));
   }
 
   @Test
-  void testPostConstruct() {
-    CacheConfigService service = new CacheConfigService();
-    service.postConstruct(); // manually invoke
-
-    assertDoesNotThrow(service::postConstruct, "postConstruct() should execute without exception");
-  }
-
-  @Test
-  void testPostConstructExceptionWithStaticMock() {
-    try (MockedStatic<JAXBContext> contextMock = Mockito.mockStatic(JAXBContext.class)) {
-      contextMock.when(() -> JAXBContext.newInstance(any(Class.class)))
-              .thenThrow(new JAXBException("Forced"));
-
-      CacheConfigService service = new CacheConfigService();
-      AppException ex = assertThrows(AppException.class, service::postConstruct);
-      assertEquals(AppError.INTERNAL_SERVER_ERROR.title, ex.getTitle());
-    }
-  }
-
-  @Test
   void loadFullCache() throws Exception {
-    ReflectionTestUtils.setField(cacheConfigService, "cacheKeyUtils", cacheKeyUtils);
-    ReflectionTestUtils.setField(cacheConfigService, "objectMapper", new ObjectMapper().findAndRegisterModules());
     Map<String, Object> allData = cacheConfigService.loadFullCache();
     assertThat(allData).hasSize(29);
-    assertThat(allData.get("version")).isEqualTo("testversion");
+    assertThat(allData).containsEntry("version", "testversion");
   }
 
   @Test
-  void newCache() throws Exception {
-    ReflectionTestUtils.setField(cacheConfigService, "cacheKeyUtils", cacheKeyUtils);
-    ReflectionTestUtils.setField(cacheConfigService, "objectMapper", new ObjectMapper().findAndRegisterModules());
-    ReflectionTestUtils.setField(cacheConfigService, "modelMapper", modelMapper);
-
+  void newCache() {
     Map<String, Object> allData = cacheConfigService.newCache();
     assertThat(allData).hasSize(29);
   }
@@ -138,18 +89,11 @@ class CacheConfigServiceTest {
   void newCacheException() {
     doThrow(new RuntimeException()).when(intermediariPaRepository).findAll();
 
-    ReflectionTestUtils.setField(cacheConfigService, "cacheKeyUtils", cacheKeyUtils);
-    ReflectionTestUtils.setField(cacheConfigService, "objectMapper", new ObjectMapper().findAndRegisterModules());
-    ReflectionTestUtils.setField(cacheConfigService, "modelMapper", modelMapper);
-
     assertThrows(RuntimeException.class, () -> cacheConfigService.newCache());
   }
 
   @Test
   void getCacheInProgress() {
-    ReflectionTestUtils.setField(cacheConfigService, "cacheKeyUtils", cacheKeyUtils);
-    ReflectionTestUtils.setField(cacheConfigService, "objectMapper", new ObjectMapper().findAndRegisterModules());
-    ReflectionTestUtils.setField(cacheConfigService, "modelMapper", modelMapper);
     when(redisRepository.getBooleanByKeyId(any())).thenReturn(true);
     cacheConfigService.getCacheInProgress();
     assertThat(cacheConfigService.getCacheInProgress()).isTrue();
@@ -157,25 +101,18 @@ class CacheConfigServiceTest {
 
   @Test
   void getCacheId_1() {
-    ReflectionTestUtils.setField(cacheConfigService, "cacheKeyUtils", cacheKeyUtils);
-    ReflectionTestUtils.setField(cacheConfigService, "objectMapper", new ObjectMapper().findAndRegisterModules());
-    ReflectionTestUtils.setField(cacheConfigService, "modelMapper", modelMapper);
     when(redisRepository.getStringByKeyId(any())).thenReturn("version");
     assertThat(cacheConfigService.getCacheId()).isNotNull();
   }
 
   @Test
   void getCacheId_2() {
-    ReflectionTestUtils.setField(cacheConfigService, "cacheKeyUtils", cacheKeyUtils);
-    ReflectionTestUtils.setField(cacheConfigService, "objectMapper", new ObjectMapper().findAndRegisterModules());
-    ReflectionTestUtils.setField(cacheConfigService, "modelMapper", modelMapper);
     when(redisRepository.getStringByKeyId(any())).thenReturn(null);
     assertThrows(AppException.class, () -> cacheConfigService.getCacheId());
   }
 
   @Test
   void testSendEvent_publishEventCalled() throws JsonProcessingException {
-    ReflectionTestUtils.setField(cacheConfigService, "SEND_EVENT", true);
     doNothing().when(eventHubService).publishEvent(anyString(), any(ZonedDateTime.class), anyString());
 
     ZonedDateTime now = ZonedDateTime.now();
@@ -187,7 +124,6 @@ class CacheConfigServiceTest {
 
   @Test
   void testSendEvent_publishEventThrowsJsonProcessingException() throws JsonProcessingException {
-    ReflectionTestUtils.setField(cacheConfigService, "SEND_EVENT", true);
     doThrow(JsonProcessingException.class).when(eventHubService).publishEvent(anyString(), any(ZonedDateTime.class), anyString());
 
     ZonedDateTime now = ZonedDateTime.now();

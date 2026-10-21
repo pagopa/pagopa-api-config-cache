@@ -40,7 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class CacheController {
 
-  private HashMap<String, Object> inMemoryCache;
+  private Map<String, Object> inMemoryCache;
 
   private final CacheConfigService cacheConfigService;
   private final Boolean preload;

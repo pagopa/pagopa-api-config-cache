@@ -1,30 +1,23 @@
 package it.gov.pagopa.apiconfig.cache;
 
 import it.gov.pagopa.apiconfig.cache.controller.CacheController;
-import it.gov.pagopa.apiconfig.cache.controller.stakeholders.NodeCacheController;
 import it.gov.pagopa.apiconfig.cache.model.ConfigData;
 import it.gov.pagopa.apiconfig.cache.model.Stakeholder;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.service.CacheConfigService;
-import it.gov.pagopa.apiconfig.cache.service.CacheEventHubService;
 import it.gov.pagopa.apiconfig.cache.service.CacheKeyUtils;
 import it.gov.pagopa.apiconfig.cache.service.StakeholderConfigService;
 import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.cache.util.DateTimeUtils;
 import it.gov.pagopa.apiconfig.cache.util.FileDeleter;
-import it.gov.pagopa.apiconfig.cache.util.JsonSerializer;
 import it.gov.pagopa.apiconfig.starter.repository.*;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -39,67 +32,23 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(classes = {StakeholderConfigService.class, ConfigMapper.class, CacheKeyUtils.class, CacheController.class})
 class StakeholderConfigServiceTest {
 
   public static final String[] KEYS = {Constants.CHANNELS, Constants.STATIONS};
 
-  @Mock private CacheRepository cacheRepository;
-  @Mock private RedisRepository redisRepository;
-  @Mock private ConfigurationKeysRepository configurationKeysRepository;
-  @Mock private IntermediariPaRepository intermediariPaRepository;
-  @Mock private IntermediariPspRepository intermediariPspRepository;
-  @Mock private CdsCategorieRepository cdsCategorieRepository;
-  @Mock private CdsSoggettoRepository cdsSoggettoRepository;
-  @Mock private CdsServizioRepository cdsServizioRepository;
-  @Mock private CdsSoggettoServizioRepository cdsSoggettoServizioRepository;
-  @Mock private GdeConfigRepository gdeConfigRepository;
-  @Mock private DizionarioMetadatiRepository dizionarioMetadatiRepository;
-  @Mock private FtpServersRepository ftpServersRepository;
-  @Mock private TipiVersamentoRepository tipiVersamentoRepository;
-  @Mock private WfespPluginConfRepository wfespPluginConfRepository;
-  @Mock private CodifichePaRepository codifichePaRepository;
-  @Mock private CodificheRepository codificheRepository;
-  @Mock private IbanValidiPerPaRepository ibanValidiPerPaRepository;
-  @Mock private StazioniRepository stazioniRepository;
-  @Mock private PaStazionePaRepository paStazioniRepository;
-  @Mock private PaRepository paRepository;
-  @Mock private CanaliViewRepository canaliRepository;
-  @Mock private PspCanaleTipoVersamentoCanaleRepository pspCanaleTipoVersamentoCanaleRepository;
-  @Mock private PspRepository pspRepository;
-  @Mock private CdiMasterValidRepository cdiMasterValidRepository;
-  @Mock private CdiDetailRepository cdiDetailRepository;
-  @Mock private CdiPreferenceRepository cdiPreferenceRepository;
-  @Mock private CdiInformazioniServizioRepository cdiInformazioniServizioRepository;
-  @Mock private CdiFasciaCostoServizioRepository cdiFasceRepository;
-  @Mock private InformativePaMasterRepository informativePaMasterRepository;
-  @Mock private InformativePaDetailRepository informativePaDetailRepository;
-  @Mock private InformativePaFasceRepository informativePaFasceRepository;
-  @Mock private JsonSerializer jsonSerializer;
-  @Mock private CacheEventHubService cacheEventHubService;
+  @MockBean
+  private CacheRepository cacheRepository;
+  @MockBean private RedisRepository redisRepository;
+  @MockBean private CacheConfigService cacheConfigService;
 
-  @Spy private ConfigMapper configMapper = new ConfigMapper();
-
-  @InjectMocks private CacheConfigService cacheConfigService;
-
-  @InjectMocks private StakeholderConfigService stakeholderConfigService;
+  @Autowired
   private CacheController cacheController;
-  private CacheKeyUtils cacheKeyUtils;
+  @Autowired
+  private ConfigMapper configMapper;
 
-  @BeforeEach
-  void setUp() {
-    cacheKeyUtils = new CacheKeyUtils();
-    cacheController = new CacheController(cacheConfigService, false, true);
-
-    // Set @Value fields manually
-    ReflectionTestUtils.setField(cacheKeyUtils, "KEY_SUFFIX", "_test");
-    ReflectionTestUtils.setField(cacheKeyUtils, "CACHE_KEY_IN_PROGRESS", "apicfg_test_{{stakeholder}}_in_progress");
-    ReflectionTestUtils.setField(cacheKeyUtils, "CACHE_KEY", "apicfg_test_{{stakeholder}}");
-    ReflectionTestUtils.setField(cacheKeyUtils, "CACHE_ID_KEY", "apicfg_test_{{stakeholder}}_id");
-    ReflectionTestUtils.setField(cacheKeyUtils, "CACHE_GENERATION_LOCK_KEY", "apicfg_test_{{stakeholder}}_lock");
-    org.springframework.test.util.ReflectionTestUtils.setField(stakeholderConfigService, "cacheKeyUtils", cacheKeyUtils);
-    org.springframework.test.util.ReflectionTestUtils.setField(stakeholderConfigService, "cacheController", cacheController);
-  }
+  @Autowired
+  private StakeholderConfigService stakeholderConfigService;
 
   @Test
   void loadCache() throws IOException {

@@ -7,7 +7,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.apiconfig.cache.exception.AppError;
 import it.gov.pagopa.apiconfig.cache.exception.AppException;
-import it.gov.pagopa.apiconfig.cache.imported.catalogodati.CtListaInformativePSP;
 import it.gov.pagopa.apiconfig.cache.imported.controparti.CtContoAccredito;
 import it.gov.pagopa.apiconfig.cache.imported.controparti.CtErogazione;
 import it.gov.pagopa.apiconfig.cache.imported.controparti.CtErogazioneServizio;
@@ -58,23 +57,6 @@ import it.gov.pagopa.apiconfig.starter.entity.InformativePaMaster;
 import it.gov.pagopa.apiconfig.starter.entity.Pa;
 import it.gov.pagopa.apiconfig.starter.entity.Psp;
 import it.gov.pagopa.apiconfig.starter.repository.*;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
-import org.modelmapper.TypeToken;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
-import javax.transaction.Transactional;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeConstants;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -96,81 +78,136 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import java.util.zip.GZIPOutputStream;
+import javax.transaction.Transactional;
+import javax.xml.bind.JAXBElement;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.transform.stream.StreamResult;
+import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.TypeToken;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 @Transactional
 public class CacheConfigService {
 
-  @Value("${info.application.version}")
-  private String APP_VERSION;
+  private static final String DA_COMPILARE_FLUSSO =
+          "DA COMPILARE (formato: [IDPSP]_dd-mm-yyyy - esempio: ESEMPIO_31-12-2001)";
+  private static final String DA_COMPILARE = "DA COMPILARE";
 
-  @Value("#{'${sendEvent}'=='true'}")
-  private Boolean SEND_EVENT;
+  private final String appVersion;
+  private final Boolean sendEvent;
+  private final long inProgressTtl;
+  private final RedisRepository redisRepository;
+  private final ConfigMapper modelMapper;
+  private final ConfigurationKeysRepository configurationKeysRepository;
+  private final IntermediariPaRepository intermediariPaRepository;
+  private final IntermediariPspRepository intermediariPspRepository;
+  private final CdsCategorieRepository cdsCategorieRepository;
+  private final CdsSoggettoRepository cdsSoggettoRepository;
+  private final CdsServizioRepository cdsServizioRepository;
+  private final CdsSoggettoServizioRepository cdsSoggettoServizioRepository;
+  private final GdeConfigRepository gdeConfigRepository;
+  private final DizionarioMetadatiRepository dizionarioMetadatiRepository;
+  private final FtpServersRepository ftpServersRepository;
+  private final TipiVersamentoRepository tipiVersamentoRepository;
+  private final WfespPluginConfRepository wfespPluginConfRepository;
+  private final CodifichePaRepository codifichePaRepository;
+  private final CodificheRepository codificheRepository;
+  private final IbanValidiPerPaRepository ibanValidiPerPaRepository;
+  private final StazioniRepository stazioniRepository;
+  private final PaStazionePaRepository paStazioniRepository;
+  private final StationMaintenanceRepository stationMaintenanceRepository;
+  private final PaRepository paRepository;
+  private final CanaliViewRepository canaliViewRepository;
+  private final PspCanaleTipoVersamentoCanaleRepository pspCanaleTipoVersamentoCanaleRepository;
+  private final PspRepository pspRepository;
+  private final CdiMasterValidRepository cdiMasterValidRepository;
+  private final InformativePaMasterRepository informativePaMasterRepository;
+  private final InformativePaFasceRepository informativePaFasceRepository;
+  private final CacheEventHubService eventHubService;
+  private final ObjectMapper objectMapper;
+  private final CacheKeyUtils cacheKeyUtils;
+  private final Jaxb2Marshaller jaxb2Marshaller;
 
-  private static String DA_COMPILARE_FLUSSO =
-      "DA COMPILARE (formato: [IDPSP]_dd-mm-yyyy - esempio: ESEMPIO_31-12-2001)";
-  private static String DA_COMPILARE = "DA COMPILARE";
-  private static String SCHEMAM_INSTANCE = "http://www.w3.org/2001/XMLSchema-instance";
-  private static double COSTO_CONVENZIONE_FORMAT = 100d;
-
-  @Value("${in_progress.ttl}")
-  private long IN_PROGRESS_TTL;
-
-  @Autowired private RedisRepository redisRepository;
-  @Autowired private ConfigMapper modelMapper;
-
-  @Autowired private ConfigurationKeysRepository configurationKeysRepository;
-  @Autowired private IntermediariPaRepository intermediariPaRepository;
-  @Autowired private IntermediariPspRepository intermediariPspRepository;
-  @Autowired private CdsCategorieRepository cdsCategorieRepository;
-  @Autowired private CdsSoggettoRepository cdsSoggettoRepository;
-  @Autowired private CdsServizioRepository cdsServizioRepository;
-  @Autowired private CdsSoggettoServizioRepository cdsSoggettoServizioRepository;
-  @Autowired private GdeConfigRepository gdeConfigRepository;
-  @Autowired private DizionarioMetadatiRepository dizionarioMetadatiRepository;
-  @Autowired private FtpServersRepository ftpServersRepository;
-  @Autowired private TipiVersamentoRepository tipiVersamentoRepository;
-  @Autowired private WfespPluginConfRepository wfespPluginConfRepository;
-  @Autowired private CodifichePaRepository codifichePaRepository;
-  @Autowired private CodificheRepository codificheRepository;
-  @Autowired private IbanValidiPerPaRepository ibanValidiPerPaRepository;
-  @Autowired private StazioniRepository stazioniRepository;
-  @Autowired private PaStazionePaRepository paStazioniRepository;
-  @Autowired private StationMaintenanceRepository stationMaintenanceRepository;
-  @Autowired private PaRepository paRepository;
-  @Autowired private CanaliViewRepository canaliViewRepository;
-  @Autowired private PspCanaleTipoVersamentoCanaleRepository pspCanaleTipoVersamentoCanaleRepository;
-  @Autowired private PspRepository pspRepository;
-  @Autowired private CdiMasterValidRepository cdiMasterValidRepository;
-  @Autowired private CdiDetailRepository cdiDetailRepository;
-  @Autowired private CdiPreferenceRepository cdiPreferenceRepository;
-  @Autowired private CdiInformazioniServizioRepository cdiInformazioniServizioRepository;
-  @Autowired private CdiFasciaCostoServizioRepository cdiFasceRepository;
-  @Autowired private InformativePaMasterRepository informativePaMasterRepository;
-  @Autowired private InformativePaDetailRepository informativePaDetailRepository;
-  @Autowired private InformativePaFasceRepository informativePaFasceRepository;
-
-  @Autowired private CacheEventHubService eventHubService;
-  @Autowired private ObjectMapper objectMapper;
-
-  @Autowired private CacheKeyUtils cacheKeyUtils;
-  private JAXBContext ctListaInformativePSPJaxbContext;
-  private JAXBContext tplInformativaPSPJaxbContext;
-  private JAXBContext ctListaInformativeControparteJaxbContext;
-
-  @PostConstruct
-  public void postConstruct() {
-    try {
-      ctListaInformativePSPJaxbContext = JAXBContext.newInstance(CtListaInformativePSP.class);
-      tplInformativaPSPJaxbContext = JAXBContext.newInstance(TplInformativaPSP.class);
-      ctListaInformativeControparteJaxbContext = JAXBContext.newInstance(CtListaInformativeControparte.class);
-    } catch (JAXBException e) {
-      throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
-    }
+  public CacheConfigService(
+          Jaxb2Marshaller jaxb2Marshaller,
+          CacheKeyUtils cacheKeyUtils,
+          ObjectMapper objectMapper,
+          CacheEventHubService eventHubService,
+          InformativePaFasceRepository informativePaFasceRepository,
+          InformativePaMasterRepository informativePaMasterRepository,
+          CdiMasterValidRepository cdiMasterValidRepository,
+          PspRepository pspRepository,
+          PspCanaleTipoVersamentoCanaleRepository pspCanaleTipoVersamentoCanaleRepository,
+          CanaliViewRepository canaliViewRepository,
+          PaRepository paRepository,
+          StationMaintenanceRepository stationMaintenanceRepository,
+          PaStazionePaRepository paStazioniRepository,
+          StazioniRepository stazioniRepository,
+          IbanValidiPerPaRepository ibanValidiPerPaRepository,
+          CodificheRepository codificheRepository,
+          CodifichePaRepository codifichePaRepository,
+          WfespPluginConfRepository wfespPluginConfRepository,
+          TipiVersamentoRepository tipiVersamentoRepository,
+          FtpServersRepository ftpServersRepository,
+          DizionarioMetadatiRepository dizionarioMetadatiRepository,
+          GdeConfigRepository gdeConfigRepository,
+          CdsSoggettoServizioRepository cdsSoggettoServizioRepository,
+          CdsServizioRepository cdsServizioRepository,
+          CdsSoggettoRepository cdsSoggettoRepository,
+          CdsCategorieRepository cdsCategorieRepository,
+          IntermediariPspRepository intermediariPspRepository,
+          IntermediariPaRepository intermediariPaRepository,
+          ConfigurationKeysRepository configurationKeysRepository,
+          ConfigMapper modelMapper,
+          RedisRepository redisRepository,
+          @Value("${in_progress.ttl}") long inProgressTtl,
+          @Value("#{'${sendEvent}'=='true'}") Boolean sendEvent,
+          @Value("${info.application.version}") String appVersion
+  ) {
+    this.jaxb2Marshaller = jaxb2Marshaller;
+    this.cacheKeyUtils = cacheKeyUtils;
+    this.objectMapper = objectMapper;
+    this.eventHubService = eventHubService;
+    this.informativePaFasceRepository = informativePaFasceRepository;
+    this.informativePaMasterRepository = informativePaMasterRepository;
+    this.cdiMasterValidRepository = cdiMasterValidRepository;
+    this.pspRepository = pspRepository;
+    this.pspCanaleTipoVersamentoCanaleRepository = pspCanaleTipoVersamentoCanaleRepository;
+    this.canaliViewRepository = canaliViewRepository;
+    this.paRepository = paRepository;
+    this.stationMaintenanceRepository = stationMaintenanceRepository;
+    this.paStazioniRepository = paStazioniRepository;
+    this.stazioniRepository = stazioniRepository;
+    this.ibanValidiPerPaRepository = ibanValidiPerPaRepository;
+    this.codificheRepository = codificheRepository;
+    this.codifichePaRepository = codifichePaRepository;
+    this.wfespPluginConfRepository = wfespPluginConfRepository;
+    this.tipiVersamentoRepository = tipiVersamentoRepository;
+    this.ftpServersRepository = ftpServersRepository;
+    this.dizionarioMetadatiRepository = dizionarioMetadatiRepository;
+    this.gdeConfigRepository = gdeConfigRepository;
+    this.cdsSoggettoServizioRepository = cdsSoggettoServizioRepository;
+    this.cdsServizioRepository = cdsServizioRepository;
+    this.cdsSoggettoRepository = cdsSoggettoRepository;
+    this.cdsCategorieRepository = cdsCategorieRepository;
+    this.intermediariPspRepository = intermediariPspRepository;
+    this.intermediariPaRepository = intermediariPaRepository;
+    this.configurationKeysRepository = configurationKeysRepository;
+    this.modelMapper = modelMapper;
+    this.redisRepository = redisRepository;
+    this.inProgressTtl = inProgressTtl;
+    this.sendEvent = sendEvent;
+    this.appVersion = appVersion;
   }
 
-  public HashMap<String, Object> loadFullCache() throws IOException {
+  public Map<String, Object> loadFullCache() throws IOException {
     log.info("Loading full cache");
 
     byte[] bytes = redisRepository.get(cacheKeyUtils.getCacheKey(Constants.FULL));
@@ -213,7 +250,7 @@ public class CacheConfigService {
     return configData;
   }
 
-  public HashMap<String, Object> newCache() {
+  public Map<String, Object> newCache() {
 
     setCacheInProgress();
 
@@ -418,7 +455,7 @@ public class CacheConfigService {
   }
 
   public void sendEvent(String id, ZonedDateTime now) {
-    if(SEND_EVENT){
+    if (Boolean.TRUE.equals(sendEvent)) {
         try {
             eventHubService.publishEvent(id,now,getVersion());
         } catch (JsonProcessingException e) {
@@ -428,7 +465,7 @@ public class CacheConfigService {
   }
 
   private String getVersion() {
-    String version = Constants.GZIP_JSON + "-" + APP_VERSION;
+    String version = Constants.GZIP_JSON + "-" + appVersion;
     if (version.length() > 32) {
       return version.substring(0, 32);
     }
@@ -442,7 +479,7 @@ public class CacheConfigService {
 
   private void setCacheInProgress() {
     String actualKeyV1 = cacheKeyUtils.getCacheKeyInProgress(Constants.FULL);
-    redisRepository.save(actualKeyV1, "1".getBytes(StandardCharsets.UTF_8), IN_PROGRESS_TTL);
+    redisRepository.save(actualKeyV1, "1".getBytes(StandardCharsets.UTF_8), inProgressTtl);
   }
 
   public Boolean getCacheInProgress() {
@@ -660,18 +697,12 @@ public class CacheConfigService {
         .map(codificheRepository.findAll(), new TypeToken<List<Encoding>>() {}.getType());
   }
 
-
-
   private String toXml(TplInformativaPSP element) {
-    try {
+    try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
       JAXBElement<TplInformativaPSP> informativaPSP =
           new it.gov.pagopa.apiconfig.cache.imported.template.ObjectFactory()
               .createInformativaPSP(element);
-      Marshaller marshaller = tplInformativaPSPJaxbContext.createMarshaller();
-      marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
-      marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, SCHEMAM_INSTANCE);
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      marshaller.marshal(informativaPSP, baos);
+      jaxb2Marshaller.marshal(informativaPSP, new StreamResult(baos));
       return Constants.ENCODER.encodeToString(baos.toByteArray());
     } catch (Exception e) {
       log.error("error creating TplInformativaPSP", e);
@@ -679,33 +710,12 @@ public class CacheConfigService {
     }
   }
 
-  private String toXml(CtListaInformativePSP element) {
-    try {
-      JAXBElement<CtListaInformativePSP> informativaPSP =
-          new it.gov.pagopa.apiconfig.cache.imported.catalogodati.ObjectFactory()
-              .createListaInformativePSP(element);
-      Marshaller marshaller = ctListaInformativePSPJaxbContext.createMarshaller();
-      marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
-      marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, SCHEMAM_INSTANCE);
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      marshaller.marshal(informativaPSP, baos);
-      return Constants.ENCODER.encodeToString(baos.toByteArray());
-    } catch (Exception e) {
-      log.error("error creating CtListaInformativePSP", e);
-      return e.toString();
-    }
-  }
-
   private String toXml(CtListaInformativeControparte element) {
-    try {
+    try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
       JAXBElement<CtListaInformativeControparte> informativaPA =
           new it.gov.pagopa.apiconfig.cache.imported.controparti.ObjectFactory()
               .createListaInformativeControparte(element);
-      Marshaller marshaller = ctListaInformativeControparteJaxbContext.createMarshaller();
-      marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
-      marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, SCHEMAM_INSTANCE);
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      marshaller.marshal(informativaPA, baos);
+      jaxb2Marshaller.marshal(informativaPA, new StreamResult(baos));
       return Constants.ENCODER.encodeToString(baos.toByteArray());
     } catch (Exception e) {
       log.error("error creating CtListaInformativeControparte", e);
