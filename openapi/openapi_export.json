@@ -1,10 +1,10 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "API-Config Cache 0.9.39 - ${service}",
+    "title": "API-Config Cache v0.9.44 - ${service}",
     "description": "Generate cache for various microservices",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.9.44"
+    "version": "0.9.44-2-PAGOPA-3776-fix-memory-consumption"
   },
   "servers": [
     {
@@ -36,18 +36,6 @@
         "summary": "Get xlsx of last v1 {stakeholder} cache version",
         "operationId": "xls",
         "responses": {
-          "429": {
-            "description": "Too many requests"
-          },
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
           "500": {
             "description": "Service unavailable",
             "content": {
@@ -58,9 +46,6 @@
               }
             }
           },
-          "403": {
-            "description": "Forbidden"
-          },
           "400": {
             "description": "Bad Request",
             "content": {
@@ -70,6 +55,21 @@
                 }
               }
             }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "429": {
+            "description": "Too many requests"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
@@ -87,18 +87,6 @@
         "summary": "Get xlsx of last v1 {stakeholder} cache version",
         "operationId": "xls_1",
         "responses": {
-          "429": {
-            "description": "Too many requests"
-          },
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
           "500": {
             "description": "Service unavailable",
             "content": {
@@ -109,9 +97,6 @@
               }
             }
           },
-          "403": {
-            "description": "Forbidden"
-          },
           "400": {
             "description": "Bad Request",
             "content": {
@@ -121,6 +106,21 @@
                 }
               }
             }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "429": {
+            "description": "Too many requests"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
@@ -138,18 +138,6 @@
         "summary": "Get xlsx of last v1 {stakeholder} cache version",
         "operationId": "xls_2",
         "responses": {
-          "429": {
-            "description": "Too many requests"
-          },
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
           "500": {
             "description": "Service unavailable",
             "content": {
@@ -160,9 +148,6 @@
               }
             }
           },
-          "403": {
-            "description": "Forbidden"
-          },
           "400": {
             "description": "Bad Request",
             "content": {
@@ -172,6 +157,21 @@
                 }
               }
             }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "429": {
+            "description": "Too many requests"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
@@ -189,18 +189,6 @@
         "summary": "Get xlsx of latest full cache",
         "operationId": "xls_3",
         "responses": {
-          "429": {
-            "description": "Too many requests"
-          },
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
           "500": {
             "description": "Service unavailable",
             "content": {
@@ -211,9 +199,6 @@
               }
             }
           },
-          "403": {
-            "description": "Forbidden"
-          },
           "400": {
             "description": "Bad Request",
             "content": {
@@ -223,6 +208,21 @@
                 }
               }
             }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {}
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "429": {
+            "description": "Too many requests"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [

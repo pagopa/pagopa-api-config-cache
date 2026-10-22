@@ -1,6 +1,5 @@
 package it.gov.pagopa.apiconfig.cache.service;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -20,11 +19,8 @@ import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.cache.util.DateTimeUtils;
 import it.gov.pagopa.apiconfig.cache.util.DefaultFileDeleter;
 import it.gov.pagopa.apiconfig.cache.util.FileDeleter;
-import it.gov.pagopa.apiconfig.cache.util.JsonSerializer;
 import it.gov.pagopa.apiconfig.cache.util.JsonToXls;
 import it.gov.pagopa.apiconfig.cache.util.ZipUtils;
-import it.gov.pagopa.apiconfig.starter.entity.Cache;
-import it.gov.pagopa.apiconfig.starter.repository.CacheRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +28,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -66,10 +63,6 @@ public class StakeholderConfigService {
     @Autowired private CacheController cacheController;
 
     @Autowired private RedisRepository redisRepository;
-
-    @Autowired private CacheRepository cacheRepository;
-
-    @Autowired private JsonSerializer jsonSerializer;
 
     @Autowired private CacheKeyUtils cacheKeyUtils;
 
@@ -107,7 +100,7 @@ public class StakeholderConfigService {
             log.info(String.format("ConfigData will be generated in memory for stakeholder [%s]. Generation is not permitted for other stakeholders.", stakeholder));
 
             // retrieve full cache and generate configData
-            HashMap<String, Object> inMemoryCache = cacheController.getInMemoryCache();
+            Map<String, Object> inMemoryCache = cacheController.getInMemoryCache();
 
             // extraction of the requested keys
             Set<String> keysSet = new HashSet<>(Arrays.asList(keys));
@@ -162,26 +155,6 @@ public class StakeholderConfigService {
             throw new AppException(AppError.CACHE_SCHEMA_NOT_INITIALIZED, stakeholder);
         }
         return configData;
-    }
-
-    public void saveOnDB(ConfigData configData, String schemaVersion) {
-        log.info("saving on CACHE table " + configData.getXCacheId());
-        try {
-            String cacheVersion = getGZIPVersion(schemaVersion);
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.registerModule(new JavaTimeModule());
-            HashMap<String, Object> cloned = objectMapper.convertValue(configData.getCacheSchemaVersion(), HashMap.class);
-            cacheRepository.save(Cache.builder()
-                    .id(configData.getXCacheId())
-                    .cache(jsonSerializer.serialize(cloned))
-                    .time(ZonedDateTime.parse(configData.getXCacheTimestamp()))
-                    .version(cacheVersion)
-                    .build());
-
-            log.info("saved on CACHE table " + configData.getXCacheId());
-        } catch (Exception e) {
-            log.error("[ALERT] could not save on db", e);
-        }
     }
 
     public CacheVersion getVersionId(Stakeholder stakeholder, String schemaVersion, String[] keys) throws IOException {
@@ -294,16 +267,14 @@ public class StakeholderConfigService {
     }
 
     private static ConfigData decompressGzipToConfigData(byte[] gzipBytes, String schemaVersion) throws IOException {
-        byte[] unzipped = ZipUtils.unzip(gzipBytes);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         SimpleModule module = new SimpleModule();
         module.addDeserializer(CacheSchemaVersion.class, new CacheSchemaVersionDeserializer(getCacheSchemaVersionClass(schemaVersion)));
         objectMapper.registerModule(module);
-        JsonParser jsonParser = objectMapper.getFactory().createParser(unzipped);
-        ConfigData configData = objectMapper.readValue(jsonParser, ConfigData.class);
-        jsonParser.close();
-        return configData;
+        try (InputStream in = ZipUtils.unzipToStream(gzipBytes)) {
+            return objectMapper.readValue(in, ConfigData.class);
+        }
     }
     
     public static byte[] compressJsonToGzip(Object object) throws IOException {

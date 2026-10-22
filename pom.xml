@@ -7,20 +7,20 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.7.7</version>
+    <version>3.3.5</version>
   </parent>
 
   <groupId>it.gov.pagopa.api-config</groupId>
   <artifactId>cache</artifactId>
-  <version>0.9.44</version>
+  <version>0.9.44-2-PAGOPA-3776-fix-memory-consumption</version>
   <name>API-Config Cache</name>
   <description>Generate cache for various microservices</description>
 
   <properties>
-    <java.version>17</java.version>
-    <spring-version>2.7.7</spring-version>
-    <starter.version>1.23.0</starter.version>
-    <springdoc.version>1.6.11</springdoc.version>
+    <java.version>21</java.version>
+    <spring-version>3.3.5</spring-version>
+    <starter.version>2.0.1</starter.version>
+    <springdoc.version>2.6.0</springdoc.version>
     <postgresql.version>42.5.5</postgresql.version>
     <oracle.version>21.4.0.0</oracle.version>
     <modelmapper.version>3.1.0</modelmapper.version>
@@ -89,7 +89,7 @@
     <!-- Swagger/OpenAPI -->
     <dependency>
       <groupId>org.springdoc</groupId>
-      <artifactId>springdoc-openapi-ui</artifactId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
       <version>${springdoc.version}</version>
     </dependency>
 
@@ -102,6 +102,16 @@
       <groupId>com.oracle.database.jdbc</groupId>
       <artifactId>ojdbc8</artifactId>
       <version>${oracle.version}</version>
+    </dependency>
+
+    <!-- Jakarta XML Binding (JAXB) runtime for Jaxb2Marshaller / generated classes -->
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
     </dependency>
 
     <!-- utilities -->
@@ -121,14 +131,8 @@
       <version>2.15.2</version>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-inline</artifactId>
-      <version>5.2.0</version>
+      <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -171,7 +175,7 @@
           <plugin>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.8.7</version>
+            <version>0.8.12</version>
             <configuration>
               <excludes>
                 <exclude>**/imported/**</exclude>
@@ -222,24 +226,8 @@
       <plugin>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-xjc-plugin</artifactId>
-        <version>3.3.0</version>
+        <version>4.0.0</version>
         <executions>
-          <execution>
-            <id>xjc1</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>xsdtojava</goal>
-            </goals>
-            <configuration>
-              <sourceRoot>${basedir}/target/generated-sources/src/main/java</sourceRoot>
-              <xsdOptions>
-                <xsdOption>
-                  <xsd>${basedir}/src/main/resources/xsd/sanp3.3.1/CatalogoDatiInformativiPSP.xsd</xsd>
-                  <packagename>it.gov.pagopa.apiconfig.cache.imported.catalogodati</packagename>
-                </xsdOption>
-              </xsdOptions>
-            </configuration>
-          </execution>
           <execution>
             <id>xjc2</id>
             <phase>generate-sources</phase>
@@ -250,7 +238,7 @@
               <sourceRoot>${basedir}/target/generated-sources/src/main/java</sourceRoot>
               <xsdOptions>
                 <xsdOption>
-                  <xsd>${basedir}/src/main/resources/xsd/sanp3.3.1/TabellaDelleContropartiEstesa_1_2_0.xsd</xsd>
+                  <xsd>${basedir}/src/main/resources/xsd/sanp3.13.0/TabellaDelleContropartiEstesa_1_2_0.xsd</xsd>
                   <packagename>it.gov.pagopa.apiconfig.cache.imported.controparti</packagename>
                 </xsdOption>
               </xsdOptions>
@@ -266,7 +254,7 @@
               <sourceRoot>${basedir}/target/generated-sources/src/main/java</sourceRoot>
               <xsdOptions>
                 <xsdOption>
-                  <xsd>${basedir}/src/main/resources/xsd/sanp3.3.1/TemplateInformativa_1_0_11.xsd</xsd>
+                  <xsd>${basedir}/src/main/resources/xsd/sanp3.13.0/TemplateInformativa_1_0_11.xsd</xsd>
                   <packagename>it.gov.pagopa.apiconfig.cache.imported.template</packagename>
                 </xsdOption>
               </xsdOptions>

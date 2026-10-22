@@ -2,7 +2,7 @@ microservice-chart: &microservice-chart
   namespace: "apiconfig"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: 0.9.44
+    tag: 0.9.44-2-PAGOPA-3776-fix-memory-consumption
   canaryDelivery:
     deployment:
       image:
@@ -43,7 +43,7 @@ microservice-chart: &microservice-chart
       memory: "512Mi"
       cpu: "0.5"
     limits:
-      memory: "2G"
+      memory: "6G"
       cpu: "1"
   envConfig: &envConfig
     ENV: "dev"
@@ -58,7 +58,7 @@ microservice-chart: &microservice-chart
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
     CACHET_TX_NAME: "nodo-dei-pagamenti-cache"
-    JAVA_OPTS: "-XX:+UnlockExperimentalVMOptions -XX:InitiatingHeapOccupancyPercent=20 -XX:+UseContainerSupport -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:MaxGCPauseMillis=100 -XX:MinHeapFreeRatio=30 -XX:MaxHeapFreeRatio=30 -Xms384m -Xmx1536m"
+    JAVA_OPTS: "-XX:+UnlockExperimentalVMOptions -XX:InitiatingHeapOccupancyPercent=20 -XX:+UseContainerSupport -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:MaxGCPauseMillis=100 -XX:MinHeapFreeRatio=30 -XX:MaxHeapFreeRatio=30 -Xms512m -Xmx3600m"
     HIKARI_CONNECTION_TIMEOUT: "3000"
     HIKARI_MAX_LIFETIME: "0"
     HIKARI_KEEPLIVE_TIME: "0"
@@ -97,127 +97,15 @@ postgresql:
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql"
-    DB_CONFIG_URL: "jdbc:postgresql://nodo-db.d.internal.postgresql.pagopa.it:5432/nodo?sslmode=require&prepareThreshold=0&currentSchema=cfg"
+    DB_CONFIG_URL: "jdbc:postgresql://nodo-db.d.internal.postgresql.pagopa.it:5432/nodo-replica?sslmode=require&prepareThreshold=0&currentSchema=cfg_prod"
     DB_CONFIG_USER: "cfg"
     DB_CONFIG_DRIVER: "org.postgresql.Driver"
     DATABASE_ID: "p"
     HEALTHCHECK_QUERY: "select 1"
-    SAVE_DB: "false"
     SEND_EVENT: "true"
   envSecret:
     !!merge <<: *envSecret
     DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
-# postgres pagopa - IT
-postgresql-replica:
-  enabled: false
-#  !!merge <<: *microservice-chart
-#  ingress:
-#    !!merge <<: *ingress
-#    path: /api-config-cache/pr(/|$)(.*)
-#  envConfig:
-#    !!merge <<: *envConfig
-#    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql-replica"
-#    DB_CONFIG_URL: "jdbc:postgresql://nodo-db.d.internal.postgresql.pagopa.it:6432/nodo-replica?sslmode=require&prepareThreshold=0&currentSchema=cfg"
-#    DB_CONFIG_USER: "cfg"
-#    DB_CONFIG_DRIVER: "org.postgresql.Driver"
-#    DATABASE_ID: "pr"
-#    HEALTHCHECK_QUERY: "select 1"
-#    SAVE_DB: "true"
-#    SEND_EVENT: "false"
-#  secretProvider:
-#    !!merge <<: *azureSecretProvider
-#    envSecrets:
-#      !!merge <<: *envSecret
-#      DB_CONFIG_PASSWORD: "postgresql-db-cfg-password"
-# postgres nexi - SIT
-postgresql-nexi:
-  enabled: false
-#  !!merge <<: *microservice-chart
-#  ingress:
-#    !!merge <<: *ingress
-#    path: /api-config-cache/nexi/(.*)
-#  envConfig:
-#    !!merge <<: *envConfig
-#    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql-nexi"
-#    DB_CONFIG_URL: "jdbc:postgresql://db-postgres-ndp.d.db-nodo-pagamenti.com:5444/ndpspct?prepareThreshold=0&currentSchema=NODO4_CFG"
-#    DB_CONFIG_USER: "pp_nodo4_cfg"
-#    DB_CONFIG_DRIVER: "org.postgresql.Driver"
-#    DATABASE_ID: "pnexi"
-#    HEALTHCHECK_QUERY: "select 1"
-#    SAVE_DB: "true"
-#    SEND_EVENT: "false"
-#  envSecret:
-#    !!merge <<: *envSecret
-#    DB_CONFIG_PASSWORD: "db-postgres-nexi-cfg-password"
-# postgres nexi - replica not present in dev environment
-postgresql-replica-nexi:
-  enabled: false
-# oracle nexi - SIT
-oracle:
-  enabled: false
-#  !!merge <<: *microservice-chart
-#  ingress:
-#    !!merge <<: *ingress
-#    path: /api-config-cache/o(/|$)(.*)
-#  envConfig:
-#    !!merge <<: *envConfig
-#    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-oracle"
-#    DB_CONFIG_URL: "jdbc:oracle:thin:@(DESCRIPTION=(ENABLE=BROKEN)(ADDRESS=(PROTOCOL=tcp)(PORT=1522)(HOST=db-nodo-pagamenti.d.db-nodo-pagamenti.com))(CONNECT_DATA=(SERVICE_NAME=NDPSPCT_PP_NODO4_CFG))(SO_KEEPALIVE=true)(TCP_KEEPIDLE=60)(TCP_KEEPINTVL=30)(TCP_KEEPCNT=15))"
-#    DB_CONFIG_USER: "NODO4_CFG"
-#    DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
-#    DATABASE_ID: "o"
-#    HEALTHCHECK_QUERY: "select 1 from dual"
-#    SAVE_DB: "false"
-#    SEND_EVENT: "false"
-#  secretProvider:
-#    !!merge <<: *azureSecretProvider
-#    envSecrets:
-#      !!merge <<: *envSecret
-#      DB_CONFIG_PASSWORD: "oracle-db-cfg-password"
-# oracle nexi - DEV
-oracledev:
-  enabled: false
-#  !!merge <<: *microservice-chart
-#  ingress:
-#    !!merge <<: *ingress
-#    path: /api-config-cachedev/o(/|$)(.*)
-#  envConfig:
-#    !!merge <<: *envConfig
-#    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-oracle-odev"
-#    DB_CONFIG_URL: "jdbc:oracle:thin:@db-nodo-pagamenti.d.db-nodo-pagamenti.com:1522/NDPSPCT_NODO4_CFG"
-#    DB_CONFIG_USER: "NODO4_CFG_DEV"
-#    DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
-#    DATABASE_ID: "odev"
-#    HEALTHCHECK_QUERY: "select 1 from dual"
-#    SAVE_DB: "true"
-#    SEND_EVENT: "false"
-#  secretProvider:
-#    !!merge <<: *azureSecretProvider
-#    envSecrets:
-#      !!merge <<: *envSecret
-#      DB_CONFIG_PASSWORD: "oracle-db-cfg-dev-password"
-# oracle nexi - PROD x TEST
-oracleprod:
-  enabled: false
-#  !!merge <<: *microservice-chart
-#  ingress:
-#    !!merge <<: *ingress
-#    path: /api-config-cachedev/oprod(/|$)(.*)
-#  envConfig:
-#    !!merge <<: *envConfig
-#    APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-oracle-oprod"
-#    DB_CONFIG_URL: "jdbc:oracle:thin:@db-nodo-pagamenti.d.db-nodo-pagamenti.com:1522/NDPSPCT_NODO4_CFG"
-#    DB_CONFIG_USER: "NODO4_CFG_EXPORT"
-#    DB_CONFIG_DRIVER: "oracle.jdbc.OracleDriver"
-#    DATABASE_ID: "oprod"
-#    HEALTHCHECK_QUERY: "select 1 from dual"
-#    SAVE_DB: "false"
-#    SEND_EVENT: "false"
-#  secretProvider:
-#    !!merge <<: *azureSecretProvider
-#    envSecrets:
-#      !!merge <<: *envSecret
-#      DB_CONFIG_PASSWORD: "oracle-db-cfg-prod-password"
 #############
 ## REFRESH ##
 #############
@@ -241,11 +129,11 @@ refresh-p:
     - "https://api.dev.platform.pagopa.it/api-config-cache/p/v1/cache/refresh"
   resources:
     requests:
-      memory: "256Mi"
-      cpu: "100m"
-    limits:
       memory: "512Mi"
-      cpu: "150m"
+      cpu: "0.5"
+    limits:
+      memory: "6G"
+      cpu: "1"
   envSecrets:
     !!merge <<: *envSecret
     API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
@@ -268,226 +156,3 @@ refresh-p:
                 operator: In
                 values:
                   - user
-# postgres pagopa - IT
-refresh-p-replica:
-  enabled: false
-#  namespace: "apiconfig"
-#  schedule: "0 0 * * *"
-#  timeZone: "Europe/Rome"
-#  successfulJobsHistoryLimit: "1"
-#  image:
-#    repository: "curlimages/curl"
-#    tag: "latest"
-#    pullPolicy: "Always"
-#  command:
-#    - "curl"
-#    - "-k"
-#    - "-m"
-#    - "\"300\""
-#    - "--header"
-#    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
-#    - "https://api.dev.platform.pagopa.it/api-config-cache/pr/v1/cache/refresh"
-#  resources:
-#    requests:
-#      memory: "256Mi"
-#      cpu: "100m"
-#    limits:
-#      memory: "512Mi"
-#      cpu: "150m"
-#  secretProvider:
-#    !!merge <<: *azureSecretProvider
-#    envSecrets:
-#      !!merge <<: *envSecret
-#      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
-#  tolerations:
-#    - key: dedicated
-#      operator: Equal
-#      value: "apiconfig"
-#      effect: NoSchedule
-#  affinity:
-#    nodeAffinity:
-#      requiredDuringSchedulingIgnoredDuringExecution:
-#        nodeSelectorTerms:
-#          - matchExpressions:
-#              - key: node_type
-#                operator: In
-#                values:
-#                  - user
-# postgres nexi - SIT
-refresh-p-nexi:
-  enabled: false
-#  namespace: "apiconfig"
-#  schedule: "0 0 * * *"
-#  timeZone: "Europe/Rome"
-#  successfulJobsHistoryLimit: "1"
-#  image:
-#    repository: "curlimages/curl"
-#    tag: "latest"
-#    pullPolicy: "Always"
-#  command:
-#    - "curl"
-#    - "-k"
-#    - "-m"
-#    - "\"300\""
-#    - "--header"
-#    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
-#    - "https://api.dev.platform.pagopa.it/api-config-cache/nexi/p/v1/cache/refresh"
-#  resources:
-#    requests:
-#      memory: "256Mi"
-#      cpu: "100m"
-#    limits:
-#      memory: "512Mi"
-#      cpu: "150m"
-#  envSecret:
-#    !!merge <<: *envSecret
-#    API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
-#  tolerations:
-#    - key: dedicated
-#      operator: Equal
-#      value: "apiconfig"
-#      effect: NoSchedule
-#  affinity:
-#    nodeAffinity:
-#      requiredDuringSchedulingIgnoredDuringExecution:
-#        nodeSelectorTerms:
-#          - matchExpressions:
-#              - key: node_type
-#                operator: In
-#                values:
-#                  - user
-# oracle nexi - SIT
-refresh-o:
-  enabled: false
-#  namespace: "apiconfig"
-#  schedule: "0 0 * * *"
-#  timeZone: "Europe/Rome"
-#  successfulJobsHistoryLimit: "1"
-#  image:
-#    repository: "curlimages/curl"
-#    tag: "latest"
-#    pullPolicy: "Always"
-#  command:
-#    - "curl"
-#    - "-k"
-#    - "-m"
-#    - "\"300\""
-#    - "--header"
-#    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
-#    - "https://api.dev.platform.pagopa.it/api-config-cache/o/v1/cache/refresh"
-#  resources:
-#    requests:
-#      memory: "256Mi"
-#      cpu: "100m"
-#    limits:
-#      memory: "512Mi"
-#      cpu: "150m"
-#  secretProvider:
-#    !!merge <<: *azureSecretProvider
-#    envSecrets:
-#      !!merge <<: *envSecret
-#      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
-#  tolerations:
-#    - key: dedicated
-#      operator: Equal
-#      value: "apiconfig"
-#      effect: NoSchedule
-#  affinity:
-#    nodeAffinity:
-#      requiredDuringSchedulingIgnoredDuringExecution:
-#        nodeSelectorTerms:
-#          - matchExpressions:
-#              - key: node_type
-#                operator: In
-#                values:
-#                  - user
-# oracle nexi - DEV
-refresh-odev:
-  enabled: false
-#  namespace: "apiconfig"
-#  schedule: "0 0 * * *"
-#  timeZone: "Europe/Rome"
-#  successfulJobsHistoryLimit: "1"
-#  image:
-#    repository: "curlimages/curl"
-#    tag: "latest"
-#    pullPolicy: "Always"
-#  command:
-#    - "curl"
-#    - "-k"
-#    - "-m"
-#    - "\"300\""
-#    - "--header"
-#    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
-#    - "https://api.dev.platform.pagopa.it/api-config-cache/odev/v1/cache/refresh"
-#  resources:
-#    requests:
-#      memory: "256Mi"
-#      cpu: "100m"
-#    limits:
-#      memory: "512Mi"
-#      cpu: "150m"
-#  secretProvider:
-#    !!merge <<: *azureSecretProvider
-#    envSecrets:
-#      !!merge <<: *envSecret
-#      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
-#  tolerations:
-#    - key: dedicated
-#      operator: Equal
-#      value: "apiconfig"
-#      effect: NoSchedule
-#  affinity:
-#    nodeAffinity:
-#      requiredDuringSchedulingIgnoredDuringExecution:
-#        nodeSelectorTerms:
-#          - matchExpressions:
-#              - key: node_type
-#                operator: In
-#                values:
-#                  - user
-# oracle nexi - PROD x TEST
-refresh-oprod:
-  enabled: false
-#  namespace: "apiconfig"
-#  schedule: "0 0 * * *"
-#  timeZone: "Europe/Rome"
-#  successfulJobsHistoryLimit: "1"
-#  image:
-#    repository: "curlimages/curl"
-#    tag: "latest"
-#    pullPolicy: "Always"
-#  command:
-#    - "curl"
-#    - "-k"
-#    - "-m"
-#    - "\"300\""
-#    - "--header"
-#    - "\"Ocp-Apim-Subscription-Key: $(API_CONFIG_CACHE_SUBSCRIPTION_KEY)\""
-#    - "https://api.dev.platform.pagopa.it/api-config-cache/oprod/v1/cache/refresh"
-#  resources:
-#    requests:
-#      memory: "256Mi"
-#      cpu: "100m"
-#    limits:
-#      memory: "512Mi"
-#      cpu: "150m"
-#  secretProvider:
-#    !!merge <<: *azureSecretProvider
-#    envSecrets:
-#      !!merge <<: *envSecret
-#      API_CONFIG_CACHE_SUBSCRIPTION_KEY: "cfg-for-node-subscription-key"
-#  tolerations:
-#    - key: dedicated
-#      operator: Equal
-#      value: "apiconfig"
-#      effect: NoSchedule
-#  affinity:
-#    nodeAffinity:
-#      requiredDuringSchedulingIgnoredDuringExecution:
-#        nodeSelectorTerms:
-#          - matchExpressions:
-#              - key: node_type
-#                operator: In
-#                values:
-#                  - user
