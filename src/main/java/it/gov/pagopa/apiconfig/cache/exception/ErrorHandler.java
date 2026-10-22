@@ -7,8 +7,10 @@ import org.springframework.beans.TypeMismatchException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.lang.Nullable;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -44,7 +46,7 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
   public ResponseEntity<Object> handleHttpMessageNotReadable(
       HttpMessageNotReadableException ex,
       HttpHeaders headers,
-      HttpStatus status,
+      HttpStatusCode status,
       WebRequest request) {
     log.warn("Input not readable: ", ex);
     var errorResponse =
@@ -69,7 +71,7 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
   public ResponseEntity<Object> handleMissingServletRequestParameter(
       MissingServletRequestParameterException ex,
       HttpHeaders headers,
-      HttpStatus status,
+      HttpStatusCode status,
       WebRequest request) {
     log.warn("Missing request parameter: ", ex);
     var errorResponse =
@@ -92,7 +94,7 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
    */
   @Override
   protected ResponseEntity<Object> handleTypeMismatch(
-      TypeMismatchException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+      TypeMismatchException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
     log.warn("Type mismatch: ", ex);
     var errorResponse =
         ProblemJson.builder()
@@ -119,7 +121,7 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
   protected ResponseEntity<Object> handleMethodArgumentNotValid(
       MethodArgumentNotValidException ex,
       HttpHeaders headers,
-      HttpStatus status,
+      HttpStatusCode status,
       WebRequest request) {
     List<String> details = new ArrayList<>();
     for (FieldError error : ex.getBindingResult().getFieldErrors()) {
@@ -136,9 +138,9 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
     return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
   }
 
-  @ExceptionHandler({javax.validation.ConstraintViolationException.class})
+  @ExceptionHandler({jakarta.validation.ConstraintViolationException.class})
   public ResponseEntity<ProblemJson> handleConstraintViolationException(
-      final javax.validation.ConstraintViolationException ex, final WebRequest request) {
+      final jakarta.validation.ConstraintViolationException ex, final WebRequest request) {
     log.warn("Validation Error raised:", ex);
     var errorResponse =
         ProblemJson.builder()

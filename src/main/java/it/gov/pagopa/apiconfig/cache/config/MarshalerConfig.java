@@ -2,7 +2,7 @@ package it.gov.pagopa.apiconfig.cache.config;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.Marshaller;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;

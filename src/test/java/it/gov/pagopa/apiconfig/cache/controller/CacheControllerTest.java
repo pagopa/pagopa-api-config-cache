@@ -7,7 +7,6 @@ import it.gov.pagopa.apiconfig.cache.service.CacheEventHubService;
 import it.gov.pagopa.apiconfig.cache.service.HealthCheckService;
 import it.gov.pagopa.apiconfig.cache.service.StakeholderConfigService;
 import it.gov.pagopa.apiconfig.cache.service.VerifierService;
-import it.gov.pagopa.apiconfig.cache.config.ConfigMapper;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.cache.util.DateTimeUtils;
 import org.junit.jupiter.api.Assertions;
@@ -23,7 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 

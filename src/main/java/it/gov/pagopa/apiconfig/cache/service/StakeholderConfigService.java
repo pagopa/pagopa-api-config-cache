@@ -28,7 +28,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
