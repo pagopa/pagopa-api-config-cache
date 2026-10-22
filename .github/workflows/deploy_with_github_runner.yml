@@ -32,7 +32,7 @@ jobs:
     steps:
       - name: Deploy
         # from https://github.com/pagopa/github-actions-template/commit/main
-        uses: pagopa/github-actions-template/aks-deploy@525266fb788f4da438e5919fcf660fe8637271ed
+        uses: pagopa/github-actions-template/aks-deploy@1aa27ebf80b99501a9019d63ef27f3057d2a4b1d # 2.8.0
         if: ${{ contains(inputs.environment, 'uat') }}
         with:
           branch: ${{ inputs.branch }}
@@ -55,7 +55,7 @@ jobs:
       - name: Deploy
         if: ${{ !contains(inputs.environment, 'uat') }}
         # from https://github.com/pagopa/github-actions-template/commit/main
-        uses: pagopa/github-actions-template/aks-deploy@525266fb788f4da438e5919fcf660fe8637271ed
+        uses: pagopa/github-actions-template/aks-deploy@1aa27ebf80b99501a9019d63ef27f3057d2a4b1d # 2.8.0
         with:
           branch: ${{ inputs.branch }}
           client_id: ${{ secrets.CLIENT_ID }}
