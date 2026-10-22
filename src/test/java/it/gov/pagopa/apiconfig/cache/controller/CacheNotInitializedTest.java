@@ -8,11 +8,11 @@ import it.gov.pagopa.apiconfig.cache.service.CacheEventHubService;
 import it.gov.pagopa.apiconfig.cache.service.HealthCheckService;
 import it.gov.pagopa.apiconfig.cache.service.StakeholderConfigService;
 import it.gov.pagopa.apiconfig.cache.service.VerifierService;
-import it.gov.pagopa.apiconfig.cache.config.ConfigMapper;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -44,7 +44,7 @@ class CacheNotInitializedTest {
   @MockBean private VerifierService verifierService;
   @MockBean private EntityManager entityManager;
   @MockBean private StakeholderConfigService stakeholderConfigService;
-  @Autowired private ConfigMapper modelMapper;
+  @Autowired private ModelMapper modelMapper;
   @Autowired private CacheController cacheController;
 
   @BeforeEach
