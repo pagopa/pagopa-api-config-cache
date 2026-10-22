@@ -2,7 +2,6 @@ package it.gov.pagopa.apiconfig.cache.service;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.apiconfig.cache.exception.AppError;
@@ -59,6 +58,7 @@ import it.gov.pagopa.apiconfig.starter.entity.Psp;
 import it.gov.pagopa.apiconfig.starter.repository.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
@@ -211,11 +211,13 @@ public class CacheConfigService {
     log.info("Loading full cache");
 
     byte[] bytes = redisRepository.get(cacheKeyUtils.getCacheKey(Constants.FULL));
-    byte[] unzipped = ZipUtils.unzip(bytes);
-    JsonFactory jsonFactory = new JsonFactory();
-    JsonParser jsonParser = jsonFactory.createParser(unzipped);
-    FullData fulldata = objectMapper.readValue(jsonParser, FullData.class);
-    jsonParser.close();
+    if (bytes == null) {
+      throw new AppException(AppError.CACHE_NOT_INITIALIZED, Constants.FULL);
+    }
+    FullData fulldata;
+    try (InputStream in = ZipUtils.unzipToStream(bytes)) {
+      fulldata = objectMapper.readValue(in, FullData.class);
+    }
 
     HashMap<String, Object> configData = new HashMap<>();
     configData.put(Constants.VERSION, fulldata.getVersion());

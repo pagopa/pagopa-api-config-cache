@@ -1,5 +1,12 @@
 package it.gov.pagopa.apiconfig.cache;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.apiconfig.cache.config.MarshalerConfig;
@@ -9,8 +16,13 @@ import it.gov.pagopa.apiconfig.cache.service.CacheConfigService;
 import it.gov.pagopa.apiconfig.cache.service.CacheEventHubService;
 import it.gov.pagopa.apiconfig.cache.service.CacheKeyUtils;
 import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
-import it.gov.pagopa.apiconfig.cache.util.ZipUtils;
 import it.gov.pagopa.apiconfig.starter.repository.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.time.ZonedDateTime;
+import java.util.Map;
+import java.util.zip.GZIPOutputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -19,19 +31,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.time.ZonedDateTime;
-import java.util.Map;
-
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.junit.Assert.assertThrows;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
-
-@SpringBootTest(classes = {CacheConfigService.class, ConfigMapper.class, MarshalerConfig.class, CacheKeyUtils.class, ObjectMapper.class})
+@SpringBootTest(
+    classes = {
+      CacheConfigService.class,
+      ConfigMapper.class,
+      MarshalerConfig.class,
+      CacheKeyUtils.class,
+      ObjectMapper.class
+    })
 @MockitoSettings(strictness = Strictness.LENIENT)
 class CacheConfigServiceTest {
 
@@ -64,12 +71,12 @@ class CacheConfigServiceTest {
   @MockBean private InformativePaFasceRepository informativePaFasceRepository;
   @MockBean private CacheEventHubService eventHubService;
 
-  @Autowired
-  private CacheConfigService cacheConfigService;
+  @Autowired private CacheConfigService cacheConfigService;
 
   @BeforeEach
   void setUp() throws IOException {
-    when(redisRepository.get(any())).thenReturn(ZipUtils.zip("{\"version\": \"testversion\"}".getBytes(StandardCharsets.UTF_8)));
+    when(redisRepository.get(any()))
+        .thenReturn(zip("{\"version\": \"testversion\"}".getBytes(StandardCharsets.UTF_8)));
   }
 
   @Test
@@ -113,24 +120,41 @@ class CacheConfigServiceTest {
 
   @Test
   void testSendEvent_publishEventCalled() throws JsonProcessingException {
-    doNothing().when(eventHubService).publishEvent(anyString(), any(ZonedDateTime.class), anyString());
+    doNothing()
+        .when(eventHubService)
+        .publishEvent(anyString(), any(ZonedDateTime.class), anyString());
 
     ZonedDateTime now = ZonedDateTime.now();
     cacheConfigService.sendEvent("ID-1", now);
 
-    verify(eventHubService, times(1))
-            .publishEvent(eq("ID-1"), eq(now), anyString());
+    verify(eventHubService, times(1)).publishEvent(eq("ID-1"), eq(now), anyString());
   }
 
   @Test
   void testSendEvent_publishEventThrowsJsonProcessingException() throws JsonProcessingException {
-    doThrow(JsonProcessingException.class).when(eventHubService).publishEvent(anyString(), any(ZonedDateTime.class), anyString());
+    doThrow(JsonProcessingException.class)
+        .when(eventHubService)
+        .publishEvent(anyString(), any(ZonedDateTime.class), anyString());
 
     ZonedDateTime now = ZonedDateTime.now();
-    AppException thrown = assertThrows(AppException.class, () -> {
-      cacheConfigService.sendEvent("ID-1", now);
-    });
+    AppException thrown =
+        assertThrows(
+            AppException.class,
+            () -> {
+              cacheConfigService.sendEvent("ID-1", now);
+            });
 
     assertInstanceOf(JsonProcessingException.class, thrown.getCause());
+  }
+
+  private byte[] zip(byte[] bytes) throws IOException {
+    if (bytes == null) {
+      return new byte[0];
+    }
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    try (GZIPOutputStream gzipOut = new GZIPOutputStream(baos)) {
+      gzipOut.write(bytes);
+    }
+    return baos.toByteArray();
   }
 }

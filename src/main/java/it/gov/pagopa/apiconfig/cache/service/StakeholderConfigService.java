@@ -1,6 +1,5 @@
 package it.gov.pagopa.apiconfig.cache.service;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -31,6 +30,7 @@ import org.springframework.util.ReflectionUtils;
 
 import javax.transaction.Transactional;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -267,16 +267,14 @@ public class StakeholderConfigService {
     }
 
     private static ConfigData decompressGzipToConfigData(byte[] gzipBytes, String schemaVersion) throws IOException {
-        byte[] unzipped = ZipUtils.unzip(gzipBytes);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         SimpleModule module = new SimpleModule();
         module.addDeserializer(CacheSchemaVersion.class, new CacheSchemaVersionDeserializer(getCacheSchemaVersionClass(schemaVersion)));
         objectMapper.registerModule(module);
-        JsonParser jsonParser = objectMapper.getFactory().createParser(unzipped);
-        ConfigData configData = objectMapper.readValue(jsonParser, ConfigData.class);
-        jsonParser.close();
-        return configData;
+        try (InputStream in = ZipUtils.unzipToStream(gzipBytes)) {
+            return objectMapper.readValue(in, ConfigData.class);
+        }
     }
     
     public static byte[] compressJsonToGzip(Object object) throws IOException {
