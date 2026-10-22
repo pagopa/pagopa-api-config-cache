@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "API-Config Cache 0.9.39 - ${service}",
+    "title": "API-Config Cache v0.9.44 - ${service}",
     "description": "Generate cache for various microservices",
     "termsOfService": "https://www.pagopa.gov.it/",
     "version": "0.9.44"
@@ -381,7 +381,11 @@
               }
             },
             "content": {
-              "application/json": {}
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshResponse"
+                }
+              }
             }
           },
           "400": {
@@ -1788,7 +1792,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 }
               }
             }
@@ -3307,6 +3314,26 @@
           },
           "dbConnection": {
             "type": "string"
+          }
+        }
+      },
+      "RefreshResponse": {
+        "required": [
+          "id",
+          "timestamp",
+          "version"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       }
