@@ -12,7 +12,7 @@
 
   <groupId>it.gov.pagopa.api-config</groupId>
   <artifactId>cache</artifactId>
-  <version>0.9.44-1-PAGOPA-3776-fix-memory-consumption</version>
+  <version>0.9.44-2-PAGOPA-3776-fix-memory-consumption</version>
   <name>API-Config Cache</name>
   <description>Generate cache for various microservices</description>
 
