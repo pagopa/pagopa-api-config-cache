@@ -9,12 +9,13 @@ import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.service.CacheConfigService;
 import it.gov.pagopa.apiconfig.cache.service.CacheKeyUtils;
 import it.gov.pagopa.apiconfig.cache.service.StakeholderConfigService;
-import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
+import it.gov.pagopa.apiconfig.cache.config.ConfigMapper;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.cache.util.DateTimeUtils;
 import it.gov.pagopa.apiconfig.cache.util.FileDeleter;
 import it.gov.pagopa.apiconfig.starter.repository.*;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -45,7 +46,7 @@ class StakeholderConfigServiceTest {
   @Autowired
   private CacheController cacheController;
   @Autowired
-  private ConfigMapper configMapper;
+  private ModelMapper configMapper;
 
   @Autowired
   private StakeholderConfigService stakeholderConfigService;
@@ -110,11 +111,10 @@ class StakeholderConfigServiceTest {
     String cacheVersion = Constants.GZIP_JSON + "-test";
     ZonedDateTime now = ZonedDateTime.now();
     ZonedDateTime romeDateTime = DateTimeUtils.getZonedDateTime(now);
-    ConfigMapper modelMapper = new ConfigMapper();
     ConfigDataV1 configDataV1 = stakeholderConfigService.cacheToConfigDataV1(
             Stakeholder.TEST,
             TestUtils.inMemoryCache(
-                    modelMapper, version, cacheVersion, romeDateTime
+                    configMapper, version, cacheVersion, romeDateTime
             ),
             new String[]{}
     );
@@ -136,11 +136,10 @@ class StakeholderConfigServiceTest {
 	  String cacheVersion = Constants.GZIP_JSON + "-test";
 	  ZonedDateTime now = ZonedDateTime.now();
 	  ZonedDateTime romeDateTime = DateTimeUtils.getZonedDateTime(now);
-	  ConfigMapper modelMapper = new ConfigMapper();
 	  ConfigDataV1 configDataV1 = stakeholderConfigService.cacheToConfigDataV1(
 			  Stakeholder.TEST,
 			  TestUtils.inMemoryCache(
-					  modelMapper, version, cacheVersion, romeDateTime
+					  configMapper, version, cacheVersion, romeDateTime
 					  ),
 			  new String[]{}
 			  );
@@ -162,11 +161,10 @@ class StakeholderConfigServiceTest {
       String cacheVersion = Constants.GZIP_JSON + "-test";
       ZonedDateTime now = ZonedDateTime.now();
       ZonedDateTime romeDateTime = DateTimeUtils.getZonedDateTime(now);
-      ConfigMapper modelMapper = new ConfigMapper();
 
       ConfigDataV1 configDataV1 = stakeholderConfigService.cacheToConfigDataV1(
           Stakeholder.TEST,
-          TestUtils.inMemoryCache(modelMapper, version, cacheVersion, romeDateTime),
+          TestUtils.inMemoryCache(configMapper, version, cacheVersion, romeDateTime),
           new String[]{}
       );
 
@@ -187,10 +185,4 @@ class StakeholderConfigServiceTest {
 
       verify(failingDeleter).delete(any(Path.class));
   }
-
-
-
-
-
-
 }

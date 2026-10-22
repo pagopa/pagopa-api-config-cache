@@ -44,7 +44,7 @@ import it.gov.pagopa.apiconfig.cache.model.latest.psp.PspChannelPaymentType;
 import it.gov.pagopa.apiconfig.cache.model.latest.psp.PspInformation;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
-import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
+import it.gov.pagopa.apiconfig.cache.config.ConfigMapper;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.cache.util.DateTimeUtils;
 import it.gov.pagopa.apiconfig.cache.util.ZipUtils;
@@ -86,6 +86,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.transform.stream.StreamResult;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -104,7 +105,7 @@ public class CacheConfigService {
   private final Boolean sendEvent;
   private final long inProgressTtl;
   private final RedisRepository redisRepository;
-  private final ConfigMapper modelMapper;
+  private final ModelMapper modelMapper;
   private final ConfigurationKeysRepository configurationKeysRepository;
   private final IntermediariPaRepository intermediariPaRepository;
   private final IntermediariPspRepository intermediariPspRepository;
@@ -165,7 +166,7 @@ public class CacheConfigService {
           IntermediariPspRepository intermediariPspRepository,
           IntermediariPaRepository intermediariPaRepository,
           ConfigurationKeysRepository configurationKeysRepository,
-          ConfigMapper modelMapper,
+          ModelMapper modelMapper,
           RedisRepository redisRepository,
           @Value("${in_progress.ttl}") long inProgressTtl,
           @Value("#{'${sendEvent}'=='true'}") Boolean sendEvent,
@@ -253,19 +254,19 @@ public class CacheConfigService {
   }
 
   public Map<String, Object> newCache() {
-
     setCacheInProgress();
 
     HashMap<String, Object> configData = new HashMap<>();
-    try {
-
+    try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
       long startTime = System.nanoTime();
 
       JsonFactory jsonFactory = new JsonFactory();
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      GZIPOutputStream gzipOut = new GZIPOutputStream(baos);
-      OutputStreamWriter outwriter = new OutputStreamWriter(gzipOut);
-      JsonGenerator jsonGenerator = jsonFactory.createGenerator(outwriter);
+      byte[] cacheByteArray;
+      long endTime;
+      String id;
+      try (GZIPOutputStream gzipOut = new GZIPOutputStream(baos);
+          OutputStreamWriter streamWriter = new OutputStreamWriter(gzipOut);
+          JsonGenerator jsonGenerator = jsonFactory.createGenerator(streamWriter)) {
       jsonGenerator.writeStartObject();
 
       List<BrokerCreditorInstitution> intpa = getBrokerDetails();
@@ -423,8 +424,8 @@ public class CacheConfigService {
 
       ZonedDateTime now = ZonedDateTime.now();
       ZonedDateTime romeDateTime = DateTimeUtils.getZonedDateTime(now);
-      long endTime = System.nanoTime();
-      String id = "" + endTime;
+      endTime = System.nanoTime();
+      id = "" + endTime;
       String cacheVersion = getVersion();
       configData.put(Constants.VERSION, id);
       configData.put(Constants.TIMESTAMP, romeDateTime);
@@ -435,9 +436,9 @@ public class CacheConfigService {
       appendObjectToJson(jsonGenerator, Constants.CACHE_VERSION, cacheVersion);
 
       jsonGenerator.writeEndObject();
-      jsonGenerator.close();
+      }
 
-      byte[] cacheByteArray = baos.toByteArray();
+      cacheByteArray = baos.toByteArray();
 
       long duration = (endTime - startTime) / 1000000;
       log.info(String.format("%s cache loaded in %s ms", Constants.FULL, duration));
@@ -449,10 +450,10 @@ public class CacheConfigService {
       redisRepository.pushToRedisAsync(actualKey, actualKeyV1, cacheByteArray, id.getBytes(StandardCharsets.UTF_8));
     } catch (Exception e) {
       log.error("[ALERT] problem to generate cache", e);
-      removeCacheInProgress();
       throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
+    } finally {
+      removeCacheInProgress();
     }
-    removeCacheInProgress();
     return configData;
   }
 
@@ -500,7 +501,6 @@ public class CacheConfigService {
   public List<ConfigurationKey> getConfigurationKeys() {
     log.info("loading ConfigurationKeys");
     return modelMapper
-        .modelMapper()
         .map(
             configurationKeysRepository.findAll(),
             new TypeToken<List<ConfigurationKey>>() {}.getType());
@@ -509,7 +509,6 @@ public class CacheConfigService {
   public List<BrokerCreditorInstitution> getBrokerDetails() {
     log.info("loading PaBrokers");
     return modelMapper
-        .modelMapper()
         .map(
             intermediariPaRepository.findAll(),
             new TypeToken<List<BrokerCreditorInstitution>>() {}.getType());
@@ -518,21 +517,18 @@ public class CacheConfigService {
   public List<BrokerPsp> getBrokerPspDetails() {
     log.info("loading PspBrokers");
     return modelMapper
-        .modelMapper()
         .map(intermediariPspRepository.findAll(), new TypeToken<List<BrokerPsp>>() {}.getType());
   }
 
   public List<CdsCategory> getCdsCategories() {
     log.info("loading CdsCategories");
     return modelMapper
-        .modelMapper()
         .map(cdsCategorieRepository.findAll(), new TypeToken<List<CdsCategory>>() {}.getType());
   }
 
   public List<CdsService> getCdsServices() {
     log.info("loading CdsServices");
     return modelMapper
-        .modelMapper()
         .map(
             cdsServizioRepository.findAllFetching(),
             new TypeToken<List<CdsService>>() {}.getType());
@@ -541,14 +537,12 @@ public class CacheConfigService {
   public List<CdsSubject> getCdsSubjects() {
     log.info("loading CdsSubjects");
     return modelMapper
-        .modelMapper()
         .map(cdsSoggettoRepository.findAll(), new TypeToken<List<CdsSubject>>() {}.getType());
   }
 
   public List<CdsSubjectService> getCdsSubjectServices() {
     log.info("loading CdsSubjectServices");
     return modelMapper
-        .modelMapper()
         .map(
             cdsSoggettoServizioRepository.findAllFetchingStations(),
             new TypeToken<List<CdsSubjectService>>() {}.getType());
@@ -557,14 +551,12 @@ public class CacheConfigService {
   public List<GdeConfiguration> getGdeConfiguration() {
     log.info("loading GdeConfigurations");
     return modelMapper
-        .modelMapper()
         .map(gdeConfigRepository.findAll(), new TypeToken<List<GdeConfiguration>>() {}.getType());
   }
 
   public List<MetadataDict> getMetadataDict() {
     log.info("loading MetadataDicts");
     return modelMapper
-        .modelMapper()
         .map(
             dizionarioMetadatiRepository.findAll(),
             new TypeToken<List<MetadataDict>>() {}.getType());
@@ -573,28 +565,24 @@ public class CacheConfigService {
   public List<FtpServer> getFtpServers() {
     log.info("loading FtpServers");
     return modelMapper
-        .modelMapper()
         .map(ftpServersRepository.findAll(), new TypeToken<List<FtpServer>>() {}.getType());
   }
 
   public List<PaymentType> getPaymentTypes() {
     log.info("loading PaymentTypes");
     return modelMapper
-        .modelMapper()
         .map(tipiVersamentoRepository.findAll(), new TypeToken<List<PaymentType>>() {}.getType());
   }
 
   public List<Plugin> getWfespPluginConfigurations() {
     log.info("loading Plugins");
     return modelMapper
-        .modelMapper()
         .map(wfespPluginConfRepository.findAll(), new TypeToken<List<Plugin>>() {}.getType());
   }
 
   public List<Iban> getCurrentIbans() {
     log.info("loading Ibans");
     return modelMapper
-        .modelMapper()
         .map(
             ibanValidiPerPaRepository.findAllFetchingPas(),
             new TypeToken<List<Iban>>() {}.getType());
@@ -603,7 +591,6 @@ public class CacheConfigService {
   public List<Station> findAllStazioni() {
     log.info("loading Stations");
     return modelMapper
-        .modelMapper()
         .map(
             stazioniRepository.findAllFetchingIntermediario(),
             new TypeToken<List<Station>>() {}.getType());
@@ -649,14 +636,12 @@ public class CacheConfigService {
   public List<CreditorInstitution> getCreditorInstitutions() {
     log.info("loading Pas");
     return modelMapper
-        .modelMapper()
         .map(paRepository.findAll(), new TypeToken<List<CreditorInstitution>>() {}.getType());
   }
 
   public List<Channel> getAllCanali() {
     log.info("loading Channels");
     return modelMapper
-        .modelMapper()
         .map(
             canaliViewRepository.findAllFetchingIntermediario(),
             new TypeToken<List<Channel>>() {}.getType());
@@ -679,14 +664,12 @@ public class CacheConfigService {
   public List<PaymentServiceProvider> getAllPaymentServiceProviders() {
     log.info("loading Psps");
     return modelMapper
-        .modelMapper()
         .map(pspRepository.findAll(), new TypeToken<List<PaymentServiceProvider>>() {}.getType());
   }
 
   public List<CreditorInstitutionEncoding> getCreditorInstitutionEncodings() {
     log.info("loading PaEncodings");
     return modelMapper
-        .modelMapper()
         .map(
             codifichePaRepository.findAllFetchingCodifiche(),
             new TypeToken<List<CreditorInstitutionEncoding>>() {}.getType());
@@ -695,7 +678,6 @@ public class CacheConfigService {
   public List<Encoding> getEncodings() {
     log.info("loading Encodings");
     return modelMapper
-        .modelMapper()
         .map(codificheRepository.findAll(), new TypeToken<List<Encoding>>() {}.getType());
   }
 

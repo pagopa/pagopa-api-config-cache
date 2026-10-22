@@ -8,7 +8,7 @@ import it.gov.pagopa.apiconfig.cache.service.CacheEventHubService;
 import it.gov.pagopa.apiconfig.cache.service.HealthCheckService;
 import it.gov.pagopa.apiconfig.cache.service.StakeholderConfigService;
 import it.gov.pagopa.apiconfig.cache.service.VerifierService;
-import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
+import it.gov.pagopa.apiconfig.cache.config.ConfigMapper;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;

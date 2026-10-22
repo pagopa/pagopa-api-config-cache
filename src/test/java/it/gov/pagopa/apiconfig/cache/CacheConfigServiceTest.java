@@ -15,7 +15,7 @@ import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.service.CacheConfigService;
 import it.gov.pagopa.apiconfig.cache.service.CacheEventHubService;
 import it.gov.pagopa.apiconfig.cache.service.CacheKeyUtils;
-import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
+import it.gov.pagopa.apiconfig.cache.config.ConfigMapper;
 import it.gov.pagopa.apiconfig.starter.repository.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

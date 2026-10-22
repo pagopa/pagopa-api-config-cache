@@ -1,4 +1,4 @@
-package it.gov.pagopa.apiconfig.cache.util;
+package it.gov.pagopa.apiconfig.cache.config;
 
 import it.gov.pagopa.apiconfig.cache.model.latest.cds.CdsService;
 import it.gov.pagopa.apiconfig.cache.model.latest.cds.CdsSubjectService;
@@ -48,13 +48,14 @@ import it.gov.pagopa.apiconfig.starter.entity.WfespPluginConf;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-@Component
+@Configuration
 public class ConfigMapper {
 
+  @Bean
   public ModelMapper modelMapper() {
-
     ModelMapper mapper = new ModelMapper();
     mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 

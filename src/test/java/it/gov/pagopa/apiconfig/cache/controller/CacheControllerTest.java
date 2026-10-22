@@ -7,13 +7,14 @@ import it.gov.pagopa.apiconfig.cache.service.CacheEventHubService;
 import it.gov.pagopa.apiconfig.cache.service.HealthCheckService;
 import it.gov.pagopa.apiconfig.cache.service.StakeholderConfigService;
 import it.gov.pagopa.apiconfig.cache.service.VerifierService;
-import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
+import it.gov.pagopa.apiconfig.cache.config.ConfigMapper;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.cache.util.DateTimeUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,7 +46,7 @@ class CacheControllerTest {
   @MockBean private HealthCheckService healthCheckService;
   @MockBean private VerifierService verifierService;
 
-  @Autowired private ConfigMapper modelMapper;
+  @Autowired private ModelMapper modelMapper;
   @Autowired private CacheController cacheController;
 
   @Test
