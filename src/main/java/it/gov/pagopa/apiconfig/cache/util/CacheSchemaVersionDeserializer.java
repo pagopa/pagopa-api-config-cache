@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class CacheSchemaVersionDeserializer extends JsonDeserializer<CacheSchemaVersion> {
 
-  private Class<?> targetType;
+  private final Class<?> targetType;
 
   public CacheSchemaVersionDeserializer() {
     this.targetType = null;
@@ -26,10 +26,6 @@ public class CacheSchemaVersionDeserializer extends JsonDeserializer<CacheSchema
       JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
 
     if (this.targetType != null && this.targetType.isAssignableFrom(ConfigDataV1.class)) {
-      // Deserialize directly from the stream into the target type.
-      // This avoids materializing the whole node as an intermediate JsonNode tree
-      // (readTree + treeToValue), which would keep both the tree and the resulting
-      // object graph in heap at the same time: a major memory amplifier on large caches.
       return jsonParser.readValueAs(ConfigDataV1.class);
     } else {
       throw new AppException(AppError.CACHE_SCHEMA_NOT_VALID);

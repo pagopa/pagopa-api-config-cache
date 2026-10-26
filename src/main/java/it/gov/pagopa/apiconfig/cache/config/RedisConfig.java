@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.SocketOptions;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,8 +57,7 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, byte[]> redisObjectTemplate(
-            final LettuceConnectionFactory connectionFactory, ObjectMapper objectMapper) {
+    public RedisTemplate<String, byte[]> redisObjectTemplate(final LettuceConnectionFactory connectionFactory) {
         RedisTemplate<String, byte[]> template = new RedisTemplate<>();
         template.setKeySerializer(new StringRedisSerializer());
         template.setConnectionFactory(connectionFactory);
