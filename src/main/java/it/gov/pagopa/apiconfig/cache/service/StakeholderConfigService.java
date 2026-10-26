@@ -1,9 +1,7 @@
 package it.gov.pagopa.apiconfig.cache.service;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import it.gov.pagopa.apiconfig.cache.config.ObjectMapperConfig;
 import it.gov.pagopa.apiconfig.cache.controller.CacheController;
 import it.gov.pagopa.apiconfig.cache.exception.AppError;
 import it.gov.pagopa.apiconfig.cache.exception.AppException;
@@ -14,7 +12,6 @@ import it.gov.pagopa.apiconfig.cache.model.node.CacheSchemaVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
-import it.gov.pagopa.apiconfig.cache.util.CacheSchemaVersionDeserializer;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.cache.util.DateTimeUtils;
 import it.gov.pagopa.apiconfig.cache.util.DefaultFileDeleter;
@@ -24,6 +21,7 @@ import it.gov.pagopa.apiconfig.cache.util.ZipUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
@@ -65,6 +63,11 @@ public class StakeholderConfigService {
     @Autowired private RedisRepository redisRepository;
 
     @Autowired private CacheKeyUtils cacheKeyUtils;
+
+    /** Centralized mapper for the per-stakeholder cache (write / convert / read). */
+    @Autowired
+    @Qualifier(ObjectMapperConfig.CACHE_OBJECT_MAPPER)
+    private ObjectMapper cacheObjectMapper;
 
     public ConfigData loadCache(Stakeholder stakeholder, String schemaVersion) throws IOException {
         log.info(String.format("Loading on Redis %s cache", getStakeholderWithSchema(stakeholder, schemaVersion)));
@@ -225,10 +228,6 @@ public class StakeholderConfigService {
     }
 
     public ConfigDataV1 cacheToConfigDataV1(Stakeholder stakeholder, Map<String,Object> inMemoryCache, String[] keys) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        
         switch (stakeholder) {
             case STANDIN:
                 elaborateStandInCache(inMemoryCache);
@@ -236,7 +235,7 @@ public class StakeholderConfigService {
             default:
                 break;
         }
-        return objectMapper.convertValue(inMemoryCache, ConfigDataV1.class);
+        return cacheObjectMapper.convertValue(inMemoryCache, ConfigDataV1.class);
     }
 
     private void elaborateStandInCache(Map<String,Object> inMemoryCache) {
@@ -266,47 +265,41 @@ public class StakeholderConfigService {
         return version;
     }
 
-    private static ConfigData decompressGzipToConfigData(byte[] gzipBytes, String schemaVersion) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        SimpleModule module = new SimpleModule();
-        module.addDeserializer(CacheSchemaVersion.class, new CacheSchemaVersionDeserializer(getCacheSchemaVersionClass(schemaVersion)));
-        objectMapper.registerModule(module);
+    private ConfigData decompressGzipToConfigData(byte[] gzipBytes, String schemaVersion) throws IOException {
+        // Validate the requested schema (throws CACHE_SCHEMA_NOT_VALID for unsupported versions),
+        // preserving the previous behavior. The cacheObjectMapper already carries the schema-aware
+        // CacheSchemaVersion deserializer.
+        getCacheSchemaVersionClass(schemaVersion);
         try (InputStream in = ZipUtils.unzipToStream(gzipBytes)) {
-            return objectMapper.readValue(in, ConfigData.class);
+            return cacheObjectMapper.readValue(in, ConfigData.class);
         }
     }
-    
-    public static byte[] compressJsonToGzip(Object object) throws IOException {
+
+    public byte[] compressJsonToGzip(Object object) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
         // use GZIPOutputStream to compress data
         try (GZIPOutputStream gzipOut = new GZIPOutputStream(byteArrayOutputStream);
                 OutputStreamWriter writer = new OutputStreamWriter(gzipOut)) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.registerModule(new JavaTimeModule());
-            objectMapper.writeValue(writer, object);
+            cacheObjectMapper.writeValue(writer, object);
         }
 
         return byteArrayOutputStream.toByteArray();
     }
     
     // Overload method to preserve backward compatibility
-    public static byte[] compressJsonToGzipFile(Object object) throws IOException {
+    public byte[] compressJsonToGzipFile(Object object) throws IOException {
         return compressJsonToGzipFile(object, new DefaultFileDeleter());
     }
 
     @SuppressWarnings("java:S5443")
-    public static byte[] compressJsonToGzipFile(Object object, FileDeleter deleter) throws IOException {
-    	ObjectMapper objectMapper = new ObjectMapper();
-    	objectMapper.registerModule(new JavaTimeModule());
-
+    public byte[] compressJsonToGzipFile(Object object, FileDeleter deleter) throws IOException {
         // add a random prefix to the temporary file name
         Path tempPath = Files.createTempFile("cache_" + Calendar.getInstance().getTimeInMillis(), ".gz");
 
     	try (OutputStream fos = Files.newOutputStream(tempPath);
     			GZIPOutputStream gzipOut = new GZIPOutputStream(fos)) {
-    		objectMapper.writeValue(gzipOut, object);
+    		cacheObjectMapper.writeValue(gzipOut, object);
     	}
 
     	byte[] compressed = Files.readAllBytes(tempPath);

@@ -1,8 +1,5 @@
 package it.gov.pagopa.apiconfig.cache.config;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.SocketOptions;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,13 +28,6 @@ public class RedisConfig {
     private Duration redisCommandTimeout;
     @Value("${spring.data.redis.socketTimeout}")
     private Duration redisSocketTimeout;
-
-    @Bean
-    public ObjectMapper objectMapper() {
-        final var objectMapper = new ObjectMapper().findAndRegisterModules();
-        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        return objectMapper;
-    }
 
     @Bean
     public LettuceConnectionFactory redisConnectionFactory() {

@@ -10,6 +10,7 @@ import it.gov.pagopa.apiconfig.cache.service.CacheConfigService;
 import it.gov.pagopa.apiconfig.cache.service.CacheKeyUtils;
 import it.gov.pagopa.apiconfig.cache.service.StakeholderConfigService;
 import it.gov.pagopa.apiconfig.cache.config.ConfigMapper;
+import it.gov.pagopa.apiconfig.cache.config.ObjectMapperConfig;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.cache.util.DateTimeUtils;
 import it.gov.pagopa.apiconfig.cache.util.FileDeleter;
@@ -33,7 +34,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = {StakeholderConfigService.class, ConfigMapper.class, CacheKeyUtils.class, CacheController.class})
+@SpringBootTest(classes = {StakeholderConfigService.class, ConfigMapper.class, CacheKeyUtils.class, CacheController.class, ObjectMapperConfig.class})
 class StakeholderConfigServiceTest {
 
   public static final String[] KEYS = {Constants.CHANNELS, Constants.STATIONS};
@@ -150,7 +151,7 @@ class StakeholderConfigServiceTest {
 			  .xCacheVersion(cacheVersion)
 			  .build();
 
-	  byte[] compressed = StakeholderConfigService.compressJsonToGzipFile(configData);
+	  byte[] compressed = stakeholderConfigService.compressJsonToGzipFile(configData);
 
 	  assertThat(compressed).isNotNull().isNotEmpty();
   }
@@ -179,7 +180,7 @@ class StakeholderConfigServiceTest {
       doThrow(new IOException("Simulated delete failure")).when(failingDeleter).delete(any(Path.class));
 
       assertDoesNotThrow(() -> {
-          byte[] result = StakeholderConfigService.compressJsonToGzipFile(configData, failingDeleter);
+          byte[] result = stakeholderConfigService.compressJsonToGzipFile(configData, failingDeleter);
           assertThat(result).isNotEmpty();
       });
 
