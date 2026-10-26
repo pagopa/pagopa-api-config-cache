@@ -749,43 +749,43 @@ public class CacheConfigService {
             tplInformativaMaster.setStornoPagamento(0);
             tplInformativaPSP.setInformativaMaster(tplInformativaMaster);
 
-            if (masters.isEmpty()) {
+//            if (masters.isEmpty()) {
               TplListaInformativaDetail tplListaInformativaDetail = new TplListaInformativaDetail();
               tplListaInformativaDetail
                   .getInformativaDetail()
                   .add(makeTplInformativaDetail(null, null, null, null));
               tplInformativaPSP.setListaInformativaDetail(tplListaInformativaDetail);
               templates.add(new PspInformation(psp.getIdPsp(), toXml(tplInformativaPSP)));
-            } else {
-              tplInformativaPSP.setRagioneSociale(psp.getRagioneSociale());
-              tplInformativaPSP.setIdentificativoPSP(psp.getIdPsp());
-              TplListaInformativaDetail tplListaInformativaDetail = new TplListaInformativaDetail();
-              masters
-                  .get()
-                  .getCdiDetail()
-                  .forEach(
-                      d ->
-                          tplListaInformativaDetail
-                              .getInformativaDetail()
-                              .add(
-                                  makeTplInformativaDetail(
-                                      d.getPspCanaleTipoVersamento()
-                                          .getCanaleTipoVersamento()
-                                          .getCanale()
-                                          .getIdCanale(),
-                                      d.getPspCanaleTipoVersamento()
-                                          .getCanaleTipoVersamento()
-                                          .getCanale()
-                                          .getFkIntermediarioPsp()
-                                          .getIdIntermediarioPsp(),
-                                      d.getPspCanaleTipoVersamento()
-                                          .getCanaleTipoVersamento()
-                                          .getTipoVersamento()
-                                          .getTipoVersamento(),
-                                      d.getModelloPagamento())));
-              tplInformativaPSP.setListaInformativaDetail(tplListaInformativaDetail);
-              templates.add(new PspInformation(psp.getIdPsp(), toXml(tplInformativaPSP)));
-            }
+//            } else {
+//              tplInformativaPSP.setRagioneSociale(psp.getRagioneSociale());
+//              tplInformativaPSP.setIdentificativoPSP(psp.getIdPsp());
+//              TplListaInformativaDetail tplListaInformativaDetail = new TplListaInformativaDetail();
+//              masters
+//                  .get()
+//                  .getCdiDetail()
+//                  .forEach(
+//                      d ->
+//                          tplListaInformativaDetail
+//                              .getInformativaDetail()
+//                              .add(
+//                                  makeTplInformativaDetail(
+//                                      d.getPspCanaleTipoVersamento()
+//                                          .getCanaleTipoVersamento()
+//                                          .getCanale()
+//                                          .getIdCanale(),
+//                                      d.getPspCanaleTipoVersamento()
+//                                          .getCanaleTipoVersamento()
+//                                          .getCanale()
+//                                          .getFkIntermediarioPsp()
+//                                          .getIdIntermediarioPsp(),
+//                                      d.getPspCanaleTipoVersamento()
+//                                          .getCanaleTipoVersamento()
+//                                          .getTipoVersamento()
+//                                          .getTipoVersamento(),
+//                                      d.getModelloPagamento())));
+//              tplInformativaPSP.setListaInformativaDetail(tplListaInformativaDetail);
+//              templates.add(new PspInformation(psp.getIdPsp(), toXml(tplInformativaPSP)));
+//            }
           } catch (Exception e) {
             log.error(
                 "errore creazione template informativa psp:"
