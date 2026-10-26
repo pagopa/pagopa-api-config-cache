@@ -20,17 +20,17 @@ import java.time.Duration;
 @Configuration
 public class RedisConfig {
 
-    @Value("${spring.redis.host}")
+    @Value("${spring.data.redis.host}")
     private String redisHost;
 
-    @Value("${spring.redis.port}")
+    @Value("${spring.data.redis.port}")
     private int redisPort;
 
-    @Value("${spring.redis.pwd}")
+    @Value("${spring.data.redis.pwd}")
     private String redisPwd;
-    @Value("${spring.redis.commandTimeout}")
+    @Value("${spring.data.redis.commandTimeout}")
     private Duration redisCommandTimeout;
-    @Value("${spring.redis.socketTimeout}")
+    @Value("${spring.data.redis.socketTimeout}")
     private Duration redisSocketTimeout;
 
     @Bean
@@ -58,7 +58,6 @@ public class RedisConfig {
     }
 
     @Bean
-    @Qualifier("object")
     public RedisTemplate<String, byte[]> redisObjectTemplate(
             final LettuceConnectionFactory connectionFactory, ObjectMapper objectMapper) {
         RedisTemplate<String, byte[]> template = new RedisTemplate<>();

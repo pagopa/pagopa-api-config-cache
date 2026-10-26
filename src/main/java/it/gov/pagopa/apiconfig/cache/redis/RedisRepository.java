@@ -16,8 +16,8 @@ public class RedisRepository {
 
   private final RedisTemplate<String, byte[]> redisTemplateObj;
 
-  public RedisRepository(@Qualifier("object") RedisTemplate<String, byte[]> redisTemplateObj) {
-    this.redisTemplateObj = redisTemplateObj;
+  public RedisRepository(RedisTemplate<String, byte[]> redisObjectTemplate) {
+    this.redisTemplateObj = redisObjectTemplate;
   }
 
   public void save(String key, byte[] value, long ttl) {
