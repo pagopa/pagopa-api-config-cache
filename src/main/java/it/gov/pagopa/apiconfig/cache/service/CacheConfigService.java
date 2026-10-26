@@ -44,7 +44,6 @@ import it.gov.pagopa.apiconfig.cache.model.latest.psp.PspChannelPaymentType;
 import it.gov.pagopa.apiconfig.cache.model.latest.psp.PspInformation;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
-import it.gov.pagopa.apiconfig.cache.config.ConfigMapper;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.cache.util.DateTimeUtils;
 import it.gov.pagopa.apiconfig.cache.util.ZipUtils;
