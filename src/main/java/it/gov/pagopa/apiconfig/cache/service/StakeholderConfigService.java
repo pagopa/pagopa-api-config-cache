@@ -14,8 +14,6 @@ import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.cache.util.DateTimeUtils;
-import it.gov.pagopa.apiconfig.cache.util.DefaultFileDeleter;
-import it.gov.pagopa.apiconfig.cache.util.FileDeleter;
 import it.gov.pagopa.apiconfig.cache.util.JsonToXls;
 import it.gov.pagopa.apiconfig.cache.util.ZipUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -26,19 +24,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
 import jakarta.transaction.Transactional;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.zip.GZIPOutputStream;
 
 @Slf4j
 @Service
@@ -146,7 +138,7 @@ public class StakeholderConfigService {
             String actualKeyV1 = cacheKeyUtils.getCacheIdKey(getStakeholderWithSchema(stakeholder, schemaVersion));
 
             // create temporary file
-            byte[] cacheByteArray = compressJsonToGzipFile(configData);
+            byte[] cacheByteArray = compressJsonToGzip(configData);
 
 
             log.info(String.format("saving on Redis %s %s", actualKey, actualKeyV1));
@@ -274,46 +266,9 @@ public class StakeholderConfigService {
         }
     }
 
-    public byte[] compressJsonToGzip(Object object) throws IOException {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-        // use GZIPOutputStream to compress data
-        try (GZIPOutputStream gzipOut = new GZIPOutputStream(byteArrayOutputStream);
-                OutputStreamWriter writer = new OutputStreamWriter(gzipOut)) {
-            cacheObjectMapper.writeValue(writer, object);
-        }
-
-        return byteArrayOutputStream.toByteArray();
-    }
-    
-    // Overload method to preserve backward compatibility
-    public byte[] compressJsonToGzipFile(Object object) throws IOException {
-        return compressJsonToGzipFile(object, new DefaultFileDeleter());
-    }
-
-    @SuppressWarnings("java:S5443")
-    public byte[] compressJsonToGzipFile(Object object, FileDeleter deleter) throws IOException {
-        // add a random prefix to the temporary file name
-        Path tempPath = Files.createTempFile("cache_" + Calendar.getInstance().getTimeInMillis(), ".gz");
-
-    	try (OutputStream fos = Files.newOutputStream(tempPath);
-    			GZIPOutputStream gzipOut = new GZIPOutputStream(fos)) {
-    		cacheObjectMapper.writeValue(gzipOut, object);
-    	}
-
-    	byte[] compressed = Files.readAllBytes(tempPath);
-
-    	// Delete the temporary file
-    	try {
-    		 deleter.delete(tempPath);
-    	} catch (IOException e) {
-    		log.warn("Unable to delete temporary file: " + tempPath, e);
-    		// The exception is not raised because the compression was successful.
-    		// Fallback: schedule deletion on JVM shutdown
-    		tempPath.toFile().deleteOnExit();
-    	}
-
-    	return compressed;
+    protected byte[] compressJsonToGzip(Object object) throws IOException {
+        // Serialize + gzip fully in streaming: the uncompressed JSON is never held in the heap as a whole.
+        return ZipUtils.gzip(out -> cacheObjectMapper.writeValue(out, object));
     }
 
     private static Class<?> getCacheSchemaVersionClass(String schemaVersion) {
