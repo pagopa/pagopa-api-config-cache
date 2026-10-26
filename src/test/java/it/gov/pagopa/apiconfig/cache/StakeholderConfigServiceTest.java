@@ -116,8 +116,7 @@ class StakeholderConfigServiceTest {
             Stakeholder.TEST,
             TestUtils.inMemoryCache(
                     configMapper, version, cacheVersion, romeDateTime
-            ),
-            new String[]{}
+            )
     );
     ConfigData configData = ConfigData.builder()
             .cacheSchemaVersion(configDataV1)
@@ -141,8 +140,7 @@ class StakeholderConfigServiceTest {
 			  Stakeholder.TEST,
 			  TestUtils.inMemoryCache(
 					  configMapper, version, cacheVersion, romeDateTime
-					  ),
-			  new String[]{}
+					  )
 			  );
 	  ConfigData configData = ConfigData.builder()
 			  .cacheSchemaVersion(configDataV1)
@@ -165,8 +163,7 @@ class StakeholderConfigServiceTest {
 
       ConfigDataV1 configDataV1 = stakeholderConfigService.cacheToConfigDataV1(
           Stakeholder.TEST,
-          TestUtils.inMemoryCache(configMapper, version, cacheVersion, romeDateTime),
-          new String[]{}
+          TestUtils.inMemoryCache(configMapper, version, cacheVersion, romeDateTime)
       );
 
       ConfigData configData = ConfigData.builder()

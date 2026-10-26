@@ -20,7 +20,6 @@ import it.gov.pagopa.apiconfig.cache.util.JsonToXls;
 import it.gov.pagopa.apiconfig.cache.util.ZipUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -46,28 +45,32 @@ import java.util.zip.GZIPOutputStream;
 @Transactional
 public class StakeholderConfigService {
 
-    @Value("${info.application.version}")
-    private String APP_VERSION;
-
-    @Value("${xls.mask-passwords}")
-    private boolean xlsMaskPasswords;
-
-    @Value("${in_progress.ttl}")
-    private long IN_PROGRESS_TTL;
-
-    @Value("${cache-schema.lock-all-stakeholder}")
-    private boolean cacheSchemaLockAllStakeholder;
-
-    @Autowired private CacheController cacheController;
-
-    @Autowired private RedisRepository redisRepository;
-
-    @Autowired private CacheKeyUtils cacheKeyUtils;
-
+    private final String appVersion;
+    private final boolean xlsMaskPasswords;
+    private final boolean cacheSchemaLockAllStakeholder;
+    private final CacheController cacheController;
+    private final RedisRepository redisRepository;
+    private final CacheKeyUtils cacheKeyUtils;
     /** Centralized mapper for the per-stakeholder cache (write / convert / read). */
-    @Autowired
-    @Qualifier(ObjectMapperConfig.CACHE_OBJECT_MAPPER)
-    private ObjectMapper cacheObjectMapper;
+    private final ObjectMapper cacheObjectMapper;
+
+    public StakeholderConfigService(
+            @Value("${info.application.version}") String appVersion,
+            @Value("${xls.mask-passwords}") boolean xlsMaskPasswords,
+            @Value("${cache-schema.lock-all-stakeholder}") boolean cacheSchemaLockAllStakeholder,
+            CacheController cacheController,
+            RedisRepository redisRepository,
+            CacheKeyUtils cacheKeyUtils,
+            @Qualifier(ObjectMapperConfig.CACHE_OBJECT_MAPPER) ObjectMapper cacheObjectMapper
+    ) {
+        this.appVersion = appVersion;
+        this.xlsMaskPasswords = xlsMaskPasswords;
+        this.cacheSchemaLockAllStakeholder = cacheSchemaLockAllStakeholder;
+        this.cacheController = cacheController;
+        this.redisRepository = redisRepository;
+        this.cacheKeyUtils = cacheKeyUtils;
+        this.cacheObjectMapper = cacheObjectMapper;
+    }
 
     public ConfigData loadCache(Stakeholder stakeholder, String schemaVersion) throws IOException {
         log.info(String.format("Loading on Redis %s cache", getStakeholderWithSchema(stakeholder, schemaVersion)));
@@ -126,7 +129,7 @@ public class StakeholderConfigService {
             clonedInMemoryCache.put(Constants.TIMESTAMP, xCacheTimestamp);
             CacheSchemaVersion cacheSchemaVersion = null;
             if (schemaVersion.equals("v1")) {
-                cacheSchemaVersion = cacheToConfigDataV1(stakeholder, clonedInMemoryCache, keys);
+                cacheSchemaVersion = cacheToConfigDataV1(stakeholder, clonedInMemoryCache);
             } else {
                 throw new AppException(AppError.CACHE_SCHEMA_NOT_VALID);
             }
@@ -227,13 +230,9 @@ public class StakeholderConfigService {
         return String.format("%s_%s", stakeholder, schemaVersion);
     }
 
-    public ConfigDataV1 cacheToConfigDataV1(Stakeholder stakeholder, Map<String,Object> inMemoryCache, String[] keys) {
-        switch (stakeholder) {
-            case STANDIN:
-                elaborateStandInCache(inMemoryCache);
-                break;
-            default:
-                break;
+    public ConfigDataV1 cacheToConfigDataV1(Stakeholder stakeholder, Map<String,Object> inMemoryCache) {
+        if (Stakeholder.STANDIN.equals(stakeholder)) {
+            elaborateStandInCache(inMemoryCache);
         }
         return cacheObjectMapper.convertValue(inMemoryCache, ConfigDataV1.class);
     }
@@ -258,7 +257,7 @@ public class StakeholderConfigService {
     }
 
     private String getGZIPVersion(String schemaVersion) {
-        String version = String.format("%s-%s-%s", Constants.GZIP_JSON, schemaVersion, APP_VERSION);
+        String version = String.format("%s-%s-%s", Constants.GZIP_JSON, schemaVersion, appVersion);
         if (version.length() > 32) {
             return version.substring(0, 32);
         }
@@ -317,13 +316,11 @@ public class StakeholderConfigService {
     	return compressed;
     }
 
-    private static Class getCacheSchemaVersionClass(String schemaVersion) {
-        switch (schemaVersion) {
-            case "v1":
-                return ConfigDataV1.class;
-            default:
-                throw new AppException(AppError.CACHE_SCHEMA_NOT_VALID);
+    private static Class<?> getCacheSchemaVersionClass(String schemaVersion) {
+        if (schemaVersion.equals("v1")) {
+            return ConfigDataV1.class;
         }
+        throw new AppException(AppError.CACHE_SCHEMA_NOT_VALID);
     }
 
     private boolean saveCacheSchemaGenerationInProgress(String stakeholder, String lockValue) {
