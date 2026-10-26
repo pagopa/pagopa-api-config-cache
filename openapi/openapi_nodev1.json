@@ -4,7 +4,7 @@
     "title": "API-Config Cache v0.9.44 - ${service}",
     "description": "Generate cache for various microservices",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.9.44-3-PAGOPA-3776-fix-memory-consumption"
+    "version": "0.9.44-4-PAGOPA-3776-fix-memory-consumption"
   },
   "servers": [
     {
