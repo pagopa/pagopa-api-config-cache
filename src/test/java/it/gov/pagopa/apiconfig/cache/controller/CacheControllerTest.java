@@ -17,6 +17,7 @@ import it.gov.pagopa.apiconfig.cache.service.CacheConfigService;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.cache.util.DateTimeUtils;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -121,9 +122,8 @@ class CacheControllerTest {
     String version = "111";
     String cacheVersion = Constants.GZIP_JSON + "-test";
     ZonedDateTime now = ZonedDateTime.now();
-    doReturn(
-            TestUtils.inMemoryCache(
-                modelMapper, version, cacheVersion, DateTimeUtils.getZonedDateTime(now)))
+    ZonedDateTime cacheTimestamp = DateTimeUtils.getZonedDateTime(now);
+    doReturn(TestUtils.inMemoryCache(modelMapper, version, cacheVersion, cacheTimestamp))
         .when(cacheConfigService)
         .getInMemoryCache();
 
@@ -134,7 +134,10 @@ class CacheControllerTest {
         .andExpect(header().string(Constants.HEADER_X_CACHE_ID, version))
         .andExpect(header().string(Constants.HEADER_X_CACHE_VERSION, cacheVersion))
         .andExpect(
-            header().string(Constants.HEADER_X_CACHE_TIMESTAMP, DateTimeUtils.getString(now)));
+            header()
+                .string(
+                    Constants.HEADER_X_CACHE_TIMESTAMP,
+                    DateTimeFormatter.ISO_DATE_TIME.format(cacheTimestamp)));
 
     verify(cacheConfigService, Mockito.times(1)).doCache();
   }
