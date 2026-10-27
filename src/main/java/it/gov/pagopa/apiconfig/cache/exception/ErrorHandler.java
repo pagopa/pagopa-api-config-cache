@@ -17,6 +17,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -228,6 +229,19 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
             .detail(ex.getMessage())
             .build();
     return new ResponseEntity<>(errorResponse, ex.getHttpStatus());
+  }
+
+  /**
+   * Handle the case where the client closes the connection before the response is fully written
+   * (e.g. broken pipe / connection reset). Since the underlying socket is already closed there is
+   * nothing we can (or should) write back, so no response is produced and the event is logged at a
+   * low level to avoid polluting the error logs.
+   *
+   * @param ex {@link AsyncRequestNotUsableException} exception raised
+   */
+  @ExceptionHandler({AsyncRequestNotUsableException.class})
+  public void handleClientAbort(final AsyncRequestNotUsableException ex) {
+    log.warn("Client aborted the request before the response was sent: {}", ex.getMessage());
   }
 
   /**
