@@ -78,7 +78,6 @@ import java.util.stream.StreamSupport;
 import java.util.zip.GZIPOutputStream;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.transaction.Transactional;
 import jakarta.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
@@ -91,10 +90,12 @@ import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class CacheConfigService {
 
   private static final String DA_COMPILARE_FLUSSO =
@@ -236,6 +237,7 @@ public class CacheConfigService {
    * @return a map containing all the keys and values.
    * @throws AppException if the in memory cache is not initialized
    */
+  @Transactional(propagation = Propagation.NOT_SUPPORTED)
   public Map<String, Object> getInMemoryCache() {
     if (inMemoryCache == null) {
       throw new AppException(AppError.CACHE_NOT_INITIALIZED, "FULL");
@@ -545,6 +547,7 @@ public class CacheConfigService {
     redisRepository.save(actualKeyV1, "1".getBytes(StandardCharsets.UTF_8), inProgressTtl);
   }
 
+  @Transactional(propagation = Propagation.NOT_SUPPORTED)
   public Boolean getCacheInProgress() {
     String actualKeyV1 = cacheKeyUtils.getCacheKeyInProgress(Constants.FULL);
     return redisRepository.getBooleanByKeyId(actualKeyV1);
