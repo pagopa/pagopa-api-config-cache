@@ -802,6 +802,7 @@ public class CacheConfigService {
                   .add(makeTplInformativaDetail(null, null, null, null));
               tplInformativaPSP.setListaInformativaDetail(tplListaInformativaDetail);
               templates.add(new PspInformation(psp.getIdPsp(), toXml(tplInformativaPSP)));
+              // TODO Remember to uncomment this, do we need it?
 //            } else {
 //              tplInformativaPSP.setRagioneSociale(psp.getRagioneSociale());
 //              tplInformativaPSP.setIdentificativoPSP(psp.getIdPsp());
