@@ -1,5 +1,7 @@
 package it.gov.pagopa.apiconfig.cache.config;
 
+import static it.gov.pagopa.apiconfig.cache.util.Constants.HEADER_REQUEST_ID;
+
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Paths;
@@ -12,42 +14,31 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.servers.ServerVariable;
 import io.swagger.v3.oas.models.servers.ServerVariables;
-import org.springdoc.core.customizers.OpenApiCustomizer;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-
-import static it.gov.pagopa.apiconfig.cache.util.Constants.HEADER_REQUEST_ID;
+import org.springdoc.core.customizers.OpenApiCustomizer;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
 
 @Configuration
 public class OpenApiConfig {
+
+  public static final String BASE_PATH = "/api-config-cache/p";
 
   @Bean
   public OpenAPI customOpenAPI(
       @Value("${info.application.name}") String appName,
       @Value("${info.application.description}") String appDescription,
-      @Value("${info.application.version}") String appVersion) {
+      @Value("${info.application.version}") String appVersion,
+      @Value("${server.port}") String serverPort) {
     return new OpenAPI()
-            .servers(List.of(new Server().url("https://{host}/{basePath}")
-                            .variables(new ServerVariables().addServerVariable("host",
-                                    new ServerVariable()._enum(
-                                            List.of(
-                                                    "api.dev.platform.pagopa.it",
-                                                    "api.uat.platform.pagopa.it",
-                                                    "api.platform.pagopa.it"))
-                                            ._default("api.dev.platform.pagopa.it"))
-                                            .addServerVariable("basePath", new ServerVariable()._enum(
-                                                    List.of(
-                                                            "api-config-cache/p/v1"
-                                                    ))
-                                                    ._default("api-config-cache/p/v1"))
-                                    )))
+        .servers(
+            createServers(serverPort, new ServerVariable()._enum(List.of("/v1"))._default("/v1")))
         .components(
             new Components()
                 .addSecuritySchemes(
@@ -127,21 +118,44 @@ public class OpenApiConfig {
                       .readOperations()
                       .forEach(
                           operation -> {
-                              if(key.contains("/stakeholders")){
-                                  operation.setSummary(operation.getSummary().replace("{stakeholder}",key.split("/")[2].toUpperCase()));
-                              }
-                              operation
-                                  .getResponses()
-                                  .values()
-                                  .forEach(
-                                      response ->
-                                          response.addHeaderObject(
-                                              HEADER_REQUEST_ID,
-                                              new Header()
-                                                  .schema(new StringSchema())
-                                                  .description(
-                                                      "This header identifies the call")));
+                            if (key.contains("/stakeholders")) {
+                              operation.setSummary(
+                                  operation
+                                      .getSummary()
+                                      .replace("{stakeholder}", key.split("/")[2].toUpperCase()));
+                            }
+                            operation
+                                .getResponses()
+                                .values()
+                                .forEach(
+                                    response ->
+                                        response.addHeaderObject(
+                                            HEADER_REQUEST_ID,
+                                            new Header()
+                                                .schema(new StringSchema())
+                                                .description("This header identifies the call")));
                           });
                 });
+  }
+
+  private static @NonNull List<Server> createServers(String serverPort, ServerVariable version) {
+    String localPath = String.format("%s://%s:%s", "http", "localhost", serverPort);
+    return List.of(
+        new Server().url(localPath),
+        new Server()
+            .url("https://{host}{basePath}{version}")
+            .variables(
+                new ServerVariables()
+                    .addServerVariable(
+                        "host",
+                        new ServerVariable()
+                            ._enum(
+                                List.of(
+                                    "api.dev.platform.pagopa.it",
+                                    "api.uat.platform.pagopa.it",
+                                    "api.platform.pagopa.it"))
+                            ._default("api.dev.platform.pagopa.it"))
+                    .addServerVariable("basePath", new ServerVariable()._default(BASE_PATH))
+                    .addServerVariable("version", version)));
   }
 }
