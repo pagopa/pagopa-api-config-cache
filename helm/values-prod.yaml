@@ -2,7 +2,7 @@ microservice-chart: &microservice-chart
   namespace: "apiconfig"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: 0.9.44-6-PAGOPA-3776-fix-memory-consumption
+    tag: 0.9.44-7-PAGOPA-3776-fix-memory-consumption
   canaryDelivery:
     deployment:
       image:
