@@ -1,6 +1,5 @@
 package it.gov.pagopa.apiconfig.cache;
 
-import it.gov.pagopa.apiconfig.cache.controller.CacheController;
 import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.Station;
 import it.gov.pagopa.apiconfig.cache.model.latest.psp.Channel;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
@@ -16,14 +15,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class TestUtils {
-
-  public static void inizializeInMemoryCache(CacheController cacheController,
-                                             ModelMapper modelMapper,
-                                             String version,
-                                             String cacheVersion,
-                                             ZonedDateTime timestamp) {
-    org.springframework.test.util.ReflectionTestUtils.setField(cacheController, "inMemoryCache", inMemoryCache(modelMapper, version, cacheVersion, timestamp));
-  }
 
   public static HashMap<String, Object> inMemoryCache(ModelMapper modelMapper,
                                                       String version,

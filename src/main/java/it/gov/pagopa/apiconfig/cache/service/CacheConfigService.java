@@ -544,14 +544,6 @@ public class CacheConfigService {
     return redisRepository.getBooleanByKeyId(actualKeyV1);
   }
 
-  public CacheVersion getCacheId() {
-    String actualKeyV1 = cacheKeyUtils.getCacheIdKey(Constants.FULL);
-    String cacheId =
-        Optional.ofNullable(redisRepository.getStringByKeyId(actualKeyV1))
-            .orElseThrow(() -> new AppException(AppError.CACHE_ID_NOT_FOUND, actualKeyV1));
-    return new CacheVersion(cacheId);
-  }
-
   public List<ConfigurationKey> getConfigurationKeys() {
     log.info("loading ConfigurationKeys");
     return modelMapper

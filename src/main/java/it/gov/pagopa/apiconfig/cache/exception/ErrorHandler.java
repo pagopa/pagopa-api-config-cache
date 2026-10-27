@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.lang.Nullable;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -163,10 +162,9 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
       final DataIntegrityViolationException ex, final WebRequest request) {
     ProblemJson errorResponse = null;
 
-    if (ex.getCause() instanceof ConstraintViolationException) {
-      String sqlState = ((ConstraintViolationException) ex.getCause()).getSQLState();
-      var errorCode =
-          ((ConstraintViolationException) ex.getCause()).getSQLException().getErrorCode();
+    if (ex.getCause() instanceof ConstraintViolationException constraintViolationException) {
+      String sqlState = constraintViolationException.getSQLState();
+      var errorCode = constraintViolationException.getSQLException().getErrorCode();
       // check the reason of ConstraintViolationException: is true if the object is referenced by a
       // foreign key
       // more info: https://docs.oracle.com/javadb/10.8.3.0/ref/rrefexcept71493.html

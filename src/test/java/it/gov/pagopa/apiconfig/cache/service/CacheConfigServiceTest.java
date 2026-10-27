@@ -1,4 +1,4 @@
-package it.gov.pagopa.apiconfig.cache;
+package it.gov.pagopa.apiconfig.cache.service;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -11,9 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.apiconfig.cache.config.MarshalerConfig;
 import it.gov.pagopa.apiconfig.cache.exception.AppException;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
-import it.gov.pagopa.apiconfig.cache.service.CacheConfigService;
-import it.gov.pagopa.apiconfig.cache.service.CacheEventHubService;
-import it.gov.pagopa.apiconfig.cache.service.CacheKeyUtils;
 import it.gov.pagopa.apiconfig.cache.config.ConfigMapper;
 import it.gov.pagopa.apiconfig.starter.repository.*;
 import java.io.ByteArrayOutputStream;
@@ -103,18 +100,6 @@ class CacheConfigServiceTest {
     when(redisRepository.getBooleanByKeyId(any())).thenReturn(true);
     cacheConfigService.getCacheInProgress();
     assertThat(cacheConfigService.getCacheInProgress()).isTrue();
-  }
-
-  @Test
-  void getCacheId_1() {
-    when(redisRepository.getStringByKeyId(any())).thenReturn("version");
-    assertThat(cacheConfigService.getCacheId()).isNotNull();
-  }
-
-  @Test
-  void getCacheId_2() {
-    when(redisRepository.getStringByKeyId(any())).thenReturn(null);
-    assertThrows(AppException.class, () -> cacheConfigService.getCacheId());
   }
 
   @Test
