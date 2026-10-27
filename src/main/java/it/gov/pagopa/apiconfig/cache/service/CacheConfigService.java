@@ -218,8 +218,14 @@ public class CacheConfigService {
     if (Boolean.TRUE.equals(preload)) {
       try {
         inMemoryCache = loadFullCache();
-      } catch (Exception e) {
+      } catch (Exception e){
         log.warn("Could not load single keys cache from redis: {}", e.getMessage(), e);
+        try {
+          doCache();
+          log.info("Cache generated, saved to Redis and sent refresh event on startup");
+        } catch (Exception ex) {
+          log.error("[ALERT] Failed to load and generate cache on startup", ex);
+        }
       }
     }
   }
