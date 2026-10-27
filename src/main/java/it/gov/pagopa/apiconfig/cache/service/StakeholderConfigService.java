@@ -2,7 +2,6 @@ package it.gov.pagopa.apiconfig.cache.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.apiconfig.cache.config.ObjectMapperConfig;
-import it.gov.pagopa.apiconfig.cache.controller.CacheController;
 import it.gov.pagopa.apiconfig.cache.exception.AppError;
 import it.gov.pagopa.apiconfig.cache.exception.AppException;
 import it.gov.pagopa.apiconfig.cache.model.ConfigData;
@@ -40,7 +39,7 @@ public class StakeholderConfigService {
     private final String appVersion;
     private final boolean xlsMaskPasswords;
     private final boolean cacheSchemaLockAllStakeholder;
-    private final CacheController cacheController;
+    private final CacheConfigService cacheConfigService;
     private final RedisRepository redisRepository;
     private final CacheKeyUtils cacheKeyUtils;
     /** Centralized mapper for the per-stakeholder cache (write / convert / read). */
@@ -50,7 +49,7 @@ public class StakeholderConfigService {
             @Value("${info.application.version}") String appVersion,
             @Value("${xls.mask-passwords}") boolean xlsMaskPasswords,
             @Value("${cache-schema.lock-all-stakeholder}") boolean cacheSchemaLockAllStakeholder,
-            CacheController cacheController,
+            CacheConfigService cacheConfigService,
             RedisRepository redisRepository,
             CacheKeyUtils cacheKeyUtils,
             @Qualifier(ObjectMapperConfig.CACHE_OBJECT_MAPPER) ObjectMapper cacheObjectMapper
@@ -58,13 +57,13 @@ public class StakeholderConfigService {
         this.appVersion = appVersion;
         this.xlsMaskPasswords = xlsMaskPasswords;
         this.cacheSchemaLockAllStakeholder = cacheSchemaLockAllStakeholder;
-        this.cacheController = cacheController;
+        this.cacheConfigService = cacheConfigService;
         this.redisRepository = redisRepository;
         this.cacheKeyUtils = cacheKeyUtils;
         this.cacheObjectMapper = cacheObjectMapper;
     }
 
-    public ConfigData loadCache(Stakeholder stakeholder, String schemaVersion) throws IOException {
+    protected ConfigData loadCache(Stakeholder stakeholder, String schemaVersion) throws IOException {
         String stakeholderWithSchema = getStakeholderWithSchema(stakeholder, schemaVersion);
         log.info("Loading on Redis {} cache", stakeholderWithSchema);
         // verify if the id of full cache and stakeholder cache are the same
@@ -89,17 +88,13 @@ public class StakeholderConfigService {
     }
 
     private ConfigData generateCacheSchemaFromInMemory(Stakeholder stakeholder, String schemaVersion, String[] keys) throws IOException {
-
         ConfigData configData;
         String lockedStakeholders = cacheSchemaLockAllStakeholder ? "all" : stakeholder.toString();
         boolean isLocked = saveCacheSchemaGenerationInProgress(lockedStakeholders, stakeholder.toString());
         if (isLocked) {
-
+            log.info("ConfigData will be generated in memory for stakeholder {}. Generation is not permitted for other stakeholders.", stakeholder);
             // retrieve full cache and generate configData
-            log.info(String.format("ConfigData will be generated in memory for stakeholder [%s]. Generation is not permitted for other stakeholders.", stakeholder));
-
-            // retrieve full cache and generate configData
-            Map<String, Object> inMemoryCache = cacheController.getInMemoryCache();
+            Map<String, Object> inMemoryCache = cacheConfigService.getInMemoryCacheOrRefreshIfNotExist();
 
             // extraction of the requested keys
             Set<String> keysSet = new HashSet<>(Arrays.asList(keys));

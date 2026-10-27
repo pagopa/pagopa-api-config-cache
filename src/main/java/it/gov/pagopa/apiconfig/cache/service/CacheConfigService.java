@@ -42,7 +42,6 @@ import it.gov.pagopa.apiconfig.cache.model.latest.psp.Channel;
 import it.gov.pagopa.apiconfig.cache.model.latest.psp.PaymentServiceProvider;
 import it.gov.pagopa.apiconfig.cache.model.latest.psp.PspChannelPaymentType;
 import it.gov.pagopa.apiconfig.cache.model.latest.psp.PspInformation;
-import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.cache.util.DateTimeUtils;
@@ -77,6 +76,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import java.util.zip.GZIPOutputStream;
+
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import jakarta.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -100,6 +101,9 @@ public class CacheConfigService {
           "DA COMPILARE (formato: [IDPSP]_dd-mm-yyyy - esempio: ESEMPIO_31-12-2001)";
   private static final String DA_COMPILARE = "DA COMPILARE";
 
+  private Map<String, Object> inMemoryCache;
+
+  private final Boolean preload;
   private final String appVersion;
   private final Boolean sendEvent;
   private final long inProgressTtl;
@@ -169,7 +173,8 @@ public class CacheConfigService {
           RedisRepository redisRepository,
           @Value("${in_progress.ttl}") long inProgressTtl,
           @Value("#{'${sendEvent}'=='true'}") Boolean sendEvent,
-          @Value("${info.application.version}") String appVersion
+          @Value("${info.application.version}") String appVersion,
+          @Value("${preload:true}") Boolean preload
   ) {
     this.jaxb2Marshaller = jaxb2Marshaller;
     this.cacheKeyUtils = cacheKeyUtils;
@@ -205,9 +210,59 @@ public class CacheConfigService {
     this.inProgressTtl = inProgressTtl;
     this.sendEvent = sendEvent;
     this.appVersion = appVersion;
+    this.preload = preload;
   }
 
-  public Map<String, Object> loadFullCache() throws IOException {
+  @PostConstruct
+  public void preloadKeysFromRedis() {
+    if (Boolean.TRUE.equals(preload)) {
+      try {
+        inMemoryCache = loadFullCache();
+      } catch (Exception e) {
+        log.warn("Could not load single keys cache from redis: {}", e.getMessage(), e);
+      }
+    }
+  }
+
+  /**
+   * Retrieve the in memory cache.
+   *
+   * @return a map containing all the keys and values.
+   * @throws AppException if the in memory cache is not initialized
+   */
+  public Map<String, Object> getInMemoryCache() {
+    if (inMemoryCache == null) {
+      throw new AppException(AppError.CACHE_NOT_INITIALIZED, "FULL");
+    }
+    return inMemoryCache;
+  }
+
+  /**
+   *  Retrieve the in memory cache if has been initialized otherwise start a
+   *  new initialization and return the cache
+   *
+   * @return a map containing all the keys and values.
+   */
+  public Map<String, Object> getInMemoryCacheOrRefreshIfNotExist() {
+    if (inMemoryCache == null) {
+      doCache();
+    }
+    return inMemoryCache;
+  }
+
+  /**
+   *  Start a new cache initialization, persist it both in memory and on Redis
+   *  and send the cache refresh event on EventHub
+   */
+  public void doCache() {
+    inMemoryCache = newCache();
+
+    sendEvent(
+            (String) inMemoryCache.get(Constants.VERSION),
+            (ZonedDateTime) inMemoryCache.get(Constants.TIMESTAMP));
+  }
+
+  protected Map<String, Object> loadFullCache() throws IOException {
     log.info("Loading full cache");
 
     byte[] bytes = redisRepository.get(cacheKeyUtils.getCacheKey(Constants.FULL));

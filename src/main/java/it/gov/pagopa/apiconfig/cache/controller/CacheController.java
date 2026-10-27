@@ -6,8 +6,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import it.gov.pagopa.apiconfig.cache.exception.AppError;
-import it.gov.pagopa.apiconfig.cache.exception.AppException;
 import it.gov.pagopa.apiconfig.cache.model.ProblemJson;
 import it.gov.pagopa.apiconfig.cache.model.RefreshResponse;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
@@ -21,7 +19,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -40,37 +37,14 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class CacheController {
 
-  private Map<String, Object> inMemoryCache;
-
   private final CacheConfigService cacheConfigService;
-  private final Boolean preload;
   private final boolean xlsMaskPasswords;
 
   public CacheController(
       CacheConfigService cacheConfigService,
-      @Value("${preload:true}") Boolean preload,
       @Value("${xls.mask-passwords}") boolean xlsMaskPasswords) {
     this.cacheConfigService = cacheConfigService;
-    this.preload = preload;
     this.xlsMaskPasswords = xlsMaskPasswords;
-  }
-
-  @PostConstruct
-  public void preloadKeysFromRedis() {
-    if (Boolean.TRUE.equals(preload)) {
-      try {
-        inMemoryCache = cacheConfigService.loadFullCache();
-      } catch (Exception e) {
-        log.warn("Could not load single keys cache from redis: {}", e.getMessage());
-      }
-    }
-  }
-
-  public Map<String, Object> getInMemoryCache() {
-    if (inMemoryCache == null) {
-      docache();
-    }
-    return inMemoryCache;
   }
 
   @Operation(
@@ -183,19 +157,13 @@ public class CacheController {
   @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<Map<String, Object>> get(
       @RequestParam(required = false) List<String> keys) {
+    Map<String, Object> inMemoryCache = cacheConfigService.getInMemoryCache();
 
-    if (inMemoryCache == null) {
-      throw new AppException(AppError.CACHE_NOT_INITIALIZED, "FULL");
-    }
+    String cacheId = (String) inMemoryCache.get(Constants.VERSION);
+    String cacheVersion = (String) inMemoryCache.get(Constants.CACHE_VERSION);
+    ZonedDateTime timestamp = (ZonedDateTime) inMemoryCache.get(Constants.TIMESTAMP);
 
-    HttpHeaders responseHeaders = new HttpHeaders();
-    responseHeaders.set(Constants.HEADER_X_CACHE_ID, (String) inMemoryCache.get(Constants.VERSION));
-    responseHeaders.set(
-        Constants.HEADER_X_CACHE_TIMESTAMP,
-        DateTimeFormatter.ISO_DATE_TIME.format(
-            (ZonedDateTime) inMemoryCache.get(Constants.TIMESTAMP)));
-    responseHeaders.set(
-        Constants.HEADER_X_CACHE_VERSION, (String) inMemoryCache.get(Constants.CACHE_VERSION));
+    HttpHeaders responseHeaders = buildHttpHeaders(cacheId, cacheVersion, timestamp);
     if (keys != null && !keys.isEmpty()) {
       Map<String, Object> returnMap = new HashMap<>();
       keys.forEach(
@@ -254,15 +222,13 @@ public class CacheController {
       value = "/id",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<CacheVersion> id() {
+    Map<String, Object> inMemoryCache = cacheConfigService.getInMemoryCache();
 
-    HttpHeaders responseHeaders = new HttpHeaders();
-    responseHeaders.set(Constants.HEADER_X_CACHE_ID, (String) inMemoryCache.get(Constants.VERSION));
-    responseHeaders.set(
-        Constants.HEADER_X_CACHE_TIMESTAMP,
-        DateTimeFormatter.ISO_DATE_TIME.format(
-            (ZonedDateTime) inMemoryCache.get(Constants.TIMESTAMP)));
-    responseHeaders.set(
-        Constants.HEADER_X_CACHE_VERSION, (String) inMemoryCache.get(Constants.CACHE_VERSION));
+    String cacheId = (String) inMemoryCache.get(Constants.VERSION);
+    String cacheVersion = (String) inMemoryCache.get(Constants.CACHE_VERSION);
+    ZonedDateTime timestamp = (ZonedDateTime) inMemoryCache.get(Constants.TIMESTAMP);
+
+    HttpHeaders responseHeaders = buildHttpHeaders(cacheId, cacheVersion, timestamp);
 
     return ResponseEntity.ok()
         .headers(responseHeaders)
@@ -317,17 +283,14 @@ public class CacheController {
     if (fullCacheInProgress) {
       return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
     } else {
-      docache();
+      cacheConfigService.doCache();
+      Map<String, Object> inMemoryCache = cacheConfigService.getInMemoryCache();
 
-      String cacheVersion = (String) inMemoryCache.get(Constants.CACHE_VERSION);
       String cacheId = (String) inMemoryCache.get(Constants.VERSION);
+      String cacheVersion = (String) inMemoryCache.get(Constants.CACHE_VERSION);
       ZonedDateTime timestamp = (ZonedDateTime) inMemoryCache.get(Constants.TIMESTAMP);
 
-      HttpHeaders responseHeaders = new HttpHeaders();
-      responseHeaders.set(Constants.HEADER_X_CACHE_ID, cacheId);
-      responseHeaders.set(
-          Constants.HEADER_X_CACHE_TIMESTAMP, DateTimeFormatter.ISO_DATE_TIME.format(timestamp));
-      responseHeaders.set(Constants.HEADER_X_CACHE_VERSION, cacheVersion);
+      HttpHeaders responseHeaders = buildHttpHeaders(cacheId, cacheVersion, timestamp);
 
       return ResponseEntity.ok()
           .headers(responseHeaders)
@@ -340,12 +303,14 @@ public class CacheController {
     }
   }
 
-  private void docache() {
-    inMemoryCache = cacheConfigService.newCache();
-
-    cacheConfigService.sendEvent(
-        (String) inMemoryCache.get(Constants.VERSION),
-        (ZonedDateTime) inMemoryCache.get(Constants.TIMESTAMP));
+  private static HttpHeaders buildHttpHeaders(
+      String cacheId, String cacheVersion, ZonedDateTime timestamp) {
+    HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.set(Constants.HEADER_X_CACHE_ID, cacheId);
+    responseHeaders.set(Constants.HEADER_X_CACHE_VERSION, cacheVersion);
+    responseHeaders.set(
+        Constants.HEADER_X_CACHE_TIMESTAMP, DateTimeFormatter.ISO_DATE_TIME.format(timestamp));
+    return responseHeaders;
   }
 
   @Operation(
@@ -393,6 +358,7 @@ public class CacheController {
       produces = {"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"})
   public ResponseEntity<byte[]> xls() throws IOException {
     byte[] convert = null;
+    Map<String, Object> inMemoryCache = cacheConfigService.getInMemoryCache();
     try {
       convert = new JsonToXls(xlsMaskPasswords).convert(inMemoryCache);
     } catch (Exception e) {
