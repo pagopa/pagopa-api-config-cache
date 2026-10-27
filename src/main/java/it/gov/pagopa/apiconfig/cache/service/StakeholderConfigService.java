@@ -65,9 +65,10 @@ public class StakeholderConfigService {
     }
 
     public ConfigData loadCache(Stakeholder stakeholder, String schemaVersion) throws IOException {
-        log.info(String.format("Loading on Redis %s cache", getStakeholderWithSchema(stakeholder, schemaVersion)));
+        String stakeholderWithSchema = getStakeholderWithSchema(stakeholder, schemaVersion);
+        log.info("Loading on Redis {} cache", stakeholderWithSchema);
         // verify if the id of full cache and stakeholder cache are the same
-        byte[] stakeholderCacheId = redisRepository.get(cacheKeyUtils.getCacheIdKey(getStakeholderWithSchema(stakeholder, schemaVersion)));
+        byte[] stakeholderCacheId = redisRepository.get(cacheKeyUtils.getCacheIdKey(stakeholderWithSchema));
         byte[] fullCacheId = redisRepository.get(cacheKeyUtils.getCacheIdKey(Constants.FULL));
         if (stakeholderCacheId != null && Arrays.equals(stakeholderCacheId, fullCacheId)) {
             // retrieve stakeholder cache
