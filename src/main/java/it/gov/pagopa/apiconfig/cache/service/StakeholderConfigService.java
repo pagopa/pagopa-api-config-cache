@@ -136,16 +136,15 @@ public class StakeholderConfigService {
             // create temporary file
             byte[] cacheByteArray = compressJsonToGzip(configData);
 
-
-            log.info(String.format("saving on Redis %s %s", actualKey, actualKeyV1));
+            log.info("saving on Redis {} {}", actualKey, actualKeyV1);
             redisRepository.pushToRedisSync(actualKey, actualKeyV1, cacheByteArray, cacheSchemaVersion.getVersion().getBytes(StandardCharsets.UTF_8));
 
             // Removing lock on cache schema generation, permitting next schema cache generation
             removeCacheSchemaGenerationInProgress(lockedStakeholders);
-            log.info(String.format("ConfigData generated in memory for stakeholder [%s]. Generation has been unlocked for other stakeholders.", stakeholder));
+            log.info("ConfigData generated in memory for stakeholder [{}]. Generation has been unlocked for other stakeholders.", stakeholder);
 
         } else {
-            log.debug(String.format("ConfigData not generated in memory for stakeholder [%s]. Generation is locked by another process.", stakeholder));
+            log.debug("ConfigData not generated in memory for stakeholder [{}]. Generation is locked by another process.", stakeholder);
             throw new AppException(AppError.CACHE_SCHEMA_NOT_INITIALIZED, stakeholder);
         }
         return configData;
@@ -227,14 +226,16 @@ public class StakeholderConfigService {
 
     private void elaborateStandInCache(Map<String,Object> inMemoryCache) {
         // remove station not configured on forwarder
-        HashMap stations = (HashMap) ((HashMap) inMemoryCache.get(Constants.STATIONS)).clone();
-        stations.entrySet()
-                .removeIf(entry ->  {
-                    Station station = ((Map.Entry<String, Station>) entry).getValue();
-                    return station.getPofService() == null ||
-                        station.getPofService().getPath() == null ||
-                        !station.getPofService().getPath().contains("pagopa-node-forwarder");
-                });
+        HashMap<String, Station> stations = (HashMap) ((HashMap) inMemoryCache.get(Constants.STATIONS)).clone();
+        stations
+                .entrySet()
+                .removeIf(
+                        entry -> {
+                            Station station = entry.getValue();
+                            return station.getPofService() == null
+                                    || station.getPofService().getPath() == null
+                                    || !station.getPofService().getPath().contains("pagopa-node-forwarder");
+                        });
         inMemoryCache.put(Constants.STATIONS, stations);
     }
 

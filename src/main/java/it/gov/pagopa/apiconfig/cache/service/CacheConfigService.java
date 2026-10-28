@@ -503,12 +503,12 @@ public class CacheConfigService {
       cacheByteArray = baos.toByteArray();
 
       long duration = (endTime - startTime) / 1000000;
-      log.info(String.format("%s cache loaded in %s ms", Constants.FULL, duration));
+      log.info("{} cache loaded in {} ms", Constants.FULL, duration);
 
       String actualKey = cacheKeyUtils.getCacheKey(Constants.FULL);
       String actualKeyV1 = cacheKeyUtils.getCacheIdKey(Constants.FULL);
 
-      log.info(String.format("Saving on Redis %s %s %s", actualKey, actualKeyV1, id));
+      log.info("Saving on Redis {} {} {}", actualKey, actualKeyV1, id);
       redisRepository.pushToRedisAsync(actualKey, actualKeyV1, cacheByteArray, id.getBytes(StandardCharsets.UTF_8));
     } catch (Exception e) {
       log.error("[ALERT] problem to generate cache", e);
@@ -670,7 +670,7 @@ public class CacheConfigService {
                     s.getPagamentoSpontaneo(),
                     s.getAca(),
                     s.getStandin()))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public List<MaintenanceStation> findAllStationMaintenance() {
@@ -685,7 +685,7 @@ public class CacheConfigService {
                                     s.getStartDateTime(),
                                     s.getEndDateTime(),
                                     s.getStandIn()))
-            .collect(Collectors.toList());
+            .toList();
   }
 
   public List<CreditorInstitution> getCreditorInstitutions() {
@@ -713,7 +713,7 @@ public class CacheConfigService {
                     p.getPsp().getIdPsp(),
                     p.getCanale().getIdCanale(),
                     p.getTipoVersamento().getTipoVersamento()))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public List<PaymentServiceProvider> getAllPaymentServiceProviders() {
@@ -765,7 +765,7 @@ public class CacheConfigService {
   public List<PspInformation> getInformativeTemplates() {
     List<CdiMasterValid> masters =
         StreamSupport.stream(cdiMasterValidRepository.findAll().spliterator(), false)
-            .collect(Collectors.toList());
+            .toList();
     return getTemplateInformativePsp(masters);
   }
 
@@ -944,7 +944,7 @@ public class CacheConfigService {
               }
               return ctContoAccredito;
             })
-        .collect(Collectors.toList());
+        .toList();
   }
   
   public List<CreditorInstitutionInformation> getInformativePa() {
@@ -972,9 +972,9 @@ public class CacheConfigService {
 
 	  pas.forEach(pa -> {
 		  if (count.incrementAndGet() % 100 == 0) {
-			  log.info("Processed " + count.get() + " of " + max);
+			  log.info("Processed {} of {}", count.get(), max);
 		  }
-		  log.debug("Processing pa:" + pa.getIdDominio());
+		  log.debug("Processing pa: {}", pa.getIdDominio());
 
 		  CtListaInformativeControparte ctListaInformativeControparte = new CtListaInformativeControparte();
 		  CtInformativaControparte ctInformativaControparte = new CtInformativaControparte();
@@ -1000,17 +1000,17 @@ public class CacheConfigService {
 			  List<InformativePaDetail> infodetails = master.getDetails();
 			  List<InformativePaFasce> fasce = infodetails.stream()
 					  .flatMap(detail -> fasceByDetail.getOrDefault(detail.getId(), Collections.emptyList()).stream())
-					  .collect(Collectors.toList());
+					  .toList();
 
 			  List<CtErogazione> disponibilita = infodetails.stream()
 					  .filter(InformativePaDetail::getFlagDisponibilita)
 					  .map(d -> infoDetailToCtErogazione(fasce, d))
-					  .collect(Collectors.toList());
+					  .toList();
 
 			  List<CtErogazione> indisponibilita = infodetails.stream()
 					  .filter(d -> !d.getFlagDisponibilita())
 					  .map(d -> infoDetailToCtErogazione(fasce, d))
-					  .collect(Collectors.toList());
+					  .toList();
 
 			  CtErogazioneServizio ctErogazioneServizio = new CtErogazioneServizio();
 			  ctErogazioneServizio.getDisponibilita().addAll(disponibilita);
@@ -1068,9 +1068,9 @@ public class CacheConfigService {
                     }
                     return fascia;
                   })
-              .collect(Collectors.toList());
+              .toList();
     } catch (Exception e) {
-      log.error("error fasce detail" + det.getId());
+      log.error("error fasce detail {}", det.getId(), e);
     }
     CtErogazione ctErogazione = new CtErogazione();
     ctErogazione.setGiorno(det.getGiorno());
