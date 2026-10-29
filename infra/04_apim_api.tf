@@ -9,7 +9,7 @@ resource "azurerm_api_management_api_version_set" "api_apiconfig_cache_node_api_
 }
 
 module "apim_api_apiconfig_cache_node_api_v1_p" {
-  source                = "git::https://github.com/pagopa/terraform-azurerm-v3.git//api_management_api?ref=v8.5.0"
+  source                = "./.terraform/modules/__v4__/api_management_api"
   name                  = "${var.env_short}-${var.domain}-cache-node-${local.postgres}-api"
   api_management_name   = local.apim.name
   resource_group_name   = local.apim.rg
