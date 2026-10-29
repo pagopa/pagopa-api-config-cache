@@ -26,6 +26,7 @@ import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @SpringBootTest(
     classes = {
@@ -73,6 +74,8 @@ class CacheConfigServiceTest {
   void setUp() throws IOException {
     when(redisRepository.get(any()))
         .thenReturn(zip("{\"version\": \"testversion\"}".getBytes(StandardCharsets.UTF_8)));
+    ReflectionTestUtils.setField(cacheConfigService, "inMemoryCache", null);
+    ReflectionTestUtils.setField(cacheConfigService, "preload", Boolean.TRUE);
   }
 
   @Test
@@ -129,6 +132,69 @@ class CacheConfigServiceTest {
             });
 
     assertInstanceOf(JsonProcessingException.class, thrown.getCause());
+  }
+
+  @Test
+  void preloadKeysFromRedis_loadsCacheFromRedis() {
+    cacheConfigService.preloadKeysFromRedis();
+
+    assertThat(cacheConfigService.getInMemoryCache()).containsEntry("version", "testversion");
+  }
+
+  @Test
+  void preloadKeysFromRedis_disabled() {
+    ReflectionTestUtils.setField(cacheConfigService, "preload", Boolean.FALSE);
+
+    cacheConfigService.preloadKeysFromRedis();
+
+    assertThrows(AppException.class, () -> cacheConfigService.getInMemoryCache());
+  }
+
+  @Test
+  void preloadKeysFromRedis_fallbackToDoCacheWhenRedisIsEmpty() {
+    when(redisRepository.get(any())).thenReturn(null);
+
+    cacheConfigService.preloadKeysFromRedis();
+
+    assertThat(cacheConfigService.getInMemoryCache()).hasSize(29);
+  }
+
+  @Test
+  void preloadKeysFromRedis_doesNotFailWhenCacheGenerationFails() {
+    when(redisRepository.get(any())).thenReturn(null);
+    doThrow(new RuntimeException()).when(intermediariPaRepository).findAll();
+
+    assertDoesNotThrow(() -> cacheConfigService.preloadKeysFromRedis());
+    assertThrows(AppException.class, () -> cacheConfigService.getInMemoryCache());
+  }
+
+  @Test
+  void getInMemoryCache_throwsWhenNotInitialized() {
+    assertThrows(AppException.class, () -> cacheConfigService.getInMemoryCache());
+  }
+
+  @Test
+  void getInMemoryCacheOrRefreshIfNotExist_refreshesWhenNotInitialized() {
+    Map<String, Object> cache = cacheConfigService.getInMemoryCacheOrRefreshIfNotExist();
+
+    assertThat(cache).hasSize(29);
+    assertThat(cacheConfigService.getInMemoryCache()).isSameAs(cache);
+  }
+
+  @Test
+  void getInMemoryCacheOrRefreshIfNotExist_returnsExistingCache() {
+    cacheConfigService.doCache();
+    Map<String, Object> cache = cacheConfigService.getInMemoryCache();
+
+    assertThat(cacheConfigService.getInMemoryCacheOrRefreshIfNotExist()).isSameAs(cache);
+  }
+
+  @Test
+  void doCache_initializesCacheAndSendsEvent() throws JsonProcessingException {
+    cacheConfigService.doCache();
+
+    assertThat(cacheConfigService.getInMemoryCache()).hasSize(29);
+    verify(eventHubService, times(1)).publishEvent(anyString(), any(), anyString());
   }
 
   private byte[] zip(byte[] bytes) throws IOException {
