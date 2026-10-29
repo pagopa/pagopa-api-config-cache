@@ -7,6 +7,7 @@ import org.springframework.beans.TypeMismatchException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -44,7 +46,7 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
   public ResponseEntity<Object> handleHttpMessageNotReadable(
       HttpMessageNotReadableException ex,
       HttpHeaders headers,
-      HttpStatus status,
+      HttpStatusCode status,
       WebRequest request) {
     log.warn("Input not readable: ", ex);
     var errorResponse =
@@ -69,7 +71,7 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
   public ResponseEntity<Object> handleMissingServletRequestParameter(
       MissingServletRequestParameterException ex,
       HttpHeaders headers,
-      HttpStatus status,
+      HttpStatusCode status,
       WebRequest request) {
     log.warn("Missing request parameter: ", ex);
     var errorResponse =
@@ -92,7 +94,7 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
    */
   @Override
   protected ResponseEntity<Object> handleTypeMismatch(
-      TypeMismatchException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+      TypeMismatchException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
     log.warn("Type mismatch: ", ex);
     var errorResponse =
         ProblemJson.builder()
@@ -119,7 +121,7 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
   protected ResponseEntity<Object> handleMethodArgumentNotValid(
       MethodArgumentNotValidException ex,
       HttpHeaders headers,
-      HttpStatus status,
+      HttpStatusCode status,
       WebRequest request) {
     List<String> details = new ArrayList<>();
     for (FieldError error : ex.getBindingResult().getFieldErrors()) {
@@ -136,9 +138,9 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
     return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
   }
 
-  @ExceptionHandler({javax.validation.ConstraintViolationException.class})
+  @ExceptionHandler({jakarta.validation.ConstraintViolationException.class})
   public ResponseEntity<ProblemJson> handleConstraintViolationException(
-      final javax.validation.ConstraintViolationException ex, final WebRequest request) {
+      final jakarta.validation.ConstraintViolationException ex, final WebRequest request) {
     log.warn("Validation Error raised:", ex);
     var errorResponse =
         ProblemJson.builder()
@@ -160,10 +162,9 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
       final DataIntegrityViolationException ex, final WebRequest request) {
     ProblemJson errorResponse = null;
 
-    if (ex.getCause() instanceof ConstraintViolationException) {
-      String sqlState = ((ConstraintViolationException) ex.getCause()).getSQLState();
-      var errorCode =
-          ((ConstraintViolationException) ex.getCause()).getSQLException().getErrorCode();
+    if (ex.getCause() instanceof ConstraintViolationException constraintViolationException) {
+      String sqlState = constraintViolationException.getSQLState();
+      var errorCode = constraintViolationException.getSQLException().getErrorCode();
       // check the reason of ConstraintViolationException: is true if the object is referenced by a
       // foreign key
       // more info: https://docs.oracle.com/javadb/10.8.3.0/ref/rrefexcept71493.html
@@ -226,6 +227,19 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
             .detail(ex.getMessage())
             .build();
     return new ResponseEntity<>(errorResponse, ex.getHttpStatus());
+  }
+
+  /**
+   * Handle the case where the client closes the connection before the response is fully written
+   * (e.g. broken pipe / connection reset). Since the underlying socket is already closed there is
+   * nothing we can (or should) write back, so no response is produced and the event is logged at a
+   * low level to avoid polluting the error logs.
+   *
+   * @param ex {@link AsyncRequestNotUsableException} exception raised
+   */
+  @ExceptionHandler({AsyncRequestNotUsableException.class})
+  public void handleClientAbort(final AsyncRequestNotUsableException ex) {
+    log.warn("Client aborted the request before the response was sent: {}", ex.getMessage());
   }
 
   /**

@@ -48,32 +48,4 @@ public class Constants {
   public static final String LANGUAGES = "languages";
   public static final String GDE_CONFIGURATIONS = "gdeConfigurations";
   public static final String METADATA_DICT = "metadataDict";
-
-  public static String[] keys={
-          CREDITOR_INSTITUTIONS,
-          CREDITOR_INSTITUTION_BROKERS,
-          STATIONS,
-          CREDITOR_INSTITUTION_STATIONS,
-          ENCODINGS,
-          CREDITOR_INSTITUTION_ENCODINGS,
-          IBANS,
-          CREDITOR_INSTITUTION_INFORMATIONS,
-          PSPS,
-          PSP_BROKERS,
-          PAYMENT_TYPES,
-          PSP_CHANNEL_PAYMENT_TYPES,
-          PLUGINS,
-          PSP_INFORMATION_TEMPLATES,
-          PSP_INFORMATIONS,
-          CHANNELS,
-          CDS_SERVICES,
-          CDS_SUBJECTS,
-          CDS_SUBJECT_SERVICES,
-          CDS_CATEGORIES,
-          CONFIGURATIONS,
-          FTP_SERVERS,
-          LANGUAGES,
-          GDE_CONFIGURATIONS,
-          METADATA_DICT
-  };
 }

@@ -1,7 +1,9 @@
 package it.gov.pagopa.apiconfig.cache.controller.stakeholders;
 
+import it.gov.pagopa.apiconfig.cache.controller.CacheController;
 import it.gov.pagopa.apiconfig.cache.controller.StakeholderController;
 import it.gov.pagopa.apiconfig.cache.model.Stakeholder;
+import it.gov.pagopa.apiconfig.cache.service.StakeholderConfigService;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -13,23 +15,27 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 @Slf4j
 public class WispCacheController extends StakeholderController {
-  public static String[] KEYS = new String[]{
-          Constants.VERSION,
-          Constants.CREDITOR_INSTITUTIONS,
-          Constants.CREDITOR_INSTITUTION_BROKERS,
-          Constants.STATIONS,
-          Constants.CREDITOR_INSTITUTION_STATIONS,
-          Constants.IBANS,
-          Constants.PSPS,
-          Constants.PSP_BROKERS,
-          Constants.PAYMENT_TYPES,
-          Constants.PSP_CHANNEL_PAYMENT_TYPES,
-          Constants.CHANNELS,
-          Constants.PLUGINS,
-          Constants.CONFIGURATIONS
-  };
+  private static final String[] KEYS =
+      new String[] {
+        Constants.VERSION,
+        Constants.CREDITOR_INSTITUTIONS,
+        Constants.CREDITOR_INSTITUTION_BROKERS,
+        Constants.STATIONS,
+        Constants.CREDITOR_INSTITUTION_STATIONS,
+        Constants.IBANS,
+        Constants.PSPS,
+        Constants.PSP_BROKERS,
+        Constants.PAYMENT_TYPES,
+        Constants.PSP_CHANNEL_PAYMENT_TYPES,
+        Constants.CHANNELS,
+        Constants.PLUGINS,
+        Constants.CONFIGURATIONS
+      };
 
-  private static final Stakeholder stakeholder = Stakeholder.WISP;
+  protected WispCacheController(
+      CacheController cacheController, StakeholderConfigService stakeholderConfigService) {
+    super(cacheController, stakeholderConfigService);
+  }
 
   @Override
   protected String[] keys() {
@@ -38,7 +44,6 @@ public class WispCacheController extends StakeholderController {
 
   @Override
   protected Stakeholder stakeholder() {
-    return WispCacheController.stakeholder;
+    return Stakeholder.WISP;
   }
-
 }

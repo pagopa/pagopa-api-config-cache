@@ -1,28 +1,34 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "API-Config Cache 0.9.39 - ${service}",
+    "title": "API-Config Cache v0.9.44-8-PAGOPA-3776-fix-memory-consumption - ${service}",
     "description": "Generate cache for various microservices",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.9.44"
+    "version": "0.9.44-9-PAGOPA-3776-fix-memory-consumption"
   },
   "servers": [
     {
-      "url": "https://{host}/{basePath}",
+      "url": "http://localhost:8080"
+    },
+    {
+      "url": "https://{host}{basePath}{version}",
       "variables": {
         "host": {
-          "default": "api.dev.platform.pagopa.it",
           "enum": [
             "api.dev.platform.pagopa.it",
             "api.uat.platform.pagopa.it",
             "api.platform.pagopa.it"
-          ]
+          ],
+          "default": "api.dev.platform.pagopa.it"
         },
         "basePath": {
-          "default": "api-config-cache/p/v1",
+          "default": "/api-config-cache/p"
+        },
+        "version": {
           "enum": [
-            "api-config-cache/p/v1"
-          ]
+            "/v1"
+          ],
+          "default": "/v1"
         }
       }
     }
@@ -48,24 +54,18 @@
           }
         ],
         "responses": {
-          "429": {
-            "description": "Too many requests"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Service unavailable",
+          "200": {
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
+                  "$ref": "#/components/schemas/ConfigDataV1"
                 }
               }
             }
           },
-          "403": {
-            "description": "Forbidden"
+          "401": {
+            "description": "Unauthorized"
           },
           "400": {
             "description": "Bad Request",
@@ -77,15 +77,21 @@
               }
             }
           },
-          "200": {
-            "description": "OK",
+          "500": {
+            "description": "Service unavailable",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ConfigDataV1"
+                  "$ref": "#/components/schemas/ProblemJson"
                 }
               }
             }
+          },
+          "429": {
+            "description": "Too many requests"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         },
         "security": [
@@ -103,9 +109,6 @@
         "summary": "Get xlsx of last v1 {stakeholder} cache version",
         "operationId": "xls",
         "responses": {
-          "429": {
-            "description": "Too many requests"
-          },
           "200": {
             "description": "OK",
             "content": {
@@ -114,6 +117,16 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
           },
           "500": {
             "description": "Service unavailable",
@@ -125,18 +138,11 @@
               }
             }
           },
+          "429": {
+            "description": "Too many requests"
+          },
           "403": {
             "description": "Forbidden"
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            }
           }
         },
         "security": [
@@ -154,6 +160,29 @@
         "summary": "Get last v1 {stakeholder} cache version",
         "operationId": "idV1",
         "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Service unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          },
           "200": {
             "description": "OK",
             "content": {
@@ -167,34 +196,11 @@
           "429": {
             "description": "Too many requests"
           },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Service unavailable",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            }
-          },
           "403": {
             "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            }
           }
         },
         "security": [
@@ -207,28 +213,6 @@
   },
   "components": {
     "schemas": {
-      "ProblemJson": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "description": "A short, summary of the problem type. Written in english and readable for engineers (usually not suited for non technical stakeholders and not localized); example: Service Unavailable"
-          },
-          "status": {
-            "maximum": 600,
-            "minimum": 100,
-            "type": "integer",
-            "description": "The HTTP status code generated by the origin server for this occurrence of the problem.",
-            "format": "int32",
-            "example": 200
-          },
-          "detail": {
-            "type": "string",
-            "description": "A human readable explanation specific to this occurrence of the problem.",
-            "example": "There was an error processing the request"
-          }
-        }
-      },
       "BrokerCreditorInstitution": {
         "required": [
           "broker_code",
@@ -1240,6 +1224,28 @@
           "timeout_c": {
             "type": "integer",
             "format": "int64"
+          }
+        }
+      },
+      "ProblemJson": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "A short, summary of the problem type. Written in english and readable for engineers (usually not suited for non technical stakeholders and not localized); example: Service Unavailable"
+          },
+          "status": {
+            "maximum": 600,
+            "minimum": 100,
+            "type": "integer",
+            "description": "The HTTP status code generated by the origin server for this occurrence of the problem.",
+            "format": "int32",
+            "example": 200
+          },
+          "detail": {
+            "type": "string",
+            "description": "A human readable explanation specific to this occurrence of the problem.",
+            "example": "There was an error processing the request"
           }
         }
       },

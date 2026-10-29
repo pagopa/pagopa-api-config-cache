@@ -1,28 +1,34 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "API-Config Cache 0.9.39 - ${service}",
+    "title": "API-Config Cache v0.9.44-8-PAGOPA-3776-fix-memory-consumption - ${service}",
     "description": "Generate cache for various microservices",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.9.44"
+    "version": "0.9.44-9-PAGOPA-3776-fix-memory-consumption"
   },
   "servers": [
     {
-      "url": "https://{host}/{basePath}",
+      "url": "http://localhost:8080"
+    },
+    {
+      "url": "https://{host}{basePath}{version}",
       "variables": {
         "host": {
-          "default": "api.dev.platform.pagopa.it",
           "enum": [
             "api.dev.platform.pagopa.it",
             "api.uat.platform.pagopa.it",
             "api.platform.pagopa.it"
-          ]
+          ],
+          "default": "api.dev.platform.pagopa.it"
         },
         "basePath": {
-          "default": "api-config-cache/p/v1",
+          "default": "/api-config-cache/p"
+        },
+        "version": {
           "enum": [
-            "api-config-cache/p/v1"
-          ]
+            "/v1"
+          ],
+          "default": "/v1"
         }
       }
     }
@@ -36,9 +42,6 @@
         "summary": "Get xlsx of last v1 {stakeholder} cache version",
         "operationId": "xls",
         "responses": {
-          "429": {
-            "description": "Too many requests"
-          },
           "200": {
             "description": "OK",
             "content": {
@@ -47,6 +50,16 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
           },
           "500": {
             "description": "Service unavailable",
@@ -58,18 +71,11 @@
               }
             }
           },
+          "429": {
+            "description": "Too many requests"
+          },
           "403": {
             "description": "Forbidden"
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            }
           }
         },
         "security": [
@@ -87,9 +93,6 @@
         "summary": "Get xlsx of last v1 {stakeholder} cache version",
         "operationId": "xls_1",
         "responses": {
-          "429": {
-            "description": "Too many requests"
-          },
           "200": {
             "description": "OK",
             "content": {
@@ -98,6 +101,16 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
           },
           "500": {
             "description": "Service unavailable",
@@ -109,18 +122,11 @@
               }
             }
           },
+          "429": {
+            "description": "Too many requests"
+          },
           "403": {
             "description": "Forbidden"
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            }
           }
         },
         "security": [
@@ -138,9 +144,6 @@
         "summary": "Get xlsx of last v1 {stakeholder} cache version",
         "operationId": "xls_2",
         "responses": {
-          "429": {
-            "description": "Too many requests"
-          },
           "200": {
             "description": "OK",
             "content": {
@@ -149,6 +152,16 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
           },
           "500": {
             "description": "Service unavailable",
@@ -160,18 +173,11 @@
               }
             }
           },
+          "429": {
+            "description": "Too many requests"
+          },
           "403": {
             "description": "Forbidden"
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            }
           }
         },
         "security": [
@@ -189,9 +195,6 @@
         "summary": "Get xlsx of latest full cache",
         "operationId": "xls_3",
         "responses": {
-          "429": {
-            "description": "Too many requests"
-          },
           "200": {
             "description": "OK",
             "content": {
@@ -200,6 +203,16 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
           },
           "500": {
             "description": "Service unavailable",
@@ -211,18 +224,11 @@
               }
             }
           },
+          "429": {
+            "description": "Too many requests"
+          },
           "403": {
             "description": "Forbidden"
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemJson"
-                }
-              }
-            }
           }
         },
         "security": [

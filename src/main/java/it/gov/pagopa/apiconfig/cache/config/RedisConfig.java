@@ -1,11 +1,7 @@
 package it.gov.pagopa.apiconfig.cache.config;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.SocketOptions;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,25 +16,18 @@ import java.time.Duration;
 @Configuration
 public class RedisConfig {
 
-    @Value("${spring.redis.host}")
+    @Value("${spring.data.redis.host}")
     private String redisHost;
 
-    @Value("${spring.redis.port}")
+    @Value("${spring.data.redis.port}")
     private int redisPort;
 
-    @Value("${spring.redis.pwd}")
+    @Value("${spring.data.redis.pwd}")
     private String redisPwd;
-    @Value("${spring.redis.commandTimeout}")
+    @Value("${spring.data.redis.commandTimeout}")
     private Duration redisCommandTimeout;
-    @Value("${spring.redis.socketTimeout}")
+    @Value("${spring.data.redis.socketTimeout}")
     private Duration redisSocketTimeout;
-
-    @Bean
-    public ObjectMapper objectMapper() {
-        final var objectMapper = new ObjectMapper().findAndRegisterModules();
-        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        return objectMapper;
-    }
 
     @Bean
     public LettuceConnectionFactory redisConnectionFactory() {
@@ -58,9 +47,7 @@ public class RedisConfig {
     }
 
     @Bean
-    @Qualifier("object")
-    public RedisTemplate<String, byte[]> redisObjectTemplate(
-            final LettuceConnectionFactory connectionFactory, ObjectMapper objectMapper) {
+    public RedisTemplate<String, byte[]> redisObjectTemplate(final LettuceConnectionFactory connectionFactory) {
         RedisTemplate<String, byte[]> template = new RedisTemplate<>();
         template.setKeySerializer(new StringRedisSerializer());
         template.setConnectionFactory(connectionFactory);

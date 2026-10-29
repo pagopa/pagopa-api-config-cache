@@ -1,11 +1,10 @@
 package it.gov.pagopa.apiconfig.cache;
 
-import it.gov.pagopa.apiconfig.cache.controller.CacheController;
 import it.gov.pagopa.apiconfig.cache.model.latest.creditorinstitution.Station;
 import it.gov.pagopa.apiconfig.cache.model.latest.psp.Channel;
-import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.starter.entity.*;
+import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 
 import java.sql.Timestamp;
@@ -17,15 +16,7 @@ import java.util.stream.Collectors;
 
 public class TestUtils {
 
-  public static void inizializeInMemoryCache(CacheController cacheController,
-                                             ConfigMapper modelMapper,
-                                             String version,
-                                             String cacheVersion,
-                                             ZonedDateTime timestamp) {
-    org.springframework.test.util.ReflectionTestUtils.setField(cacheController, "inMemoryCache", inMemoryCache(modelMapper, version, cacheVersion, timestamp));
-  }
-
-  public static HashMap<String, Object> inMemoryCache(ConfigMapper modelMapper,
+  public static HashMap<String, Object> inMemoryCache(ModelMapper modelMapper,
                                                       String version,
                                                       String cacheVersion,
                                                       ZonedDateTime timestamp) {
@@ -35,7 +26,7 @@ public class TestUtils {
     objectObjectHashMap.put(Constants.CACHE_VERSION, cacheVersion);
     objectObjectHashMap.put(Constants.TIMESTAMP, timestamp);
 
-    List<Station> stations = modelMapper.modelMapper().map(
+    List<Station> stations = modelMapper.map(
             TestUtils.stazioni,
             new TypeToken<List<Station>>() {
             }.getType());
@@ -45,7 +36,7 @@ public class TestUtils {
                     obj -> obj
             )));
 
-    List<Channel> channels = modelMapper.modelMapper().map(
+    List<Channel> channels = modelMapper.map(
             TestUtils.canali,
             new TypeToken<List<Channel>>() {
             }.getType());
@@ -213,7 +204,6 @@ public class TestUtils {
           CdiMasterValid.builder()
               .id(1L)
               .fkPsp(psps.get(0))
-              .cdiDetail(Arrays.asList(cdiDetail.get(0)))
               .stornoPagamento(true)
               .marcaBolloDigitale(true)
               .dataInizioValidita(new Timestamp(0))
@@ -221,7 +211,6 @@ public class TestUtils {
           CdiMasterValid.builder()
               .id(2L)
               .fkPsp(psps.get(1))
-              .cdiDetail(Arrays.asList(cdiDetail.get(1)))
               .stornoPagamento(true)
               .marcaBolloDigitale(true)
               .dataInizioValidita(new Timestamp(0))

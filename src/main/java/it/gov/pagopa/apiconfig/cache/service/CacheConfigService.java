@@ -2,12 +2,10 @@ package it.gov.pagopa.apiconfig.cache.service;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.apiconfig.cache.exception.AppError;
 import it.gov.pagopa.apiconfig.cache.exception.AppException;
-import it.gov.pagopa.apiconfig.cache.imported.catalogodati.CtListaInformativePSP;
 import it.gov.pagopa.apiconfig.cache.imported.controparti.CtContoAccredito;
 import it.gov.pagopa.apiconfig.cache.imported.controparti.CtErogazione;
 import it.gov.pagopa.apiconfig.cache.imported.controparti.CtErogazioneServizio;
@@ -44,9 +42,7 @@ import it.gov.pagopa.apiconfig.cache.model.latest.psp.Channel;
 import it.gov.pagopa.apiconfig.cache.model.latest.psp.PaymentServiceProvider;
 import it.gov.pagopa.apiconfig.cache.model.latest.psp.PspChannelPaymentType;
 import it.gov.pagopa.apiconfig.cache.model.latest.psp.PspInformation;
-import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
-import it.gov.pagopa.apiconfig.cache.util.ConfigMapper;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.cache.util.DateTimeUtils;
 import it.gov.pagopa.apiconfig.cache.util.ZipUtils;
@@ -58,25 +54,9 @@ import it.gov.pagopa.apiconfig.starter.entity.InformativePaMaster;
 import it.gov.pagopa.apiconfig.starter.entity.Pa;
 import it.gov.pagopa.apiconfig.starter.entity.Psp;
 import it.gov.pagopa.apiconfig.starter.repository.*;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
-import org.modelmapper.TypeToken;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
-import javax.transaction.Transactional;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeConstants;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
@@ -97,88 +77,208 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import java.util.zip.GZIPOutputStream;
 
+import jakarta.xml.bind.JAXBElement;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.transform.stream.StreamResult;
+import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 @Slf4j
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class CacheConfigService {
 
-  @Value("${info.application.version}")
-  private String APP_VERSION;
+  private static final String DA_COMPILARE_FLUSSO =
+          "DA COMPILARE (formato: [IDPSP]_dd-mm-yyyy - esempio: ESEMPIO_31-12-2001)";
+  private static final String DA_COMPILARE = "DA COMPILARE";
 
-  @Value("#{'${sendEvent}'=='true'}")
-  private Boolean SEND_EVENT;
+  private Map<String, Object> inMemoryCache;
 
-  private static String DA_COMPILARE_FLUSSO =
-      "DA COMPILARE (formato: [IDPSP]_dd-mm-yyyy - esempio: ESEMPIO_31-12-2001)";
-  private static String DA_COMPILARE = "DA COMPILARE";
-  private static String SCHEMAM_INSTANCE = "http://www.w3.org/2001/XMLSchema-instance";
-  private static double COSTO_CONVENZIONE_FORMAT = 100d;
+  private final Boolean preload;
+  private final String appVersion;
+  private final Boolean sendEvent;
+  private final long inProgressTtl;
+  private final RedisRepository redisRepository;
+  private final ModelMapper modelMapper;
+  private final ConfigurationKeysRepository configurationKeysRepository;
+  private final IntermediariPaRepository intermediariPaRepository;
+  private final IntermediariPspRepository intermediariPspRepository;
+  private final CdsCategorieRepository cdsCategorieRepository;
+  private final CdsSoggettoRepository cdsSoggettoRepository;
+  private final CdsServizioRepository cdsServizioRepository;
+  private final CdsSoggettoServizioRepository cdsSoggettoServizioRepository;
+  private final GdeConfigRepository gdeConfigRepository;
+  private final DizionarioMetadatiRepository dizionarioMetadatiRepository;
+  private final FtpServersRepository ftpServersRepository;
+  private final TipiVersamentoRepository tipiVersamentoRepository;
+  private final WfespPluginConfRepository wfespPluginConfRepository;
+  private final CodifichePaRepository codifichePaRepository;
+  private final CodificheRepository codificheRepository;
+  private final IbanValidiPerPaRepository ibanValidiPerPaRepository;
+  private final StazioniRepository stazioniRepository;
+  private final PaStazionePaRepository paStazioniRepository;
+  private final StationMaintenanceRepository stationMaintenanceRepository;
+  private final PaRepository paRepository;
+  private final CanaliViewRepository canaliViewRepository;
+  private final PspCanaleTipoVersamentoCanaleRepository pspCanaleTipoVersamentoCanaleRepository;
+  private final PspRepository pspRepository;
+  private final CdiMasterValidRepository cdiMasterValidRepository;
+  private final InformativePaMasterRepository informativePaMasterRepository;
+  private final InformativePaFasceRepository informativePaFasceRepository;
+  private final CacheEventHubService eventHubService;
+  private final ObjectMapper objectMapper;
+  private final CacheKeyUtils cacheKeyUtils;
+  private final Jaxb2Marshaller jaxb2Marshaller;
 
-  @Value("${in_progress.ttl}")
-  private long IN_PROGRESS_TTL;
+  public CacheConfigService(
+          Jaxb2Marshaller jaxb2Marshaller,
+          CacheKeyUtils cacheKeyUtils,
+          ObjectMapper objectMapper,
+          CacheEventHubService eventHubService,
+          InformativePaFasceRepository informativePaFasceRepository,
+          InformativePaMasterRepository informativePaMasterRepository,
+          CdiMasterValidRepository cdiMasterValidRepository,
+          PspRepository pspRepository,
+          PspCanaleTipoVersamentoCanaleRepository pspCanaleTipoVersamentoCanaleRepository,
+          CanaliViewRepository canaliViewRepository,
+          PaRepository paRepository,
+          StationMaintenanceRepository stationMaintenanceRepository,
+          PaStazionePaRepository paStazioniRepository,
+          StazioniRepository stazioniRepository,
+          IbanValidiPerPaRepository ibanValidiPerPaRepository,
+          CodificheRepository codificheRepository,
+          CodifichePaRepository codifichePaRepository,
+          WfespPluginConfRepository wfespPluginConfRepository,
+          TipiVersamentoRepository tipiVersamentoRepository,
+          FtpServersRepository ftpServersRepository,
+          DizionarioMetadatiRepository dizionarioMetadatiRepository,
+          GdeConfigRepository gdeConfigRepository,
+          CdsSoggettoServizioRepository cdsSoggettoServizioRepository,
+          CdsServizioRepository cdsServizioRepository,
+          CdsSoggettoRepository cdsSoggettoRepository,
+          CdsCategorieRepository cdsCategorieRepository,
+          IntermediariPspRepository intermediariPspRepository,
+          IntermediariPaRepository intermediariPaRepository,
+          ConfigurationKeysRepository configurationKeysRepository,
+          ModelMapper modelMapper,
+          RedisRepository redisRepository,
+          @Value("${in_progress.ttl}") long inProgressTtl,
+          @Value("#{'${sendEvent}'=='true'}") Boolean sendEvent,
+          @Value("${info.application.version}") String appVersion,
+          @Value("${preload:true}") Boolean preload
+  ) {
+    this.jaxb2Marshaller = jaxb2Marshaller;
+    this.cacheKeyUtils = cacheKeyUtils;
+    this.objectMapper = objectMapper;
+    this.eventHubService = eventHubService;
+    this.informativePaFasceRepository = informativePaFasceRepository;
+    this.informativePaMasterRepository = informativePaMasterRepository;
+    this.cdiMasterValidRepository = cdiMasterValidRepository;
+    this.pspRepository = pspRepository;
+    this.pspCanaleTipoVersamentoCanaleRepository = pspCanaleTipoVersamentoCanaleRepository;
+    this.canaliViewRepository = canaliViewRepository;
+    this.paRepository = paRepository;
+    this.stationMaintenanceRepository = stationMaintenanceRepository;
+    this.paStazioniRepository = paStazioniRepository;
+    this.stazioniRepository = stazioniRepository;
+    this.ibanValidiPerPaRepository = ibanValidiPerPaRepository;
+    this.codificheRepository = codificheRepository;
+    this.codifichePaRepository = codifichePaRepository;
+    this.wfespPluginConfRepository = wfespPluginConfRepository;
+    this.tipiVersamentoRepository = tipiVersamentoRepository;
+    this.ftpServersRepository = ftpServersRepository;
+    this.dizionarioMetadatiRepository = dizionarioMetadatiRepository;
+    this.gdeConfigRepository = gdeConfigRepository;
+    this.cdsSoggettoServizioRepository = cdsSoggettoServizioRepository;
+    this.cdsServizioRepository = cdsServizioRepository;
+    this.cdsSoggettoRepository = cdsSoggettoRepository;
+    this.cdsCategorieRepository = cdsCategorieRepository;
+    this.intermediariPspRepository = intermediariPspRepository;
+    this.intermediariPaRepository = intermediariPaRepository;
+    this.configurationKeysRepository = configurationKeysRepository;
+    this.modelMapper = modelMapper;
+    this.redisRepository = redisRepository;
+    this.inProgressTtl = inProgressTtl;
+    this.sendEvent = sendEvent;
+    this.appVersion = appVersion;
+    this.preload = preload;
+  }
 
-  @Autowired private RedisRepository redisRepository;
-  @Autowired private ConfigMapper modelMapper;
-
-  @Autowired private ConfigurationKeysRepository configurationKeysRepository;
-  @Autowired private IntermediariPaRepository intermediariPaRepository;
-  @Autowired private IntermediariPspRepository intermediariPspRepository;
-  @Autowired private CdsCategorieRepository cdsCategorieRepository;
-  @Autowired private CdsSoggettoRepository cdsSoggettoRepository;
-  @Autowired private CdsServizioRepository cdsServizioRepository;
-  @Autowired private CdsSoggettoServizioRepository cdsSoggettoServizioRepository;
-  @Autowired private GdeConfigRepository gdeConfigRepository;
-  @Autowired private DizionarioMetadatiRepository dizionarioMetadatiRepository;
-  @Autowired private FtpServersRepository ftpServersRepository;
-  @Autowired private TipiVersamentoRepository tipiVersamentoRepository;
-  @Autowired private WfespPluginConfRepository wfespPluginConfRepository;
-  @Autowired private CodifichePaRepository codifichePaRepository;
-  @Autowired private CodificheRepository codificheRepository;
-  @Autowired private IbanValidiPerPaRepository ibanValidiPerPaRepository;
-  @Autowired private StazioniRepository stazioniRepository;
-  @Autowired private PaStazionePaRepository paStazioniRepository;
-  @Autowired private StationMaintenanceRepository stationMaintenanceRepository;
-  @Autowired private PaRepository paRepository;
-  @Autowired private CanaliViewRepository canaliViewRepository;
-  @Autowired private PspCanaleTipoVersamentoCanaleRepository pspCanaleTipoVersamentoCanaleRepository;
-  @Autowired private PspRepository pspRepository;
-  @Autowired private CdiMasterValidRepository cdiMasterValidRepository;
-  @Autowired private CdiDetailRepository cdiDetailRepository;
-  @Autowired private CdiPreferenceRepository cdiPreferenceRepository;
-  @Autowired private CdiInformazioniServizioRepository cdiInformazioniServizioRepository;
-  @Autowired private CdiFasciaCostoServizioRepository cdiFasceRepository;
-  @Autowired private InformativePaMasterRepository informativePaMasterRepository;
-  @Autowired private InformativePaDetailRepository informativePaDetailRepository;
-  @Autowired private InformativePaFasceRepository informativePaFasceRepository;
-
-  @Autowired private CacheEventHubService eventHubService;
-  @Autowired private ObjectMapper objectMapper;
-
-  @Autowired private CacheKeyUtils cacheKeyUtils;
-  private JAXBContext ctListaInformativePSPJaxbContext;
-  private JAXBContext tplInformativaPSPJaxbContext;
-  private JAXBContext ctListaInformativeControparteJaxbContext;
-
-  @PostConstruct
-  public void postConstruct() {
-    try {
-      ctListaInformativePSPJaxbContext = JAXBContext.newInstance(CtListaInformativePSP.class);
-      tplInformativaPSPJaxbContext = JAXBContext.newInstance(TplInformativaPSP.class);
-      ctListaInformativeControparteJaxbContext = JAXBContext.newInstance(CtListaInformativeControparte.class);
-    } catch (JAXBException e) {
-      throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
+  public void preloadKeysFromRedis() {
+    if (Boolean.TRUE.equals(preload)) {
+      try {
+        inMemoryCache = loadFullCache();
+      } catch (Exception e){
+        log.warn("Could not load single keys cache from redis: {}", e.getMessage(), e);
+        try {
+          doCache();
+          log.info("Cache generated, saved to Redis and sent refresh event on startup");
+        } catch (Exception ex) {
+          log.error("[ALERT] Failed to load and generate cache on startup", ex);
+        }
+      }
     }
   }
 
-  public HashMap<String, Object> loadFullCache() throws IOException {
+  /**
+   * Retrieve the in memory cache.
+   *
+   * @return a map containing all the keys and values.
+   * @throws AppException if the in memory cache is not initialized
+   */
+  @Transactional(propagation = Propagation.NOT_SUPPORTED)
+  public Map<String, Object> getInMemoryCache() {
+    if (inMemoryCache == null) {
+      throw new AppException(AppError.CACHE_NOT_INITIALIZED, "FULL");
+    }
+    return inMemoryCache;
+  }
+
+  /**
+   *  Retrieve the in memory cache if has been initialized otherwise start a
+   *  new initialization and return the cache
+   *
+   * @return a map containing all the keys and values.
+   */
+  public Map<String, Object> getInMemoryCacheOrRefreshIfNotExist() {
+    if (inMemoryCache == null) {
+      doCache();
+    }
+    return inMemoryCache;
+  }
+
+  /**
+   *  Start a new cache initialization, persist it both in memory and on Redis
+   *  and send the cache refresh event on EventHub
+   */
+  public void doCache() {
+    inMemoryCache = newCache();
+
+    sendEvent(
+            (String) inMemoryCache.get(Constants.VERSION),
+            (ZonedDateTime) inMemoryCache.get(Constants.TIMESTAMP));
+  }
+
+  protected Map<String, Object> loadFullCache() throws IOException {
     log.info("Loading full cache");
 
     byte[] bytes = redisRepository.get(cacheKeyUtils.getCacheKey(Constants.FULL));
-    byte[] unzipped = ZipUtils.unzip(bytes);
-    JsonFactory jsonFactory = new JsonFactory();
-    JsonParser jsonParser = jsonFactory.createParser(unzipped);
-    FullData fulldata = objectMapper.readValue(jsonParser, FullData.class);
-    jsonParser.close();
+    if (bytes == null) {
+      throw new AppException(AppError.CACHE_NOT_INITIALIZED, Constants.FULL);
+    }
+    FullData fulldata;
+    try (InputStream in = ZipUtils.unzipToStream(bytes)) {
+      fulldata = objectMapper.readValue(in, FullData.class);
+    }
 
     HashMap<String, Object> configData = new HashMap<>();
     configData.put(Constants.VERSION, fulldata.getVersion());
@@ -213,20 +313,20 @@ public class CacheConfigService {
     return configData;
   }
 
-  public HashMap<String, Object> newCache() {
-
+  public Map<String, Object> newCache() {
     setCacheInProgress();
 
     HashMap<String, Object> configData = new HashMap<>();
-    try {
-
+    try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
       long startTime = System.nanoTime();
 
       JsonFactory jsonFactory = new JsonFactory();
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      GZIPOutputStream gzipOut = new GZIPOutputStream(baos);
-      OutputStreamWriter outwriter = new OutputStreamWriter(gzipOut);
-      JsonGenerator jsonGenerator = jsonFactory.createGenerator(outwriter);
+      byte[] cacheByteArray;
+      long endTime;
+      String id;
+      try (GZIPOutputStream gzipOut = new GZIPOutputStream(baos);
+          OutputStreamWriter streamWriter = new OutputStreamWriter(gzipOut);
+          JsonGenerator jsonGenerator = jsonFactory.createGenerator(streamWriter)) {
       jsonGenerator.writeStartObject();
 
       List<BrokerCreditorInstitution> intpa = getBrokerDetails();
@@ -367,16 +467,10 @@ public class CacheConfigService {
       configData.put(Constants.IBANS,ibansMap);
       appendMapToJson(jsonGenerator,Constants.IBANS,ibansMap);
 
-      Pair<List<PspInformation>, List<PspInformation>> informativePspAndTemplates =
-          getInformativePspAndTemplates();
+      configData.put(Constants.PSP_INFORMATIONS,new HashMap<>());
+      appendMapToJson(jsonGenerator,Constants.PSP_INFORMATIONS,new HashMap<>());
 
-      List<PspInformation> infopsps = informativePspAndTemplates.getLeft();
-      HashMap<String, Object> infopspsMap = new HashMap<>();
-      infopsps.forEach(k -> infopspsMap.put(k.getPsp(), k));
-      configData.put(Constants.PSP_INFORMATIONS,infopspsMap);
-      appendMapToJson(jsonGenerator,Constants.PSP_INFORMATIONS,infopspsMap);
-
-      List<PspInformation> infopspTemplates = informativePspAndTemplates.getRight();
+      List<PspInformation> infopspTemplates = getInformativeTemplates();
       HashMap<String, Object> infopspTemplatesMap = new HashMap<>();
       infopspTemplates.forEach(k -> infopspTemplatesMap.put(k.getPsp(), k));
       configData.put(Constants.PSP_INFORMATION_TEMPLATES,infopspTemplatesMap);
@@ -390,8 +484,8 @@ public class CacheConfigService {
 
       ZonedDateTime now = ZonedDateTime.now();
       ZonedDateTime romeDateTime = DateTimeUtils.getZonedDateTime(now);
-      long endTime = System.nanoTime();
-      String id = "" + endTime;
+      endTime = System.nanoTime();
+      id = "" + endTime;
       String cacheVersion = getVersion();
       configData.put(Constants.VERSION, id);
       configData.put(Constants.TIMESTAMP, romeDateTime);
@@ -402,29 +496,29 @@ public class CacheConfigService {
       appendObjectToJson(jsonGenerator, Constants.CACHE_VERSION, cacheVersion);
 
       jsonGenerator.writeEndObject();
-      jsonGenerator.close();
+      }
 
-      byte[] cacheByteArray = baos.toByteArray();
+      cacheByteArray = baos.toByteArray();
 
       long duration = (endTime - startTime) / 1000000;
-      log.info(String.format("%s cache loaded in %s ms", Constants.FULL, duration));
+      log.info("{} cache loaded in {} ms", Constants.FULL, duration);
 
       String actualKey = cacheKeyUtils.getCacheKey(Constants.FULL);
       String actualKeyV1 = cacheKeyUtils.getCacheIdKey(Constants.FULL);
 
-      log.info(String.format("Saving on Redis %s %s %s", actualKey, actualKeyV1, id));
+      log.info("Saving on Redis {} {} {}", actualKey, actualKeyV1, id);
       redisRepository.pushToRedisAsync(actualKey, actualKeyV1, cacheByteArray, id.getBytes(StandardCharsets.UTF_8));
     } catch (Exception e) {
       log.error("[ALERT] problem to generate cache", e);
-      removeCacheInProgress();
       throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
+    } finally {
+      removeCacheInProgress();
     }
-    removeCacheInProgress();
     return configData;
   }
 
   public void sendEvent(String id, ZonedDateTime now) {
-    if(SEND_EVENT){
+    if (Boolean.TRUE.equals(sendEvent)) {
         try {
             eventHubService.publishEvent(id,now,getVersion());
         } catch (JsonProcessingException e) {
@@ -434,7 +528,7 @@ public class CacheConfigService {
   }
 
   private String getVersion() {
-    String version = Constants.GZIP_JSON + "-" + APP_VERSION;
+    String version = Constants.GZIP_JSON + "-" + appVersion;
     if (version.length() > 32) {
       return version.substring(0, 32);
     }
@@ -448,26 +542,18 @@ public class CacheConfigService {
 
   private void setCacheInProgress() {
     String actualKeyV1 = cacheKeyUtils.getCacheKeyInProgress(Constants.FULL);
-    redisRepository.save(actualKeyV1, "1".getBytes(StandardCharsets.UTF_8), IN_PROGRESS_TTL);
+    redisRepository.save(actualKeyV1, "1".getBytes(StandardCharsets.UTF_8), inProgressTtl);
   }
 
+  @Transactional(propagation = Propagation.NOT_SUPPORTED)
   public Boolean getCacheInProgress() {
     String actualKeyV1 = cacheKeyUtils.getCacheKeyInProgress(Constants.FULL);
     return redisRepository.getBooleanByKeyId(actualKeyV1);
   }
 
-  public CacheVersion getCacheId() {
-    String actualKeyV1 = cacheKeyUtils.getCacheIdKey(Constants.FULL);
-    String cacheId =
-        Optional.ofNullable(redisRepository.getStringByKeyId(actualKeyV1))
-            .orElseThrow(() -> new AppException(AppError.CACHE_ID_NOT_FOUND, actualKeyV1));
-    return new CacheVersion(cacheId);
-  }
-
   public List<ConfigurationKey> getConfigurationKeys() {
     log.info("loading ConfigurationKeys");
     return modelMapper
-        .modelMapper()
         .map(
             configurationKeysRepository.findAll(),
             new TypeToken<List<ConfigurationKey>>() {}.getType());
@@ -476,7 +562,6 @@ public class CacheConfigService {
   public List<BrokerCreditorInstitution> getBrokerDetails() {
     log.info("loading PaBrokers");
     return modelMapper
-        .modelMapper()
         .map(
             intermediariPaRepository.findAll(),
             new TypeToken<List<BrokerCreditorInstitution>>() {}.getType());
@@ -485,21 +570,18 @@ public class CacheConfigService {
   public List<BrokerPsp> getBrokerPspDetails() {
     log.info("loading PspBrokers");
     return modelMapper
-        .modelMapper()
         .map(intermediariPspRepository.findAll(), new TypeToken<List<BrokerPsp>>() {}.getType());
   }
 
   public List<CdsCategory> getCdsCategories() {
     log.info("loading CdsCategories");
     return modelMapper
-        .modelMapper()
         .map(cdsCategorieRepository.findAll(), new TypeToken<List<CdsCategory>>() {}.getType());
   }
 
   public List<CdsService> getCdsServices() {
     log.info("loading CdsServices");
     return modelMapper
-        .modelMapper()
         .map(
             cdsServizioRepository.findAllFetching(),
             new TypeToken<List<CdsService>>() {}.getType());
@@ -508,14 +590,12 @@ public class CacheConfigService {
   public List<CdsSubject> getCdsSubjects() {
     log.info("loading CdsSubjects");
     return modelMapper
-        .modelMapper()
         .map(cdsSoggettoRepository.findAll(), new TypeToken<List<CdsSubject>>() {}.getType());
   }
 
   public List<CdsSubjectService> getCdsSubjectServices() {
     log.info("loading CdsSubjectServices");
     return modelMapper
-        .modelMapper()
         .map(
             cdsSoggettoServizioRepository.findAllFetchingStations(),
             new TypeToken<List<CdsSubjectService>>() {}.getType());
@@ -524,14 +604,12 @@ public class CacheConfigService {
   public List<GdeConfiguration> getGdeConfiguration() {
     log.info("loading GdeConfigurations");
     return modelMapper
-        .modelMapper()
         .map(gdeConfigRepository.findAll(), new TypeToken<List<GdeConfiguration>>() {}.getType());
   }
 
   public List<MetadataDict> getMetadataDict() {
     log.info("loading MetadataDicts");
     return modelMapper
-        .modelMapper()
         .map(
             dizionarioMetadatiRepository.findAll(),
             new TypeToken<List<MetadataDict>>() {}.getType());
@@ -540,28 +618,24 @@ public class CacheConfigService {
   public List<FtpServer> getFtpServers() {
     log.info("loading FtpServers");
     return modelMapper
-        .modelMapper()
         .map(ftpServersRepository.findAll(), new TypeToken<List<FtpServer>>() {}.getType());
   }
 
   public List<PaymentType> getPaymentTypes() {
     log.info("loading PaymentTypes");
     return modelMapper
-        .modelMapper()
         .map(tipiVersamentoRepository.findAll(), new TypeToken<List<PaymentType>>() {}.getType());
   }
 
   public List<Plugin> getWfespPluginConfigurations() {
     log.info("loading Plugins");
     return modelMapper
-        .modelMapper()
         .map(wfespPluginConfRepository.findAll(), new TypeToken<List<Plugin>>() {}.getType());
   }
 
   public List<Iban> getCurrentIbans() {
     log.info("loading Ibans");
     return modelMapper
-        .modelMapper()
         .map(
             ibanValidiPerPaRepository.findAllFetchingPas(),
             new TypeToken<List<Iban>>() {}.getType());
@@ -570,7 +644,6 @@ public class CacheConfigService {
   public List<Station> findAllStazioni() {
     log.info("loading Stations");
     return modelMapper
-        .modelMapper()
         .map(
             stazioniRepository.findAllFetchingIntermediario(),
             new TypeToken<List<Station>>() {}.getType());
@@ -595,7 +668,7 @@ public class CacheConfigService {
                     s.getPagamentoSpontaneo(),
                     s.getAca(),
                     s.getStandin()))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public List<MaintenanceStation> findAllStationMaintenance() {
@@ -610,20 +683,18 @@ public class CacheConfigService {
                                     s.getStartDateTime(),
                                     s.getEndDateTime(),
                                     s.getStandIn()))
-            .collect(Collectors.toList());
+            .toList();
   }
 
   public List<CreditorInstitution> getCreditorInstitutions() {
     log.info("loading Pas");
     return modelMapper
-        .modelMapper()
         .map(paRepository.findAll(), new TypeToken<List<CreditorInstitution>>() {}.getType());
   }
 
   public List<Channel> getAllCanali() {
     log.info("loading Channels");
     return modelMapper
-        .modelMapper()
         .map(
             canaliViewRepository.findAllFetchingIntermediario(),
             new TypeToken<List<Channel>>() {}.getType());
@@ -640,20 +711,18 @@ public class CacheConfigService {
                     p.getPsp().getIdPsp(),
                     p.getCanale().getIdCanale(),
                     p.getTipoVersamento().getTipoVersamento()))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public List<PaymentServiceProvider> getAllPaymentServiceProviders() {
     log.info("loading Psps");
     return modelMapper
-        .modelMapper()
         .map(pspRepository.findAll(), new TypeToken<List<PaymentServiceProvider>>() {}.getType());
   }
 
   public List<CreditorInstitutionEncoding> getCreditorInstitutionEncodings() {
     log.info("loading PaEncodings");
     return modelMapper
-        .modelMapper()
         .map(
             codifichePaRepository.findAllFetchingCodifiche(),
             new TypeToken<List<CreditorInstitutionEncoding>>() {}.getType());
@@ -662,22 +731,15 @@ public class CacheConfigService {
   public List<Encoding> getEncodings() {
     log.info("loading Encodings");
     return modelMapper
-        .modelMapper()
         .map(codificheRepository.findAll(), new TypeToken<List<Encoding>>() {}.getType());
   }
 
-
-
   private String toXml(TplInformativaPSP element) {
-    try {
+    try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
       JAXBElement<TplInformativaPSP> informativaPSP =
           new it.gov.pagopa.apiconfig.cache.imported.template.ObjectFactory()
               .createInformativaPSP(element);
-      Marshaller marshaller = tplInformativaPSPJaxbContext.createMarshaller();
-      marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
-      marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, SCHEMAM_INSTANCE);
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      marshaller.marshal(informativaPSP, baos);
+      jaxb2Marshaller.marshal(informativaPSP, new StreamResult(baos));
       return Constants.ENCODER.encodeToString(baos.toByteArray());
     } catch (Exception e) {
       log.error("error creating TplInformativaPSP", e);
@@ -685,33 +747,12 @@ public class CacheConfigService {
     }
   }
 
-  private String toXml(CtListaInformativePSP element) {
-    try {
-      JAXBElement<CtListaInformativePSP> informativaPSP =
-          new it.gov.pagopa.apiconfig.cache.imported.catalogodati.ObjectFactory()
-              .createListaInformativePSP(element);
-      Marshaller marshaller = ctListaInformativePSPJaxbContext.createMarshaller();
-      marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
-      marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, SCHEMAM_INSTANCE);
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      marshaller.marshal(informativaPSP, baos);
-      return Constants.ENCODER.encodeToString(baos.toByteArray());
-    } catch (Exception e) {
-      log.error("error creating CtListaInformativePSP", e);
-      return e.toString();
-    }
-  }
-
   private String toXml(CtListaInformativeControparte element) {
-    try {
+    try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
       JAXBElement<CtListaInformativeControparte> informativaPA =
           new it.gov.pagopa.apiconfig.cache.imported.controparti.ObjectFactory()
               .createListaInformativeControparte(element);
-      Marshaller marshaller = ctListaInformativeControparteJaxbContext.createMarshaller();
-      marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
-      marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, SCHEMAM_INSTANCE);
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      marshaller.marshal(informativaPA, baos);
+      jaxb2Marshaller.marshal(informativaPA, new StreamResult(baos));
       return Constants.ENCODER.encodeToString(baos.toByteArray());
     } catch (Exception e) {
       log.error("error creating CtListaInformativeControparte", e);
@@ -719,263 +760,12 @@ public class CacheConfigService {
     }
   }
 
-  public Pair<List<PspInformation>, List<PspInformation>> getInformativePspAndTemplates() {
-//    List<Psp> psps = pspRepository.findAll();
-//    List<CdiPreference> preferences = cdiPreferenceRepository.findAll();
-//    List<CdiFasciaCostoServizio> allFasce = cdiFasceRepository.findAll();
+  public List<PspInformation> getInformativeTemplates() {
     List<CdiMasterValid> masters =
         StreamSupport.stream(cdiMasterValidRepository.findAll().spliterator(), false)
-            .collect(Collectors.toList());
-//    List<CdiDetail> details = cdiDetailRepository.findAll();
-//    List<CdiInformazioniServizio> allInformazioni = cdiInformazioniServizioRepository.findAll();
-
-    List<PspInformation> informativePsp =
-        new ArrayList<>(); // getInformativePsp(psps, masters, details, preferences, allFasce,
-    // allInformazioni);
-    List<PspInformation> templateInformativePsp = getTemplateInformativePsp(masters);
-
-    return Pair.of(informativePsp, templateInformativePsp);
+            .toList();
+    return getTemplateInformativePsp(masters);
   }
-
-//  public List<PspInformation> getInformativePsp(
-//      List<Psp> psps,
-//      List<CdiMasterValid> masters,
-//      List<CdiDetail> details,
-//      List<CdiPreference> preferences,
-//      List<CdiFasciaCostoServizio> allFasce,
-//      List<CdiInformazioniServizio> allInformazioni) {
-//    log.info("loading InformativePsp");
-//
-//    List<CtListaInformativePSP> informativePspSingle =
-//        masters
-//            .stream()
-//            .filter(
-//                m -> details.stream().anyMatch(d -> d.getFkCdiMaster().getId().equals(m.getId())))
-//            .map(
-//                cdiMaster -> {
-//                  Psp psp =
-//                      psps.stream()
-//                          .filter(p -> p.getObjId().equals(cdiMaster.getFkPsp().getObjId()))
-//                          .findFirst()
-//                          .get();
-//                  CtInformativaPSP ctInformativaPSP = new CtInformativaPSP();
-//                  ctInformativaPSP.setCodiceABI(psp.getAbi());
-//                  ctInformativaPSP.setCodiceBIC(psp.getBic());
-//                  ctInformativaPSP.setIdentificativoPSP(psp.getIdPsp());
-//                  ctInformativaPSP.setRagioneSociale(psp.getRagioneSociale());
-//                  CtInformativaMaster ctInformativaMaster = new CtInformativaMaster();
-//                  try {
-//                    ctInformativaMaster.setDataInizioValidita(
-//                        tsToXmlGC(cdiMaster.getDataInizioValidita()));
-//                  } catch (DatatypeConfigurationException e) {
-//                    throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
-//                  }
-//                  try {
-//                    ctInformativaMaster.setDataPubblicazione(
-//                        tsToXmlGC(cdiMaster.getDataPubblicazione()));
-//                  } catch (DatatypeConfigurationException e) {
-//                    throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
-//                  }
-//                  ctInformativaMaster.setLogoPSP("".getBytes(StandardCharsets.UTF_8));
-//                  ctInformativaMaster.setStornoPagamento(
-//                      Boolean.TRUE.equals(cdiMaster.getStornoPagamento()) ? 1 : 0);
-//                  ctInformativaMaster.setUrlInformazioniPSP(cdiMaster.getUrlInformazioniPsp());
-//                  ctInformativaMaster.setMarcaBolloDigitale(
-//                      Boolean.TRUE.equals(cdiMaster.getMarcaBolloDigitale()) ? 1 : 0);
-//                  ctInformativaPSP.setInformativaMaster(ctInformativaMaster);
-//                  ctInformativaPSP.setIdentificativoFlusso(cdiMaster.getIdInformativaPsp());
-//
-//                  List<CtInformativaDetail> masterdetails =
-//                      details
-//                          .stream()
-//                          .filter(d -> d.getFkCdiMaster().getId().equals(cdiMaster.getId()))
-//                          .filter(
-//                              d ->
-//                                  !d.getPspCanaleTipoVersamento()
-//                                      .getCanaleTipoVersamento()
-//                                      .getTipoVersamento()
-//                                      .equals("PPAY"))
-//                          .map(
-//                              cdiDetail -> {
-//                                var pspCanaleTipoVersamento =
-//                                    cdiDetail.getPspCanaleTipoVersamento();
-//
-//                                CtIdentificazioneServizio ctIdentificazioneServizio =
-//                                    new CtIdentificazioneServizio();
-//                                ctIdentificazioneServizio.setNomeServizio(
-//                                    cdiDetail.getNomeServizio());
-//                                ctIdentificazioneServizio.setLogoServizio(
-//                                    "".getBytes(StandardCharsets.UTF_8));
-//
-//                                List<CdiInformazioniServizio> it =
-//                                    allInformazioni
-//                                        .stream()
-//                                        .filter(
-//                                            ii ->
-//                                                ii.getFkCdiDetail()
-//                                                    .getId()
-//                                                    .equals(cdiDetail.getId()))
-//                                        .filter(info -> info.getCodiceLingua().equals("IT"))
-//                                        .collect(Collectors.toList());
-//                                CtListaInformazioniServizio ctListaInformazioniServizio =
-//                                    new CtListaInformazioniServizio();
-//                                if (!it.isEmpty()) {
-//                                  CtInformazioniServizio ctInformazioniServizio =
-//                                      new CtInformazioniServizio();
-//                                  ctInformazioniServizio.setDescrizioneServizio(
-//                                      it.get(0).getDescrizioneServizio());
-//                                  ctInformazioniServizio.setCodiceLingua(
-//                                          StCodiceLingua.fromValue(it.get(0).getCodiceLingua()));
-//                                  ctInformazioniServizio.setDisponibilitaServizio(
-//                                      it.get(0).getDisponibilitaServizio());
-//                                  ctInformazioniServizio.setUrlInformazioniCanale(
-//                                      it.get(0).getUrlInformazioniCanale());
-//                                  ctListaInformazioniServizio
-//                                      .getInformazioniServizio()
-//                                      .add(ctInformazioniServizio);
-//                                }
-//
-//                                List<CtFasciaCostoServizio> fasce =
-//                                    allFasce
-//                                        .stream()
-//                                        .filter(
-//                                            fas ->
-//                                                fas.getFkCdiDetail()
-//                                                    .getId()
-//                                                    .equals(cdiDetail.getId()))
-//                                        .map(
-//                                            fascia -> {
-//                                              CtFasciaCostoServizio ctFasciaCostoServizio =
-//                                                  new CtFasciaCostoServizio();
-//                                              ctFasciaCostoServizio.setCostoFisso(
-//                                                  BigDecimal.valueOf(fascia.getCostoFisso())
-//                                                      .setScale(2, RoundingMode.FLOOR));
-//                                              ctFasciaCostoServizio.setImportoMassimoFascia(
-//                                                  BigDecimal.valueOf(fascia.getImportoMassimo())
-//                                                      .setScale(2, RoundingMode.FLOOR));
-//                                              ctFasciaCostoServizio.setValoreCommissione(
-//                                                  (BigDecimal.valueOf(fascia.getValoreCommissione())
-//                                                      .setScale(2, RoundingMode.FLOOR)));
-//                                              return ctFasciaCostoServizio;
-//                                            })
-//                                        .collect(Collectors.toList());
-//                                CtListaFasceCostoServizio ctListaFasceCostoServizio =
-//                                    new CtListaFasceCostoServizio();
-//                                ctListaFasceCostoServizio.getFasciaCostoServizio().addAll(fasce);
-//
-//                                List<CdiPreference> cdiPreferenceStream =
-//                                    preferences
-//                                        .stream()
-//                                        .filter(
-//                                            pref ->
-//                                                pref.getCdiDetail()
-//                                                    .getId()
-//                                                    .equals(cdiDetail.getId()))
-//                                        .collect(Collectors.toList());
-//                                List<String> buyers =
-//                                    cdiPreferenceStream
-//                                        .stream()
-//                                        .map(p -> p.getBuyer())
-//                                        .collect(Collectors.toList());
-//                                CtListaConvenzioni listaConvenzioni = new CtListaConvenzioni();
-//                                listaConvenzioni.getCodiceConvenzione().addAll(buyers);
-//
-//                                CtInformativaDetail ctInformativaDetail = new CtInformativaDetail();
-//                                ctInformativaDetail.setCanaleApp(
-//                                    cdiDetail.getCanaleApp().intValue());
-//                                ctInformativaDetail.setIdentificativoCanale(
-//                                    pspCanaleTipoVersamento
-//                                        .getCanaleTipoVersamento()
-//                                        .getCanale()
-//                                        .getIdCanale());
-//
-//                                List<Double> costiConvenzione =
-//                                    cdiPreferenceStream
-//                                        .stream()
-//                                        .map(p -> p.getCostoConvenzione() / COSTO_CONVENZIONE_FORMAT)
-//                                        .collect(Collectors.toList());
-//
-//                                CtCostiServizio costiServizio = new CtCostiServizio();
-//                                costiServizio.setTipoCostoTransazione(1);
-//                                costiServizio.setTipoCommissione(0);
-//                                costiServizio.setListaFasceCostoServizio(ctListaFasceCostoServizio);
-//                                if (!costiConvenzione.isEmpty()) {
-//                                  costiServizio.setCostoConvenzione(
-//                                      BigDecimal.valueOf(costiConvenzione.get(0)));
-//                                }
-//                                ctInformativaDetail.setCostiServizio(costiServizio);
-//
-//                                ctInformativaDetail.setPriorita(cdiDetail.getPriorita().intValue());
-//                                ctInformativaDetail.setListaConvenzioni(listaConvenzioni);
-//                                ctInformativaDetail.setIdentificativoIntermediario(
-//                                    pspCanaleTipoVersamento
-//                                        .getCanaleTipoVersamento()
-//                                        .getCanale()
-//                                        .getFkIntermediarioPsp()
-//                                        .getIdIntermediarioPsp());
-//                                ctInformativaDetail.setIdentificazioneServizio(
-//                                    ctIdentificazioneServizio);
-//                                ctInformativaDetail.setListaInformazioniServizio(
-//                                    ctListaInformazioniServizio);
-//                                if (cdiDetail.getTags() != null) {
-//                                  CtListaParoleChiave ctListaParoleChiave =
-//                                      new CtListaParoleChiave();
-//                                  ctListaParoleChiave
-//                                      .getParoleChiave()
-//                                      .addAll(
-//                                          Arrays.stream(cdiDetail.getTags().split(";"))
-//                                              .map(StParoleChiave::fromValue)
-//                                              .collect(Collectors.toList()));
-//                                  ctInformativaDetail.setListaParoleChiave(ctListaParoleChiave);
-//                                }
-//                                ctInformativaDetail.setModelloPagamento(
-//                                    cdiDetail.getModelloPagamento().intValue());
-//                                ctInformativaDetail.setTipoVersamento(
-//                                    StTipoVersamento.fromValue(
-//                                        pspCanaleTipoVersamento
-//                                            .getCanaleTipoVersamento()
-//                                            .getTipoVersamento()
-//                                            .getTipoVersamento()));
-//                                return ctInformativaDetail;
-//                              })
-//                          .collect(Collectors.toList());
-//                  CtListaInformativaDetail listaInformativaDetail = new CtListaInformativaDetail();
-//                  listaInformativaDetail.getInformativaDetail().addAll(masterdetails);
-//                  ctInformativaPSP.setListaInformativaDetail(listaInformativaDetail);
-//
-//                  CtListaInformativePSP ctListaInformativePSP = new CtListaInformativePSP();
-//                  ctListaInformativePSP.getInformativaPSP().add(ctInformativaPSP);
-//                  return ctListaInformativePSP;
-//                })
-//            .collect(Collectors.toList());
-//
-//    CtListaInformativePSP informativaPspFull = new CtListaInformativePSP();
-//    informativePspSingle.forEach(
-//        i -> informativaPspFull.getInformativaPSP().addAll(i.getInformativaPSP()));
-//
-//    CtListaInformativePSP informativaEmpty = new CtListaInformativePSP();
-//
-//    List<PspInformation> informativePspSingleCache =
-//        informativePspSingle
-//            .stream()
-//            .map(
-//                i ->
-//                    PspInformation.builder()
-//                        .psp(i.getInformativaPSP().get(0).getIdentificativoPSP())
-//                        .informativa(toXml(i))
-//                        .build())
-//            .collect(Collectors.toList());
-//
-//    PspInformation informativaPSPFull =
-//        PspInformation.builder().psp(Constants.FULL_INFORMATION).informativa(toXml(informativaPspFull)).build();
-//
-//    PspInformation informativaPSPEmpty =
-//        PspInformation.builder().psp("EMPTY").informativa(toXml(informativaEmpty)).build();
-//
-//    informativePspSingleCache.add(informativaPSPFull);
-//    informativePspSingleCache.add(informativaPSPEmpty);
-//    return informativePspSingleCache;
-//  }
 
   public List<PspInformation> getTemplateInformativePsp(List<CdiMasterValid> allMasters) {
     log.info("loading TemplateInformativePsp");
@@ -1012,43 +802,44 @@ public class CacheConfigService {
             tplInformativaMaster.setStornoPagamento(0);
             tplInformativaPSP.setInformativaMaster(tplInformativaMaster);
 
-            if (masters.isEmpty()) {
+//            if (masters.isEmpty()) {
               TplListaInformativaDetail tplListaInformativaDetail = new TplListaInformativaDetail();
               tplListaInformativaDetail
                   .getInformativaDetail()
                   .add(makeTplInformativaDetail(null, null, null, null));
               tplInformativaPSP.setListaInformativaDetail(tplListaInformativaDetail);
               templates.add(new PspInformation(psp.getIdPsp(), toXml(tplInformativaPSP)));
-            } else {
-              tplInformativaPSP.setRagioneSociale(psp.getRagioneSociale());
-              tplInformativaPSP.setIdentificativoPSP(psp.getIdPsp());
-              TplListaInformativaDetail tplListaInformativaDetail = new TplListaInformativaDetail();
-              masters
-                  .get()
-                  .getCdiDetail()
-                  .forEach(
-                      d ->
-                          tplListaInformativaDetail
-                              .getInformativaDetail()
-                              .add(
-                                  makeTplInformativaDetail(
-                                      d.getPspCanaleTipoVersamento()
-                                          .getCanaleTipoVersamento()
-                                          .getCanale()
-                                          .getIdCanale(),
-                                      d.getPspCanaleTipoVersamento()
-                                          .getCanaleTipoVersamento()
-                                          .getCanale()
-                                          .getFkIntermediarioPsp()
-                                          .getIdIntermediarioPsp(),
-                                      d.getPspCanaleTipoVersamento()
-                                          .getCanaleTipoVersamento()
-                                          .getTipoVersamento()
-                                          .getTipoVersamento(),
-                                      d.getModelloPagamento())));
-              tplInformativaPSP.setListaInformativaDetail(tplListaInformativaDetail);
-              templates.add(new PspInformation(psp.getIdPsp(), toXml(tplInformativaPSP)));
-            }
+              // TODO Remember to uncomment this, do we need it?
+//            } else {
+//              tplInformativaPSP.setRagioneSociale(psp.getRagioneSociale());
+//              tplInformativaPSP.setIdentificativoPSP(psp.getIdPsp());
+//              TplListaInformativaDetail tplListaInformativaDetail = new TplListaInformativaDetail();
+//              masters
+//                  .get()
+//                  .getCdiDetail()
+//                  .forEach(
+//                      d ->
+//                          tplListaInformativaDetail
+//                              .getInformativaDetail()
+//                              .add(
+//                                  makeTplInformativaDetail(
+//                                      d.getPspCanaleTipoVersamento()
+//                                          .getCanaleTipoVersamento()
+//                                          .getCanale()
+//                                          .getIdCanale(),
+//                                      d.getPspCanaleTipoVersamento()
+//                                          .getCanaleTipoVersamento()
+//                                          .getCanale()
+//                                          .getFkIntermediarioPsp()
+//                                          .getIdIntermediarioPsp(),
+//                                      d.getPspCanaleTipoVersamento()
+//                                          .getCanaleTipoVersamento()
+//                                          .getTipoVersamento()
+//                                          .getTipoVersamento(),
+//                                      d.getModelloPagamento())));
+//              tplInformativaPSP.setListaInformativaDetail(tplListaInformativaDetail);
+//              templates.add(new PspInformation(psp.getIdPsp(), toXml(tplInformativaPSP)));
+//            }
           } catch (Exception e) {
             log.error(
                 "errore creazione template informativa psp:"
@@ -1151,7 +942,7 @@ public class CacheConfigService {
               }
               return ctContoAccredito;
             })
-        .collect(Collectors.toList());
+        .toList();
   }
   
   public List<CreditorInstitutionInformation> getInformativePa() {
@@ -1179,9 +970,9 @@ public class CacheConfigService {
 
 	  pas.forEach(pa -> {
 		  if (count.incrementAndGet() % 100 == 0) {
-			  log.info("Processed " + count.get() + " of " + max);
+			  log.info("Processed {} of {}", count.get(), max);
 		  }
-		  log.debug("Processing pa:" + pa.getIdDominio());
+		  log.debug("Processing pa: {}", pa.getIdDominio());
 
 		  CtListaInformativeControparte ctListaInformativeControparte = new CtListaInformativeControparte();
 		  CtInformativaControparte ctInformativaControparte = new CtInformativaControparte();
@@ -1207,17 +998,17 @@ public class CacheConfigService {
 			  List<InformativePaDetail> infodetails = master.getDetails();
 			  List<InformativePaFasce> fasce = infodetails.stream()
 					  .flatMap(detail -> fasceByDetail.getOrDefault(detail.getId(), Collections.emptyList()).stream())
-					  .collect(Collectors.toList());
+					  .toList();
 
 			  List<CtErogazione> disponibilita = infodetails.stream()
 					  .filter(InformativePaDetail::getFlagDisponibilita)
 					  .map(d -> infoDetailToCtErogazione(fasce, d))
-					  .collect(Collectors.toList());
+					  .toList();
 
 			  List<CtErogazione> indisponibilita = infodetails.stream()
 					  .filter(d -> !d.getFlagDisponibilita())
 					  .map(d -> infoDetailToCtErogazione(fasce, d))
-					  .collect(Collectors.toList());
+					  .toList();
 
 			  CtErogazioneServizio ctErogazioneServizio = new CtErogazioneServizio();
 			  ctErogazioneServizio.getDisponibilita().addAll(disponibilita);
@@ -1275,9 +1066,9 @@ public class CacheConfigService {
                     }
                     return fascia;
                   })
-              .collect(Collectors.toList());
+              .toList();
     } catch (Exception e) {
-      log.error("error fasce detail" + det.getId());
+      log.error("error fasce detail {}", det.getId(), e);
     }
     CtErogazione ctErogazione = new CtErogazione();
     ctErogazione.setGiorno(det.getGiorno());
