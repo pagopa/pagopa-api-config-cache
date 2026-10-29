@@ -77,7 +77,6 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import java.util.zip.GZIPOutputStream;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
@@ -214,7 +213,6 @@ public class CacheConfigService {
     this.preload = preload;
   }
 
-  @PostConstruct
   public void preloadKeysFromRedis() {
     if (Boolean.TRUE.equals(preload)) {
       try {
