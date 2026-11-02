@@ -45,36 +45,38 @@ public class RedisRepository {
   }
 
   @Async
-  public void pushToRedisAsync(String key, String keyId, byte[] object, byte[] keyobject) {
+  public void pushToRedisAsync(String key, String keyId, byte[] object, byte[] keyObject) {
     try {
-      log.info("async saving {} on redis", key);
+      log.debug("Async saving key {} on redis", key);
       save(key, object, 1440);
-      save(keyId, keyobject, 1440);
-      log.info("async saved {} on redis, id {}", key, new String(keyobject, StandardCharsets.UTF_8));
+      log.debug("Async saving key {} on redis", keyId);
+      save(keyId, keyObject, 1440);
+      log.info("Async saved {} on redis, id {}", key, new String(keyObject, StandardCharsets.UTF_8));
     } catch (Exception e) {
-      log.error("could not async-save on redis", e);
+      log.error("Could not async-save key {} or key {} on redis", key, keyId, e);
     }
   }
 
-  public void pushToRedisSync(String key, String keyId, byte[] object, byte[] keyobject) {
+  public void pushToRedisSync(String key, String keyId, byte[] object, byte[] keyObject) {
     try {
-      log.info("sync saving {} on redis", key);
+      log.debug("Sync saving key {} on redis", key);
       save(key, object, 1440);
-      save(keyId, keyobject, 1440);
-      log.info("sync saved {} on redis, id {}", key, new String(keyobject, StandardCharsets.UTF_8));
+      log.debug("Sync saving key {} on redis", keyId);
+      save(keyId, keyObject, 1440);
+      log.info("Sync saved {} on redis, id {}", key, new String(keyObject, StandardCharsets.UTF_8));
     } catch (Exception e) {
-      log.error("could not sync save on redis", e);
+      log.error("Could not sync save key {} or key {} on redis", key, keyId, e);
     }
   }
 
   @Async
   public void pushToRedisAsync(String key, byte[] object) {
     try {
-      log.info("async saving {} on redis", key);
+      log.debug("Async saving {} on redis", key);
       save(key, object, 1440);
-      log.info("async saved {} on redis", key);
+      log.info("Async saved {} on redis", key);
     } catch (Exception e) {
-      log.error("could not async-save " + key + "on redis", e);
+      log.error("Could not async-save key {} on redis", key, e);
     }
   }
 
@@ -83,7 +85,7 @@ public class RedisRepository {
     try {
       v = get(keyId);
     } catch (Exception e) {
-      log.error("could not get key " + keyId + " from redis", e);
+      log.error("Could not get key {} from redis", keyId, e);
     }
     if (v != null) {
       return new String(v,StandardCharsets.UTF_8);
@@ -97,7 +99,7 @@ public class RedisRepository {
     try {
       v = get(keyId);
     } catch (Exception e) {
-      log.error("could not get key " + keyId + " from redis", e);
+      log.error("Could not get key {} from redis", keyId, e);
     }
     if (v != null) {
       return "1".equals(new String(v,StandardCharsets.UTF_8));

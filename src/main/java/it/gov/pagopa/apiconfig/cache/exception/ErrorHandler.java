@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.lang.NonNull;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -43,12 +44,13 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
    * @return a {@link ProblemJson} as response with the cause and with a 400 as HTTP status
    */
   @Override
-  public ResponseEntity<Object> handleHttpMessageNotReadable(
-      HttpMessageNotReadableException ex,
-      HttpHeaders headers,
-      HttpStatusCode status,
-      WebRequest request) {
-    log.warn("Input not readable: ", ex);
+  @SuppressWarnings("java:S2638") // false positive: parent return is @Nullable, override is stricter
+  public @NonNull ResponseEntity<Object> handleHttpMessageNotReadable(
+      @NonNull HttpMessageNotReadableException ex,
+      @NonNull HttpHeaders headers,
+      @NonNull HttpStatusCode status,
+      @NonNull WebRequest request) {
+    log.warn("Input not readable", ex);
     var errorResponse =
         ProblemJson.builder()
             .status(HttpStatus.BAD_REQUEST.value())
@@ -68,12 +70,13 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
    * @return a {@link ProblemJson} as response with the cause and with a 400 as HTTP status
    */
   @Override
-  public ResponseEntity<Object> handleMissingServletRequestParameter(
-      MissingServletRequestParameterException ex,
-      HttpHeaders headers,
-      HttpStatusCode status,
-      WebRequest request) {
-    log.warn("Missing request parameter: ", ex);
+  @SuppressWarnings("java:S2638") // false positive: parent return is @Nullable, override is stricter
+  public @NonNull ResponseEntity<Object> handleMissingServletRequestParameter(
+      @NonNull MissingServletRequestParameterException ex,
+      @NonNull HttpHeaders headers,
+      @NonNull HttpStatusCode status,
+      @NonNull WebRequest request) {
+    log.warn("Missing request parameter", ex);
     var errorResponse =
         ProblemJson.builder()
             .status(HttpStatus.BAD_REQUEST.value())
@@ -93,9 +96,13 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
    * @return a {@code ResponseEntity} instance
    */
   @Override
-  protected ResponseEntity<Object> handleTypeMismatch(
-      TypeMismatchException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-    log.warn("Type mismatch: ", ex);
+  @SuppressWarnings("java:S2638") // false positive: parent return is @Nullable, override is stricter
+  protected @NonNull ResponseEntity<Object> handleTypeMismatch(
+      @NonNull TypeMismatchException ex,
+      @NonNull HttpHeaders headers,
+      @NonNull HttpStatusCode status,
+      @NonNull WebRequest request) {
+    log.warn("Type mismatch", ex);
     var errorResponse =
         ProblemJson.builder()
             .status(HttpStatus.BAD_REQUEST.value())
@@ -118,17 +125,18 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
    * @return a {@link ProblemJson} as response with the cause and with a 400 as HTTP status
    */
   @Override
-  protected ResponseEntity<Object> handleMethodArgumentNotValid(
-      MethodArgumentNotValidException ex,
-      HttpHeaders headers,
-      HttpStatusCode status,
-      WebRequest request) {
+  @SuppressWarnings("java:S2638") // false positive: parent return is @Nullable, override is stricter
+  protected @NonNull ResponseEntity<Object> handleMethodArgumentNotValid(
+      @NonNull MethodArgumentNotValidException ex,
+      @NonNull HttpHeaders headers,
+      @NonNull HttpStatusCode status,
+      @NonNull WebRequest request) {
     List<String> details = new ArrayList<>();
     for (FieldError error : ex.getBindingResult().getFieldErrors()) {
       details.add(error.getField() + ": " + error.getDefaultMessage());
     }
     var detailsMessage = String.join(", ", details);
-    log.warn("Input not valid: " + detailsMessage);
+    log.warn("Input not valid: {}", detailsMessage, ex);
     var errorResponse =
         ProblemJson.builder()
             .status(HttpStatus.BAD_REQUEST.value())
@@ -141,7 +149,7 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
   @ExceptionHandler({jakarta.validation.ConstraintViolationException.class})
   public ResponseEntity<ProblemJson> handleConstraintViolationException(
       final jakarta.validation.ConstraintViolationException ex, final WebRequest request) {
-    log.warn("Validation Error raised:", ex);
+    log.warn("Validation Error raised", ex);
     var errorResponse =
         ProblemJson.builder()
             .status(HttpStatus.BAD_REQUEST.value())
@@ -214,8 +222,8 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
       final AppException ex, final WebRequest request) {
     if (ex.getCause() != null) {
       log.warn(
-          "App Exception raised: " + ex.getMessage() + "\nCause of the App Exception: ",
-          ex.getCause());
+          "App Exception raised: {} \nCause of the App Exception",
+          ex.getMessage(), ex.getCause());
     } else {
       log.warn("App Exception raised: {}", ex.getMessage());
       log.debug("Trace error: ", ex);

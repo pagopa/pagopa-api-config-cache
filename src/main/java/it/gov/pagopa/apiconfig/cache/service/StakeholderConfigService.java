@@ -63,24 +63,27 @@ public class StakeholderConfigService {
         this.cacheObjectMapper = cacheObjectMapper;
     }
 
-    protected ConfigData loadCache(Stakeholder stakeholder, String schemaVersion) throws IOException {
+    protected ConfigData loadStakeholderCacheFromRedis(Stakeholder stakeholder, String schemaVersion) throws IOException {
         String stakeholderWithSchema = getStakeholderWithSchema(stakeholder, schemaVersion);
-        log.info("Loading on Redis {} cache", stakeholderWithSchema);
+        log.debug("Retrieve {} cache version and {} cache version from Redis", stakeholderWithSchema, Constants.FULL);
         // verify if the id of full cache and stakeholder cache are the same
         byte[] stakeholderCacheId = redisRepository.get(cacheKeyUtils.getCacheIdKey(stakeholderWithSchema));
         byte[] fullCacheId = redisRepository.get(cacheKeyUtils.getCacheIdKey(Constants.FULL));
         if (stakeholderCacheId != null && Arrays.equals(stakeholderCacheId, fullCacheId)) {
+            log.debug("Stakeholder {} cache already up to date on Redis, retrieve it", stakeholder);
             // retrieve stakeholder cache
             return getCacheFromRedis(stakeholder, schemaVersion);
         }
+        log.info("Stakeholder {} cache is not up to date on Redis, retrieve full cache and update it", stakeholder);
         return null;
     }
 
     public ConfigData getCache(Stakeholder stakeholder, String schemaVersion, String[] keys) throws IOException {
         // retrieve configDataVersion from Redis
-        ConfigData configData = loadCache(stakeholder, schemaVersion);
+        ConfigData configData = loadStakeholderCacheFromRedis(stakeholder, schemaVersion);
 
         if (configData == null) {
+            log.debug("Stakeholder {} cache is stale on Redis, it will be regenerated from in memory cache", stakeholder);
             configData = generateCacheSchemaFromInMemory(stakeholder, schemaVersion, keys);
         }
 
@@ -93,7 +96,8 @@ public class StakeholderConfigService {
         boolean isLocked = saveCacheSchemaGenerationInProgress(lockedStakeholders, stakeholder.toString());
         if (isLocked) {
             try {
-                log.info("ConfigData will be generated in memory for stakeholder {}. Generation is not permitted for other stakeholders.", stakeholder);
+                log.info("Cache generation locked by stakeholder {}, refresh is not permitted for other stakeholders.", stakeholder);
+                log.debug("Stakeholder {} cache will be generated from in memory cache", stakeholder);
                 // retrieve full cache and generate configData
                 Map<String, Object> inMemoryCache = cacheConfigService.getInMemoryCacheOrRefreshIfNotExist();
 
@@ -137,16 +141,15 @@ public class StakeholderConfigService {
                 // create temporary file
                 byte[] cacheByteArray = compressJsonToGzip(configData);
 
-                log.info("saving on Redis {} {}", actualKey, actualKeyV1);
                 redisRepository.pushToRedisSync(actualKey, actualKeyV1, cacheByteArray, cacheSchemaVersion.getVersion().getBytes(StandardCharsets.UTF_8));
-
-                log.info("ConfigData generated in memory for stakeholder [{}]. Generation has been unlocked for other stakeholders.", stakeholder);
+                log.info("Stakeholder {} cache generated and saved on Redis", stakeholder);
             } finally {
                 // Removing lock on cache schema generation, permitting next schema cache generation
                 removeCacheSchemaGenerationInProgress(lockedStakeholders);
+                log.info("Cache generation unlocked for other stakeholders.");
             }
         } else {
-            log.debug("ConfigData not generated in memory for stakeholder [{}]. Generation is locked by another process.", stakeholder);
+            log.debug("Stakeholder {} cache not generated from in memory cache. Generation is locked by another process.", stakeholder);
             throw new AppException(AppError.CACHE_SCHEMA_NOT_INITIALIZED, stakeholder);
         }
         return configData;

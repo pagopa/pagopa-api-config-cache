@@ -89,7 +89,7 @@ public abstract class StakeholderController {
           Optional<Boolean> refresh)
       throws IOException {
     if (refresh.orElse(false)) {
-      log.warn("Deprecated refresh from stakeholder,change this to call /cache/refresh");
+      log.warn("Deprecated refresh from stakeholder {},change this to call /cache/refresh", stakeholder());
       cacheController.refresh();
       return ResponseEntity.ok().build();
     }

@@ -47,9 +47,9 @@ class StakeholderConfigServiceTest {
   @Autowired private StakeholderConfigService stakeholderConfigService;
 
   @Test
-  void loadCache() throws IOException {
+  void loadStakeholderCacheFromRedis() throws IOException {
     when(redisRepository.get(any())).thenReturn(null);
-    ConfigData configData = stakeholderConfigService.loadCache(Stakeholder.TEST, "v1");
+    ConfigData configData = stakeholderConfigService.loadStakeholderCacheFromRedis(Stakeholder.TEST, "v1");
     assertThat(configData).isNull();
   }
 

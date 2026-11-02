@@ -216,10 +216,13 @@ public class CacheConfigService {
   public void preloadKeysFromRedis() {
     if (Boolean.TRUE.equals(preload)) {
       try {
+        log.debug("Preloading in memory cache from Redis");
         inMemoryCache = loadFullCache();
+        log.info("Successfully loaded in memory cache from Redis");
       } catch (Exception e){
-        log.warn("Could not load single keys cache from redis: {}", e.getMessage(), e);
+        log.warn("Could not load cache from redis: {}. Try to regenerate full cache", e.getMessage(), e);
         try {
+          log.debug("Loading in memory cache from DB");
           doCache();
           log.info("Cache generated, saved to Redis and sent refresh event on startup");
         } catch (Exception ex) {
@@ -251,6 +254,7 @@ public class CacheConfigService {
    */
   public Map<String, Object> getInMemoryCacheOrRefreshIfNotExist() {
     if (inMemoryCache == null) {
+      log.debug("In memory cache not initialized, starting initialization");
       doCache();
     }
     return inMemoryCache;
@@ -269,7 +273,7 @@ public class CacheConfigService {
   }
 
   protected Map<String, Object> loadFullCache() throws IOException {
-    log.info("Loading full cache");
+    log.debug("Loading full cache");
 
     byte[] bytes = redisRepository.get(cacheKeyUtils.getCacheKey(Constants.FULL));
     if (bytes == null) {
@@ -314,6 +318,7 @@ public class CacheConfigService {
   }
 
   public Map<String, Object> newCache() {
+    log.debug("Starting [{}] cache generation process", Constants.FULL);
     setCacheInProgress();
 
     HashMap<String, Object> configData = new HashMap<>();
@@ -501,13 +506,13 @@ public class CacheConfigService {
       cacheByteArray = baos.toByteArray();
 
       long duration = (endTime - startTime) / 1000000;
-      log.info("{} cache loaded in {} ms", Constants.FULL, duration);
+      log.info("Cache [{}] loaded in memory in {} ms", Constants.FULL, duration);
 
       String actualKey = cacheKeyUtils.getCacheKey(Constants.FULL);
       String actualKeyV1 = cacheKeyUtils.getCacheIdKey(Constants.FULL);
 
-      log.info("Saving on Redis {} {} {}", actualKey, actualKeyV1, id);
       redisRepository.pushToRedisAsync(actualKey, actualKeyV1, cacheByteArray, id.getBytes(StandardCharsets.UTF_8));
+      log.info("Cache [{}] saved on Redis", Constants.FULL);
     } catch (Exception e) {
       log.error("[ALERT] problem to generate cache", e);
       throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
@@ -520,8 +525,11 @@ public class CacheConfigService {
   public void sendEvent(String id, ZonedDateTime now) {
     if (Boolean.TRUE.equals(sendEvent)) {
         try {
+          log.debug("Notify cache refresh to all consumers");
             eventHubService.publishEvent(id,now,getVersion());
+            log.info("Cache refresh event sent to all consumers");
         } catch (JsonProcessingException e) {
+          log.error("Error sending cache refresh event: {}", e.getMessage());
             throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
         }
     }
@@ -841,11 +849,7 @@ public class CacheConfigService {
 //              templates.add(new PspInformation(psp.getIdPsp(), toXml(tplInformativaPSP)));
 //            }
           } catch (Exception e) {
-            log.error(
-                "errore creazione template informativa psp:"
-                    + psp.getIdPsp()
-                    + " error:"
-                    + e.getMessage());
+            log.error("Error creating template informativa psp: {}", psp.getIdPsp(), e);
           }
         });
 
@@ -1031,7 +1035,7 @@ public class CacheConfigService {
 			  informativaPaFull.getInformativaControparte()
 			  .addAll(ctListaInformativeControparte.getInformativaControparte());
 		  }
-		  log.debug("Processed pa:" + pa.getIdDominio());
+		  log.debug("Processed pa: {}", pa.getIdDominio());
 	  });
 
 	  log.debug("creating cache info full");
@@ -1068,7 +1072,7 @@ public class CacheConfigService {
                   })
               .toList();
     } catch (Exception e) {
-      log.error("error fasce detail {}", det.getId(), e);
+      log.error("Error fasce detail {}", det.getId(), e);
     }
     CtErogazione ctErogazione = new CtErogazione();
     ctErogazione.setGiorno(det.getGiorno());
