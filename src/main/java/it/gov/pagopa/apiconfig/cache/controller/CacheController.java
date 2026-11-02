@@ -362,7 +362,8 @@ public class CacheController {
     try {
       convert = new JsonToXls(xlsMaskPasswords).convert(inMemoryCache);
     } catch (Exception e) {
-      log.error("Error creating xlsx", e);
+      log.error("Error creating xlsx");
+      throw e;
     }
     String fileName =
         String.format("%s.xlsx", inMemoryCache.getOrDefault(Constants.CACHE_VERSION, "cache"));
