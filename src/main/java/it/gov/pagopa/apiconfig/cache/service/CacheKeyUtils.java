@@ -1,43 +1,42 @@
 package it.gov.pagopa.apiconfig.cache.service;
 
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CacheKeyUtils {
 
-    @Value("#{'${canary}'=='true' ? '_canary' : ''}")
-    private String KEY_SUFFIX;
+  private static final String CANARY_SUFFIX = "_canary";
 
-    @Value("apicfg_${spring.database.id}_{{stakeholder}}_in_progress")
-    private String CACHE_KEY_IN_PROGRESS;
+  /** Prefix built once from config, e.g. {@code apicfg_<databaseId>}. */
+  private final String keyPrefix;
 
+  /** Suffix appended to every key when the instance runs as canary. */
+  private final String keySuffix;
 
-    @Value("apicfg_${spring.database.id}_{{stakeholder}}")
-    private String CACHE_KEY;
+  public CacheKeyUtils(
+      @Value("${spring.database.id}") String databaseId, @Value("${canary:false}") boolean canary) {
+    this.keyPrefix = "apicfg_" + databaseId + "_";
+    this.keySuffix = canary ? CANARY_SUFFIX : "";
+  }
 
-    @Value("apicfg_${spring.database.id}_{{stakeholder}}_id")
-    private String CACHE_ID_KEY;
+  public String getCacheKeyInProgress(String stakeholder) {
+    return buildKey(stakeholder, "_in_progress");
+  }
 
-    private final String STAKEHOLDER_PLACEHOLDER = "{{stakeholder}}";
+  public String getCacheKey(String stakeholder) {
+    return buildKey(stakeholder, "");
+  }
 
-    @Value("apicfg_${spring.database.id}_{{stakeholder}}_schema_caching_in_progress")
-    private String CACHE_GENERATION_LOCK_KEY;
+  public String getCacheIdKey(String stakeholder) {
+    return buildKey(stakeholder, "_id");
+  }
 
-    public String getCacheKeyInProgress(String stakeholder) {
-        return CACHE_KEY_IN_PROGRESS.replace(STAKEHOLDER_PLACEHOLDER, stakeholder) + KEY_SUFFIX;
-    }
+  public String getCacheGenerationLockKey(String stakeholder) {
+    return buildKey(stakeholder, "_schema_caching_in_progress");
+  }
 
-    public String getCacheKey(String stakeholder) {
-        return CACHE_KEY.replace(STAKEHOLDER_PLACEHOLDER, stakeholder) + KEY_SUFFIX;
-    }
-
-    public String getCacheIdKey(String stakeholder) {
-        return CACHE_ID_KEY.replace(STAKEHOLDER_PLACEHOLDER, stakeholder) + KEY_SUFFIX;
-    }
-
-    public String getCacheGenerationLockKey(String stakeholder) {
-        return CACHE_GENERATION_LOCK_KEY.replace(STAKEHOLDER_PLACEHOLDER, stakeholder) + KEY_SUFFIX;
-    }
+  private String buildKey(String stakeholder, String subKey) {
+    return keyPrefix + stakeholder + subKey + keySuffix;
+  }
 }

@@ -121,7 +121,7 @@ jobs:
     steps:
       - name: Make Release
         id: release
-        uses: pagopa/github-actions-template/maven-release@4a4c25ce28feeec9e619b3132b5327f52023d441 # v1.14.2
+        uses: pagopa/github-actions-template/maven-release@1aa27ebf80b99501a9019d63ef27f3057d2a4b1d # 2.8.0
         with:
           semver: ${{ needs.setup.outputs.semver }}
           github_token: ${{ secrets.CD_BOT_TOKEN_GITHUB }}
@@ -129,6 +129,8 @@ jobs:
           skip_ci: true
           prerelease: ${{  github.ref_name != 'main' }}
           only_tag: false
+          jdk_version: 21
+          maven_version: 3.9.9
 
   image:
     needs: [ setup, release ]

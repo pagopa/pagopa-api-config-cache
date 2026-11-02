@@ -14,17 +14,11 @@ import java.time.Duration;
 @Slf4j
 public class RedisRepository {
 
-//  @Autowired
-//  @Qualifier("configData")
-//  private RedisTemplate<String, Map<String, Object>> redisTemplate;
+  private final RedisTemplate<String, byte[]> redisTemplateObj;
 
-  @Autowired
-  @Qualifier("object")
-  private RedisTemplate<String, byte[]> redisTemplateObj;
-
-//  public void save(String key, Map<String, Object> value, long ttl) {
-//    redisTemplate.opsForValue().set(key, value, Duration.ofMinutes(ttl));
-//  }
+  public RedisRepository(RedisTemplate<String, byte[]> redisObjectTemplate) {
+    this.redisTemplateObj = redisObjectTemplate;
+  }
 
   public void save(String key, byte[] value, long ttl) {
     redisTemplateObj.opsForValue().set(key, value, Duration.ofMinutes(ttl));
@@ -42,10 +36,6 @@ public class RedisRepository {
       return redisTemplateObj.opsForValue().setIfAbsent(key, value, Duration.ofMinutes(ttl));
   }
 
-//  public Map<String, Object> getCache(String key) {
-//    return redisTemplate.opsForValue().get(key);
-//  }
-
   public byte[] get(String key) {
     return redisTemplateObj.opsForValue().get(key);
   }
@@ -53,18 +43,6 @@ public class RedisRepository {
   public void remove(String key) {
     redisTemplateObj.delete(key);
   }
-
-//  @Async
-//  public void pushToRedisAsync(String key, String keyId, Map<String,byte[]> map, byte[] keyobject) {
-//    try {
-//      log.info("saving {} on redis", key);
-//      save(key, map, 1440);
-//      save(keyId, keyobject, 1440);
-//      log.info("saved {} on redis,id {}", key, keyobject);
-//    } catch (Exception e) {
-//      log.error("could not save on redis", e);
-//    }
-//  }
 
   @Async
   public void pushToRedisAsync(String key, String keyId, byte[] object, byte[] keyobject) {

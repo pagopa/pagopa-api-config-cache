@@ -15,14 +15,20 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableAsync
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
-  @Value("${cors.configuration}")
-  private String corsConfiguration;
+  private final String corsConfiguration;
+  private final ObjectMapper objectMapper;
+
+  public WebMvcConfiguration(
+      @Value("${cors.configuration}") String corsConfiguration, ObjectMapper objectMapper) {
+    this.corsConfiguration = corsConfiguration;
+    this.objectMapper = objectMapper;
+  }
 
   @SneakyThrows
   @Override
   public void addCorsMappings(CorsRegistry registry) {
     AppCorsConfiguration appCorsConfiguration =
-        new ObjectMapper().readValue(corsConfiguration, AppCorsConfiguration.class);
+        objectMapper.readValue(corsConfiguration, AppCorsConfiguration.class);
     registry
         .addMapping("/**")
         .allowedOrigins(appCorsConfiguration.getOrigins())
