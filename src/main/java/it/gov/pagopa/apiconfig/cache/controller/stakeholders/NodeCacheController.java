@@ -2,6 +2,7 @@ package it.gov.pagopa.apiconfig.cache.controller.stakeholders;
 
 import it.gov.pagopa.apiconfig.cache.controller.CacheController;
 import it.gov.pagopa.apiconfig.cache.controller.StakeholderController;
+import it.gov.pagopa.apiconfig.cache.controller.StakeholderTag;
 import it.gov.pagopa.apiconfig.cache.model.Stakeholder;
 import it.gov.pagopa.apiconfig.cache.service.StakeholderConfigService;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
@@ -10,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@StakeholderTag(Stakeholder.NODE)
 @RestController
 @RequestMapping("/stakeholders/node/cache/schemas")
 @Validated
