@@ -91,6 +91,7 @@ public abstract class StakeholderController {
     if (refresh.orElse(false)) {
       log.warn("Deprecated refresh from stakeholder,change this to call /cache/refresh");
       cacheController.refresh();
+      return ResponseEntity.ok().build();
     }
     ConfigData config = stakeholderConfigService.getCache(stakeholder(), "v1", keys());
 
