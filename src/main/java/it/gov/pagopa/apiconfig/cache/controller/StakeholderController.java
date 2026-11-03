@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import it.gov.pagopa.apiconfig.cache.model.ConfigData;
 import it.gov.pagopa.apiconfig.cache.model.ProblemJson;
+import it.gov.pagopa.apiconfig.cache.model.RefreshResponse;
 import it.gov.pagopa.apiconfig.cache.model.Stakeholder;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
@@ -89,9 +90,12 @@ public abstract class StakeholderController {
           Optional<Boolean> refresh)
       throws IOException {
     if (refresh.orElse(false)) {
-      log.warn("Deprecated refresh from stakeholder {},change this to call /cache/refresh", stakeholder());
-      cacheController.refresh();
-      return ResponseEntity.ok().build();
+      log.warn(
+          "Deprecated refresh from stakeholder {},change this to call /cache/refresh",
+          stakeholder());
+      ResponseEntity<RefreshResponse> refreshResponse = cacheController.refresh();
+
+      return ResponseEntity.ok().headers(refreshResponse.getHeaders()).body(new ConfigDataV1());
     }
     ConfigData config = stakeholderConfigService.getCache(stakeholder(), "v1", keys());
 
