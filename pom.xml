@@ -244,22 +244,6 @@
               </xsdOptions>
             </configuration>
           </execution>
-          <execution>
-            <id>xjc3</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>xsdtojava</goal>
-            </goals>
-            <configuration>
-              <sourceRoot>${basedir}/target/generated-sources/src/main/java</sourceRoot>
-              <xsdOptions>
-                <xsdOption>
-                  <xsd>${basedir}/src/main/resources/xsd/sanp3.13.0/TemplateInformativa_1_0_11.xsd</xsd>
-                  <packagename>it.gov.pagopa.apiconfig.cache.imported.template</packagename>
-                </xsdOption>
-              </xsdOptions>
-            </configuration>
-          </execution>
         </executions>
       </plugin>
       <plugin>

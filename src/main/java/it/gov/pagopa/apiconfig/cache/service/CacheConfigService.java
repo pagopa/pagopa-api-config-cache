@@ -13,17 +13,6 @@ import it.gov.pagopa.apiconfig.cache.imported.controparti.CtFasciaOraria;
 import it.gov.pagopa.apiconfig.cache.imported.controparti.CtInformativaControparte;
 import it.gov.pagopa.apiconfig.cache.imported.controparti.CtListaInformativeControparte;
 import it.gov.pagopa.apiconfig.cache.imported.controparti.StTipoPeriodo;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplCostiServizio;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplFasciaCostoServizio;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplIdentificazioneServizio;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplInformativaDetail;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplInformativaMaster;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplInformativaPSP;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplInformazioniServizio;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplListaFasceCostoServizio;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplListaInformativaDetail;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplListaInformazioniServizio;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplListaParoleChiave;
 import it.gov.pagopa.apiconfig.cache.model.FullData;
 import it.gov.pagopa.apiconfig.cache.model.latest.cds.CdsCategory;
 import it.gov.pagopa.apiconfig.cache.model.latest.cds.CdsService;
@@ -41,19 +30,17 @@ import it.gov.pagopa.apiconfig.cache.model.latest.psp.BrokerPsp;
 import it.gov.pagopa.apiconfig.cache.model.latest.psp.Channel;
 import it.gov.pagopa.apiconfig.cache.model.latest.psp.PaymentServiceProvider;
 import it.gov.pagopa.apiconfig.cache.model.latest.psp.PspChannelPaymentType;
-import it.gov.pagopa.apiconfig.cache.model.latest.psp.PspInformation;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.cache.util.DateTimeUtils;
 import it.gov.pagopa.apiconfig.cache.util.ZipUtils;
-import it.gov.pagopa.apiconfig.starter.entity.CdiMasterValid;
 import it.gov.pagopa.apiconfig.starter.entity.IbanValidiPerPa;
 import it.gov.pagopa.apiconfig.starter.entity.InformativePaDetail;
 import it.gov.pagopa.apiconfig.starter.entity.InformativePaFasce;
 import it.gov.pagopa.apiconfig.starter.entity.InformativePaMaster;
 import it.gov.pagopa.apiconfig.starter.entity.Pa;
-import it.gov.pagopa.apiconfig.starter.entity.Psp;
 import it.gov.pagopa.apiconfig.starter.repository.*;
+import jakarta.xml.bind.JAXBElement;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,19 +52,13 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import java.util.zip.GZIPOutputStream;
-
-import jakarta.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
@@ -96,10 +77,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class CacheConfigService {
-
-  private static final String DA_COMPILARE_FLUSSO =
-          "DA COMPILARE (formato: [IDPSP]_dd-mm-yyyy - esempio: ESEMPIO_31-12-2001)";
-  private static final String DA_COMPILARE = "DA COMPILARE";
 
   private Map<String, Object> inMemoryCache;
 
@@ -131,7 +108,6 @@ public class CacheConfigService {
   private final CanaliViewRepository canaliViewRepository;
   private final PspCanaleTipoVersamentoCanaleRepository pspCanaleTipoVersamentoCanaleRepository;
   private final PspRepository pspRepository;
-  private final CdiMasterValidRepository cdiMasterValidRepository;
   private final InformativePaMasterRepository informativePaMasterRepository;
   private final InformativePaFasceRepository informativePaFasceRepository;
   private final CacheEventHubService eventHubService;
@@ -146,7 +122,6 @@ public class CacheConfigService {
           CacheEventHubService eventHubService,
           InformativePaFasceRepository informativePaFasceRepository,
           InformativePaMasterRepository informativePaMasterRepository,
-          CdiMasterValidRepository cdiMasterValidRepository,
           PspRepository pspRepository,
           PspCanaleTipoVersamentoCanaleRepository pspCanaleTipoVersamentoCanaleRepository,
           CanaliViewRepository canaliViewRepository,
@@ -182,7 +157,6 @@ public class CacheConfigService {
     this.eventHubService = eventHubService;
     this.informativePaFasceRepository = informativePaFasceRepository;
     this.informativePaMasterRepository = informativePaMasterRepository;
-    this.cdiMasterValidRepository = cdiMasterValidRepository;
     this.pspRepository = pspRepository;
     this.pspCanaleTipoVersamentoCanaleRepository = pspCanaleTipoVersamentoCanaleRepository;
     this.canaliViewRepository = canaliViewRepository;
@@ -472,14 +446,13 @@ public class CacheConfigService {
       configData.put(Constants.IBANS,ibansMap);
       appendMapToJson(jsonGenerator,Constants.IBANS,ibansMap);
 
-      configData.put(Constants.PSP_INFORMATIONS,new HashMap<>());
-      appendMapToJson(jsonGenerator,Constants.PSP_INFORMATIONS,new HashMap<>());
+      HashMap<Object, Object> objectHashMap = new HashMap<>();
+      HashMap<String, Object> stringObjectHashMap = new HashMap<>();
+      configData.put(Constants.PSP_INFORMATIONS, objectHashMap);
+      appendMapToJson(jsonGenerator,Constants.PSP_INFORMATIONS, stringObjectHashMap);
 
-      List<PspInformation> infopspTemplates = getInformativeTemplates();
-      HashMap<String, Object> infopspTemplatesMap = new HashMap<>();
-      infopspTemplates.forEach(k -> infopspTemplatesMap.put(k.getPsp(), k));
-      configData.put(Constants.PSP_INFORMATION_TEMPLATES,infopspTemplatesMap);
-      appendMapToJson(jsonGenerator,Constants.PSP_INFORMATION_TEMPLATES,infopspTemplatesMap);
+      configData.put(Constants.PSP_INFORMATION_TEMPLATES, objectHashMap);
+      appendMapToJson(jsonGenerator,Constants.PSP_INFORMATION_TEMPLATES, stringObjectHashMap);
 
       List<CreditorInstitutionInformation> infopas = getInformativePa();
       HashMap<String, Object> infopasMap = new HashMap<>();
@@ -742,19 +715,6 @@ public class CacheConfigService {
         .map(codificheRepository.findAll(), new TypeToken<List<Encoding>>() {}.getType());
   }
 
-  private String toXml(TplInformativaPSP element) {
-    try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-      JAXBElement<TplInformativaPSP> informativaPSP =
-          new it.gov.pagopa.apiconfig.cache.imported.template.ObjectFactory()
-              .createInformativaPSP(element);
-      jaxb2Marshaller.marshal(informativaPSP, new StreamResult(baos));
-      return Constants.ENCODER.encodeToString(baos.toByteArray());
-    } catch (Exception e) {
-      log.error("error creating TplInformativaPSP", e);
-      return e.toString();
-    }
-  }
-
   private String toXml(CtListaInformativeControparte element) {
     try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
       JAXBElement<CtListaInformativeControparte> informativaPA =
@@ -766,157 +726,6 @@ public class CacheConfigService {
       log.error("error creating CtListaInformativeControparte", e);
       return e.toString();
     }
-  }
-
-  public List<PspInformation> getInformativeTemplates() {
-    List<CdiMasterValid> masters =
-        StreamSupport.stream(cdiMasterValidRepository.findAll().spliterator(), false)
-            .toList();
-    return getTemplateInformativePsp(masters);
-  }
-
-  public List<PspInformation> getTemplateInformativePsp(List<CdiMasterValid> allMasters) {
-    log.info("loading TemplateInformativePsp");
-    List<Psp> psps = pspRepository.findAll();
-    List<PspInformation> templates = new ArrayList<>();
-
-    psps.forEach(
-        psp -> {
-          try {
-            Optional<CdiMasterValid> masters =
-                allMasters
-                    .stream()
-                    .filter(m -> m.getFkPsp().getObjId().equals(psp.getObjId()))
-                    .findFirst();
-            TplInformativaPSP tplInformativaPSP = new TplInformativaPSP();
-            tplInformativaPSP.setRagioneSociale(DA_COMPILARE);
-            tplInformativaPSP.setIdentificativoPSP(DA_COMPILARE);
-            tplInformativaPSP.setCodiceABI(
-                Objects.isNull(psp.getAbi()) ? DA_COMPILARE : psp.getAbi());
-            tplInformativaPSP.setCodiceBIC(
-                Objects.isNull(psp.getBic()) ? DA_COMPILARE : psp.getBic());
-            tplInformativaPSP.setIdentificativoFlusso(DA_COMPILARE_FLUSSO);
-            tplInformativaPSP.setMybankIDVS(
-                Objects.isNull(psp.getCodiceMybank()) ? DA_COMPILARE : psp.getCodiceMybank());
-
-            TplInformativaMaster tplInformativaMaster = new TplInformativaMaster();
-            tplInformativaMaster.setLogoPSP(DA_COMPILARE);
-            tplInformativaMaster.setDataInizioValidita(DA_COMPILARE);
-            tplInformativaMaster.setDataPubblicazione(DA_COMPILARE);
-            tplInformativaMaster.setUrlConvenzioniPSP(DA_COMPILARE);
-            tplInformativaMaster.setUrlInformativaPSP(DA_COMPILARE);
-            tplInformativaMaster.setUrlInformazioniPSP(DA_COMPILARE);
-            tplInformativaMaster.setMarcaBolloDigitale(0);
-            tplInformativaMaster.setStornoPagamento(0);
-            tplInformativaPSP.setInformativaMaster(tplInformativaMaster);
-
-//            if (masters.isEmpty()) {
-              TplListaInformativaDetail tplListaInformativaDetail = new TplListaInformativaDetail();
-              tplListaInformativaDetail
-                  .getInformativaDetail()
-                  .add(makeTplInformativaDetail(null, null, null, null));
-              tplInformativaPSP.setListaInformativaDetail(tplListaInformativaDetail);
-              templates.add(new PspInformation(psp.getIdPsp(), toXml(tplInformativaPSP)));
-              // TODO Remember to uncomment this, do we need it?
-//            } else {
-//              tplInformativaPSP.setRagioneSociale(psp.getRagioneSociale());
-//              tplInformativaPSP.setIdentificativoPSP(psp.getIdPsp());
-//              TplListaInformativaDetail tplListaInformativaDetail = new TplListaInformativaDetail();
-//              masters
-//                  .get()
-//                  .getCdiDetail()
-//                  .forEach(
-//                      d ->
-//                          tplListaInformativaDetail
-//                              .getInformativaDetail()
-//                              .add(
-//                                  makeTplInformativaDetail(
-//                                      d.getPspCanaleTipoVersamento()
-//                                          .getCanaleTipoVersamento()
-//                                          .getCanale()
-//                                          .getIdCanale(),
-//                                      d.getPspCanaleTipoVersamento()
-//                                          .getCanaleTipoVersamento()
-//                                          .getCanale()
-//                                          .getFkIntermediarioPsp()
-//                                          .getIdIntermediarioPsp(),
-//                                      d.getPspCanaleTipoVersamento()
-//                                          .getCanaleTipoVersamento()
-//                                          .getTipoVersamento()
-//                                          .getTipoVersamento(),
-//                                      d.getModelloPagamento())));
-//              tplInformativaPSP.setListaInformativaDetail(tplListaInformativaDetail);
-//              templates.add(new PspInformation(psp.getIdPsp(), toXml(tplInformativaPSP)));
-//            }
-          } catch (Exception e) {
-            log.error("Error creating template informativa psp: {}", psp.getIdPsp(), e);
-          }
-        });
-
-    return templates;
-  }
-
-  private TplInformativaDetail makeTplInformativaDetail(
-      String idCanale, String idInter, String tv, Long modello) {
-    TplInformativaDetail tplInformativaDetail = new TplInformativaDetail();
-    tplInformativaDetail.setCanaleApp(DA_COMPILARE);
-    tplInformativaDetail.setIdentificativoCanale(Objects.isNull(idCanale) ? DA_COMPILARE : idCanale);
-    tplInformativaDetail.setPriorita(DA_COMPILARE);
-    tplInformativaDetail.setTipoVersamento(
-        Objects.isNull(tv)
-            ? it.gov.pagopa.apiconfig.cache.imported.template.StTipoVersamento.BBT
-            : it.gov.pagopa.apiconfig.cache.imported.template.StTipoVersamento.fromValue(tv));
-    tplInformativaDetail.setModelloPagamento(Objects.isNull(modello) ? 0 : modello.intValue());
-    tplInformativaDetail.setIdentificativoIntermediario(
-        Objects.isNull(idInter) ? DA_COMPILARE : idInter);
-    tplInformativaDetail.setServizioAlleImprese(null);
-
-    TplIdentificazioneServizio tplIdentificazioneServizio = new TplIdentificazioneServizio();
-    tplIdentificazioneServizio.setLogoServizio(DA_COMPILARE);
-    tplIdentificazioneServizio.setNomeServizio(DA_COMPILARE);
-    tplInformativaDetail.setIdentificazioneServizio(tplIdentificazioneServizio);
-
-    TplCostiServizio tplCostiServizio = new TplCostiServizio();
-    tplCostiServizio.setTipoCommissione("0");
-    tplCostiServizio.setTipoCostoTransazione("0");
-    TplFasciaCostoServizio tplFasciaCostoServizio = new TplFasciaCostoServizio();
-    tplFasciaCostoServizio.setCostoFisso(DA_COMPILARE);
-    tplFasciaCostoServizio.setImportoMassimoFascia(DA_COMPILARE);
-    tplFasciaCostoServizio.setCostoFisso(DA_COMPILARE);
-    List<TplFasciaCostoServizio> tplFasciaCostoServizios =
-        Arrays.asList(tplFasciaCostoServizio, tplFasciaCostoServizio, tplFasciaCostoServizio);
-    TplListaFasceCostoServizio fasce = new TplListaFasceCostoServizio();
-    fasce.getFasciaCostoServizio().addAll(tplFasciaCostoServizios);
-    tplCostiServizio.setListaFasceCostoServizio(fasce);
-    tplInformativaDetail.setCostiServizio(tplCostiServizio);
-
-    TplListaParoleChiave ks = new TplListaParoleChiave();
-    ks.getParoleChiave().add(DA_COMPILARE);
-    ks.getParoleChiave().add(DA_COMPILARE);
-    ks.getParoleChiave().add(DA_COMPILARE);
-    tplInformativaDetail.setListaParoleChiave(ks);
-
-    TplListaInformazioniServizio info = new TplListaInformazioniServizio();
-
-    Arrays.asList(
-            it.gov.pagopa.apiconfig.cache.imported.template.StCodiceLingua.IT,
-            it.gov.pagopa.apiconfig.cache.imported.template.StCodiceLingua.EN,
-            it.gov.pagopa.apiconfig.cache.imported.template.StCodiceLingua.DE,
-            it.gov.pagopa.apiconfig.cache.imported.template.StCodiceLingua.FR,
-            it.gov.pagopa.apiconfig.cache.imported.template.StCodiceLingua.SL)
-        .forEach(
-            l -> {
-              TplInformazioniServizio infoser = new TplInformazioniServizio();
-              infoser.setCodiceLingua(
-                  it.gov.pagopa.apiconfig.cache.imported.template.StCodiceLingua.IT);
-              infoser.setDescrizioneServizio(DA_COMPILARE);
-              infoser.setDescrizioneServizio(DA_COMPILARE);
-              infoser.setUrlInformazioniCanale(DA_COMPILARE);
-              infoser.setLimitazioniServizio(DA_COMPILARE);
-              info.getInformazioniServizio().add(infoser);
-            });
-    tplInformativaDetail.setListaInformazioniServizio(info);
-    return tplInformativaDetail;
   }
 
   private List<CtContoAccredito> manageContiAccredito(List<IbanValidiPerPa> ibans) {
