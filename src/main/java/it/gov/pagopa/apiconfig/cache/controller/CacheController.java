@@ -303,16 +303,6 @@ public class CacheController {
     }
   }
 
-  private static HttpHeaders buildHttpHeaders(
-      String cacheId, String cacheVersion, ZonedDateTime timestamp) {
-    HttpHeaders responseHeaders = new HttpHeaders();
-    responseHeaders.set(Constants.HEADER_X_CACHE_ID, cacheId);
-    responseHeaders.set(Constants.HEADER_X_CACHE_VERSION, cacheVersion);
-    responseHeaders.set(
-        Constants.HEADER_X_CACHE_TIMESTAMP, DateTimeFormatter.ISO_DATE_TIME.format(timestamp));
-    return responseHeaders;
-  }
-
   @Operation(
       summary = "Get xlsx of latest full cache",
       security = {@SecurityRequirement(name = "ApiKey")},
@@ -371,5 +361,15 @@ public class CacheController {
         .header(
             HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=\"%s\"", fileName))
         .body(convert);
+  }
+
+  private HttpHeaders buildHttpHeaders(
+      String cacheId, String cacheVersion, ZonedDateTime timestamp) {
+    HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.set(Constants.HEADER_X_CACHE_ID, cacheId);
+    responseHeaders.set(Constants.HEADER_X_CACHE_VERSION, cacheVersion);
+    responseHeaders.set(
+        Constants.HEADER_X_CACHE_TIMESTAMP, DateTimeFormatter.ISO_DATE_TIME.format(timestamp));
+    return responseHeaders;
   }
 }
