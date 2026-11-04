@@ -6,7 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,7 +29,14 @@ import it.gov.pagopa.apiconfig.starter.repository.*;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -133,7 +143,6 @@ class StakeholderConfigServiceTest {
     doReturn(TestUtils.inMemoryCache(configMapper, version, cacheVersion, romeDateTime))
         .when(cacheConfigService)
         .getInMemoryCacheOrRefreshIfNotExist();
-    when(redisRepository.saveIfAbsent(anyString(), any(), anyLong())).thenReturn(true);
 
     ConfigData configData = sut.getCache(Stakeholder.TEST, "v1", KEYS);
 
@@ -151,13 +160,48 @@ class StakeholderConfigServiceTest {
     doReturn(TestUtils.inMemoryCache(configMapper, version, cacheVersion, romeDateTime))
         .when(cacheConfigService)
         .getInMemoryCacheOrRefreshIfNotExist();
-    when(redisRepository.saveIfAbsent(anyString(), any(), anyLong())).thenReturn(true);
 
     ConfigData configData = sut.getCache(Stakeholder.STANDIN, "v1", KEYS);
 
     assertThat(configData).isNotNull();
   }
 
+  @Test
+  void getCache_concurrentRequests_generateOnlyOnce() throws Exception {
+    String cacheVersion = Constants.GZIP_JSON + "-test";
+    ZonedDateTime romeDateTime = DateTimeUtils.getZonedDateTime(ZonedDateTime.now());
+    HashMap<String, Object> cache =
+        TestUtils.inMemoryCache(configMapper, CACHE_VERSION, cacheVersion, romeDateTime);
+    String stakeholderWithSchema = sut.getStakeholderWithSchema(Stakeholder.TEST, "v1");
+    byte[] id = CACHE_VERSION.getBytes(StandardCharsets.UTF_8);
+    AtomicBoolean generated = new AtomicBoolean(false);
+
+    when(redisRepository.get(cacheKeyUtils.getCacheIdKey(Constants.FULL))).thenReturn(id);
+    when(redisRepository.get(cacheKeyUtils.getCacheIdKey(stakeholderWithSchema)))
+        .thenAnswer(i -> generated.get() ? id : null);
+    when(redisRepository.get(cacheKeyUtils.getCacheKey(stakeholderWithSchema)))
+        .thenReturn(ZipUtils.gzip(out -> objectMapper.writeValue(out, cache)));
+    doReturn(cache).when(cacheConfigService).getInMemoryCacheOrRefreshIfNotExist();
+    doAnswer(i -> {
+          Thread.sleep(300);
+          generated.set(true);
+          return null;
+        })
+        .when(redisRepository)
+        .pushToRedisSync(anyString(), anyString(), any(), any());
+
+    ExecutorService executor = Executors.newFixedThreadPool(5);
+    List<Future<ConfigData>> results = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      results.add(executor.submit(() -> sut.getCache(Stakeholder.TEST, "v1", KEYS)));
+    }
+    for (Future<ConfigData> result : results) {
+      assertNotNull(result.get(10, TimeUnit.SECONDS));
+    }
+    executor.shutdown();
+
+    verify(redisRepository, times(1)).pushToRedisSync(anyString(), anyString(), any(), any());
+  }
   @Test
   void getVersionId() throws IOException {
     String version = "111";
@@ -179,7 +223,6 @@ class StakeholderConfigServiceTest {
         .when(cacheConfigService)
         .getInMemoryCacheOrRefreshIfNotExist();
     when(redisRepository.get(any())).thenReturn(null);
-    when(redisRepository.saveIfAbsent(anyString(), any(), anyLong())).thenReturn(true);
 
     CacheVersion generatedCache =
         sut.getVersionId(Stakeholder.TEST, "v1", KEYS);

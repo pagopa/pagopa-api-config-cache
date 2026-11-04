@@ -59,6 +59,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
+import java.util.concurrent.locks.ReentrantLock;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
@@ -78,7 +79,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CacheConfigService {
 
-  private Map<String, Object> inMemoryCache;
+  private volatile Map<String, Object> inMemoryCache;
+  /** Global lock: only one full cache generation at a time. */
+  private final ReentrantLock cacheRefreshLock = new ReentrantLock();
 
   private final Boolean preload;
   private final String appVersion;
@@ -228,8 +231,16 @@ public class CacheConfigService {
    */
   public Map<String, Object> getInMemoryCacheOrRefreshIfNotExist() {
     if (inMemoryCache == null) {
-      log.debug("In memory cache not initialized, starting initialization");
-      doCache();
+      cacheRefreshLock.lock();
+      try {
+        // re-check: another thread may have initialized the cache while this one was waiting
+        if (inMemoryCache == null) {
+          log.debug("In memory cache not initialized, starting initialization");
+          refreshInMemoryCache();
+        }
+      } finally {
+        cacheRefreshLock.unlock();
+      }
     }
     return inMemoryCache;
   }
@@ -239,11 +250,36 @@ public class CacheConfigService {
    *  and send the cache refresh event on EventHub
    */
   public void doCache() {
-    inMemoryCache = newCache();
+    cacheRefreshLock.lock();
+    try {
+      refreshInMemoryCache();
+    } finally {
+      cacheRefreshLock.unlock();
+    }
+  }
+
+  /**
+   * Same as {@link #doCache()} but does not wait: returns false if another generation is running.
+   */
+  public boolean tryDoCache() {
+    if (!cacheRefreshLock.tryLock()) {
+      return false;
+    }
+    try {
+      refreshInMemoryCache();
+      return true;
+    } finally {
+      cacheRefreshLock.unlock();
+    }
+  }
+
+  private void refreshInMemoryCache() {
+    Map<String, Object> newCache = newCache();
+    inMemoryCache = newCache;
 
     sendEvent(
-            (String) inMemoryCache.get(Constants.VERSION),
-            (ZonedDateTime) inMemoryCache.get(Constants.TIMESTAMP));
+            (String) newCache.get(Constants.VERSION),
+            (ZonedDateTime) newCache.get(Constants.TIMESTAMP));
   }
 
   protected Map<String, Object> loadFullCache() throws IOException {
