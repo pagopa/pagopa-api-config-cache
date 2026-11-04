@@ -63,7 +63,7 @@ public class StakeholderConfigService {
         this.cacheObjectMapper = cacheObjectMapper;
     }
 
-    protected ConfigData loadStakeholderCacheFromRedis(Stakeholder stakeholder, String schemaVersion) throws IOException {
+    protected String getStakeholderCacheVersionFromRedisIfUpToDate(Stakeholder stakeholder, String schemaVersion) throws IOException {
         String stakeholderWithSchema = getStakeholderWithSchema(stakeholder, schemaVersion);
         log.debug("Retrieve {} cache version and {} cache version from Redis", stakeholderWithSchema, Constants.FULL);
         // verify if the id of full cache and stakeholder cache are the same
@@ -71,8 +71,7 @@ public class StakeholderConfigService {
         byte[] fullCacheId = redisRepository.get(cacheKeyUtils.getCacheIdKey(Constants.FULL));
         if (stakeholderCacheId != null && Arrays.equals(stakeholderCacheId, fullCacheId)) {
             log.debug("Stakeholder {} cache already up to date on Redis, retrieve it", stakeholder);
-            // retrieve stakeholder cache
-            return getCacheFromRedis(stakeholder, schemaVersion);
+            return new String(stakeholderCacheId, StandardCharsets.UTF_8);
         }
         log.info("Stakeholder {} cache is not up to date on Redis, retrieve full cache and update it", stakeholder);
         return null;
@@ -80,14 +79,14 @@ public class StakeholderConfigService {
 
     public ConfigData getCache(Stakeholder stakeholder, String schemaVersion, String[] keys) throws IOException {
         // retrieve configDataVersion from Redis
-        ConfigData configData = loadStakeholderCacheFromRedis(stakeholder, schemaVersion);
-
-        if (configData == null) {
-            log.debug("Stakeholder {} cache is stale on Redis, it will be regenerated from in memory cache", stakeholder);
-            configData = generateCacheSchemaFromInMemory(stakeholder, schemaVersion, keys);
+        String cacheVersion = getStakeholderCacheVersionFromRedisIfUpToDate(stakeholder, schemaVersion);
+        if (cacheVersion != null) {
+            // retrieve stakeholder cache
+            return getCacheFromRedis(stakeholder, schemaVersion);
         }
 
-        return configData;
+        log.debug("Stakeholder {} cache is stale on Redis, it will be regenerated from in memory cache", stakeholder);
+        return generateCacheSchemaFromInMemory(stakeholder, schemaVersion, keys);
     }
 
     private ConfigData generateCacheSchemaFromInMemory(Stakeholder stakeholder, String schemaVersion, String[] keys) throws IOException {
@@ -156,33 +155,24 @@ public class StakeholderConfigService {
     }
 
     public CacheVersion getVersionId(Stakeholder stakeholder, String schemaVersion, String[] keys) throws IOException {
-        byte[] stakeholderCacheId = redisRepository.get(cacheKeyUtils.getCacheIdKey(getStakeholderWithSchema(stakeholder, schemaVersion)));
-        byte[] fullCacheId = redisRepository.get(cacheKeyUtils.getCacheIdKey(Constants.FULL));
-        // check cache validity and generate schema if necessary
-        if (stakeholderCacheId != null) {
-            String cacheVersion = new String(stakeholderCacheId, StandardCharsets.UTF_8);
-            if (fullCacheId != null && !Arrays.equals(stakeholderCacheId, fullCacheId)) {
-                generateCacheSchemaFromInMemory(stakeholder, schemaVersion, keys);
-                cacheVersion = new String(fullCacheId, StandardCharsets.UTF_8);
-            }
+        String cacheVersion = getStakeholderCacheVersionFromRedisIfUpToDate(stakeholder, schemaVersion);
+        if (cacheVersion != null) {
             return CacheVersion.builder()
                     .version(cacheVersion)
                     .build();
         }
-        else {
-            try {
-                ConfigData configData = getCache(stakeholder, schemaVersion, keys);
+        try {
+            ConfigData configData = getCache(stakeholder, schemaVersion, keys);
 
-                return CacheVersion.builder()
-                        .version(configData.getCacheSchemaVersion().getVersion())
-                        .build();
-            }
-            catch (AppException e) {
-                throw e;
-            }
-            catch (Exception e) {
-                throw new AppException(AppError.CACHE_NOT_INITIALIZED, stakeholder.toString());
-            }
+            return CacheVersion.builder()
+                    .version(configData.getCacheSchemaVersion().getVersion())
+                    .build();
+        }
+        catch (AppException e) {
+            throw e;
+        }
+        catch (Exception e) {
+            throw new AppException(AppError.CACHE_NOT_INITIALIZED, stakeholder.toString());
         }
     }
 
@@ -218,7 +208,7 @@ public class StakeholderConfigService {
         throw new AppException(AppError.CACHE_NOT_INITIALIZED, stakeholder.toString());
     }
 
-    private String getStakeholderWithSchema(Stakeholder stakeholder, String schemaVersion) {
+    protected String getStakeholderWithSchema(Stakeholder stakeholder, String schemaVersion) {
         return String.format("%s_%s", stakeholder, schemaVersion);
     }
 
