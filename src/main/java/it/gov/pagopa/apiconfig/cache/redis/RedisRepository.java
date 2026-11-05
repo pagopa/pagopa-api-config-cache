@@ -48,10 +48,20 @@ public class RedisRepository {
     } catch (Exception e) {
       throw new AppException(AppError.CACHE_SAVE_ERROR, e, key);
     }
-    if (results == null || results.stream().anyMatch(Throwable.class::isInstance)) {
+    if (results == null) {
       throw new AppException(
-          AppError.CACHE_SAVE_ERROR, new IllegalStateException("Transaction not applied"), key);
+          AppError.CACHE_SAVE_ERROR,
+          new IllegalStateException("Transaction not applied: EXEC returned no result"),
+          key);
     }
+    results.stream()
+        .filter(Throwable.class::isInstance)
+        .map(Throwable.class::cast)
+        .findFirst()
+        .ifPresent(
+            failure -> {
+              throw new AppException(AppError.CACHE_SAVE_ERROR, failure, key);
+            });
     log.info("Sync saved {} on redis, id {}", key, new String(keyObject, StandardCharsets.UTF_8));
   }
 
