@@ -241,6 +241,7 @@ public class CacheConfigService {
           refreshInMemoryCache();
         }
       } finally {
+        log.debug("Releasing {} cache refresh lock", Constants.FULL);
         cacheRefreshLock.unlock();
       }
     }
@@ -252,10 +253,12 @@ public class CacheConfigService {
    *  and send the cache refresh event on EventHub
    */
   public void doCache() {
+    log.debug("Acquire {} cache refresh lock", Constants.FULL);
     cacheRefreshLock.lock();
     try {
       refreshInMemoryCache();
     } finally {
+      log.debug("Releasing {} cache refresh lock", Constants.FULL);
       cacheRefreshLock.unlock();
     }
   }
@@ -277,10 +280,12 @@ public class CacheConfigService {
 
   private void acquireRefreshLockOrFail() {
     try {
+      log.debug("Try to acquire {} cache refresh lock", Constants.FULL);
       if (!cacheRefreshLock.tryLock(lockWaitTimeout.toMillis(), TimeUnit.MILLISECONDS)) {
         log.warn("Timeout waiting for the full cache generation in progress");
         throw new AppException(AppError.CACHE_SCHEMA_NOT_INITIALIZED, Constants.FULL);
       }
+      log.debug("Acquired {} cache refresh lock", Constants.FULL);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       throw new AppException(AppError.CACHE_SCHEMA_NOT_INITIALIZED, e, Constants.FULL);
