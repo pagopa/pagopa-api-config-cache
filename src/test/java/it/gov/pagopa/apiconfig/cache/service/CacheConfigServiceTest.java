@@ -16,8 +16,11 @@ import it.gov.pagopa.apiconfig.starter.repository.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.zip.GZIPOutputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -96,6 +99,36 @@ class CacheConfigServiceTest {
     doThrow(new RuntimeException()).when(intermediariPaRepository).findAll();
 
     assertThrows(RuntimeException.class, () -> cacheConfigService.newCache());
+  }
+
+  @Test
+  void getInMemoryCacheOrRefreshIfNotExist_timeoutWhileGenerationInProgress() throws Exception {
+    ReentrantLock lock = (ReentrantLock) ReflectionTestUtils.getField(cacheConfigService, "cacheRefreshLock");
+    Object originalTimeout = ReflectionTestUtils.getField(cacheConfigService, "lockWaitTimeout");
+    ReflectionTestUtils.setField(cacheConfigService, "lockWaitTimeout", Duration.ofMillis(100));
+    CountDownLatch locked = new CountDownLatch(1);
+    CountDownLatch release = new CountDownLatch(1);
+    Thread holder = new Thread(() -> {
+      lock.lock();
+      locked.countDown();
+      try {
+        release.await();
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+      } finally {
+        lock.unlock();
+      }
+    });
+    holder.start();
+    locked.await();
+
+    try {
+      assertThrows(AppException.class, () -> cacheConfigService.getInMemoryCacheOrRefreshIfNotExist());
+    } finally {
+      release.countDown();
+      holder.join();
+      ReflectionTestUtils.setField(cacheConfigService, "lockWaitTimeout", originalTimeout);
+    }
   }
 
   @Test

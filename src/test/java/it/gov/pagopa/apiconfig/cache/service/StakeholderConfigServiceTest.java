@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import it.gov.pagopa.apiconfig.cache.exception.AppError;
+import it.gov.pagopa.apiconfig.cache.exception.AppException;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -202,6 +205,18 @@ class StakeholderConfigServiceTest {
 
     verify(redisRepository, times(1)).pushToRedisSync(anyString(), anyString(), any(), any());
   }
+  @Test
+  void getCache_fullCacheGenerationTimeout() {
+    when(redisRepository.get(any())).thenReturn(null);
+    when(cacheConfigService.getInMemoryCacheOrRefreshIfNotExist())
+        .thenThrow(new AppException(AppError.CACHE_NOT_INITIALIZED, Constants.FULL));
+
+    AppException e =
+        assertThrows(AppException.class, () -> sut.getCache(Stakeholder.TEST, "v1", KEYS));
+
+    assertEquals(AppError.CACHE_NOT_INITIALIZED.title, e.getTitle());
+  }
+
   @Test
   void getVersionId() throws IOException {
     String version = "111";

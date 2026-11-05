@@ -49,6 +49,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -56,6 +57,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -88,6 +90,7 @@ public class CacheConfigService {
   private final String appVersion;
   private final Boolean sendEvent;
   private final long inProgressTtl;
+  private final Duration lockWaitTimeout;
   private final RedisRepository redisRepository;
   private final ModelMapper modelMapper;
   private final ConfigurationKeysRepository configurationKeysRepository;
@@ -153,7 +156,8 @@ public class CacheConfigService {
           @Value("${in_progress.ttl}") long inProgressTtl,
           @Value("#{'${sendEvent}'=='true'}") Boolean sendEvent,
           @Value("${info.application.version}") String appVersion,
-          @Value("${preload:true}") Boolean preload
+          @Value("${preload:true}") Boolean preload,
+          @Value("${cache-schema.lock-wait-timeout:30s}") Duration lockWaitTimeout
   ) {
     this.jaxb2Marshaller = jaxb2Marshaller;
     this.cacheKeyUtils = cacheKeyUtils;
@@ -189,6 +193,7 @@ public class CacheConfigService {
     this.sendEvent = sendEvent;
     this.appVersion = appVersion;
     this.preload = preload;
+    this.lockWaitTimeout = lockWaitTimeout;
   }
 
   public void preloadKeysFromRedis() {
@@ -233,7 +238,7 @@ public class CacheConfigService {
    */
   public Map<String, Object> getInMemoryCacheOrRefreshIfNotExist() {
     if (inMemoryCache.get() == null) {
-      cacheRefreshLock.lock();
+      acquireRefreshLockOrFail();
       try {
         // re-check: another thread may have initialized the cache while this one was waiting
         if (inMemoryCache.get() == null) {
@@ -272,6 +277,18 @@ public class CacheConfigService {
       return true;
     } finally {
       cacheRefreshLock.unlock();
+    }
+  }
+
+  private void acquireRefreshLockOrFail() {
+    try {
+      if (!cacheRefreshLock.tryLock(lockWaitTimeout.toMillis(), TimeUnit.MILLISECONDS)) {
+        log.warn("Timeout waiting for the full cache generation in progress");
+        throw new AppException(AppError.CACHE_SCHEMA_NOT_INITIALIZED, Constants.FULL);
+      }
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new AppException(AppError.CACHE_SCHEMA_NOT_INITIALIZED, e, Constants.FULL);
     }
   }
 
