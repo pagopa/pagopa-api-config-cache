@@ -41,10 +41,10 @@ microservice-chart: &microservice-chart
     workloadIdentityClientId: <workload-identity-client-id-set-automatically-by-gha>
   resources:
     requests:
-      memory: "1G"
+      memory: "512Mi"
       cpu: "0.5"
     limits:
-      memory: "8G"
+      memory: "2G"
       cpu: "1"
   envConfig: &envConfig
     ENV: "dev"
@@ -98,7 +98,7 @@ postgresql:
   envConfig:
     !!merge <<: *envConfig
     APPLICATIONINSIGHTS_ROLE_NAME: "pagopa-api-config-cache-postgresql"
-    DB_CONFIG_URL: "jdbc:postgresql://nodo-db.d.internal.postgresql.pagopa.it:5432/nodo-replica?sslmode=require&prepareThreshold=0&currentSchema=cfg_prod"
+    DB_CONFIG_URL: "jdbc:postgresql://nodo-db.d.internal.postgresql.pagopa.it:5432/nodo?sslmode=require&prepareThreshold=0&currentSchema=cfg"
     DB_CONFIG_USER: "cfg"
     DB_CONFIG_DRIVER: "org.postgresql.Driver"
     DATABASE_ID: "p"
