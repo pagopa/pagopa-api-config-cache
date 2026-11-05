@@ -315,7 +315,7 @@ public class CacheConfigService {
             (ZonedDateTime) newCache.get(Constants.TIMESTAMP));
   }
 
-  protected Map<String, Object> loadFullCache() throws IOException {
+  protected Map<String, Object> loadFullCache() {
     log.debug("Loading full cache");
 
     byte[] bytes = redisRepository.get(cacheKeyUtils.getCacheKey(Constants.FULL));
@@ -325,6 +325,8 @@ public class CacheConfigService {
     FullData fulldata;
     try (InputStream in = ZipUtils.unzipToStream(bytes)) {
       fulldata = objectMapper.readValue(in, FullData.class);
+    }  catch (IOException e) {
+      throw new AppException(AppError.CACHE_DECOMPRESS_ERROR, e);
     }
 
     HashMap<String, Object> configData = new HashMap<>();
@@ -556,7 +558,7 @@ public class CacheConfigService {
       redisRepository.pushToRedisSync(actualKey, actualKeyV1, cacheByteArray, id.getBytes(StandardCharsets.UTF_8));
       log.info("Cache [{}] saved on Redis", Constants.FULL);
     } catch (Exception e) {
-      log.error("[ALERT] problem to generate cache", e);
+      log.error("[ALERT] Problem in cache generation or save", e);
       throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
     }
     return configData;
