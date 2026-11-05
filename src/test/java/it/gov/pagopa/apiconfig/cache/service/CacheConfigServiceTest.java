@@ -78,7 +78,6 @@ class CacheConfigServiceTest {
     when(redisRepository.get(any()))
         .thenReturn(zip("{\"version\": \"testversion\"}".getBytes(StandardCharsets.UTF_8)));
     ReflectionTestUtils.setField(cacheConfigService, "inMemoryCache", new java.util.concurrent.atomic.AtomicReference<>());
-    ReflectionTestUtils.setField(cacheConfigService, "preload", Boolean.TRUE);
   }
 
   @Test
@@ -172,15 +171,6 @@ class CacheConfigServiceTest {
     cacheConfigService.preloadKeysFromRedis();
 
     assertThat(cacheConfigService.getInMemoryCache()).containsEntry("version", "testversion");
-  }
-
-  @Test
-  void preloadKeysFromRedis_disabled() {
-    ReflectionTestUtils.setField(cacheConfigService, "preload", Boolean.FALSE);
-
-    cacheConfigService.preloadKeysFromRedis();
-
-    assertThrows(AppException.class, () -> cacheConfigService.getInMemoryCache());
   }
 
   @Test

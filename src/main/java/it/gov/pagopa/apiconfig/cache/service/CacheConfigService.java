@@ -86,7 +86,6 @@ public class CacheConfigService {
   /** Global lock: only one full cache generation at a time. */
   private final ReentrantLock cacheRefreshLock = new ReentrantLock();
 
-  private final Boolean preload;
   private final String appVersion;
   private final Boolean sendEvent;
   private final long inProgressTtl;
@@ -156,7 +155,6 @@ public class CacheConfigService {
           @Value("${in_progress.ttl}") long inProgressTtl,
           @Value("#{'${sendEvent}'=='true'}") Boolean sendEvent,
           @Value("${info.application.version}") String appVersion,
-          @Value("${preload:true}") Boolean preload,
           @Value("${cache-schema.lock-wait-timeout:30s}") Duration lockWaitTimeout
   ) {
     this.jaxb2Marshaller = jaxb2Marshaller;
@@ -192,25 +190,22 @@ public class CacheConfigService {
     this.inProgressTtl = inProgressTtl;
     this.sendEvent = sendEvent;
     this.appVersion = appVersion;
-    this.preload = preload;
     this.lockWaitTimeout = lockWaitTimeout;
   }
 
   public void preloadKeysFromRedis() {
-    if (Boolean.TRUE.equals(preload)) {
+    try {
+      log.debug("Preloading in memory cache from Redis");
+      inMemoryCache.set(Collections.unmodifiableMap(loadFullCache()));
+      log.info("Successfully loaded in memory cache from Redis");
+    } catch (Exception e){
+      log.warn("Could not load cache from redis: {}. Try to regenerate full cache", e.getMessage(), e);
       try {
-        log.debug("Preloading in memory cache from Redis");
-        inMemoryCache.set(Collections.unmodifiableMap(loadFullCache()));
-        log.info("Successfully loaded in memory cache from Redis");
-      } catch (Exception e){
-        log.warn("Could not load cache from redis: {}. Try to regenerate full cache", e.getMessage(), e);
-        try {
-          log.debug("Loading in memory cache from DB");
-          doCache();
-          log.info("Cache generated, saved to Redis and sent refresh event on startup");
-        } catch (Exception ex) {
-          log.error("[ALERT] Failed to load and generate cache on startup", ex);
-        }
+        log.debug("Loading in memory cache from DB");
+        doCache();
+        log.info("Cache generated, saved to Redis and sent refresh event on startup");
+      } catch (Exception ex) {
+        log.error("[ALERT] Failed to load and generate cache on startup", ex);
       }
     }
   }
