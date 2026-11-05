@@ -88,7 +88,6 @@ public class CacheConfigService {
 
   private final String appVersion;
   private final Boolean sendEvent;
-  private final long inProgressTtl;
   private final Duration lockWaitTimeout;
   private final RedisRepository redisRepository;
   private final ModelMapper modelMapper;
@@ -152,7 +151,6 @@ public class CacheConfigService {
           ConfigurationKeysRepository configurationKeysRepository,
           ModelMapper modelMapper,
           RedisRepository redisRepository,
-          @Value("${in_progress.ttl}") long inProgressTtl,
           @Value("#{'${sendEvent}'=='true'}") Boolean sendEvent,
           @Value("${info.application.version}") String appVersion,
           @Value("${cache-schema.lock-wait-timeout:30s}") Duration lockWaitTimeout
@@ -187,7 +185,6 @@ public class CacheConfigService {
     this.configurationKeysRepository = configurationKeysRepository;
     this.modelMapper = modelMapper;
     this.redisRepository = redisRepository;
-    this.inProgressTtl = inProgressTtl;
     this.sendEvent = sendEvent;
     this.appVersion = appVersion;
     this.lockWaitTimeout = lockWaitTimeout;
@@ -365,7 +362,6 @@ public class CacheConfigService {
 
   public Map<String, Object> newCache() {
     log.debug("Starting [{}] cache generation process", Constants.FULL);
-    setCacheInProgress();
 
     HashMap<String, Object> configData = new HashMap<>();
     try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
@@ -561,8 +557,6 @@ public class CacheConfigService {
     } catch (Exception e) {
       log.error("[ALERT] problem to generate cache", e);
       throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
-    } finally {
-      removeCacheInProgress();
     }
     return configData;
   }
@@ -586,22 +580,6 @@ public class CacheConfigService {
       return version.substring(0, 32);
     }
     return version;
-  }
-
-  public void removeCacheInProgress() {
-    String actualKeyV1 = cacheKeyUtils.getCacheKeyInProgress(Constants.FULL);
-    redisRepository.remove(actualKeyV1);
-  }
-
-  private void setCacheInProgress() {
-    String actualKeyV1 = cacheKeyUtils.getCacheKeyInProgress(Constants.FULL);
-    redisRepository.save(actualKeyV1, "1".getBytes(StandardCharsets.UTF_8), inProgressTtl);
-  }
-
-  @Transactional(propagation = Propagation.NOT_SUPPORTED)
-  public Boolean getCacheInProgress() {
-    String actualKeyV1 = cacheKeyUtils.getCacheKeyInProgress(Constants.FULL);
-    return redisRepository.getBooleanByKeyId(actualKeyV1);
   }
 
   public List<ConfigurationKey> getConfigurationKeys() {

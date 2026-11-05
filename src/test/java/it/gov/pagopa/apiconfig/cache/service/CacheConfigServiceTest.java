@@ -131,13 +131,6 @@ class CacheConfigServiceTest {
   }
 
   @Test
-  void getCacheInProgress() {
-    when(redisRepository.getBooleanByKeyId(any())).thenReturn(true);
-    cacheConfigService.getCacheInProgress();
-    assertThat(cacheConfigService.getCacheInProgress()).isTrue();
-  }
-
-  @Test
   void testSendEvent_publishEventCalled() throws JsonProcessingException {
     doNothing()
         .when(eventHubService)
