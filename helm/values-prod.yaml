@@ -14,15 +14,16 @@ microservice-chart: &microservice-chart
     tcpSocket:
       port: 8080
     initialDelaySeconds: 60
-    periodSeconds: 60
-    failureThreshold: 5
+    periodSeconds: 15
+    failureThreshold: 12
   readinessProbe:
-    handlerType: tcpSocket
-    tcpSocket:
+    handlerType: httpGet
+    httpGet:
+      path: /actuator/health/readiness
       port: 8080
     initialDelaySeconds: 60
-    periodSeconds: 60
-    failureThreshold: 5
+    periodSeconds: 15
+    failureThreshold: 12
   deployment:
     create: true
     replicas: 1 # default
