@@ -74,7 +74,7 @@ class CacheConfigServiceTest {
   void setUp() throws IOException {
     when(redisRepository.get(any()))
         .thenReturn(zip("{\"version\": \"testversion\"}".getBytes(StandardCharsets.UTF_8)));
-    ReflectionTestUtils.setField(cacheConfigService, "inMemoryCache", null);
+    ReflectionTestUtils.setField(cacheConfigService, "inMemoryCache", new java.util.concurrent.atomic.AtomicReference<>());
     ReflectionTestUtils.setField(cacheConfigService, "preload", Boolean.TRUE);
   }
 

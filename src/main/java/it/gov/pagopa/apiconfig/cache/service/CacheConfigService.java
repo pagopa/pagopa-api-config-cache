@@ -57,6 +57,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
 import java.util.concurrent.locks.ReentrantLock;
@@ -79,7 +80,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CacheConfigService {
 
-  private volatile Map<String, Object> inMemoryCache;
+  private final AtomicReference<Map<String, Object>> inMemoryCache = new AtomicReference<>();
   /** Global lock: only one full cache generation at a time. */
   private final ReentrantLock cacheRefreshLock = new ReentrantLock();
 
@@ -194,7 +195,7 @@ public class CacheConfigService {
     if (Boolean.TRUE.equals(preload)) {
       try {
         log.debug("Preloading in memory cache from Redis");
-        inMemoryCache = loadFullCache();
+        inMemoryCache.set(Collections.unmodifiableMap(loadFullCache()));
         log.info("Successfully loaded in memory cache from Redis");
       } catch (Exception e){
         log.warn("Could not load cache from redis: {}. Try to regenerate full cache", e.getMessage(), e);
@@ -217,10 +218,11 @@ public class CacheConfigService {
    */
   @Transactional(propagation = Propagation.NOT_SUPPORTED)
   public Map<String, Object> getInMemoryCache() {
-    if (inMemoryCache == null) {
+    Map<String, Object> cache = inMemoryCache.get();
+    if (cache == null) {
       throw new AppException(AppError.CACHE_NOT_INITIALIZED, "FULL");
     }
-    return inMemoryCache;
+    return cache;
   }
 
   /**
@@ -230,11 +232,11 @@ public class CacheConfigService {
    * @return a map containing all the keys and values.
    */
   public Map<String, Object> getInMemoryCacheOrRefreshIfNotExist() {
-    if (inMemoryCache == null) {
+    if (inMemoryCache.get() == null) {
       cacheRefreshLock.lock();
       try {
         // re-check: another thread may have initialized the cache while this one was waiting
-        if (inMemoryCache == null) {
+        if (inMemoryCache.get() == null) {
           log.debug("In memory cache not initialized, starting initialization");
           refreshInMemoryCache();
         }
@@ -242,7 +244,7 @@ public class CacheConfigService {
         cacheRefreshLock.unlock();
       }
     }
-    return inMemoryCache;
+    return inMemoryCache.get();
   }
 
   /**
@@ -275,7 +277,7 @@ public class CacheConfigService {
 
   private void refreshInMemoryCache() {
     Map<String, Object> newCache = newCache();
-    inMemoryCache = newCache;
+    inMemoryCache.set(Collections.unmodifiableMap(newCache));
 
     sendEvent(
             (String) newCache.get(Constants.VERSION),
