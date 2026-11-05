@@ -2,7 +2,7 @@ microservice-chart: &microservice-chart
   namespace: "apiconfig"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: 0.9.44-13-PAGOPA-3776-improve-logs
+    tag: 0.9.44-14-PAGOPA-3776-switch-from-stakeholder-redis-lock-to-synchronized-block
   canaryDelivery:
     deployment:
       image:

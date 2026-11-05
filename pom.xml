@@ -12,7 +12,7 @@
 
   <groupId>it.gov.pagopa.api-config</groupId>
   <artifactId>cache</artifactId>
-  <version>0.9.44-13-PAGOPA-3776-improve-logs</version>
+  <version>0.9.44-14-PAGOPA-3776-switch-from-stakeholder-redis-lock-to-synchronized-block</version>
   <name>API-Config Cache</name>
   <description>Generate cache for various microservices</description>
 
