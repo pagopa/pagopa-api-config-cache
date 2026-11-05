@@ -1,14 +1,13 @@
 package it.gov.pagopa.apiconfig.cache.redis;
 
+import it.gov.pagopa.apiconfig.cache.exception.AppError;
+import it.gov.pagopa.apiconfig.cache.exception.AppException;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 
 @Component
 @Slf4j
@@ -24,37 +23,8 @@ public class RedisRepository {
     redisTemplateObj.opsForValue().set(key, value, Duration.ofMinutes(ttl));
   }
 
-  /**
-   * Returns true if the value does not exists and is stored, false if already present.
-   *
-   * @param key
-   * @param value
-   * @param ttl
-   * @return
-   */
-  public Boolean saveIfAbsent(String key, byte[] value, long ttl) {
-      return redisTemplateObj.opsForValue().setIfAbsent(key, value, Duration.ofMinutes(ttl));
-  }
-
   public byte[] get(String key) {
     return redisTemplateObj.opsForValue().get(key);
-  }
-
-  public void remove(String key) {
-    redisTemplateObj.delete(key);
-  }
-
-  @Async
-  public void pushToRedisAsync(String key, String keyId, byte[] object, byte[] keyObject) {
-    try {
-      log.debug("Async saving key {} on redis", key);
-      save(key, object, 1440);
-      log.debug("Async saving key {} on redis", keyId);
-      save(keyId, keyObject, 1440);
-      log.info("Async saved {} on redis, id {}", key, new String(keyObject, StandardCharsets.UTF_8));
-    } catch (Exception e) {
-      log.error("Could not async-save key {} or key {} on redis", key, keyId, e);
-    }
   }
 
   public void pushToRedisSync(String key, String keyId, byte[] object, byte[] keyObject) {
@@ -65,7 +35,7 @@ public class RedisRepository {
       save(keyId, keyObject, 1440);
       log.info("Sync saved {} on redis, id {}", key, new String(keyObject, StandardCharsets.UTF_8));
     } catch (Exception e) {
-      log.error("Could not sync save key {} or key {} on redis", key, keyId, e);
+      throw new AppException(AppError.CACHE_SAVE_ERROR, e, key);
     }
   }
 
@@ -80,7 +50,7 @@ public class RedisRepository {
     }
   }
 
-  public String getStringByKeyId(String keyId) {
+  String getStringByKeyId(String keyId) {
     byte[] v = null;
     try {
       v = get(keyId);
@@ -88,13 +58,13 @@ public class RedisRepository {
       log.error("Could not get key {} from redis", keyId, e);
     }
     if (v != null) {
-      return new String(v,StandardCharsets.UTF_8);
+      return new String(v, StandardCharsets.UTF_8);
     } else {
       return null;
     }
   }
 
-  public Boolean getBooleanByKeyId(String keyId) {
+  Boolean getBooleanByKeyId(String keyId) {
     byte[] v = null;
     try {
       v = get(keyId);
@@ -102,7 +72,7 @@ public class RedisRepository {
       log.error("Could not get key {} from redis", keyId, e);
     }
     if (v != null) {
-      return "1".equals(new String(v,StandardCharsets.UTF_8));
+      return "1".equals(new String(v, StandardCharsets.UTF_8));
     } else {
       return Boolean.FALSE;
     }

@@ -213,6 +213,18 @@ class CacheConfigServiceTest {
     verify(eventHubService, times(1)).publishEvent(anyString(), any(), anyString());
   }
 
+  @Test
+  void doCache_redisFailure_failsAndKeepsPreviousInMemoryCache() throws JsonProcessingException {
+    doThrow(new RuntimeException("redis down"))
+        .when(redisRepository)
+        .pushToRedisSync(anyString(), anyString(), any(), any());
+
+    assertThrows(AppException.class, () -> cacheConfigService.doCache());
+
+    assertThrows(AppException.class, () -> cacheConfigService.getInMemoryCache());
+    verify(eventHubService, never()).publishEvent(anyString(), any(), anyString());
+  }
+
   private byte[] zip(byte[] bytes) throws IOException {
     if (bytes == null) {
       return new byte[0];

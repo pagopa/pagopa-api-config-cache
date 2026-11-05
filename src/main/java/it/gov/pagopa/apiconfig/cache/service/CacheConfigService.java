@@ -552,7 +552,8 @@ public class CacheConfigService {
       String actualKey = cacheKeyUtils.getCacheKey(Constants.FULL);
       String actualKeyV1 = cacheKeyUtils.getCacheIdKey(Constants.FULL);
 
-      redisRepository.pushToRedisAsync(actualKey, actualKeyV1, cacheByteArray, id.getBytes(StandardCharsets.UTF_8));
+      // sync and before the in memory swap: Redis and memory must always hold the same FULL cache
+      redisRepository.pushToRedisSync(actualKey, actualKeyV1, cacheByteArray, id.getBytes(StandardCharsets.UTF_8));
       log.info("Cache [{}] saved on Redis", Constants.FULL);
     } catch (Exception e) {
       log.error("[ALERT] problem to generate cache", e);
