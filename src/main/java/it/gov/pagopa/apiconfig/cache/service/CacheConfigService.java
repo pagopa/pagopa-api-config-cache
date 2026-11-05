@@ -193,6 +193,10 @@ public class CacheConfigService {
     this.lockWaitTimeout = lockWaitTimeout;
   }
 
+  /**
+   * Load the in memory cache from the full cache stored on Redis. If it is not available, generate
+   * it from the DB. Failures are logged and not propagated.
+   */
   public void preloadKeysFromRedis() {
     try {
       log.debug("Preloading in memory cache from Redis");
@@ -227,9 +231,15 @@ public class CacheConfigService {
 
   /**
    *  Retrieve the in memory cache if has been initialized otherwise start a
-   *  new initialization and return the cache
+   *  new initialization and return the cache.
    *
-   * @return a map containing all the keys and values.
+   * <p>If the cache is not initialized the caller waits, up to {@code
+   * cache-schema.lock-wait-timeout}, for the full cache refresh lock and checks again once it is
+   * acquired, so concurrent callers trigger a single generation.
+   *
+   * @return an unmodifiable map containing all the keys and values.
+   * @throws AppException with {@link AppError#CACHE_SCHEMA_NOT_INITIALIZED} if the lock is not
+   *     acquired before the timeout or the thread is interrupted
    */
   public Map<String, Object> getInMemoryCacheOrRefreshIfNotExist() {
     if (inMemoryCache.get() == null) {
@@ -250,9 +260,13 @@ public class CacheConfigService {
 
   /**
    *  Start a new cache initialization, persist it both in memory and on Redis
-   *  and send the cache refresh event on EventHub
+   *  and send the cache refresh event on EventHub.
+   *
+   * <p>Internal: used only at startup by {@link #preloadKeysFromRedis()}; the refresh endpoint uses
+   * {@link #tryDoCache()}. Only one generation runs at a time: if another one is in progress, this
+   * call waits for it to finish and then generates the cache again.
    */
-  public void doCache() {
+  void doCache() {
     log.debug("Acquire {} cache refresh lock", Constants.FULL);
     cacheRefreshLock.lock();
     try {
@@ -264,7 +278,10 @@ public class CacheConfigService {
   }
 
   /**
-   * Same as {@link #doCache()} but does not wait: returns false if another generation is running.
+   * Same as {@link #doCache()} but does not wait for a generation in progress.
+   *
+   * @return {@code true} if the cache has been generated, {@code false} if another generation is
+   *     already running and nothing has been done
    */
   public boolean tryDoCache() {
     if (!cacheRefreshLock.tryLock()) {

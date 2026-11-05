@@ -65,7 +65,8 @@ public class StakeholderConfigService {
         this.cacheObjectMapper = cacheObjectMapper;
     }
 
-    protected String getStakeholderCacheVersionFromRedisIfUpToDate(Stakeholder stakeholder, String schemaVersion) throws IOException {
+    // Internal: used only by other methods in this class, keep it package private for testing purpose
+    String getStakeholderCacheVersionFromRedisIfUpToDate(Stakeholder stakeholder, String schemaVersion) throws IOException {
         String stakeholderWithSchema = getStakeholderWithSchema(stakeholder, schemaVersion);
         log.debug("Retrieve {} cache version and {} cache version from Redis", stakeholderWithSchema, Constants.FULL);
         // verify if the id of full cache and stakeholder cache are the same
@@ -79,6 +80,22 @@ public class StakeholderConfigService {
         return null;
     }
 
+    /**
+     * Single entrypoint to retrieve (and refresh when stale) the cache of a stakeholder.
+     *
+     * <p>If the cache on Redis is up to date it is returned without any lock. Otherwise, the request
+     * waits up to {@code cache-schema.lock-wait-timeout}, for the stakeholder lock, checks again
+     * whether another request has already refreshed the cache and, if not, regenerates it from the
+     * in memory cache.
+     *
+     * @param stakeholder the stakeholder requesting the cache
+     * @param schemaVersion the cache schema version (e.g. {@code v1})
+     * @param keys the cache keys to include in the stakeholder cache
+     * @return the up to date stakeholder cache
+     * @throws IOException if the cache cannot be read from or written to Redis
+     * @throws AppException with {@link AppError#CACHE_SCHEMA_NOT_INITIALIZED} if the lock or the
+     *     full cache generation is not available before the timeout, or the thread is interrupted
+     */
     public ConfigData getCache(Stakeholder stakeholder, String schemaVersion, String[] keys) throws IOException {
         // fast path without lock: cache already up to date on Redis
         if (getStakeholderCacheVersionFromRedisIfUpToDate(stakeholder, schemaVersion) != null) {
@@ -160,6 +177,18 @@ public class StakeholderConfigService {
         return configData;
     }
 
+    /**
+     * Retrieve the version id of the stakeholder cache. If the cache on Redis is stale it is
+     * refreshed through {@link #getCache(Stakeholder, String, String[])}, so it follows the same
+     * locking rules.
+     *
+     * @param stakeholder the stakeholder requesting the cache version
+     * @param schemaVersion the cache schema version (e.g. {@code v1})
+     * @param keys the cache keys to include if the stakeholder cache has to be regenerated
+     * @return the version id of the up to date stakeholder cache
+     * @throws IOException if the cache version cannot be read from Redis
+     * @throws AppException if the cache cannot be refreshed
+     */
     public CacheVersion getVersionId(Stakeholder stakeholder, String schemaVersion, String[] keys) throws IOException {
         String cacheVersion = getStakeholderCacheVersionFromRedisIfUpToDate(stakeholder, schemaVersion);
         if (cacheVersion != null) {
