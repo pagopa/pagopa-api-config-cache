@@ -206,7 +206,7 @@ public class CacheConfigService {
         doCache();
         log.info("Cache generated, saved to Redis and sent refresh event on startup");
       } catch (Exception ex) {
-        log.error("[ALERT] Failed to load and generate cache on startup", ex);
+        log.error("Failed to load and generate cache on startup", ex);
       }
     }
   }
@@ -566,14 +566,14 @@ public class CacheConfigService {
 
   public void sendEvent(String id, ZonedDateTime now) {
     if (Boolean.TRUE.equals(sendEvent)) {
-        try {
-          log.debug("Notify cache refresh to all consumers");
-            eventHubService.publishEvent(id,now,getVersion());
-            log.info("Cache refresh event sent to all consumers");
-        } catch (JsonProcessingException e) {
-          log.error("Error sending cache refresh event: {}", e.getMessage());
-            throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
-        }
+      try {
+        log.debug("Notify cache refresh to all consumers");
+        eventHubService.publishEvent(id,now,getVersion());
+        log.info("Cache refresh event sent to all consumers");
+      } catch (Exception e) {
+        log.error("[ALERT] Error sending cache refresh event: {}", e.getMessage());
+        throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
+      }
     }
   }
 
