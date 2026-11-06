@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import it.gov.pagopa.apiconfig.cache.model.ConfigData;
 import it.gov.pagopa.apiconfig.cache.model.ProblemJson;
-import it.gov.pagopa.apiconfig.cache.model.RefreshResponse;
 import it.gov.pagopa.apiconfig.cache.model.Stakeholder;
 import it.gov.pagopa.apiconfig.cache.model.node.CacheVersion;
 import it.gov.pagopa.apiconfig.cache.model.node.v1.ConfigDataV1;
@@ -87,15 +86,12 @@ public abstract class StakeholderController {
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ConfigDataV1> cache(
       @Deprecated @RequestParam @Parameter(description = "to force the refresh of the cache")
-          Optional<Boolean> refresh)
-      throws IOException {
+          Optional<Boolean> refresh) {
     if (refresh.orElse(false)) {
       log.warn(
           "Deprecated refresh from stakeholder {},change this to call /cache/refresh",
           stakeholder());
-      ResponseEntity<RefreshResponse> refreshResponse = cacheController.refresh();
-
-      return ResponseEntity.ok().headers(refreshResponse.getHeaders()).body(new ConfigDataV1());
+      cacheController.refresh();
     }
     ConfigData config = stakeholderConfigService.getCache(stakeholder(), "v1", keys());
 
@@ -157,7 +153,7 @@ public abstract class StakeholderController {
   @GetMapping(
       value = "/v1/id",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<CacheVersion> idV1() throws IOException {
+  public ResponseEntity<CacheVersion> idV1() {
     return ResponseEntity.ok()
         .body(stakeholderConfigService.getVersionId(stakeholder(), "v1", keys()));
   }

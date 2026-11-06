@@ -117,7 +117,7 @@ class CacheControllerTest {
 
   @Test
   void refresh_inProgress_false() throws Exception {
-    when(cacheConfigService.getCacheInProgress()).thenReturn(false);
+    when(cacheConfigService.tryDoCache()).thenReturn(true);
 
     String version = "111";
     String cacheVersion = Constants.GZIP_JSON + "-test";
@@ -139,18 +139,17 @@ class CacheControllerTest {
                     Constants.HEADER_X_CACHE_TIMESTAMP,
                     DateTimeFormatter.ISO_DATE_TIME.format(cacheTimestamp)));
 
-    verify(cacheConfigService, Mockito.times(1)).doCache();
+    verify(cacheConfigService, Mockito.times(1)).tryDoCache();
   }
 
   @Test
   void refresh_inProgress_true() throws Exception {
-    when(cacheConfigService.getCacheInProgress()).thenReturn(true);
+    when(cacheConfigService.tryDoCache()).thenReturn(false);
 
     String url = "/cache/refresh";
     mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().is(HttpStatus.SERVICE_UNAVAILABLE.value()));
 
-    verify(cacheConfigService, Mockito.never()).doCache();
     verify(cacheConfigService, Mockito.never()).getInMemoryCache();
   }
 }

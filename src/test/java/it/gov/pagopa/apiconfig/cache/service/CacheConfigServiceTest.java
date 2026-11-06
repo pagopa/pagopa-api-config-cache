@@ -16,8 +16,11 @@ import it.gov.pagopa.apiconfig.starter.repository.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.zip.GZIPOutputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -74,8 +77,7 @@ class CacheConfigServiceTest {
   void setUp() throws IOException {
     when(redisRepository.get(any()))
         .thenReturn(zip("{\"version\": \"testversion\"}".getBytes(StandardCharsets.UTF_8)));
-    ReflectionTestUtils.setField(cacheConfigService, "inMemoryCache", null);
-    ReflectionTestUtils.setField(cacheConfigService, "preload", Boolean.TRUE);
+    ReflectionTestUtils.setField(cacheConfigService, "inMemoryCache", new java.util.concurrent.atomic.AtomicReference<>());
   }
 
   @Test
@@ -99,10 +101,33 @@ class CacheConfigServiceTest {
   }
 
   @Test
-  void getCacheInProgress() {
-    when(redisRepository.getBooleanByKeyId(any())).thenReturn(true);
-    cacheConfigService.getCacheInProgress();
-    assertThat(cacheConfigService.getCacheInProgress()).isTrue();
+  void getInMemoryCacheOrRefreshIfNotExist_timeoutWhileGenerationInProgress() throws Exception {
+    ReentrantLock lock = (ReentrantLock) ReflectionTestUtils.getField(cacheConfigService, "cacheRefreshLock");
+    Object originalTimeout = ReflectionTestUtils.getField(cacheConfigService, "lockWaitTimeout");
+    ReflectionTestUtils.setField(cacheConfigService, "lockWaitTimeout", Duration.ofMillis(100));
+    CountDownLatch locked = new CountDownLatch(1);
+    CountDownLatch release = new CountDownLatch(1);
+    Thread holder = new Thread(() -> {
+      lock.lock();
+      locked.countDown();
+      try {
+        release.await();
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+      } finally {
+        lock.unlock();
+      }
+    });
+    holder.start();
+    locked.await();
+
+    try {
+      assertThrows(AppException.class, () -> cacheConfigService.getInMemoryCacheOrRefreshIfNotExist());
+    } finally {
+      release.countDown();
+      holder.join();
+      ReflectionTestUtils.setField(cacheConfigService, "lockWaitTimeout", originalTimeout);
+    }
   }
 
   @Test
@@ -139,15 +164,6 @@ class CacheConfigServiceTest {
     cacheConfigService.preloadKeysFromRedis();
 
     assertThat(cacheConfigService.getInMemoryCache()).containsEntry("version", "testversion");
-  }
-
-  @Test
-  void preloadKeysFromRedis_disabled() {
-    ReflectionTestUtils.setField(cacheConfigService, "preload", Boolean.FALSE);
-
-    cacheConfigService.preloadKeysFromRedis();
-
-    assertThrows(AppException.class, () -> cacheConfigService.getInMemoryCache());
   }
 
   @Test
@@ -195,6 +211,18 @@ class CacheConfigServiceTest {
 
     assertThat(cacheConfigService.getInMemoryCache()).hasSize(29);
     verify(eventHubService, times(1)).publishEvent(anyString(), any(), anyString());
+  }
+
+  @Test
+  void doCache_redisFailure_failsAndKeepsPreviousInMemoryCache() throws JsonProcessingException {
+    doThrow(new RuntimeException("redis down"))
+        .when(redisRepository)
+        .pushToRedisSync(anyString(), anyString(), any(), any());
+
+    assertThrows(AppException.class, () -> cacheConfigService.doCache());
+
+    assertThrows(AppException.class, () -> cacheConfigService.getInMemoryCache());
+    verify(eventHubService, never()).publishEvent(anyString(), any(), anyString());
   }
 
   private byte[] zip(byte[] bytes) throws IOException {
