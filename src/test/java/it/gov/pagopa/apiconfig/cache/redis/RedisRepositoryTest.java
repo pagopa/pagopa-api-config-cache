@@ -1,24 +1,29 @@
 package it.gov.pagopa.apiconfig.cache.redis;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
-
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import it.gov.pagopa.apiconfig.cache.exception.AppException;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.redis.core.RedisOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SessionCallback;
+import org.springframework.data.redis.core.ValueOperations;
 
 @ExtendWith(MockitoExtension.class)
 class RedisRepositoryTest {
@@ -28,6 +33,8 @@ class RedisRepositoryTest {
   @Mock private RedisTemplate<String, byte[]> redisTemplateObj;
 
   @Mock private ValueOperations<String, byte[]> valueOps;
+
+  @Mock private RedisOperations<String, byte[]> operations;
 
   @InjectMocks private RedisRepository redisRepository;
 
@@ -44,17 +51,6 @@ class RedisRepositoryTest {
   }
 
   @Test
-  void saveIfAbsent_returnsStoredFlag() {
-    when(redisTemplateObj.opsForValue()).thenReturn(valueOps);
-    when(valueOps.setIfAbsent("lock", value, Duration.ofMinutes(5))).thenReturn(Boolean.TRUE);
-
-    Boolean stored = redisRepository.saveIfAbsent("lock", value, 5);
-
-    assertThat(stored).isTrue();
-    verify(valueOps).setIfAbsent("lock", value, Duration.ofMinutes(5));
-  }
-
-  @Test
   void get_returnsValueFromRedis() {
     when(redisTemplateObj.opsForValue()).thenReturn(valueOps);
     when(valueOps.get("k")).thenReturn(value);
@@ -62,31 +58,30 @@ class RedisRepositoryTest {
     assertThat(redisRepository.get("k")).isEqualTo(value);
   }
 
-  @Test
-  void remove_delegatesToDelete() {
-    redisRepository.remove("k");
-
-    verify(redisTemplateObj).delete("k");
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  private void stubSessionCallback() {
+    when(redisTemplateObj.execute(any(SessionCallback.class)))
+        .thenAnswer(
+            invocation -> {
+              SessionCallback<?> callback = invocation.getArgument(0);
+              return callback.execute((RedisOperations) operations);
+            });
   }
 
   @Test
-  void pushToRedisSync_storesBothKeysWithDefaultTtl() {
-    when(redisTemplateObj.opsForValue()).thenReturn(valueOps);
+  void pushToRedisSync_storesBothKeysAtomicallyWithDefaultTtl() {
+    when(operations.opsForValue()).thenReturn(valueOps);
+    when(operations.exec()).thenReturn(List.of(true, true));
+    stubSessionCallback();
 
     redisRepository.pushToRedisSync("k", "kid", value, keyValue);
 
-    verify(valueOps).set("k", value, Duration.ofMinutes(DEFAULT_TTL_MINUTES));
-    verify(valueOps).set("kid", keyValue, Duration.ofMinutes(DEFAULT_TTL_MINUTES));
-  }
-
-  @Test
-  void pushToRedisAsyncWithKeyId_storesBothKeysWithDefaultTtl() {
-    when(redisTemplateObj.opsForValue()).thenReturn(valueOps);
-
-    redisRepository.pushToRedisAsync("k", "kid", value, keyValue);
-
-    verify(valueOps).set("k", value, Duration.ofMinutes(DEFAULT_TTL_MINUTES));
-    verify(valueOps).set("kid", keyValue, Duration.ofMinutes(DEFAULT_TTL_MINUTES));
+    InOrder inOrder = inOrder(operations, valueOps);
+    inOrder.verify(operations).multi();
+    inOrder.verify(valueOps).set("k", value, Duration.ofMinutes(DEFAULT_TTL_MINUTES));
+    inOrder.verify(valueOps).set("kid", keyValue, Duration.ofMinutes(DEFAULT_TTL_MINUTES));
+    inOrder.verify(operations).exec();
+    verify(operations, never()).discard();
   }
 
   @Test
@@ -100,12 +95,37 @@ class RedisRepositoryTest {
   }
 
   @Test
-  void pushToRedisSync_swallowsExceptions() {
-    when(redisTemplateObj.opsForValue()).thenReturn(valueOps);
+  void pushToRedisSync_commandFails_discardsTransactionAndThrows() {
+    when(operations.opsForValue()).thenReturn(valueOps);
     doThrow(new RuntimeException("redis down")).when(valueOps).set(eq("k"), any(), any());
+    stubSessionCallback();
 
-    assertThatCode(() -> redisRepository.pushToRedisSync("k", "kid", value, keyValue))
-        .doesNotThrowAnyException();
+    assertThrows(
+        AppException.class, () -> redisRepository.pushToRedisSync("k", "kid", value, keyValue));
+
+    verify(operations).discard();
+    verify(operations, never()).exec();
+    verify(valueOps, never()).set(eq("kid"), any(), any());
+  }
+
+  @Test
+  void pushToRedisSync_execReturnsError_throws() {
+    when(operations.opsForValue()).thenReturn(valueOps);
+    when(operations.exec()).thenReturn(List.of(true, new RuntimeException("OOM")));
+    stubSessionCallback();
+
+    assertThrows(
+        AppException.class, () -> redisRepository.pushToRedisSync("k", "kid", value, keyValue));
+  }
+
+  @Test
+  void pushToRedisSync_execReturnsNull_throws() {
+    when(operations.opsForValue()).thenReturn(valueOps);
+    when(operations.exec()).thenReturn(null);
+    stubSessionCallback();
+
+    assertThrows(
+        AppException.class, () -> redisRepository.pushToRedisSync("k", "kid", value, keyValue));
   }
 
   @Test

@@ -279,28 +279,26 @@ public class CacheController {
       value = "/refresh",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<RefreshResponse> refresh() {
-    boolean fullCacheInProgress = cacheConfigService.getCacheInProgress();
-    if (fullCacheInProgress) {
+    if (!cacheConfigService.tryDoCache()) {
       return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
-    } else {
-      cacheConfigService.doCache();
-      Map<String, Object> inMemoryCache = cacheConfigService.getInMemoryCache();
-
-      String cacheId = (String) inMemoryCache.get(Constants.VERSION);
-      String cacheVersion = (String) inMemoryCache.get(Constants.CACHE_VERSION);
-      ZonedDateTime timestamp = (ZonedDateTime) inMemoryCache.get(Constants.TIMESTAMP);
-
-      HttpHeaders responseHeaders = buildHttpHeaders(cacheId, cacheVersion, timestamp);
-
-      return ResponseEntity.ok()
-          .headers(responseHeaders)
-          .body(
-              RefreshResponse.builder()
-                  .version(cacheVersion)
-                  .timestamp(timestamp)
-                  .id(cacheId)
-                  .build());
     }
+
+    Map<String, Object> inMemoryCache = cacheConfigService.getInMemoryCache();
+
+    String cacheId = (String) inMemoryCache.get(Constants.VERSION);
+    String cacheVersion = (String) inMemoryCache.get(Constants.CACHE_VERSION);
+    ZonedDateTime timestamp = (ZonedDateTime) inMemoryCache.get(Constants.TIMESTAMP);
+
+    HttpHeaders responseHeaders = buildHttpHeaders(cacheId, cacheVersion, timestamp);
+
+    return ResponseEntity.ok()
+        .headers(responseHeaders)
+        .body(
+            RefreshResponse.builder()
+                .version(cacheVersion)
+                .timestamp(timestamp)
+                .id(cacheId)
+                .build());
   }
 
   @Operation(

@@ -49,6 +49,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -56,9 +57,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
+import java.util.concurrent.locks.ReentrantLock;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
@@ -78,12 +82,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CacheConfigService {
 
-  private Map<String, Object> inMemoryCache;
+  private final AtomicReference<Map<String, Object>> inMemoryCache = new AtomicReference<>();
+  /** Global lock: only one full cache generation at a time. */
+  private final ReentrantLock cacheRefreshLock = new ReentrantLock();
 
-  private final Boolean preload;
   private final String appVersion;
   private final Boolean sendEvent;
-  private final long inProgressTtl;
+  private final Duration lockWaitTimeout;
   private final RedisRepository redisRepository;
   private final ModelMapper modelMapper;
   private final ConfigurationKeysRepository configurationKeysRepository;
@@ -146,10 +151,9 @@ public class CacheConfigService {
           ConfigurationKeysRepository configurationKeysRepository,
           ModelMapper modelMapper,
           RedisRepository redisRepository,
-          @Value("${in_progress.ttl}") long inProgressTtl,
           @Value("#{'${sendEvent}'=='true'}") Boolean sendEvent,
           @Value("${info.application.version}") String appVersion,
-          @Value("${preload:true}") Boolean preload
+          @Value("${cache-schema.lock-wait-timeout:30s}") Duration lockWaitTimeout
   ) {
     this.jaxb2Marshaller = jaxb2Marshaller;
     this.cacheKeyUtils = cacheKeyUtils;
@@ -181,27 +185,28 @@ public class CacheConfigService {
     this.configurationKeysRepository = configurationKeysRepository;
     this.modelMapper = modelMapper;
     this.redisRepository = redisRepository;
-    this.inProgressTtl = inProgressTtl;
     this.sendEvent = sendEvent;
     this.appVersion = appVersion;
-    this.preload = preload;
+    this.lockWaitTimeout = lockWaitTimeout;
   }
 
+  /**
+   * Load the in memory cache from the full cache stored on Redis. If it is not available, generate
+   * it from the DB. Failures are logged and not propagated.
+   */
   public void preloadKeysFromRedis() {
-    if (Boolean.TRUE.equals(preload)) {
+    try {
+      log.debug("Preloading in memory cache from Redis");
+      inMemoryCache.set(Collections.unmodifiableMap(loadFullCache()));
+      log.info("Successfully loaded in memory cache from Redis");
+    } catch (Exception e){
+      log.warn("Could not load cache from redis: {}. Try to regenerate full cache", e.getMessage(), e);
       try {
-        log.debug("Preloading in memory cache from Redis");
-        inMemoryCache = loadFullCache();
-        log.info("Successfully loaded in memory cache from Redis");
-      } catch (Exception e){
-        log.warn("Could not load cache from redis: {}. Try to regenerate full cache", e.getMessage(), e);
-        try {
-          log.debug("Loading in memory cache from DB");
-          doCache();
-          log.info("Cache generated, saved to Redis and sent refresh event on startup");
-        } catch (Exception ex) {
-          log.error("[ALERT] Failed to load and generate cache on startup", ex);
-        }
+        log.debug("Loading in memory cache from DB");
+        doCache();
+        log.info("Cache generated, saved to Redis and sent refresh event on startup");
+      } catch (Exception ex) {
+        log.error("Failed to load and generate cache on startup", ex);
       }
     }
   }
@@ -214,39 +219,103 @@ public class CacheConfigService {
    */
   @Transactional(propagation = Propagation.NOT_SUPPORTED)
   public Map<String, Object> getInMemoryCache() {
-    if (inMemoryCache == null) {
+    Map<String, Object> cache = inMemoryCache.get();
+    if (cache == null) {
       throw new AppException(AppError.CACHE_NOT_INITIALIZED, "FULL");
     }
-    return inMemoryCache;
+    return cache;
   }
 
   /**
    *  Retrieve the in memory cache if has been initialized otherwise start a
-   *  new initialization and return the cache
+   *  new initialization and return the cache.
    *
-   * @return a map containing all the keys and values.
+   * <p>If the cache is not initialized the caller waits, up to {@code
+   * cache-schema.lock-wait-timeout}, for the full cache refresh lock and checks again once it is
+   * acquired, so concurrent callers trigger a single generation.
+   *
+   * @return an unmodifiable map containing all the keys and values.
+   * @throws AppException with {@link AppError#CACHE_SCHEMA_NOT_INITIALIZED} if the lock is not
+   *     acquired before the timeout or the thread is interrupted
    */
   public Map<String, Object> getInMemoryCacheOrRefreshIfNotExist() {
-    if (inMemoryCache == null) {
-      log.debug("In memory cache not initialized, starting initialization");
-      doCache();
+    if (inMemoryCache.get() == null) {
+      acquireRefreshLockOrFail();
+      try {
+        // re-check: another thread may have initialized the cache while this one was waiting
+        if (inMemoryCache.get() == null) {
+          log.debug("In memory cache not initialized, starting initialization");
+          refreshInMemoryCache();
+        }
+      } finally {
+        log.debug("Releasing {} cache refresh lock", Constants.FULL);
+        cacheRefreshLock.unlock();
+      }
     }
-    return inMemoryCache;
+    return inMemoryCache.get();
   }
 
   /**
    *  Start a new cache initialization, persist it both in memory and on Redis
-   *  and send the cache refresh event on EventHub
+   *  and send the cache refresh event on EventHub.
+   *
+   * <p>Internal: used only at startup by {@link #preloadKeysFromRedis()}; the refresh endpoint uses
+   * {@link #tryDoCache()}. Only one generation runs at a time: if another one is in progress, this
+   * call waits for it to finish and then generates the cache again.
    */
-  public void doCache() {
-    inMemoryCache = newCache();
-
-    sendEvent(
-            (String) inMemoryCache.get(Constants.VERSION),
-            (ZonedDateTime) inMemoryCache.get(Constants.TIMESTAMP));
+  void doCache() {
+    log.debug("Acquire {} cache refresh lock", Constants.FULL);
+    cacheRefreshLock.lock();
+    try {
+      refreshInMemoryCache();
+    } finally {
+      log.debug("Releasing {} cache refresh lock", Constants.FULL);
+      cacheRefreshLock.unlock();
+    }
   }
 
-  protected Map<String, Object> loadFullCache() throws IOException {
+  /**
+   * Same as {@link #doCache()} but does not wait for a generation in progress.
+   *
+   * @return {@code true} if the cache has been generated, {@code false} if another generation is
+   *     already running and nothing has been done
+   */
+  public boolean tryDoCache() {
+    if (!cacheRefreshLock.tryLock()) {
+      return false;
+    }
+    try {
+      refreshInMemoryCache();
+      return true;
+    } finally {
+      cacheRefreshLock.unlock();
+    }
+  }
+
+  private void acquireRefreshLockOrFail() {
+    try {
+      log.debug("Try to acquire {} cache refresh lock", Constants.FULL);
+      if (!cacheRefreshLock.tryLock(lockWaitTimeout.toMillis(), TimeUnit.MILLISECONDS)) {
+        log.warn("Timeout waiting for the full cache generation in progress");
+        throw new AppException(AppError.CACHE_SCHEMA_NOT_INITIALIZED, Constants.FULL);
+      }
+      log.debug("Acquired {} cache refresh lock", Constants.FULL);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new AppException(AppError.CACHE_SCHEMA_NOT_INITIALIZED, e, Constants.FULL);
+    }
+  }
+
+  private void refreshInMemoryCache() {
+    Map<String, Object> newCache = newCache();
+    inMemoryCache.set(Collections.unmodifiableMap(newCache));
+
+    sendEvent(
+            (String) newCache.get(Constants.VERSION),
+            (ZonedDateTime) newCache.get(Constants.TIMESTAMP));
+  }
+
+  protected Map<String, Object> loadFullCache() {
     log.debug("Loading full cache");
 
     byte[] bytes = redisRepository.get(cacheKeyUtils.getCacheKey(Constants.FULL));
@@ -256,6 +325,8 @@ public class CacheConfigService {
     FullData fulldata;
     try (InputStream in = ZipUtils.unzipToStream(bytes)) {
       fulldata = objectMapper.readValue(in, FullData.class);
+    }  catch (IOException e) {
+      throw new AppException(AppError.CACHE_DECOMPRESS_ERROR, e);
     }
 
     HashMap<String, Object> configData = new HashMap<>();
@@ -293,7 +364,6 @@ public class CacheConfigService {
 
   public Map<String, Object> newCache() {
     log.debug("Starting [{}] cache generation process", Constants.FULL);
-    setCacheInProgress();
 
     HashMap<String, Object> configData = new HashMap<>();
     try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
@@ -484,27 +554,26 @@ public class CacheConfigService {
       String actualKey = cacheKeyUtils.getCacheKey(Constants.FULL);
       String actualKeyV1 = cacheKeyUtils.getCacheIdKey(Constants.FULL);
 
-      redisRepository.pushToRedisAsync(actualKey, actualKeyV1, cacheByteArray, id.getBytes(StandardCharsets.UTF_8));
+      // sync and before the in memory swap: Redis and memory must always hold the same FULL cache
+      redisRepository.pushToRedisSync(actualKey, actualKeyV1, cacheByteArray, id.getBytes(StandardCharsets.UTF_8));
       log.info("Cache [{}] saved on Redis", Constants.FULL);
     } catch (Exception e) {
-      log.error("[ALERT] problem to generate cache", e);
+      log.error("[ALERT] Problem in cache generation or save", e);
       throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
-    } finally {
-      removeCacheInProgress();
     }
     return configData;
   }
 
   public void sendEvent(String id, ZonedDateTime now) {
     if (Boolean.TRUE.equals(sendEvent)) {
-        try {
-          log.debug("Notify cache refresh to all consumers");
-            eventHubService.publishEvent(id,now,getVersion());
-            log.info("Cache refresh event sent to all consumers");
-        } catch (JsonProcessingException e) {
-          log.error("Error sending cache refresh event: {}", e.getMessage());
-            throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
-        }
+      try {
+        log.debug("Notify cache refresh to all consumers");
+        eventHubService.publishEvent(id,now,getVersion());
+        log.info("Cache refresh event sent to all consumers");
+      } catch (Exception e) {
+        log.error("[ALERT] Error sending cache refresh event: {}", e.getMessage());
+        throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
+      }
     }
   }
 
@@ -514,22 +583,6 @@ public class CacheConfigService {
       return version.substring(0, 32);
     }
     return version;
-  }
-
-  public void removeCacheInProgress() {
-    String actualKeyV1 = cacheKeyUtils.getCacheKeyInProgress(Constants.FULL);
-    redisRepository.remove(actualKeyV1);
-  }
-
-  private void setCacheInProgress() {
-    String actualKeyV1 = cacheKeyUtils.getCacheKeyInProgress(Constants.FULL);
-    redisRepository.save(actualKeyV1, "1".getBytes(StandardCharsets.UTF_8), inProgressTtl);
-  }
-
-  @Transactional(propagation = Propagation.NOT_SUPPORTED)
-  public Boolean getCacheInProgress() {
-    String actualKeyV1 = cacheKeyUtils.getCacheKeyInProgress(Constants.FULL);
-    return redisRepository.getBooleanByKeyId(actualKeyV1);
   }
 
   public List<ConfigurationKey> getConfigurationKeys() {
