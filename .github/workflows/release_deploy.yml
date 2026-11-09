@@ -45,6 +45,14 @@ on:
       environment:
         required: true
         type: string
+      force_deploy:
+        required: false
+        type: boolean
+        default: false
+      beta:
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   packages: write
