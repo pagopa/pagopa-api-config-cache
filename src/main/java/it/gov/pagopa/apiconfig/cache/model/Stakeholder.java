@@ -5,6 +5,7 @@ public enum Stakeholder {
     NODE,
     STANDIN,
     WISP,
+    VERIFIER,
     TEST;
 
     @Override

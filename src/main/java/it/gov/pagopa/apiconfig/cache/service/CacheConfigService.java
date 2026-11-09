@@ -13,17 +13,6 @@ import it.gov.pagopa.apiconfig.cache.imported.controparti.CtFasciaOraria;
 import it.gov.pagopa.apiconfig.cache.imported.controparti.CtInformativaControparte;
 import it.gov.pagopa.apiconfig.cache.imported.controparti.CtListaInformativeControparte;
 import it.gov.pagopa.apiconfig.cache.imported.controparti.StTipoPeriodo;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplCostiServizio;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplFasciaCostoServizio;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplIdentificazioneServizio;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplInformativaDetail;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplInformativaMaster;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplInformativaPSP;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplInformazioniServizio;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplListaFasceCostoServizio;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplListaInformativaDetail;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplListaInformazioniServizio;
-import it.gov.pagopa.apiconfig.cache.imported.template.TplListaParoleChiave;
 import it.gov.pagopa.apiconfig.cache.model.FullData;
 import it.gov.pagopa.apiconfig.cache.model.latest.cds.CdsCategory;
 import it.gov.pagopa.apiconfig.cache.model.latest.cds.CdsService;
@@ -41,19 +30,17 @@ import it.gov.pagopa.apiconfig.cache.model.latest.psp.BrokerPsp;
 import it.gov.pagopa.apiconfig.cache.model.latest.psp.Channel;
 import it.gov.pagopa.apiconfig.cache.model.latest.psp.PaymentServiceProvider;
 import it.gov.pagopa.apiconfig.cache.model.latest.psp.PspChannelPaymentType;
-import it.gov.pagopa.apiconfig.cache.model.latest.psp.PspInformation;
 import it.gov.pagopa.apiconfig.cache.redis.RedisRepository;
 import it.gov.pagopa.apiconfig.cache.util.Constants;
 import it.gov.pagopa.apiconfig.cache.util.DateTimeUtils;
 import it.gov.pagopa.apiconfig.cache.util.ZipUtils;
-import it.gov.pagopa.apiconfig.starter.entity.CdiMasterValid;
 import it.gov.pagopa.apiconfig.starter.entity.IbanValidiPerPa;
 import it.gov.pagopa.apiconfig.starter.entity.InformativePaDetail;
 import it.gov.pagopa.apiconfig.starter.entity.InformativePaFasce;
 import it.gov.pagopa.apiconfig.starter.entity.InformativePaMaster;
 import it.gov.pagopa.apiconfig.starter.entity.Pa;
-import it.gov.pagopa.apiconfig.starter.entity.Psp;
 import it.gov.pagopa.apiconfig.starter.repository.*;
+import jakarta.xml.bind.JAXBElement;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,22 +49,20 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import java.util.zip.GZIPOutputStream;
-
-import jakarta.xml.bind.JAXBElement;
+import java.util.concurrent.locks.ReentrantLock;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
@@ -97,16 +82,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CacheConfigService {
 
-  private static final String DA_COMPILARE_FLUSSO =
-          "DA COMPILARE (formato: [IDPSP]_dd-mm-yyyy - esempio: ESEMPIO_31-12-2001)";
-  private static final String DA_COMPILARE = "DA COMPILARE";
+  private final AtomicReference<Map<String, Object>> inMemoryCache = new AtomicReference<>();
+  /** Global lock: only one full cache generation at a time. */
+  private final ReentrantLock cacheRefreshLock = new ReentrantLock();
 
-  private Map<String, Object> inMemoryCache;
-
-  private final Boolean preload;
   private final String appVersion;
   private final Boolean sendEvent;
-  private final long inProgressTtl;
+  private final Duration lockWaitTimeout;
   private final RedisRepository redisRepository;
   private final ModelMapper modelMapper;
   private final ConfigurationKeysRepository configurationKeysRepository;
@@ -131,7 +113,6 @@ public class CacheConfigService {
   private final CanaliViewRepository canaliViewRepository;
   private final PspCanaleTipoVersamentoCanaleRepository pspCanaleTipoVersamentoCanaleRepository;
   private final PspRepository pspRepository;
-  private final CdiMasterValidRepository cdiMasterValidRepository;
   private final InformativePaMasterRepository informativePaMasterRepository;
   private final InformativePaFasceRepository informativePaFasceRepository;
   private final CacheEventHubService eventHubService;
@@ -146,7 +127,6 @@ public class CacheConfigService {
           CacheEventHubService eventHubService,
           InformativePaFasceRepository informativePaFasceRepository,
           InformativePaMasterRepository informativePaMasterRepository,
-          CdiMasterValidRepository cdiMasterValidRepository,
           PspRepository pspRepository,
           PspCanaleTipoVersamentoCanaleRepository pspCanaleTipoVersamentoCanaleRepository,
           CanaliViewRepository canaliViewRepository,
@@ -171,10 +151,9 @@ public class CacheConfigService {
           ConfigurationKeysRepository configurationKeysRepository,
           ModelMapper modelMapper,
           RedisRepository redisRepository,
-          @Value("${in_progress.ttl}") long inProgressTtl,
           @Value("#{'${sendEvent}'=='true'}") Boolean sendEvent,
           @Value("${info.application.version}") String appVersion,
-          @Value("${preload:true}") Boolean preload
+          @Value("${cache-schema.lock-wait-timeout:30s}") Duration lockWaitTimeout
   ) {
     this.jaxb2Marshaller = jaxb2Marshaller;
     this.cacheKeyUtils = cacheKeyUtils;
@@ -182,7 +161,6 @@ public class CacheConfigService {
     this.eventHubService = eventHubService;
     this.informativePaFasceRepository = informativePaFasceRepository;
     this.informativePaMasterRepository = informativePaMasterRepository;
-    this.cdiMasterValidRepository = cdiMasterValidRepository;
     this.pspRepository = pspRepository;
     this.pspCanaleTipoVersamentoCanaleRepository = pspCanaleTipoVersamentoCanaleRepository;
     this.canaliViewRepository = canaliViewRepository;
@@ -207,24 +185,28 @@ public class CacheConfigService {
     this.configurationKeysRepository = configurationKeysRepository;
     this.modelMapper = modelMapper;
     this.redisRepository = redisRepository;
-    this.inProgressTtl = inProgressTtl;
     this.sendEvent = sendEvent;
     this.appVersion = appVersion;
-    this.preload = preload;
+    this.lockWaitTimeout = lockWaitTimeout;
   }
 
+  /**
+   * Load the in memory cache from the full cache stored on Redis. If it is not available, generate
+   * it from the DB. Failures are logged and not propagated.
+   */
   public void preloadKeysFromRedis() {
-    if (Boolean.TRUE.equals(preload)) {
+    try {
+      log.debug("Preloading in memory cache from Redis");
+      inMemoryCache.set(Collections.unmodifiableMap(loadFullCache()));
+      log.info("Successfully loaded in memory cache from Redis");
+    } catch (Exception e){
+      log.warn("Could not load cache from redis: {}. Try to regenerate full cache", e.getMessage(), e);
       try {
-        inMemoryCache = loadFullCache();
-      } catch (Exception e){
-        log.warn("Could not load single keys cache from redis: {}", e.getMessage(), e);
-        try {
-          doCache();
-          log.info("Cache generated, saved to Redis and sent refresh event on startup");
-        } catch (Exception ex) {
-          log.error("[ALERT] Failed to load and generate cache on startup", ex);
-        }
+        log.debug("Loading in memory cache from DB");
+        doCache();
+        log.info("Cache generated, saved to Redis and sent refresh event on startup");
+      } catch (Exception ex) {
+        log.error("Failed to load and generate cache on startup", ex);
       }
     }
   }
@@ -237,39 +219,104 @@ public class CacheConfigService {
    */
   @Transactional(propagation = Propagation.NOT_SUPPORTED)
   public Map<String, Object> getInMemoryCache() {
-    if (inMemoryCache == null) {
+    Map<String, Object> cache = inMemoryCache.get();
+    if (cache == null) {
       throw new AppException(AppError.CACHE_NOT_INITIALIZED, "FULL");
     }
-    return inMemoryCache;
+    return cache;
   }
 
   /**
    *  Retrieve the in memory cache if has been initialized otherwise start a
-   *  new initialization and return the cache
+   *  new initialization and return the cache.
    *
-   * @return a map containing all the keys and values.
+   * <p>If the cache is not initialized the caller waits, up to {@code
+   * cache-schema.lock-wait-timeout}, for the full cache refresh lock and checks again once it is
+   * acquired, so concurrent callers trigger a single generation.
+   *
+   * @return an unmodifiable map containing all the keys and values.
+   * @throws AppException with {@link AppError#CACHE_SCHEMA_NOT_INITIALIZED} if the lock is not
+   *     acquired before the timeout or the thread is interrupted
    */
   public Map<String, Object> getInMemoryCacheOrRefreshIfNotExist() {
-    if (inMemoryCache == null) {
-      doCache();
+    if (inMemoryCache.get() == null) {
+      acquireRefreshLockOrFail();
+      try {
+        // re-check: another thread may have initialized the cache while this one was waiting
+        if (inMemoryCache.get() == null) {
+          log.debug("In memory cache not initialized, starting initialization");
+          refreshInMemoryCache();
+        }
+      } finally {
+        log.debug("Releasing {} cache refresh lock", Constants.FULL);
+        cacheRefreshLock.unlock();
+      }
     }
-    return inMemoryCache;
+    return inMemoryCache.get();
   }
 
   /**
    *  Start a new cache initialization, persist it both in memory and on Redis
-   *  and send the cache refresh event on EventHub
+   *  and send the cache refresh event on EventHub.
+   *
+   * <p>Internal: used only at startup by {@link #preloadKeysFromRedis()}; the refresh endpoint uses
+   * {@link #tryDoCache()}. Only one generation runs at a time: if another one is in progress, this
+   * call waits for it to finish and then generates the cache again.
    */
-  public void doCache() {
-    inMemoryCache = newCache();
-
-    sendEvent(
-            (String) inMemoryCache.get(Constants.VERSION),
-            (ZonedDateTime) inMemoryCache.get(Constants.TIMESTAMP));
+  void doCache() {
+    log.debug("Acquire {} cache refresh lock", Constants.FULL);
+    cacheRefreshLock.lock();
+    try {
+      refreshInMemoryCache();
+    } finally {
+      log.debug("Releasing {} cache refresh lock", Constants.FULL);
+      cacheRefreshLock.unlock();
+    }
   }
 
-  protected Map<String, Object> loadFullCache() throws IOException {
-    log.info("Loading full cache");
+  /**
+   * Same as {@link #doCache()} but does not wait for a generation in progress.
+   *
+   * @return {@code true} if the cache has been generated, {@code false} if another generation is
+   *     already running and nothing has been done
+   */
+  public boolean tryDoCache() {
+    if (!cacheRefreshLock.tryLock()) {
+      return false;
+    }
+    try {
+      refreshInMemoryCache();
+      return true;
+    } finally {
+      cacheRefreshLock.unlock();
+    }
+  }
+
+  private void acquireRefreshLockOrFail() {
+    try {
+      log.debug("Try to acquire {} cache refresh lock", Constants.FULL);
+      if (!cacheRefreshLock.tryLock(lockWaitTimeout.toMillis(), TimeUnit.MILLISECONDS)) {
+        log.warn("Timeout waiting for the full cache generation in progress");
+        throw new AppException(AppError.CACHE_SCHEMA_NOT_INITIALIZED, Constants.FULL);
+      }
+      log.debug("Acquired {} cache refresh lock", Constants.FULL);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new AppException(AppError.CACHE_SCHEMA_NOT_INITIALIZED, e, Constants.FULL);
+    }
+  }
+
+  private void refreshInMemoryCache() {
+    Map<String, Object> newCache = newCache();
+    inMemoryCache.set(Collections.unmodifiableMap(newCache));
+
+    sendEvent(
+            (String) newCache.get(Constants.VERSION),
+            (ZonedDateTime) newCache.get(Constants.TIMESTAMP));
+  }
+
+  protected Map<String, Object> loadFullCache() {
+    log.debug("Loading full cache");
 
     byte[] bytes = redisRepository.get(cacheKeyUtils.getCacheKey(Constants.FULL));
     if (bytes == null) {
@@ -278,6 +325,8 @@ public class CacheConfigService {
     FullData fulldata;
     try (InputStream in = ZipUtils.unzipToStream(bytes)) {
       fulldata = objectMapper.readValue(in, FullData.class);
+    }  catch (IOException e) {
+      throw new AppException(AppError.CACHE_DECOMPRESS_ERROR, e);
     }
 
     HashMap<String, Object> configData = new HashMap<>();
@@ -314,7 +363,7 @@ public class CacheConfigService {
   }
 
   public Map<String, Object> newCache() {
-    setCacheInProgress();
+    log.debug("Starting [{}] cache generation process", Constants.FULL);
 
     HashMap<String, Object> configData = new HashMap<>();
     try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
@@ -467,14 +516,13 @@ public class CacheConfigService {
       configData.put(Constants.IBANS,ibansMap);
       appendMapToJson(jsonGenerator,Constants.IBANS,ibansMap);
 
-      configData.put(Constants.PSP_INFORMATIONS,new HashMap<>());
-      appendMapToJson(jsonGenerator,Constants.PSP_INFORMATIONS,new HashMap<>());
+      HashMap<Object, Object> objectHashMap = new HashMap<>();
+      HashMap<String, Object> stringObjectHashMap = new HashMap<>();
+      configData.put(Constants.PSP_INFORMATIONS, objectHashMap);
+      appendMapToJson(jsonGenerator,Constants.PSP_INFORMATIONS, stringObjectHashMap);
 
-      List<PspInformation> infopspTemplates = getInformativeTemplates();
-      HashMap<String, Object> infopspTemplatesMap = new HashMap<>();
-      infopspTemplates.forEach(k -> infopspTemplatesMap.put(k.getPsp(), k));
-      configData.put(Constants.PSP_INFORMATION_TEMPLATES,infopspTemplatesMap);
-      appendMapToJson(jsonGenerator,Constants.PSP_INFORMATION_TEMPLATES,infopspTemplatesMap);
+      configData.put(Constants.PSP_INFORMATION_TEMPLATES, objectHashMap);
+      appendMapToJson(jsonGenerator,Constants.PSP_INFORMATION_TEMPLATES, stringObjectHashMap);
 
       List<CreditorInstitutionInformation> infopas = getInformativePa();
       HashMap<String, Object> infopasMap = new HashMap<>();
@@ -501,29 +549,31 @@ public class CacheConfigService {
       cacheByteArray = baos.toByteArray();
 
       long duration = (endTime - startTime) / 1000000;
-      log.info("{} cache loaded in {} ms", Constants.FULL, duration);
+      log.info("Cache [{}] loaded in memory in {} ms", Constants.FULL, duration);
 
       String actualKey = cacheKeyUtils.getCacheKey(Constants.FULL);
       String actualKeyV1 = cacheKeyUtils.getCacheIdKey(Constants.FULL);
 
-      log.info("Saving on Redis {} {} {}", actualKey, actualKeyV1, id);
-      redisRepository.pushToRedisAsync(actualKey, actualKeyV1, cacheByteArray, id.getBytes(StandardCharsets.UTF_8));
+      // sync and before the in memory swap: Redis and memory must always hold the same FULL cache
+      redisRepository.pushToRedisSync(actualKey, actualKeyV1, cacheByteArray, id.getBytes(StandardCharsets.UTF_8));
+      log.info("Cache [{}] saved on Redis", Constants.FULL);
     } catch (Exception e) {
-      log.error("[ALERT] problem to generate cache", e);
+      log.error("[ALERT] Problem in cache generation or save", e);
       throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
-    } finally {
-      removeCacheInProgress();
     }
     return configData;
   }
 
   public void sendEvent(String id, ZonedDateTime now) {
     if (Boolean.TRUE.equals(sendEvent)) {
-        try {
-            eventHubService.publishEvent(id,now,getVersion());
-        } catch (JsonProcessingException e) {
-            throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
-        }
+      try {
+        log.debug("Notify cache refresh to all consumers");
+        eventHubService.publishEvent(id,now,getVersion());
+        log.info("Cache refresh event sent to all consumers");
+      } catch (Exception e) {
+        log.error("[ALERT] Error sending cache refresh event: {}", e.getMessage());
+        throw new AppException(AppError.INTERNAL_SERVER_ERROR, e);
+      }
     }
   }
 
@@ -533,22 +583,6 @@ public class CacheConfigService {
       return version.substring(0, 32);
     }
     return version;
-  }
-
-  public void removeCacheInProgress() {
-    String actualKeyV1 = cacheKeyUtils.getCacheKeyInProgress(Constants.FULL);
-    redisRepository.remove(actualKeyV1);
-  }
-
-  private void setCacheInProgress() {
-    String actualKeyV1 = cacheKeyUtils.getCacheKeyInProgress(Constants.FULL);
-    redisRepository.save(actualKeyV1, "1".getBytes(StandardCharsets.UTF_8), inProgressTtl);
-  }
-
-  @Transactional(propagation = Propagation.NOT_SUPPORTED)
-  public Boolean getCacheInProgress() {
-    String actualKeyV1 = cacheKeyUtils.getCacheKeyInProgress(Constants.FULL);
-    return redisRepository.getBooleanByKeyId(actualKeyV1);
   }
 
   public List<ConfigurationKey> getConfigurationKeys() {
@@ -734,19 +768,6 @@ public class CacheConfigService {
         .map(codificheRepository.findAll(), new TypeToken<List<Encoding>>() {}.getType());
   }
 
-  private String toXml(TplInformativaPSP element) {
-    try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-      JAXBElement<TplInformativaPSP> informativaPSP =
-          new it.gov.pagopa.apiconfig.cache.imported.template.ObjectFactory()
-              .createInformativaPSP(element);
-      jaxb2Marshaller.marshal(informativaPSP, new StreamResult(baos));
-      return Constants.ENCODER.encodeToString(baos.toByteArray());
-    } catch (Exception e) {
-      log.error("error creating TplInformativaPSP", e);
-      return e.toString();
-    }
-  }
-
   private String toXml(CtListaInformativeControparte element) {
     try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
       JAXBElement<CtListaInformativeControparte> informativaPA =
@@ -758,161 +779,6 @@ public class CacheConfigService {
       log.error("error creating CtListaInformativeControparte", e);
       return e.toString();
     }
-  }
-
-  public List<PspInformation> getInformativeTemplates() {
-    List<CdiMasterValid> masters =
-        StreamSupport.stream(cdiMasterValidRepository.findAll().spliterator(), false)
-            .toList();
-    return getTemplateInformativePsp(masters);
-  }
-
-  public List<PspInformation> getTemplateInformativePsp(List<CdiMasterValid> allMasters) {
-    log.info("loading TemplateInformativePsp");
-    List<Psp> psps = pspRepository.findAll();
-    List<PspInformation> templates = new ArrayList<>();
-
-    psps.forEach(
-        psp -> {
-          try {
-            Optional<CdiMasterValid> masters =
-                allMasters
-                    .stream()
-                    .filter(m -> m.getFkPsp().getObjId().equals(psp.getObjId()))
-                    .findFirst();
-            TplInformativaPSP tplInformativaPSP = new TplInformativaPSP();
-            tplInformativaPSP.setRagioneSociale(DA_COMPILARE);
-            tplInformativaPSP.setIdentificativoPSP(DA_COMPILARE);
-            tplInformativaPSP.setCodiceABI(
-                Objects.isNull(psp.getAbi()) ? DA_COMPILARE : psp.getAbi());
-            tplInformativaPSP.setCodiceBIC(
-                Objects.isNull(psp.getBic()) ? DA_COMPILARE : psp.getBic());
-            tplInformativaPSP.setIdentificativoFlusso(DA_COMPILARE_FLUSSO);
-            tplInformativaPSP.setMybankIDVS(
-                Objects.isNull(psp.getCodiceMybank()) ? DA_COMPILARE : psp.getCodiceMybank());
-
-            TplInformativaMaster tplInformativaMaster = new TplInformativaMaster();
-            tplInformativaMaster.setLogoPSP(DA_COMPILARE);
-            tplInformativaMaster.setDataInizioValidita(DA_COMPILARE);
-            tplInformativaMaster.setDataPubblicazione(DA_COMPILARE);
-            tplInformativaMaster.setUrlConvenzioniPSP(DA_COMPILARE);
-            tplInformativaMaster.setUrlInformativaPSP(DA_COMPILARE);
-            tplInformativaMaster.setUrlInformazioniPSP(DA_COMPILARE);
-            tplInformativaMaster.setMarcaBolloDigitale(0);
-            tplInformativaMaster.setStornoPagamento(0);
-            tplInformativaPSP.setInformativaMaster(tplInformativaMaster);
-
-//            if (masters.isEmpty()) {
-              TplListaInformativaDetail tplListaInformativaDetail = new TplListaInformativaDetail();
-              tplListaInformativaDetail
-                  .getInformativaDetail()
-                  .add(makeTplInformativaDetail(null, null, null, null));
-              tplInformativaPSP.setListaInformativaDetail(tplListaInformativaDetail);
-              templates.add(new PspInformation(psp.getIdPsp(), toXml(tplInformativaPSP)));
-              // TODO Remember to uncomment this, do we need it?
-//            } else {
-//              tplInformativaPSP.setRagioneSociale(psp.getRagioneSociale());
-//              tplInformativaPSP.setIdentificativoPSP(psp.getIdPsp());
-//              TplListaInformativaDetail tplListaInformativaDetail = new TplListaInformativaDetail();
-//              masters
-//                  .get()
-//                  .getCdiDetail()
-//                  .forEach(
-//                      d ->
-//                          tplListaInformativaDetail
-//                              .getInformativaDetail()
-//                              .add(
-//                                  makeTplInformativaDetail(
-//                                      d.getPspCanaleTipoVersamento()
-//                                          .getCanaleTipoVersamento()
-//                                          .getCanale()
-//                                          .getIdCanale(),
-//                                      d.getPspCanaleTipoVersamento()
-//                                          .getCanaleTipoVersamento()
-//                                          .getCanale()
-//                                          .getFkIntermediarioPsp()
-//                                          .getIdIntermediarioPsp(),
-//                                      d.getPspCanaleTipoVersamento()
-//                                          .getCanaleTipoVersamento()
-//                                          .getTipoVersamento()
-//                                          .getTipoVersamento(),
-//                                      d.getModelloPagamento())));
-//              tplInformativaPSP.setListaInformativaDetail(tplListaInformativaDetail);
-//              templates.add(new PspInformation(psp.getIdPsp(), toXml(tplInformativaPSP)));
-//            }
-          } catch (Exception e) {
-            log.error(
-                "errore creazione template informativa psp:"
-                    + psp.getIdPsp()
-                    + " error:"
-                    + e.getMessage());
-          }
-        });
-
-    return templates;
-  }
-
-  private TplInformativaDetail makeTplInformativaDetail(
-      String idCanale, String idInter, String tv, Long modello) {
-    TplInformativaDetail tplInformativaDetail = new TplInformativaDetail();
-    tplInformativaDetail.setCanaleApp(DA_COMPILARE);
-    tplInformativaDetail.setIdentificativoCanale(Objects.isNull(idCanale) ? DA_COMPILARE : idCanale);
-    tplInformativaDetail.setPriorita(DA_COMPILARE);
-    tplInformativaDetail.setTipoVersamento(
-        Objects.isNull(tv)
-            ? it.gov.pagopa.apiconfig.cache.imported.template.StTipoVersamento.BBT
-            : it.gov.pagopa.apiconfig.cache.imported.template.StTipoVersamento.fromValue(tv));
-    tplInformativaDetail.setModelloPagamento(Objects.isNull(modello) ? 0 : modello.intValue());
-    tplInformativaDetail.setIdentificativoIntermediario(
-        Objects.isNull(idInter) ? DA_COMPILARE : idInter);
-    tplInformativaDetail.setServizioAlleImprese(null);
-
-    TplIdentificazioneServizio tplIdentificazioneServizio = new TplIdentificazioneServizio();
-    tplIdentificazioneServizio.setLogoServizio(DA_COMPILARE);
-    tplIdentificazioneServizio.setNomeServizio(DA_COMPILARE);
-    tplInformativaDetail.setIdentificazioneServizio(tplIdentificazioneServizio);
-
-    TplCostiServizio tplCostiServizio = new TplCostiServizio();
-    tplCostiServizio.setTipoCommissione("0");
-    tplCostiServizio.setTipoCostoTransazione("0");
-    TplFasciaCostoServizio tplFasciaCostoServizio = new TplFasciaCostoServizio();
-    tplFasciaCostoServizio.setCostoFisso(DA_COMPILARE);
-    tplFasciaCostoServizio.setImportoMassimoFascia(DA_COMPILARE);
-    tplFasciaCostoServizio.setCostoFisso(DA_COMPILARE);
-    List<TplFasciaCostoServizio> tplFasciaCostoServizios =
-        Arrays.asList(tplFasciaCostoServizio, tplFasciaCostoServizio, tplFasciaCostoServizio);
-    TplListaFasceCostoServizio fasce = new TplListaFasceCostoServizio();
-    fasce.getFasciaCostoServizio().addAll(tplFasciaCostoServizios);
-    tplCostiServizio.setListaFasceCostoServizio(fasce);
-    tplInformativaDetail.setCostiServizio(tplCostiServizio);
-
-    TplListaParoleChiave ks = new TplListaParoleChiave();
-    ks.getParoleChiave().add(DA_COMPILARE);
-    ks.getParoleChiave().add(DA_COMPILARE);
-    ks.getParoleChiave().add(DA_COMPILARE);
-    tplInformativaDetail.setListaParoleChiave(ks);
-
-    TplListaInformazioniServizio info = new TplListaInformazioniServizio();
-
-    Arrays.asList(
-            it.gov.pagopa.apiconfig.cache.imported.template.StCodiceLingua.IT,
-            it.gov.pagopa.apiconfig.cache.imported.template.StCodiceLingua.EN,
-            it.gov.pagopa.apiconfig.cache.imported.template.StCodiceLingua.DE,
-            it.gov.pagopa.apiconfig.cache.imported.template.StCodiceLingua.FR,
-            it.gov.pagopa.apiconfig.cache.imported.template.StCodiceLingua.SL)
-        .forEach(
-            l -> {
-              TplInformazioniServizio infoser = new TplInformazioniServizio();
-              infoser.setCodiceLingua(
-                  it.gov.pagopa.apiconfig.cache.imported.template.StCodiceLingua.IT);
-              infoser.setDescrizioneServizio(DA_COMPILARE);
-              infoser.setDescrizioneServizio(DA_COMPILARE);
-              infoser.setUrlInformazioniCanale(DA_COMPILARE);
-              infoser.setLimitazioniServizio(DA_COMPILARE);
-              info.getInformazioniServizio().add(infoser);
-            });
-    tplInformativaDetail.setListaInformazioniServizio(info);
-    return tplInformativaDetail;
   }
 
   private List<CtContoAccredito> manageContiAccredito(List<IbanValidiPerPa> ibans) {
@@ -1031,7 +897,7 @@ public class CacheConfigService {
 			  informativaPaFull.getInformativaControparte()
 			  .addAll(ctListaInformativeControparte.getInformativaControparte());
 		  }
-		  log.debug("Processed pa:" + pa.getIdDominio());
+		  log.debug("Processed pa: {}", pa.getIdDominio());
 	  });
 
 	  log.debug("creating cache info full");
@@ -1068,7 +934,7 @@ public class CacheConfigService {
                   })
               .toList();
     } catch (Exception e) {
-      log.error("error fasce detail {}", det.getId(), e);
+      log.error("Error fasce detail {}", det.getId(), e);
     }
     CtErogazione ctErogazione = new CtErogazione();
     ctErogazione.setGiorno(det.getGiorno());

@@ -279,38 +279,26 @@ public class CacheController {
       value = "/refresh",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<RefreshResponse> refresh() {
-    boolean fullCacheInProgress = cacheConfigService.getCacheInProgress();
-    if (fullCacheInProgress) {
+    if (!cacheConfigService.tryDoCache()) {
       return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
-    } else {
-      cacheConfigService.doCache();
-      Map<String, Object> inMemoryCache = cacheConfigService.getInMemoryCache();
-
-      String cacheId = (String) inMemoryCache.get(Constants.VERSION);
-      String cacheVersion = (String) inMemoryCache.get(Constants.CACHE_VERSION);
-      ZonedDateTime timestamp = (ZonedDateTime) inMemoryCache.get(Constants.TIMESTAMP);
-
-      HttpHeaders responseHeaders = buildHttpHeaders(cacheId, cacheVersion, timestamp);
-
-      return ResponseEntity.ok()
-          .headers(responseHeaders)
-          .body(
-              RefreshResponse.builder()
-                  .version(cacheVersion)
-                  .timestamp(timestamp)
-                  .id(cacheId)
-                  .build());
     }
-  }
 
-  private static HttpHeaders buildHttpHeaders(
-      String cacheId, String cacheVersion, ZonedDateTime timestamp) {
-    HttpHeaders responseHeaders = new HttpHeaders();
-    responseHeaders.set(Constants.HEADER_X_CACHE_ID, cacheId);
-    responseHeaders.set(Constants.HEADER_X_CACHE_VERSION, cacheVersion);
-    responseHeaders.set(
-        Constants.HEADER_X_CACHE_TIMESTAMP, DateTimeFormatter.ISO_DATE_TIME.format(timestamp));
-    return responseHeaders;
+    Map<String, Object> inMemoryCache = cacheConfigService.getInMemoryCache();
+
+    String cacheId = (String) inMemoryCache.get(Constants.VERSION);
+    String cacheVersion = (String) inMemoryCache.get(Constants.CACHE_VERSION);
+    ZonedDateTime timestamp = (ZonedDateTime) inMemoryCache.get(Constants.TIMESTAMP);
+
+    HttpHeaders responseHeaders = buildHttpHeaders(cacheId, cacheVersion, timestamp);
+
+    return ResponseEntity.ok()
+        .headers(responseHeaders)
+        .body(
+            RefreshResponse.builder()
+                .version(cacheVersion)
+                .timestamp(timestamp)
+                .id(cacheId)
+                .build());
   }
 
   @Operation(
@@ -362,7 +350,8 @@ public class CacheController {
     try {
       convert = new JsonToXls(xlsMaskPasswords).convert(inMemoryCache);
     } catch (Exception e) {
-      log.error("Error creating xlsx", e);
+      log.error("Error creating xlsx");
+      throw e;
     }
     String fileName =
         String.format("%s.xlsx", inMemoryCache.getOrDefault(Constants.CACHE_VERSION, "cache"));
@@ -370,5 +359,15 @@ public class CacheController {
         .header(
             HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=\"%s\"", fileName))
         .body(convert);
+  }
+
+  private HttpHeaders buildHttpHeaders(
+      String cacheId, String cacheVersion, ZonedDateTime timestamp) {
+    HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.set(Constants.HEADER_X_CACHE_ID, cacheId);
+    responseHeaders.set(Constants.HEADER_X_CACHE_VERSION, cacheVersion);
+    responseHeaders.set(
+        Constants.HEADER_X_CACHE_TIMESTAMP, DateTimeFormatter.ISO_DATE_TIME.format(timestamp));
+    return responseHeaders;
   }
 }

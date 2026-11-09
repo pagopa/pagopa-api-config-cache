@@ -86,12 +86,12 @@ public abstract class StakeholderController {
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ConfigDataV1> cache(
       @Deprecated @RequestParam @Parameter(description = "to force the refresh of the cache")
-          Optional<Boolean> refresh)
-      throws IOException {
+          Optional<Boolean> refresh) {
     if (refresh.orElse(false)) {
-      log.warn("Deprecated refresh from stakeholder,change this to call /cache/refresh");
+      log.warn(
+          "Deprecated refresh from stakeholder {},change this to call /cache/refresh",
+          stakeholder());
       cacheController.refresh();
-      return ResponseEntity.ok().build();
     }
     ConfigData config = stakeholderConfigService.getCache(stakeholder(), "v1", keys());
 
@@ -153,7 +153,7 @@ public abstract class StakeholderController {
   @GetMapping(
       value = "/v1/id",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<CacheVersion> idV1() throws IOException {
+  public ResponseEntity<CacheVersion> idV1() {
     return ResponseEntity.ok()
         .body(stakeholderConfigService.getVersionId(stakeholder(), "v1", keys()));
   }

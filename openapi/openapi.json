@@ -4,7 +4,7 @@
     "title": "API-Config Cache v0.9.44-8-PAGOPA-3776-fix-memory-consumption - ${service}",
     "description": "Generate cache for various microservices",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "0.9.44-10-PAGOPA-3776-fix-memory-consumption"
+    "version": "0.9.44-17-PAGOPA-3776-switch-from-stakeholder-redis-lock-to-synchronized-block"
   },
   "servers": [
     {

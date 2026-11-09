@@ -12,7 +12,7 @@
 
   <groupId>it.gov.pagopa.api-config</groupId>
   <artifactId>cache</artifactId>
-  <version>0.9.44-10-PAGOPA-3776-fix-memory-consumption</version>
+  <version>0.9.44-17-PAGOPA-3776-switch-from-stakeholder-redis-lock-to-synchronized-block</version>
   <name>API-Config Cache</name>
   <description>Generate cache for various microservices</description>
 
@@ -240,22 +240,6 @@
                 <xsdOption>
                   <xsd>${basedir}/src/main/resources/xsd/sanp3.13.0/TabellaDelleContropartiEstesa_1_2_0.xsd</xsd>
                   <packagename>it.gov.pagopa.apiconfig.cache.imported.controparti</packagename>
-                </xsdOption>
-              </xsdOptions>
-            </configuration>
-          </execution>
-          <execution>
-            <id>xjc3</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>xsdtojava</goal>
-            </goals>
-            <configuration>
-              <sourceRoot>${basedir}/target/generated-sources/src/main/java</sourceRoot>
-              <xsdOptions>
-                <xsdOption>
-                  <xsd>${basedir}/src/main/resources/xsd/sanp3.13.0/TemplateInformativa_1_0_11.xsd</xsd>
-                  <packagename>it.gov.pagopa.apiconfig.cache.imported.template</packagename>
                 </xsdOption>
               </xsdOptions>
             </configuration>

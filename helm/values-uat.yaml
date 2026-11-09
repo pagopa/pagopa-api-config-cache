@@ -2,7 +2,7 @@ microservice-chart: &microservice-chart
   namespace: "apiconfig"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: 0.9.44-10-PAGOPA-3776-fix-memory-consumption
+    tag: 0.9.44-17-PAGOPA-3776-switch-from-stakeholder-redis-lock-to-synchronized-block
   canaryDelivery:
     deployment:
       image:
@@ -14,15 +14,16 @@ microservice-chart: &microservice-chart
     tcpSocket:
       port: 8080
     initialDelaySeconds: 60
-    periodSeconds: 60
-    failureThreshold: 5
+    periodSeconds: 15
+    failureThreshold: 12
   readinessProbe:
-    handlerType: tcpSocket
-    tcpSocket:
+    handlerType: httpGet
+    httpGet:
+      path: /actuator/health/readiness
       port: 8080
     initialDelaySeconds: 60
-    periodSeconds: 60
-    failureThreshold: 5
+    periodSeconds: 15
+    failureThreshold: 12
   deployment:
     create: true
     replicas: 1 # default
@@ -63,7 +64,7 @@ microservice-chart: &microservice-chart
     HIKARI_MAX_LIFETIME: "0"
     HIKARI_KEEPLIVE_TIME: "0"
     HIKARI_MAXIMUM_POOL_SIZE: "15"
-    CACHE_SCHEMA_LOCK_ALL_STAKEHOLDER: "true"
+    CACHE_SCHEMA_LOCK_WAIT_TIMEOUT: "30s"
   envSecret: &envSecret
     APPLICATIONINSIGHTS_CONNECTION_STRING: "ai-u-connection-string"
     REDIS_PWD: "redis-password"
