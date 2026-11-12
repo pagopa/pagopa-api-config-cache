@@ -19,7 +19,7 @@ public class MarshalerConfig {
     jaxb2Marshaller.setMarshallerProperties(
         Map.of(
             Marshaller.JAXB_FORMATTED_OUTPUT,
-            Boolean.TRUE,
+            Boolean.FALSE,
             Marshaller.JAXB_SCHEMA_LOCATION,
             SCHEMA_INSTANCE,
             Marshaller.JAXB_ENCODING,
