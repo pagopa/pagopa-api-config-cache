@@ -18,6 +18,8 @@ public class MarshalerConfig {
     jaxb2Marshaller.setPackagesToScan("it.gov.pagopa.apiconfig.cache.imported");
     jaxb2Marshaller.setMarshallerProperties(
         Map.of(
+            Marshaller.JAXB_FORMATTED_OUTPUT,
+            Boolean.FALSE,
             Marshaller.JAXB_SCHEMA_LOCATION,
             SCHEMA_INSTANCE,
             Marshaller.JAXB_ENCODING,
