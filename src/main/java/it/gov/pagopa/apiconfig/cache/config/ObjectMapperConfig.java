@@ -37,11 +37,12 @@ public class ObjectMapperConfig {
 
     /**
      * Maximum length (in characters) of a single JSON string value allowed when reading, enforced by
-     * Jackson's {@link StreamReadConstraints}. Default is 128 MiB: finite (so an unexpectedly huge
-     * value fails fast instead of risking an OutOfMemoryError) but well above the largest single
-     * cache field (the ~42 MB {@code informativa} string in the FULL cache).
+     * Jackson's {@link StreamReadConstraints}. Default is 40,000,000 chars (~40 MB): finite (so an
+     * unexpectedly huge value fails fast instead of risking an OutOfMemoryError) but large enough
+     * for the biggest single cache fields (e.g. the {@code informativa} string in the FULL cache).
+     * Overridable via {@code CACHE_JACKSON_MAX_STRING_LENGTH}.
      */
-    @Value("${cache.jackson.max-string-length:134217728}")
+    @Value("${cache.jackson.max-string-length:40000000}")
     private int maxStringLength;
 
     /**
