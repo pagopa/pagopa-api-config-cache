@@ -2,7 +2,7 @@ microservice-chart: &microservice-chart
   namespace: "apiconfig"
   image:
     repository: ghcr.io/pagopa/pagopa-api-config-cache
-    tag: 0.10.1
+    tag: 0.10.1-1-fix-jaxb-marshaller-configuration
   canaryDelivery:
     deployment:
       image:
