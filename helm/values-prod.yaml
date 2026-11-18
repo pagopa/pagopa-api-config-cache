@@ -41,11 +41,11 @@ microservice-chart: &microservice-chart
     workloadIdentityClientId: <workload-identity-client-id-set-automatically-by-gha>
   resources:
     requests:
-      memory: "512Mi"
-      cpu: "0.5"
+      memory: "2400Mi"
+      cpu: "0.3"
     limits:
-      memory: "6G"
-      cpu: "1"
+      memory: "3700Mi"
+      cpu: "0.9"
   envConfig: &envConfig
     ENV: "prod"
     TZ: "Europe/Rome"
