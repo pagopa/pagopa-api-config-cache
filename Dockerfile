@@ -34,4 +34,5 @@ EXPOSE 8080
 
 COPY --chown=spring:spring docker-resources/run.sh ./run.sh
 RUN chmod +x ./run.sh
+ENV JAVA_TOOL_OPTIONS="-XX:-UseBASE64Intrinsics"
 ENTRYPOINT ["./run.sh"]
