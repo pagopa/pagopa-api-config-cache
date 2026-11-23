@@ -42,10 +42,10 @@ microservice-chart: &microservice-chart
   resources:
     requests:
       memory: "512Mi"
-      cpu: "0.5"
+      cpu: "0.15"
     limits:
-      memory: "2G"
-      cpu: "1"
+      memory: "1500Mi"
+      cpu: "0.3"
   envConfig: &envConfig
     ENV: "dev"
     TZ: "Europe/Rome"
@@ -59,7 +59,7 @@ microservice-chart: &microservice-chart
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
     CACHET_TX_NAME: "nodo-dei-pagamenti-cache"
-    JAVA_OPTS: "-XX:+UnlockExperimentalVMOptions -XX:InitiatingHeapOccupancyPercent=20 -XX:+UseContainerSupport -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:MaxGCPauseMillis=100 -XX:MinHeapFreeRatio=30 -XX:MaxHeapFreeRatio=30 -Xms384m -Xmx1536m -XX:-UseBASE64Intrinsics"
+    JAVA_OPTS: "-XX:+UnlockExperimentalVMOptions -XX:InitiatingHeapOccupancyPercent=20 -XX:+UseContainerSupport -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:MaxGCPauseMillis=100 -XX:MinHeapFreeRatio=30 -XX:MaxHeapFreeRatio=30 -Xms512m -Xmx1152m -XX:-UseBASE64Intrinsics"
     HIKARI_CONNECTION_TIMEOUT: "3000"
     HIKARI_MAX_LIFETIME: "0"
     HIKARI_KEEPLIVE_TIME: "0"
